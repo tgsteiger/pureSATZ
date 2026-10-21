@@ -19,6 +19,8 @@ import sys
 from datetime import datetime
 
 MOTOR = os.path.dirname(os.path.abspath(__file__))
+WEBSEITE = "https://tgsteiger.github.io/pureSATZ/"
+GITHUB = "https://github.com/tgsteiger/pureSATZ"
 
 SPICKZETTEL = [
     ("sh sync.sh", "Am Anfang und am Ende: Stand mit den anderen Computern abgleichen"),
@@ -34,6 +36,8 @@ SPICKZETTEL = [
     ("sh build.sh geschichten", "Sammel-PDF aller Geschichten (mit «uz» auch unzensiert)"),
     ("sh update.sh", "Neuen Motor von GitHub holen (lokal: sh update.sh lokal)"),
     ("sh sicherung.sh", "Ganzes Buch als ZIP sichern (alte Fassungen einzelner Dateien: Ordner md-history/)"),
+    ("sh cleanup.sh", "Aufräumen: alte Motoren und Zwischenspeicher löschen, entfernen (delete) – fragt zuerst, "
+                      "md-history/ und Texte bleiben"),
     ("sh build.sh hilfe", "Diese Hilfe neu erzeugen und öffnen"),
 ]
 
@@ -249,6 +253,23 @@ def formate_html(variablen=None):
             "<p class='leise'>Foto ganze Breite = nötige Pixel für 300 dpi (Breite in mm × 12).</p>")
 
 
+def netz_html():
+    """Abschnitt «pureSATZ im Netz»: Webseite, GitHub, Download, Fehler melden, Kontakt (auch über die Suche)."""
+    reihen = [
+        ("Webseite", WEBSEITE, "Download, die fünf Schritte für Linux, Mac und Windows, diese Hilfe online"),
+        ("GitHub", GITHUB, "Quelltext, neueste Version, Änderungen (CHANGELOG)"),
+        ("Download (ZIP)", GITHUB + "/archive/refs/heads/main.zip",
+         "neuester Stand; Ordner «pureSATZ-main» in «pureSATZ» umbenennen"),
+        ("Fehler melden, Fragen", GITHUB + "/issues", "Issues auf GitHub (öffentlich)"),
+        ("Lizenz", GITHUB + "/blob/main/LIZENZ.md", "kostenlos für eigene Bücher, Quelltext einsehbar"),
+    ]
+    t = "".join(f'<tr><td>{n}</td><td><a href="{u}">{html.escape(u.replace("https://", ""))}</a></td>'
+                f"<td>{html.escape(x)}</td></tr>" for n, u, x in reihen)
+    return (f"<table><tbody>{t}<tr><td>E-Mail</td><td><a class=mail href=#>puresatz (at) gsteiger.ch</a></td>"
+            "<td>Kontakt, Lizenzanfragen (GPL-3.0)</td></tr></tbody></table>"
+            "<p>Neuen Motor holen: <code>sh update.sh</code> (holt ihn von GitHub, ohne Konto).</p>")
+
+
 def spick_html():
     return "".join(_code(b) .replace('<div class="code">', f'<div class="code spick" data-text="{html.escape(t)}">')
                    + f'<p class="spicktext">{html.escape(t)}</p>' for b, t in SPICKZETTEL)
@@ -321,12 +342,15 @@ tr.dies td{{background:var(--code);font-weight:bold}}
 <span class="os">{'<a class="startk" href="#a1">Start</a> ' if start else ''}<button data-os="lx" class="aktiv">Linux/Mac</button> <button data-os="win">Windows</button></span></header>
 <div class="wrap"><nav>{"".join(nav)}</nav><main>{"".join(inhalt)}
 <p id="leer">Nichts gefunden.</p>
-<footer>Erstellt {datetime.now():%d.%m.%Y %H:%M} von pureSATZ · neu mit «sh build.sh hilfe» · Quellen: START.md, motor/HILFE.md, meine-hilfe.md, Variablen-Datei</footer>
+<footer><a href="{WEBSEITE}">Webseite</a> · <a href="{GITHUB}">GitHub</a> · <a href="{GITHUB}/issues">Fehler melden</a> · <a class=mail href=#>puresatz (at) gsteiger.ch</a><br>
+Erstellt {datetime.now():%d.%m.%Y %H:%M} von pureSATZ {html.escape(version)} · neu mit «sh build.sh hilfe» · Quellen: START.md, motor/HILFE.md, meine-hilfe.md, Variablen-Datei</footer>
 </main></div>
 <script>
+document.querySelectorAll('a.mail').forEach(m=>{{const a=['puresatz','gsteiger.ch'].join('@');m.textContent=a;m.href='mailto:'+a}});
 const norm=t=>t.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'');
+const norm2=t=>norm(t).replace(/ae/g,'a').replace(/oe/g,'o').replace(/ue/g,'u').replace(/ß/g,'ss');
 const secs=[...document.querySelectorAll('main section')],navs=[...document.querySelectorAll('nav a')];
-secs.forEach(s=>{{s._orig=s.innerHTML;s._text=norm(s.textContent)}});
+secs.forEach(s=>{{s._orig=s.innerHTML;s._text=norm2(s.textContent)}});
 const such=document.getElementById('suche');
 function markiere(el,woerter){{const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);const knoten=[];
 while(w.nextNode())knoten.push(w.currentNode);for(const n of knoten){{const t=n.nodeValue,nt=norm(t);let pos=[];
@@ -335,7 +359,9 @@ if(!pos.length)continue;pos.sort((a,b)=>a[0]-b[0]);const f=document.createDocume
 for(const [s,e] of pos){{if(s<a)continue;f.append(t.slice(a,s));const m=document.createElement('mark');m.textContent=t.slice(s,e);f.append(m);a=e}}
 f.append(t.slice(a));n.parentNode.replaceChild(f,n)}}}}
 such.addEventListener('input',()=>{{const w=norm(such.value).split(/\\s+/).filter(Boolean);let n=0;
-secs.forEach((s,i)=>{{s.innerHTML=s._orig;const ok=w.every(x=>s._text.includes(x));s.style.display=ok?'':'none';
+const passt=(s,alle)=>alle?w.every(x=>s._text.includes(norm2(x))):w.some(x=>s._text.includes(norm2(x)));
+let alle=true;if(w.length>1&&!secs.some(s=>passt(s,true)))alle=false;   // kein Abschnitt mit allen Wörtern: eines genügt
+secs.forEach((s,i)=>{{s.innerHTML=s._orig;const ok=passt(s,alle);s.style.display=ok?'':'none';
 navs[i].style.display=ok?'':'none';if(ok){{n++;if(w.length)markiere(s,w)}}}});
 document.getElementById('leer').style.display=n?'none':'block';knoepfe();}});
 document.addEventListener('keydown',e=>{{if(e.key==='/'&&document.activeElement!==such){{e.preventDefault();such.focus()}}
@@ -387,6 +413,7 @@ def erzeuge(basis, buchtitel=None, variablen=None, farben=None, oeffnen=False):
                     ("Buchformate", formate_html(variablen))]
     if variablen:
         nachschlagen.append(("Variablen dieses Buchs", variablen_html(variablen)))
+    nachschlagen.append(("pureSATZ im Netz (GitHub, Webseite)", netz_html()))
     gruppen.append(("Nachschlagen", nachschlagen))
     if not variablen:                       # Ordner pureSATZ: Installation und GitHub
         extra = []

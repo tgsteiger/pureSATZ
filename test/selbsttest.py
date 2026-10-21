@@ -153,7 +153,8 @@ def main():
     hh = os.path.join(buch, "hilfe.html")
     if os.path.exists(hh):
         ht = open(hh, encoding="utf-8").read()
-        for muss in ('id="suche"', "Befehle (@)", "Variablen", "@@name", "Buchformate", "taschenbuch", "class=dies"):
+        for muss in ('id="suche"', "Befehle (@)", "Variablen", "@@name", "Buchformate", "taschenbuch", "class=dies",
+                     "tgsteiger.github.io/pureSATZ"):
             if muss not in ht:
                 fehlt.append(f"hilfe.html: «{muss}» fehlt")
     if not tippfehler_erkannt:

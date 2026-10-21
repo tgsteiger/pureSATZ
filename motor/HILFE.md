@@ -32,7 +32,8 @@ sh build.sh korrektur       # Korrekturfassung: A4, Zeilennummern pro Seite, Ran
 sh build.sh geschichten     # Sammel-PDF aller Geschichten aus geschichten/ (mit «uz»: auch unzensiert)
 sh neu.sh "Titel"           # neue Geschichte anlegen · sh neu.sh = Übersicht (Windows: neu.bat)
 sh sicherung.sh             # ganzes Buch als ZIP sichern (lokal und/oder cloud)
-sh cleanup.sh               # aufräumen (fragt zuerst; md-history/ bleibt)
+sh cleanup.sh               # aufräumen: Altes löschen / entfernen (delete), fragt zuerst; md-history/ bleibt
+sh cleanup.sh ausgaben      # dazu auch die Ausgabeordner löschen (macht sh build.sh final jederzeit neu)
 python3 motor/manuskript.py # Liste aller @-Befehle
 python3 motor/stichworte-vorschlag.py   # Vorschläge fürs Stichwortverzeichnis
 ```
@@ -58,6 +59,13 @@ Korrigieren («S. 12, Z. 5»). Im Entwurf mit offenen Stellen, mit `korrektur fi
 bei `sicherung-lokal:` und `sicherung-cloud:` stehen (Leerschläge im Pfad sind kein Problem); `sh sicherung.sh lokal` oder `cloud` nur dorthin. `sicherung-behalten: 10` = nur die 10 neuesten ZIPs bleiben.
 Im ZIP: alle MD/TXT, Fotos, Bilder, md-history, Motor und je Ausgabe das Bildschirm-PDF – keine
 Zwischenspeicher und keine anderen Ausgaben (die macht `sh build.sh final` jederzeit neu).
+
+**Aufräumen, alte Dateien löschen, entfernen, delete:** `sh cleanup.sh` (Windows: `cleanup.bat`) zeigt zuerst
+eine Liste und fragt, bevor etwas gelöscht wird. Weg kommen nur entbehrliche Dinge: Zwischenspeicher (`_bildcache`,
+`_druckbilder`, `__pycache__`, `_epub_tmp`), alte Motoren (`motor-alt-…`), Sicherungen in `_backup/` und
+`stichworte-vorschlag.txt`. Mit `sh cleanup.sh ausgaben` auch die Ausgabeordner. **Nie gelöscht:** `md-history/`,
+die MD-Dateien, Stichworte, `fotos/`, `bilder/`, `motor/`, `.venv/` und alles, was das Skript nicht kennt.
+Alte ZIP-Sicherungen räumt `sicherung-behalten:` auf, alte Stände in md-history `md-history-behalten:`.
 
 Vor jedem Bau werden die drei MD-Dateien nach `md-history/` gesichert und geprüft (unbekannte
 `{Variablen}` oder `@Befehle`, fehlende Fotos – mit Zeilennummer). Gebaut wird parallel.

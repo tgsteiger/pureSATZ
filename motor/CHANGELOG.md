@@ -3,6 +3,17 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.16.2 (Oktober 2026)
+- Hilfe: Aufräumen erklärt (was `sh cleanup.sh` löscht und was nie) und im Spickzettel; findet sich über die Suche
+  mit «löschen», «entfernen», «delete», «alt», «aufräumen».
+- Suche: mehrere Wörter – zuerst Abschnitte mit allen Wörtern, gibt es keinen, genügt eines. «ae/oe/ue» findet
+  auch ä/ö/ü (z. B. «aufraeumen»).
+
+## 2.16.1 (Oktober 2026)
+- Hilfe: Fusszeile mit Links zu Webseite, GitHub, «Fehler melden» und E-Mail; neuer Abschnitt «pureSATZ im Netz
+  (GitHub, Webseite)» unter «Nachschlagen» mit Webseite, GitHub, Download, Issues, Lizenz und Kontakt –
+  findet sich auch über die Suche («github», «webseite», «download»).
+
 ## 2.16.0 (Oktober 2026)
 - **Nummerierte Aufzählung**: Zeilen `1. …`, `2. …` werden eine Aufzählung mit bündigen Nummern in der
   Buchschrift. Der Motor zählt selbst (die erste Zahl ist der Start, Leerzeilen dazwischen unterbrechen nicht).
