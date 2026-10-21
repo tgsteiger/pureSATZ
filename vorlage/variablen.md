@@ -37,6 +37,7 @@ Angaben für epubli, tolino und KDP. Nach «sh build.sh final» stehen sie zum K
 ### Leseprobe
 «sh build.sh leseprobe» macht eine Leseprobe: Umschlag, Titelei bis zum Inhaltsverzeichnis, dann die gewählten Seiten, Schlussseite, Rückseite. leseprobe-seiten: gedruckte Seitenzahlen, z. B. 14,16,17-20,22 (leseprobe-seiten-uz: eigene für die zweite Ausgabe). Sonst leseprobe: Anzahl Kapitel oder Titel des letzten Kapitels. Beides leer = die 4 Seiten nach dem Inhaltsverzeichnis. Text der Schlussseite: Variablen erlaubt, <br/> = neue Zeile, eine Zeile mit leerer Variable fällt weg. Der QR-Code führt zu «shop-link» (sonst zur Website). Auch als E-Book (…_Leseprobe.epub).
 - leseprobe-seiten:
+- leseprobe-seiten-uz:
 - leseprobe:
 - leseprobe-text: Das ganze Buch «{titel}» von {autor}<br/>ISBN {isbn}<br/>{website}
 
