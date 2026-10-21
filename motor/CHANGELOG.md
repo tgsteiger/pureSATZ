@@ -3,6 +3,12 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.17.0 (Oktober 2026)
+- **Werbebilder (Mockup)**: Bei `sh build.sh final` und `nur-pdf final` entstehen aus dem Bildschirm-PDF jeder
+  Ausgabe `…_Mockup.jpg` (Vorder- und Rückseite leicht gedreht, mit weichem Schatten, 1600 × 1600 Pixel) und
+  `…_Vorderseite.jpg`. Jederzeit neu: `sh build.sh mockup`. Variable `mockup-hintergrund` (Farbverlauf oben, unten).
+  Neues Modul `motor/mockup.py`.
+
 ## 2.16.2 (Oktober 2026)
 - Hilfe: Aufräumen erklärt (was `sh cleanup.sh` löscht und was nie) und im Spickzettel; findet sich über die Suche
   mit «löschen», «entfernen», «delete», «alt», «aufräumen».

@@ -18,6 +18,7 @@ Booklets zum Selberdrucken entstehen automatisch: im «final» der Probedruck au
     python motor/bauen.py pruefen         nur die MD prüfen
     python motor/bauen.py geschichten [uz]   Sammel-PDF aller Geschichten aus geschichten/ (normal; mit uz auch unzensiert)
     python motor/bauen.py hilfe           hilfe.html erzeugen und im Browser öffnen
+    python motor/bauen.py mockup          Werbebilder (…_Mockup.jpg, …_Vorderseite.jpg) aus dem Bildschirm-PDF
 Vor jedem Bau: Sicherung nach md-history/ und Prüfung der MD. Gebaut wird parallel.
 """
 import os
@@ -77,6 +78,25 @@ def aufraeumen_history(ordner):
                 os.remove(os.path.join(wurzel, f)); weg += 1
     if weg:
         print(f"md-history: {weg} ältere Stände entfernt (behalten: je {n}).")
+
+
+def mockups():
+    """Werbebilder aus dem Bildschirm-PDF jeder Ausgabe: …_Mockup.jpg und …_Vorderseite.jpg (pureSATZ 2.17)."""
+    try:
+        import mockup
+    except ImportError:
+        return
+    for a in ausgaben():
+        aus = bk.AUSGABEN["B" if a == "uz" else "A"]
+        pdf = os.path.join(BASE, aus["ordner"], aus["datei"] + ".pdf")
+        if not os.path.exists(pdf):
+            print(f"Mockup: {os.path.relpath(pdf, BASE)} fehlt – zuerst sh build.sh nur-pdf final")
+            continue
+        try:
+            for p in mockup.erzeuge(pdf, bk.V("mockup-hintergrund", "#E9EEF4, #C9D3DF") or "#E9EEF4, #C9D3DF"):
+                print("Mockup:", os.path.relpath(p, BASE))
+        except Exception as e:                       # nie den Bau verhindern
+            print(f"Hinweis: Mockup nicht erstellt ({e})")
 
 
 def hilfe(oeffnen=False):
@@ -325,6 +345,8 @@ def main():
         sicherung(); return
     if art == "pruefen":
         pruefen(); return
+    if art == "mockup":
+        mockups(); return
     if art == "hilfe":
         hilfe(oeffnen=True); return
     if art == "geschichten":
@@ -367,6 +389,8 @@ def main():
     parallel(schritte, env)
     bk.ENTWURF = not final
     statistik()
+    if final and art in ("alles", "nur-pdf"):
+        mockups()
     if art == "alles" and final:
         print()
         shop_angaben()

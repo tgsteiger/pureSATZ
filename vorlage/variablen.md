@@ -76,13 +76,14 @@ Fotos liegen in fotos/ (JPG), Porträt, Verzierung und Teil-Bilder in bilder/ (P
 - foto-anpassen: ja
 
 ## Weiteres
-Stichwortverzeichnis aus stichworte-<name>.txt (ja / nein). Trennstellen: | = hier darf ein langes Wort getrennt werden. Zier: eigenes Bild der Verzierung im Ordner bilder/, leer = Standard. Kopfzeile: ohne-autor (Teil · Kapitel, Standard), autor (Autor · Teil · Kapitel) oder wechselnd (links Teil, rechts Kapitel). bildschirm-dunkler: ja = feine Farben nur im Bildschirm-PDF etwas dunkler (für Schwarz-weiss-Ausdrucke).
+Stichwortverzeichnis aus stichworte-<name>.txt (ja / nein). Trennstellen: | = hier darf ein langes Wort getrennt werden. Zier: eigenes Bild der Verzierung im Ordner bilder/, leer = Standard. Kopfzeile: ohne-autor (Teil · Kapitel, Standard), autor (Autor · Teil · Kapitel) oder wechselnd (links Teil, rechts Kapitel). bildschirm-dunkler: ja = feine Farben nur im Bildschirm-PDF etwas dunkler (für Schwarz-weiss-Ausdrucke). mockup-hintergrund: Farbverlauf (oben, unten) des Werbebilds …_Mockup.jpg (entsteht bei «final» und mit «sh build.sh mockup»).
 - stichworte: ja
 - trennstellen: Welt|anschauung, Gedanken|karussell
 - zier:
 - zier-hell:
 - kopfzeile: ohne-autor
 - bildschirm-dunkler: nein
+- mockup-hintergrund: #E9EEF4, #C9D3DF
 
 ## Sicherung
 «sh sicherung.sh» sichert das ganze Buch als ZIP (Name mit Datum und Uhrzeit, ohne Zwischenspeicher; von den Ausgaben nur die Bildschirm-PDFs). «sh sicherung.sh lokal» oder «cloud» = nur dorthin, ohne Angabe = an beide. «sicherung-behalten»: nur die neuesten ZIPs behalten (leer = alle). Pfad relativ zum Buchordner oder mit ~ bzw. /. Bei jedem Bau kommen die MD-Dateien ausserdem mit Datum und Uhrzeit nach md-history/; «md-history-behalten»: pro Datei nur die neuesten Stände behalten (leer = alle).

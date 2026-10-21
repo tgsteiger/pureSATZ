@@ -110,7 +110,7 @@ def main():
     erwartet = [os.path.join(normal, n) for n in (
         "Testbuch.pdf", "Testbuch.epub", "Testbuch_Leseprobe.pdf", "Testbuch_Leseprobe.epub", "Testbuch_Korrektur.pdf",
         "shop-angaben.txt", "TESTBUCH_Buchblock.pdf", "TESTBUCH_Umschlag_Hardcover.pdf", "TESTBUCH_Umschlag_Hardcover.jpg",
-        "TESTBUCH_Umschlag_Softcover.pdf", "TESTBUCH_Umschlag_Softcover.jpg", "TESTBUCH_Probedruck_booklet.pdf")]
+        "TESTBUCH_Umschlag_Softcover.pdf", "TESTBUCH_Umschlag_Softcover.jpg", "TESTBUCH_Probedruck_booklet.pdf", "Testbuch_Mockup.jpg", "Testbuch_Vorderseite.jpg")]
     erwartet += [os.path.join(zweite, "Testbuch_Directors-Cut.pdf"), os.path.join(zweite, "Testbuch_Directors-Cut.epub")]
     fehlt = [os.path.relpath(p, buch) for p in erwartet if not os.path.exists(p) or os.path.getsize(p) == 0]
     fehlt += [os.path.relpath(p, tmp) for p in importiert if not os.path.exists(p)]
