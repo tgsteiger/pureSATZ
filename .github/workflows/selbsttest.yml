@@ -1,0 +1,48 @@
+# Selbsttest: baut bei jedem «git push» ein Testbuch auf Linux, Mac und Windows.
+# Ergebnis auf GitHub unter «Actions»: grünes Häkchen = läuft überall.
+name: Selbsttest
+
+on:
+  push:
+    paths: ["motor/**", "vorlage/**", "setup/**", "import/**", "pc-einrichten/**", "test/**", ".github/**"]
+  workflow_dispatch:          # von Hand starten: Actions → Selbsttest → Run workflow
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest,  python: "3.10" }
+          - { os: ubuntu-latest,  python: "3.12" }
+          - { os: macos-latest,   python: "3.12" }
+          - { os: windows-latest, python: "3.12" }
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.os }} · Python ${{ matrix.python }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Testbuch anlegen und bauen
+        run: python test/selbsttest.py
+
+  epubcheck:
+    runs-on: ubuntu-latest
+    name: E-Book prüfen (EPUBCheck)
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Testbuch bauen und behalten
+        run: python test/selbsttest.py
+        env:
+          SELBSTTEST_BEHALTEN: "1"
+      - name: EPUBCheck
+        run: |
+          curl -sSL -o ec.zip https://github.com/w3c/epubcheck/releases/download/v5.1.0/epubcheck-5.1.0.zip
+          unzip -q ec.zip
+          for f in $(cat "$RUNNER_TEMP/selbsttest-epubs.txt"); do
+            java -jar epubcheck-5.1.0/epubcheck.jar "$f"
+          done

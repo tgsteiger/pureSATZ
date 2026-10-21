@@ -1,0 +1,24 @@
+Geschichten sammeln (pureSATZ)
+==============================
+Eine Geschichte = eine Datei in diesem Ordner, z. B. schutzschild-hoch.md.
+
+Neue Geschichte:   sh neu.sh "Schutzschild hoch!"     (Windows: neu.bat "Schutzschild hoch!")
+Übersicht:         sh neu.sh   – und im Browser: geschichten-uebersicht.html im Buchordner
+
+Aufbau einer Geschichte:
+  ## Schutzschild hoch!
+  - stand: idee
+  - stichworte: Emotionscode, Schutz
+  - quelle: Praxis 2018
+
+  Der Text, wie im Buch: Absätze, **fett**, > Zitat, ::: Blöcke, Fotos, {variablen}.
+
+Die drei Zeilen mit «-» sind freiwillig und werden nicht gedruckt:
+  stand       idee · entwurf · ueberarbeiten · fertig   (nur für die Übersicht)
+  stichworte  kommen ins Stichwortverzeichnis
+  quelle      Notiz für dich (woher die Geschichte stammt)
+
+Ins Buch einbinden: in der Buchdatei eine eigene Zeile  @@schutzschild-hoch
+(Name = Dateiname ohne .md). Reihenfolge im Buch = Reihenfolge der @@-Zeilen.
+Alle Geschichten zum Lesen, auch nicht eingebundene:  sh build.sh geschichten
+UEBERSICHT.md in diesem Ordner wird automatisch erstellt – nicht von Hand ändern.

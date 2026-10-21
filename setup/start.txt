@@ -1,0 +1,14 @@
+# Werte für ein neues Buch:  sh setup/setup.sh start.txt
+# Fehlende Werte werden abgefragt. # = Kommentar.
+TITEL = Mein Buch
+UNTERTITEL = Eine Geschichte in drei Teilen
+AUTOR = Vorname Nachname
+NAME = Mein-Buch
+FORMAT = a5
+BINDUNG = hardcover
+ZWEITE_AUSGABE = ja
+ZWEITE_NAME = Director's Cut
+ORT = Ort
+JAHR = 2027
+WEBSITE = www.example.ch
+ADRESSE = Strasse 1, 1234 Ort, verlag@example.ch

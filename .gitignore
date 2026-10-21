@@ -1,0 +1,27 @@
+# pureSATZ – was nicht ins Repository gehört
+# (Bücher liegen NEBEN diesem Ordner, z. B. ../MeinBuch, und sind ohnehin nicht dabei.)
+
+# Python-Umgebung und Zwischenspeicher
+.venv/
+__pycache__/
+*.pyc
+_bildcache/
+_druckbilder/
+_epub_tmp*/
+_tmp*.pdf
+
+# Ausgaben, Sicherungen, alte Motoren
+ausgabe-*/
+md-history/
+Sicherungen/
+motor-alt-*/
+_backup/
+*.zip
+
+# Editor- und System-Dateien
+*.backup
+*~
+.DS_Store
+Thumbs.db
+.vscode/
+Claude outputs/

@@ -1,0 +1,16 @@
+# Stichwortverzeichnis – eine Zeile pro Stichwort.
+# Die erste Schreibweise erscheint im Verzeichnis, weitere Varianten mit | trennen.
+#   Quelle = göttlichen Quelle | Urquelle   Eintrag links vom =, gesucht wird nur rechts
+#   Gott -> Quelle                          Verweis «Gott, siehe Quelle» (ohne Seitenzahl)
+# Zeilen mit # werden ignoriert. Nach Änderungen: sh build.sh nur-pdf
+# Vorschläge erzeugen:  python3 motor/stichworte-vorschlag.py  -> stichworte-vorschlag.txt
+# Ein-/ausschalten: «stichworte: ja/nein» in der Variablen-Datei.
+
+# --- Beispiele aus dem Demo-Kapitel (löschen, sobald das eigene Buch steht)
+Kapitel | Kapiteln
+Zwischentitel
+Bild | Bilder | Foto | Fotos
+Verzierung | Verzierungen
+Absatz = Absatz | Absätze | Absätzen
+Kasten
+Ausgabe -> Kasten

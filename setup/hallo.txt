@@ -1,0 +1,11 @@
+# Werte für das Hallo-Buch (sh hallo.sh im Ordner pureSATZ). Nur zum Ausprobieren.
+TITEL = Hallo Buch
+UNTERTITEL = Der erste Blick auf pureSATZ
+AUTOR = Vorname Nachname
+NAME = Hallo-Buch
+FORMAT = a5
+BINDUNG = hardcover
+ZWEITE_AUSGABE = nein
+ORT = Bern
+WEBSITE = www.beispiel.ch
+ADRESSE = Strasse 1, 3000 Bern, mail@beispiel.ch

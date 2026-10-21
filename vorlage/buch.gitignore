@@ -1,0 +1,25 @@
+# Was NICHT zu GitHub kommt – bleibt auf jedem Computer für sich (sh sync.sh)
+.venv/
+__pycache__/
+*.pyc
+_bildcache/
+_druckbilder/
+_epub_tmp*/
+_tmp*.pdf
+ausgabe-*/
+md-history/
+motor-alt-*/
+_backup/
+Sicherungen/
+*.zip
+stichworte-vorschlag.txt
+*.backup
+*~
+.DS_Store
+Thumbs.db
+Claude outputs/
+# Geschichten-Übersicht (wird bei jedem Bau neu erzeugt)
+geschichten-uebersicht.html
+geschichten/UEBERSICHT.md
+_geschichten-sammlung.md
+hilfe.html

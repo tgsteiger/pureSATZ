@@ -1,0 +1,13 @@
+# Zeilenenden: überall LF, nur Windows-Skripte CRLF
+* text=auto eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Dateien, die nie verändert werden dürfen
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.ttf binary
+*.otf binary
+*.epub binary

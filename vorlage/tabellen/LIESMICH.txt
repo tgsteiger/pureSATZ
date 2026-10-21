@@ -1,0 +1,20 @@
+Tabellen (pureSATZ)
+===================
+Eine Tabelle = eine CSV-Datei in diesem Ordner, z. B. behandlungen.csv.
+
+Neue Tabelle:  sh neu.sh tabelle "Behandlungen pro Jahr"   (Windows: neu.bat tabelle "…")
+
+Aufbau:
+  Zeile 1     Bezeichnung (steht über der Tabelle)
+  Zeile 2     Spaltenüberschriften, getrennt mit ;
+  ab Zeile 3  Werte
+  optional    letzte Zeile «Quelle: …» (klein unter der Tabelle)
+
+Bearbeiten mit LibreOffice: Datei öffnen, ändern, «Speichern unter» → Dateityp «Text CSV»,
+Feldtrenner ;  Zeichensatz UTF-8. Gedruckt werden nur die Werte (keine Formeln, keine Farben).
+
+Im Buch einbinden: eigene Zeile  @#behandlungen   (Name = Dateiname ohne .csv)
+  @#behandlungen quer   immer quer (um 90° gedreht auf eigener Seite)
+  @#behandlungen hoch   nie quer (notfalls kleinere Schrift)
+Ohne Angabe entscheidet pureSATZ: erst umbrechen, dann kleiner, dann quer.
+muster.csv zeigt die Form und kann gelöscht werden.
