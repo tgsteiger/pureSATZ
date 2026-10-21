@@ -26,6 +26,12 @@ import os
 import re
 import sys
 from datetime import datetime
+try:                                            # Windows: «sh build.sh» in Meldungen als «.\build.bat»
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "."))
+    import plattform
+    plattform.windows_befehle()
+except ImportError:
+    pass
 
 ORDNER = "geschichten"
 STAENDE = ("idee", "entwurf", "ueberarbeiten", "fertig")
@@ -302,6 +308,7 @@ def uebersicht(basis, buchdatei, buchtitel="Buch", farben=None, zeigen=False):
             print(f"  {STAND_TEXT.get(d['stand'], '–'):14} {zahl(d['woerter']):>6} W.  "
                   f"{(d['teil'] or '– noch nicht im Buch')[:24]:24}  {d['titel']}  (@@{d['name']})")
         print("\nÜbersicht im Browser: geschichten-uebersicht.html   ·   Tabelle: geschichten/UEBERSICHT.md")
+        print('Neue Geschichte: sh neu.sh "Titel"   ·   neue Tabelle: sh neu.sh tabelle "Titel"')
     return zeilen
 
 

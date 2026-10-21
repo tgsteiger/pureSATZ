@@ -27,6 +27,12 @@ import tempfile
 import zipfile
 from datetime import date
 from xml.etree import ElementTree as ET
+try:                                            # Windows: «sh build.sh» in Meldungen als «.\build.bat»
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "motor"))
+    import plattform
+    plattform.windows_befehle()
+except ImportError:
+    pass
 
 HIER = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))     # Ordner pureSATZ (import-text.py liegt in import/)
 sys.path.insert(0, os.path.join(HIER, "setup"))

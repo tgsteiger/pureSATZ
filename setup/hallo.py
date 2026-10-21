@@ -12,6 +12,12 @@ import glob
 import os
 import subprocess
 import sys
+try:                                            # Windows: «sh build.sh» in Meldungen als «.\build.bat»
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "motor"))
+    import plattform
+    plattform.windows_befehle()
+except ImportError:
+    pass
 
 SETUP = os.path.dirname(os.path.abspath(__file__))
 HIER = os.path.dirname(SETUP)

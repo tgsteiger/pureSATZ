@@ -103,7 +103,8 @@ SCHRITTE = {
     ],
     "win": [
         ("Herunterladen und auspacken", "ZIP laden, Rechtsklick → «Alle extrahieren …» und den Ordner "
-         "<b>pureSATZ-main</b> in <b>pureSATZ</b> umbenennen.", None),
+         "<b>pureSATZ-main</b> in <b>pureSATZ</b> umbenennen. Steht darin nochmals ein Ordner pureSATZ-main "
+         "(das macht Windows gern), den inneren nehmen.", None),
         ("Einrichten (einmalig)", "Im Ordner <b>pc-einrichten</b> die Datei <b>win-einrichten.bat</b> doppelklicken. "
          "Fehlt Python, wird es installiert (oder python.org öffnet sich: beim Installieren «Add python.exe to PATH» "
          "anhaken). Danach das Fenster schliessen und die Datei nochmals starten.", None),

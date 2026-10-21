@@ -3,6 +3,13 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.17.1 (Oktober 2026)
+- **Windows**: Meldungen zeigen jetzt Windows-Befehle (`.\build.bat final` statt `sh build.sh final`, ebenso
+  setup, neu, update, sicherung, «py motor\…»). Neues Modul `motor/plattform.py`, in allen Skripten eingebunden.
+- `neu.sh` / `neu.bat` ohne Titel zeigt unter der Übersicht, wie man eine Geschichte oder Tabelle anlegt.
+- `readme.txt` und README beginnen mit «Zum Starten: hilfe.html → Start». Hinweis zum doppelten Ordner
+  `pureSATZ-main` beim Entpacken unter Windows (START, Webseite).
+
 ## 2.17.0 (Oktober 2026)
 - **Werbebilder (Mockup)**: Bei `sh build.sh final` und `nur-pdf final` entstehen aus dem Bildschirm-PDF jeder
   Ausgabe `…_Mockup.jpg` (Vorder- und Rückseite leicht gedreht, mit weichem Schatten, 1600 × 1600 Pixel) und

@@ -62,6 +62,7 @@ Weiter geht es mit **Mein erstes Buch** (fünf Schritte bis zur Bestellung) und 
 
 | Meldung | Was tun |
 |---|---|
+| Windows: Ordner `pureSATZ-main` steckt in einem zweiten `pureSATZ-main` | Den inneren Ordner nehmen, an einen guten Ort verschieben (z. B. Dokumente) und in `pureSATZ` umbenennen. |
 | `python3: command not found` / «nicht erkannt» | Punkt «Computer einrichten». Windows: Python von python.org, beim Installieren «Add python.exe to PATH» anhaken. |
 | «Python … ist zu alt» | Neues Python installieren (3.10 oder neuer), Terminal neu öffnen. |
 | Hängt beim ersten Mal / «keine Verbindung» | Der erste Bau lädt Pakete aus dem Internet. Verbindung prüfen, nochmals starten. |

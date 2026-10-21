@@ -1,5 +1,10 @@
-pureSATZ - Vorlage und Motor für eigene Bücher (Hilfe: hilfe.html, START.md, README.md)
+pureSATZ - Vorlage und Motor für eigene Bücher
 =====================================================================
+
+ZUM STARTEN:  hilfe.html doppelklicken  ->  oben auf «Start» klicken.
+              Dort steht alles Schritt für Schritt, mit Schalter für Linux/Mac oder Windows.
+              Online: https://tgsteiger.github.io/pureSATZ/hilfe.html
+
 
 Ordner
   setup/          neues Buch anlegen, Motor ins Buch bringen

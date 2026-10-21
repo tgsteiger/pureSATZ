@@ -21,6 +21,12 @@ import shutil
 import subprocess
 import sys
 from datetime import date
+try:                                            # Windows: «sh build.sh» in Meldungen als «.\build.bat»
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "motor"))
+    import plattform
+    plattform.windows_befehle()
+except ImportError:
+    pass
 
 HIER = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))     # Ordner pureSATZ (setup.py liegt in setup/)
 VORLAGE = os.path.join(HIER, "vorlage")

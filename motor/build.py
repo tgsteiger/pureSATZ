@@ -8,6 +8,12 @@ Das Aussehen (Schriften, Farben) steht in layout.py.
 import os
 import re
 import sys
+try:                                            # Windows: «sh build.sh» in Meldungen als «.\build.bat»
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "."))
+    import plattform
+    plattform.windows_befehle()
+except ImportError:
+    pass
 sys.dont_write_bytecode = True                # keine __pycache__-Ordner im Buchordner
 
 MOTOR = os.path.dirname(os.path.abspath(__file__))

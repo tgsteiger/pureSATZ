@@ -6,6 +6,8 @@ Druckdateien für epubli (Hardcover/Softcover), E-Book und Booklets. Entstanden 
 
 **Webseite:** [tgsteiger.github.io/pureSATZ](https://tgsteiger.github.io/pureSATZ/) – Download, fünf Schritte, Hilfe online.
 
+**Zum Starten:** `hilfe.html` doppelklicken und oben auf «Start» klicken – dort steht alles Schritt für Schritt.
+
 **Nur schnell sehen, wie es aussieht?** Im Ordner pureSATZ `sh hallo.sh` (Windows: `hallo.bat` doppelklicken):
 legt ein Beispielbuch an und öffnet das PDF. Checkliste dazu: **`START.md`** (auch in `hilfe.html`, Knopf «Start»).
 

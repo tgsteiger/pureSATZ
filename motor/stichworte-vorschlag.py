@@ -15,6 +15,12 @@ import re
 from collections import Counter
 
 import sys
+try:                                            # Windows: «sh build.sh» in Meldungen als «.\build.bat»
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "."))
+    import plattform
+    plattform.windows_befehle()
+except ImportError:
+    pass
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   # Buchordner
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import build as bk      # findet die Buch-MD

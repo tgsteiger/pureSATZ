@@ -17,6 +17,12 @@ import os
 import re
 import sys
 from datetime import datetime
+try:                                            # Windows: «sh build.sh» in Meldungen als «.\build.bat»
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "."))
+    import plattform
+    plattform.windows_befehle()
+except ImportError:
+    pass
 
 MOTOR = os.path.dirname(os.path.abspath(__file__))
 WEBSEITE = "https://tgsteiger.github.io/pureSATZ/"

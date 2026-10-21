@@ -26,6 +26,12 @@ import subprocess
 import sys
 import tempfile
 from datetime import datetime
+try:                                            # Windows: «sh build.sh» in Meldungen als «.\build.bat»
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "."))
+    import plattform
+    plattform.windows_befehle()
+except ImportError:
+    pass
 
 QUELLE = (os.environ.get("PURESATZ_QUELLE") or os.environ.get("LEERES_BUCH_QUELLE")
           or "https://github.com/tgsteiger/pureSATZ.git")
