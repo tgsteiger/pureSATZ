@@ -381,7 +381,8 @@ def _uebersicht(art, final, test):
                 ("BEI DER DRUCKEREI HOCHLADEN (" + ("epubli: Buchblock als PDF, Umschlag als JPG"
                                                     if plattform == "epubli" else plattform) + ")",
                  [f"{K}_Buchblock.pdf", hc + ".jpg", hc + ".pdf", sc + ".jpg", sc + ".pdf"], "sh build.sh final"),
-                ("E-BOOK (Wix-Shop, tolino, XinXii, KDP …)", [f"{D}.epub", f"{D}_Cover-vorne.jpg", f"{D}_Cover-hinten.jpg"],
+                ("E-BOOK (Wix-Shop, tolino, XinXii, KDP …; …_EPUB2.epub nur, wo EPUB 2 verlangt wird)",
+                 [f"{D}.epub", f"{D}_EPUB2.epub", f"{D}_Cover-vorne.jpg", f"{D}_Cover-hinten.jpg"],
                  "sh build.sh nur-ebook final"),
                 ("ZUM LESEN, VERSCHICKEN UND KORRIGIEREN", [f"{D}.pdf", f"{D}_Leseprobe.pdf", f"{D}_Leseprobe.epub",
                  f"{D}_Korrektur.pdf", f"{D}_Geschichten.pdf"], None),

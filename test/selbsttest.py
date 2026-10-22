@@ -85,8 +85,10 @@ def main():
     with open(vd, "w", encoding="utf-8") as f:
         f.write(v.replace("- leseprobe-seiten:\n", "- leseprobe-seiten: 5,7-8\n- leseprobe-seiten-uz: 6\n", 1)
                 .replace("- foto-format:\n", "- foto-format: 3:2\n", 1)
-                .replace("- md-history-behalten: 200\n", "- md-history-behalten: 3\n", 1))
+                .replace("- md-history-behalten: 200\n", "- md-history-behalten: 3\n", 1)
+                .replace("- ebook-epub2: nein\n", "- ebook-epub2: ja\n", 1))
     lauf([py, os.path.join("motor", "bauen.py"), "schnell"], buch)
+    lauf([py, os.path.join("motor", "bauen.py"), "nur-ebook", "final"], buch)       # mit ebook-epub2: ja (2.20)
     lauf([py, os.path.join("motor", "bauen.py"), "leseprobe"], buch)
     lauf([py, os.path.join("motor", "bauen.py"), "geschichten", "uz"], buch)
     with open(md, "w", encoding="utf-8") as f:
@@ -115,6 +117,7 @@ def main():
         "TESTBUCH_Umschlag_Softcover.pdf", "TESTBUCH_Umschlag_Softcover.jpg", "TESTBUCH_Probedruck_booklet.pdf", "Testbuch_Mockup.jpg", "Testbuch_Vorderseite.jpg",
         "Testbuch_Cover-vorne.jpg", "Testbuch_Cover-hinten.jpg")]
     erwartet += [os.path.join(zweite, "Testbuch_Directors-Cut.pdf"), os.path.join(zweite, "Testbuch_Directors-Cut.epub")]
+    erwartet.append(os.path.join(normal, "Testbuch_EPUB2.epub"))          # epub2-light, auch für EPUBCheck
     fehlt = [os.path.relpath(p, buch) for p in erwartet if not os.path.exists(p) or os.path.getsize(p) == 0]
     fehlt += [os.path.relpath(p, tmp) for p in importiert if not os.path.exists(p)]
     fehlt += [f for f in ("update.sh", "update.bat", "neu.sh", "neu.bat", os.path.join("motor", "update.py"),

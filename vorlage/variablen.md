@@ -25,6 +25,10 @@ Von epubli (Buch) bzw. eigene fürs E-Book. Leer = im Buch steht «ISBN folgt».
 - isbn-buch:
 - isbn-ebook:
 
+### E-Book als EPUB 2
+Zusätzlich <datei>_EPUB2.epub für Shops, die nur EPUB 2 annehmen (z. B. epubli): ja / nein.
+- ebook-epub2: nein
+
 ## Shop
 Angaben für epubli, tolino und KDP. Nach «sh build.sh final» stehen sie zum Kopieren in shop-angaben.txt (im Ausgabeordner). Beschreibung und Schlagwörter gehen auch ins E-Book. shop-link: Adresse des Shops (für den QR-Code der Leseprobe).
 - shop-beschreibung: Worum geht es in diesem Buch? Zwei bis vier Sätze, die neugierig machen.

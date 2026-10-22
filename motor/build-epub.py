@@ -634,7 +634,7 @@ manifest = [
     '<item id="cover" href="cover.xhtml" media-type="application/xhtml+xml"/>',
     '<item id="lotus" href="img/lotus.png" media-type="image/png"/>',
 ] + [f'<item id="foto{i}" href="img/{n}" media-type="image/jpeg"/>' for i, n in enumerate(FOTOS)] + [
-] + [f'<item id="f{i}" href="fonts/{f}" media-type="font/ttf"/>' for i, f in enumerate(fonts)] \
+] + [f'<item id="f{i}" href="fonts/{f}" media-type="application/vnd.ms-opentype"/>' for i, f in enumerate(fonts)] \
   + [f'<item id="d{i}" href="{n}" media-type="application/xhtml+xml"/>' for i, (n, _, _) in enumerate(dateien)]
 spine = ['<itemref idref="cover" linear="yes"/>', f'<itemref idref="d0"/>', '<itemref idref="nav"/>'] + \
         [f'<itemref idref="d{i}"/>' for i in range(1, len(dateien))]
@@ -688,3 +688,6 @@ if OHNE_ALT:
           + ", ".join(OHNE_ALT))
 if not ISBN_EBOOK and not LESEPROBE:
     print("Hinweis: Noch keine E-Book-ISBN eingetragen.")
+if bk.ja("ebook-epub2", "nein") and not LESEPROBE:      # «epub2-light» für Shops, die nur EPUB 2 annehmen (2.20)
+    import epub2
+    print(f"Fertig: {os.path.relpath(epub2.wandle(EPUB, EPUB[:-5] + '_EPUB2.epub'), BASE)}  (EPUB 2, ohne Barrierefreiheit)")
