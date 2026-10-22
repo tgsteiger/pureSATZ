@@ -196,8 +196,7 @@ summary{{font:500 16px Poppins,system-ui,sans-serif;color:var(--haupt);cursor:po
 
 <div class="held"><div>
 <h1>In fünf Minuten zu deinem ersten Buch.</h1>
-<p class="unter">Du schreibst in einfachen Textdateien (Markdown). pureSATZ macht daraus ein druckfertiges Buch,
-den Umschlag und ein E-Book – für epubli oder zum Selberdrucken. Auf Linux, Mac und Windows.</p>
+<p class="unter">Du schreibst in einfachen Textdateien (Markdown). pureSATZ macht daraus ein druckfertiges Buch in fünf Formaten von Taschenbuch bis A4, den Umschlag und ein E-Book – für epubli oder zum Selberdrucken. Auf Linux, Mac und Windows.</p>
 <a class="knopf voll" href="{ZIP}">⬇ pureSATZ herunterladen (ZIP)</a><a class="knopf rand" href="{REPO}">Auf GitHub ansehen</a>
 <p class="klein">Version {html.escape(version)} · kostenlos für eigene Bücher · ohne Konto, ohne Cloud</p>
 </div>
