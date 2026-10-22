@@ -1,4 +1,4 @@
-# pureSATZ – Vorlage für neue Bücher (Motor 2.16)
+# pureSATZ – Vorlage für neue Bücher
 
 Ein Satzsystem für Bücher aus Markdown: **alles steht in drei MD-Dateien**, der Motor macht das
 Layout. Zwei Ausgaben (normal und z. B. Director's Cut / Unzensiert), daraus Bildschirm-PDF,
