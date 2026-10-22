@@ -1732,7 +1732,7 @@ def _build(out, ausgleich=None):
         while z and not z[-1].strip(): z.pop()
         if art == "TITEL":
             z = [t.strip() for t in z if t.strip()]
-            story.extend(titelseite(z[0] if z else E.TITEL, z[1] if len(z) > 1 else ""))
+            story.extend(titelseite(z[0] if z else E.TITEL, " · ".join(z[1:])))   # weitere Zeilen: mit « · » angehängt
         else:
             story.extend(impressum(z, widmung))
 
@@ -1741,6 +1741,8 @@ def _build(out, ausgleich=None):
         if liste.punkte and not (not isinstance(ln, tuple) and (not ln.strip() or LISTE.match(ln.rstrip()))):
             story += liste.ende()
         if sammle is not None:
+            if not isinstance(ln, tuple) and ln.strip() == "@HINWEIS" and sammle[0] == "IMPRESSUM":
+                del sammle[3:]; sammle[1].append(""); continue      # folgende Zeilen = Hinweis unten im Impressum
             if isinstance(ln, tuple) and ln[0] == "WIDMUNG" and sammle[0] == "IMPRESSUM":
                 sammle[2] = " ".join(t.strip() for t in ln[2] if t.strip()); continue
             if not isinstance(ln, tuple) and ln.strip() == "@WIDMUNG" and sammle[0] == "IMPRESSUM":
@@ -1830,6 +1832,8 @@ def _build(out, ausgleich=None):
             sammle = ["IMPRESSUM", [], ""]
         elif s == "@WIDMUNG":
             raise M.Fehler(f"{TEXT}, Zeile {getattr(ln, 'nr', '?')}: @WIDMUNG gehört direkt unter @IMPRESSUM.")
+        elif s == "@HINWEIS":
+            raise M.Fehler(f"{TEXT}, Zeile {getattr(ln, 'nr', '?')}: @HINWEIS gehört direkt nach @IMPRESSUM oder @WIDMUNG.")
         elif s.startswith("@KERNSATZ"):
             vorspann["kernsatz"] = True
             t = inline_einfach(s[9:].strip())
@@ -2248,9 +2252,10 @@ class ZitatUnten(Flowable):
 
 
 class ImpressumSeite(Flowable):
-    """Impressum-Seite: Widmung kursiv, waagrecht und senkrecht in der Mitte; Angaben unten auf der Seite."""
-    def __init__(self, widmung, angaben):
-        super().__init__(); self.widmung = widmung; self.angaben = angaben
+    """Impressum-Seite: Widmung kursiv, waagrecht und senkrecht in der Mitte; Angaben unten auf der Seite.
+    logo: Bild der Plattform oben links (Variable impressum-logo, nur Druck)."""
+    def __init__(self, widmung, angaben, logo=None):
+        super().__init__(); self.widmung = widmung; self.angaben = angaben; self.logo = logo
     def wrap(self, aw, ah):
         self.aw, self.ah = aw, ah
         self.ah_ang = self.angaben.wrap(aw, ah)[1]
@@ -2262,18 +2267,41 @@ class ImpressumSeite(Flowable):
         return aw, ah - 1
     def draw(self):
         self.angaben.drawOn(self.canv, 0, 0)
+        if self.logo:
+            from reportlab.lib.utils import ImageReader
+            iw, ih = ImageReader(self.logo).getSize()
+            b = IMPRESSUM_LOGO_BREITE * mm; h = b * ih / iw
+            self.canv.drawImage(self.logo, 0, self.ah - h, b, h, mask="auto")
         if self.w:
             self.w.drawOn(self.canv, 8 * mm, (self.ah - self.wh) / 2 + 12 * mm)   # optisch etwas über der Mitte
 
 
+IMPRESSUM_LOGO_BREITE = 34    # mm, wie in der tredition-Vorlage
+
+
+def impressum_logo():
+    """impressum-logo (Druckdatei oder Variablen-Datei): PNG aus bilder/, None = kein Logo."""
+    n = V("impressum-logo").strip()
+    if not n:
+        return None
+    pfad = finde(n, ("bilder",))
+    if not pfad or not os.path.exists(pfad):
+        raise SystemExit(f"Variable «impressum-logo»: {n} fehlt im Ordner bilder/.")
+    return bild(pfad)
+
+
 def impressum(zeilen, widmung):
-    """Druck: Impressum links unten, Widmung senkrecht mittig auf derselben Seite.
+    """Druck: Impressum links unten (Logo oben), Widmung auf eigener Seite rechts, senkrecht mittig.
     Bildschirm: Impressum zentriert, Widmung auf eigener Seite."""
     html = zeilen_html(zeilen)
     if DRUCK:
-        return [PageBreak(), ImpressumSeite(inline_einfach(widmung), Paragraph(html, ParagraphStyle(
-            "imp", parent=small, alignment=TA_LEFT, fontSize=7.6, leading=11)))]
-    out = [Spacer(1, 52 * mm * min(S, 1.6)), Paragraph(html, ParagraphStyle("imp", parent=small, alignment=TA_CENTER)),
+        # Seite 2 (links): Impressum unten, Logo der Plattform oben. Seite 3 (rechts): Widmung allein.
+        out = [PageBreak(), ImpressumSeite("", Paragraph(html, ParagraphStyle(
+            "imp", parent=small, alignment=TA_LEFT, fontSize=7.6, leading=11)), impressum_logo())]
+        if widmung:
+            out += [PageBreak(), ImpressumSeite(inline_einfach(widmung), Paragraph("", small))]
+        return out
+    out = [Spacer(1, 25 * mm * min(S, 1.6)), Paragraph(html, ParagraphStyle("imp", parent=small, alignment=TA_CENTER)),
            PageBreak()]
     if widmung:   # eigene Seite, Satz unten (gleicher Abstand wie oben)
         out += [ImpressumSeite("", Paragraph("<i>" + inline_einfach(widmung) + "</i>",

@@ -55,7 +55,7 @@ BLOECKE = [
     ("::: nur-uz", "Text nur in der zweiten Ausgabe (auch -normal, -bildschirm, -druck, -ebook, -buch, -privatdruck)"),
     ("::: uz Titel", "Heller Kasten «Unzensiert» – nur in der zweiten Ausgabe"),
     ("::: mitte", "Text mittig auf einer eigenen Seite (z. B. Überleitung)"),
-    ("::: foto Titel", "Foto mit datei:, text:, alt:, breite:, fluss:, quelle:"),
+    ("#### @FOTO Titel", "Foto: darunter - datei:, - text:, - alt:, - breite:, - fluss:, - quelle:; Ende = Leerzeile"),
     ("::: zusammen", "Zeilen bleiben auf derselben Seite"),
     ("::: offen", "Noch offener Text: im Entwurf gelb, im Druck normal"),
     ("::: offen-notiz", "Notiz an dich: nur im Entwurf sichtbar, nie gedruckt"),

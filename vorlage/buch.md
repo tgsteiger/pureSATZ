@@ -1,44 +1,31 @@
 ## @TITEL
 {titel}
-::: nur-normal
 {untertitel}
-:::
-::: nur-uz
-{untertitel} · {ausgabe-name}
-:::
+{titel-zusatz}
 
 ## @IMPRESSUM
-© {jahr} {autor}, {ort}
+© {jahr} {autor}
 {website}
+Satzsystem: pureSATZ
 
-Text, Gestaltung und Satz: {autor}<br/>
-Satzsystem: pureSATZ (Markdown, Python)
-::: nur-buch
 {verlag}
 {impressum-herstellung}
+
+{impressum-rechte}
+
 {impressum-kontakt}
-
-**ISBN {isbn}**
-
-{auflage}
-:::
-::: nur-privatdruck
-
-Privatdruck {jahr} · nicht im Handel erhältlich
-:::
-::: nur-ebook
-{verlag}
 
 ISBN {isbn}
 {auflage}
-:::
-::: nur-bildschirm
-
-Stand: {stand}
+::: nur-privatdruck
+Privatdruck {jahr} · nicht im Handel erhältlich
 :::
 
-### @WIDMUNG
-Hier steht eine Widmung, mittig auf der Impressum-Seite. Keine gewünscht? Diese zwei Zeilen löschen.
+## @HINWEIS
+Hier steht ein Hinweis unten im Impressum, z. B. «Dieses Buch ersetzt keine Beratung». Keiner gewünscht? Diese zwei Zeilen löschen.
+
+## @WIDMUNG
+Hier steht eine Widmung. Im gedruckten Buch steht sie allein auf der rechten Seite neben dem Impressum. Keine gewünscht? Diese zwei Zeilen löschen.
 
 ## @KERNSATZ Ein Satz, der das ganze Buch zusammenfasst.
 
@@ -123,35 +110,31 @@ Eine Notiz an dich selbst: erscheint nur im Entwurf als roter Kasten und wird ni
 
 ## Bilder
 
-Ein Foto über die ganze Breite (ohne «fluss»):
+Ein Foto beginnt mit «#### @FOTO Titel» (so steht es auch in der Gliederung des Editors), darunter die Angaben als Liste. Die erste Leerzeile beendet den Foto-Block. Ein Foto über die ganze Breite (ohne «fluss»):
 
-::: foto Landschaft
-datei: beispiel.jpg
-text: Ein Bild mit Bildunterschrift
-quelle: Foto: Vorname Nachname
-alt: Weite Landschaft mit Hügeln unter blauem Himmel
-breite: 80
-:::
+#### @FOTO Landschaft
+- datei: beispiel.jpg
+- text: Ein Bild mit Bildunterschrift
+- quelle: Foto: Vorname Nachname
+- alt: Weite Landschaft mit Hügeln unter blauem Himmel
+- breite: 80
 
 Ein Hochformat wird bei gleicher Breite höher; der Motor begrenzt Fotos auf 75 mm Höhe, darum wird es schmaler. Sollen alle Fotos gleich gross sein: in der Variablen-Datei «foto-format: 3:2» (alle gleich zugeschnitten), «foto-breite» und «foto-anpassen: nein».
 
-::: foto Hochformat
-datei: beispiel-hoch.jpg
-text: Ein Hochformat: gleich hoch, aber schmaler
-alt: Ein Baum vor einem Abendhimmel
-:::
+#### @FOTO Hochformat
+- datei: beispiel-hoch.jpg
+- text: Ein Hochformat: gleich hoch, aber schmaler
+- alt: Ein Baum vor einem Abendhimmel
 
-::: foto Ein Foto, das noch fehlt
-Vorschlag: Hier könnte ein Foto vom Garten stehen. Im Entwurf ein Kasten, im Druck nichts.
-datei: garten.jpg
-:::
+#### @FOTO Ein Foto, das noch fehlt
+- Vorschlag: Hier könnte ein Foto vom Garten stehen. Im Entwurf ein Kasten, im Druck nichts.
+- datei: garten.jpg
 
-::: foto Klein mit Textfluss
-datei: beispiel.jpg
-fluss: rechts
-breite: 40
-text: Text fliesst um das Bild
-:::
+#### @FOTO Klein mit Textfluss
+- datei: beispiel.jpg
+- fluss: rechts
+- breite: 40
+- text: Text fliesst um das Bild
 
 Dieser Absatz fliesst links um das kleine Bild herum. Das ist praktisch für Porträts oder kleine Erinnerungsstücke. Die folgenden Absätze (bis zu fünf) umfliessen das Bild, bis es zu Ende ist.
 

@@ -3,6 +3,34 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.24.0 (Oktober 2026)
+- **Titelei ohne `:::`-Blöcke**: `## @TITEL`, `## @IMPRESSUM`, `## @HINWEIS`, `## @WIDMUNG` stehen als eigene Abschnitte.
+  - `@TITEL`: weitere Zeilen unter Titel und Untertitel werden mit « · » an den Untertitel gehängt
+    (Vorlage: `{titel-zusatz}`, `titel-zusatz-uz` = Name der zweiten Ausgabe). PDF und E-Book.
+  - **`## @HINWEIS`** (neu): direkt nach `@IMPRESSUM` oder `@WIDMUNG`; steht unten im Impressum, mit Abstand.
+  - `## @WIDMUNG` als eigene Überschrift (bisher `### @WIDMUNG`, geht weiterhin).
+- **Druck: Impressum und Widmung getrennt**: Seite 2 links = Impressum unten, Seite 3 rechts = Widmung allein,
+  senkrecht mittig. Danach Kernsatz und Inhalt; das Vorwort beginnt so auf einer rechten Seite. Der Buchblock wird
+  um eine Seite länger (oft fällt dafür eine Füllseite weg).
+- **Logo im Impressum**: neue Variable `impressum-logo` (Druckdatei oder Variablen-Datei, PNG aus bilder/), oben links,
+  34 mm breit wie in der tredition-Vorlage. Leer = kein Logo. `sh build.sh pruefen` meldet ein fehlendes Bild.
+- **Variablen je Medium**: gibt es `name-druck`, `name-ebook` oder `name-bildschirm`, nimmt `{name}` den Wert des
+  Mediums (z. B. `impressum-herstellung-druck`). So braucht das Impressum keine `::: nur-buch`-Blöcke mehr.
+  Neu in der Vorlage: `impressum-rechte` (Urheberrecht).
+- **Foto ohne `:::`**: `#### @FOTO Titel`, darunter `- datei: …`, `- text: …` usw.; die erste Leerzeile beendet
+  das Foto. `#### @FOTO-UZ` = nur zweite Ausgabe. Steht so in der Gliederung des Editors. Die alte Form
+  `::: foto` … `:::` geht weiterhin. Vorlage, Import (Word/LibreOffice) und Hilfe auf die neue Form umgestellt.
+- **Lese-PDF**: Impressum beginnt höher (25 statt 52 mm), damit ein längeres Impressum auf die Titelseite passt
+  (vorher rutschte der letzte Absatz allein auf eine eigene Seite).
+- **Umschlag-Datei im gleichen Aufbau wie die Druckdateien**: `## Vorderseite` / `## Buchrücken` / `## Rückseite`,
+  Werte `- name: text`, Erklärungen `> …`. Neu: Endung am Namen statt `:::`-Block – `fuss-druck`, `fuss-bildschirm`,
+  `text-ebook`, `auszug-uz` … gilt nur dort. Die alte Form (`# Vorderseite`, `::: nur-druck`) geht weiterhin.
+- **Druckdateien**: Erklärungen mit `> ` statt `####` (ruhiger im Editor, der Motor übergeht beides).
+  Muster in vorlage/druck/ mit Feld `impressum-logo`; tredition-Muster mit dem Impressumstext von tredition.
+- Geprüft: Selbsttest; Leben123 Seite für Seite mit 2.23.0 verglichen – Unterschied nur in der Titelei
+  (eine Seite weniger im Lese-PDF, weil das Impressum nicht mehr überläuft); `::: foto` und `#### @FOTO`
+  ergeben Pixel für Pixel dasselbe PDF.
+
 ## 2.23.0 (Oktober 2026)
 - **Rückseite im E-Book**: neue Variable `ebook-rueckseite` (Standard `bild`). Letzte Seite des E-Books ist die
   Rückseite des Covers als Bild – ohne Strichcode; Slogan, Klappentext, Zitate und Fuss stehen als Beschreibung (alt)

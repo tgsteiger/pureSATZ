@@ -61,14 +61,15 @@ BUCHTEXT (@@NAME@@-buch.md)
   ## @BEFEHL                    Befehl als Überschrift, wirkt wie @BEFEHL
 
 Blöcke: beginnen mit «::: art Titel», enden mit «:::» (eigene Zeile)
-  Arten: nur, mitte, foto, zusammen, offen, offen-notiz, widmung, zeitstrahl, uz
+  Arten: nur, mitte, foto (alt), zusammen, offen, offen-notiz, widmung, zeitstrahl, uz
   Endung = nur in einer Ausgabe/Medium: -normal, -uz, -bildschirm, -druck, -ebook, -buch, -privatdruck
   Beispiel:  ::: nur-uz        (dieser Text nur in der zweiten Ausgabe)
-  Foto-Block, Zeilen darin:  datei: bild.jpg / text: Bildunterschrift / alt: Bildbeschreibung
-                             breite: 60 / fluss: rechts / quelle: Foto: Name
+Foto (ohne «:::»):  «#### @FOTO Titel», darunter Zeilen «- datei: bild.jpg» / «- text: Bildunterschrift» /
+  «- alt: Bildbeschreibung» / «- breite: 60» / «- fluss: rechts» / «- quelle: Foto: Name».
+  Der Foto-Block endet an der ersten Leerzeile.  «#### @FOTO-UZ Titel» = nur zweite Ausgabe.
 
 Befehle (eine eigene Zeile, GROSS, genau so geschrieben):
-  @TITEL @IMPRESSUM @WIDMUNG @KERNSATZ Satz @INHALTSVERZEICHNIS
+  @TITEL @IMPRESSUM @HINWEIS @WIDMUNG @KERNSATZ Satz @INHALTSVERZEICHNIS   (als «## @…» geschrieben)
   @ZITAT Text  @MOTTO Text  @UNTEN Text  @KOPF Text
   @UMBRUCH  @UMBRUCH-RECHTS  @PLATZ 40  @ABSTAND 8  @SEITENMITTE
   @ZIER 12  @ZIER-UNTEN  @ZIER-TRENNER
@@ -77,8 +78,9 @@ Befehle (eine eigene Zeile, GROSS, genau so geschrieben):
 Keine anderen @-Befehle erfinden. Befehle nicht übersetzen, nicht verschieben ohne Auftrag.
 
 UMSCHLAG (@@NAME@@-umschlag.md)
-  Abschnitte # Vorderseite, # Buchrücken, # Rückseite. Werte als - schluessel: wert
-  (titel, untertitel, autor, stempel, stempel-farbe, fuss, bild, slogan, foto, text, auszug). Text der Rückseite kurz halten.
+  Abschnitte ## Vorderseite, ## Buchrücken, ## Rückseite. Werte als - schluessel: wert
+  (titel, untertitel, autor, stempel, stempel-farbe, fuss, bild, slogan, foto, text, auszug).
+  Endung am Schlüssel = nur dort: fuss-druck, fuss-bildschirm, text-ebook, auszug-uz. «> …» = Erklärung. Text der Rückseite kurz halten.
 
 WAS DER MOTOR MACHT (zur Info)
   sh build.sh            Entwurf: Bildschirm-PDF, Druckdateien, E-Book (offene Stellen sichtbar)

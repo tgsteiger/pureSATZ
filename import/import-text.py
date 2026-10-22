@@ -436,33 +436,33 @@ def buch_md(blocks, fotos_ordner):
                 j += 1
             if j < len(blocks) and blocks[j][0] == "beschriftung":
                 text = blocks[j][1].replace("**", ""); blocks[j] = ("leer", None)
-            zeilen.append(f"::: foto {name}")
+            zeilen.append(f"#### @FOTO {name}")
             if d["daten"]:
                 with open(os.path.join(fotos_ordner, datei), "wb") as f:
                     f.write(d["daten"])
             else:
-                zeilen.append(f"Bild «{d['name']}» war im Dokument ohne Bilddaten (verknüpft?). "
+                zeilen.append(f"- Bild «{d['name']}» war im Dokument ohne Bilddaten (verknüpft?). "
                               f"Bitte als fotos/{datei} ablegen.")
                 BERICHT(f"Bild «{d['name']}»: keine Bilddaten im Dokument – Platzhalter gesetzt (fotos/{datei}).")
-            zeilen.append(f"datei: {datei}")
+            zeilen.append(f"- datei: {datei}")
             if text:
-                zeilen.append(f"text: {text}")
+                zeilen.append(f"- text: {text}")
             if d["alt"]:
-                zeilen.append(f"alt: {d['alt']}")
+                zeilen.append(f"- alt: {d['alt']}")
             if not text and not d["alt"]:
                 BERICHT(f"Bild «{d['name']}»: ohne Beschriftung und ohne Alternativtext (fürs E-Book «alt:» ergänzen).")
-            zeilen += [":::", ""]
+            zeilen += [""]                    # Foto-Block endet an der Leerzeile
         i += 1
     return zeilen, bildnr
 
 
 def titelei(vorlage_md):
-    """Titelei aus der Vorlage (bis @INHALTSVERZEICHNIS), ohne Demo-Widmung und Demo-Kernsatz."""
+    """Titelei aus der Vorlage (bis @INHALTSVERZEICHNIS), ohne Demo-Widmung, Demo-Hinweis und Demo-Kernsatz."""
     aus, weg = [], False
     for z in vorlage_md.split("\n"):
         if z.startswith("## Vorwort"):
             break
-        if z.startswith("### @WIDMUNG"):
+        if re.match(r"#{2,3} @(WIDMUNG|HINWEIS)\b", z):
             weg = True; continue
         if z.startswith("## @KERNSATZ"):
             continue

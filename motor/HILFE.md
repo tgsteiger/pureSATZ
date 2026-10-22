@@ -7,8 +7,8 @@
 | Datei | Inhalt |
 |---|---|
 | `<buch>-variablen.md` | `# VARIABLEN` (Titel, Autor, ISBN …), `# TECHNIK` (Format, Bindung, Rücken, Dateien), `# LAYOUT` (Farben, Schriften) |
-| `<buch>-buch.md` | das Buch: `## @TITEL`, `## @IMPRESSUM`, `### @WIDMUNG`, `## @KERNSATZ`, `## @INHALTSVERZEICHNIS`, Kapitel und Teile |
-| `<buch>-umschlag.md` | `# Vorderseite`, `# Buchrücken`, `# Rückseite` |
+| `<buch>-buch.md` | das Buch: `## @TITEL`, `## @IMPRESSUM`, `## @HINWEIS`, `## @WIDMUNG`, `## @KERNSATZ`, `## @INHALTSVERZEICHNIS`, Kapitel und Teile |
+| `<buch>-umschlag.md` | `## Vorderseite`, `## Buchrücken`, `## Rückseite`, darunter `- name: text` (`-druck`, `-bildschirm`, `-ebook`, `-uz` am Namen = nur dort), `> Erklärung` |
 | `stichworte-<buch>.txt` | Stichwortverzeichnis: eine Zeile pro Stichwort, Varianten mit `\|`, `#` = Kommentar |
 | `fotos/`, `bilder/` | Fotos und Bilder (Porträt, eigene Verzierung) |
 | `readme4ki.txt` | kurze Anleitung für eine andere KI (siehe unten) |
@@ -33,27 +33,56 @@ das PDF ansehen und mit der MD vergleichen – danach das Demo löschen und schr
 | `3\. Mai war …` | Zahl mit Punkt am Zeilenanfang, aber keine Aufzählung |
 | Leerzeile / `<br/>` | neuer Absatz / Zeilenumbruch im Absatz |
 
-**Blöcke** `::: art-ausgabe Titel` … `:::` – Art: `nur`, `mitte`, `foto`, `zusammen`, `offen`,
+**Blöcke** `::: art-ausgabe Titel` … `:::` – Art: `nur`, `mitte`, `zusammen`, `offen`,
 `offen-notiz`, `zeitstrahl`, `uz` (Kasten der zweiten Ausgabe). Endung: keine (überall),
 `-normal`, `-uz` (`-dc`), `-bildschirm`, `-druck`, `-ebook`, `-buch`, `-privatdruck`.
 
-**Foto-Block:**
+**Foto:** beginnt mit `#### @FOTO Titel` (steht so in der Gliederung des Editors), darunter die Angaben als
+Liste. **Die erste Leerzeile beendet das Foto** – ein `:::` braucht es nicht. `#### @FOTO-UZ Titel` = nur in der
+zweiten Ausgabe (auch `-NORMAL`, `-DRUCK`, `-EBOOK` …).
 ```text
-::: foto Sommer
-datei: sommer-1980.jpg     Bild im Ordner fotos/ (Grösse: fotos/readme.txt)
-text: Bildunterschrift     (optional)
-breite: 60                 (optional) Breite in mm
-fluss: rechts              (optional) Text umfliesst das Bild, rechts oder links
-quelle: Foto: Max Muster   (optional) erscheint im Bildnachweis im Anhang
-alt: Kind auf rotem Dreirad (optional) Beschreibung fürs E-Book (Vorlesefunktion); sonst gilt text:
-ausschnitt: oben           (optional, nur mit foto-format) was beim Zuschneiden bleibt: oben, unten, links, rechts
-:::
+#### @FOTO Sommer
+- datei: sommer-1980.jpg     Bild im Ordner fotos/ (Grösse: fotos/readme.txt)
+- text: Bildunterschrift     (optional)
+- breite: 60                 (optional) Breite in mm
+- fluss: rechts              (optional) Text umfliesst das Bild, rechts oder links
+- quelle: Foto: Max Muster   (optional) erscheint im Bildnachweis im Anhang
+- alt: Kind auf rotem Dreirad (optional) Beschreibung fürs E-Book (Vorlesefunktion); sonst gilt text:
+- ausschnitt: oben           (optional, nur mit foto-format) was beim Zuschneiden bleibt: oben, unten, links, rechts
+
+Hier geht der Text weiter.
 ```
+Eine Zeile ohne `name:` (z. B. `- Vorschlag: …`) erscheint im Entwurf im Kasten, solange das Foto fehlt.
+Die alte Form `::: foto Sommer` … `:::` (ohne `- `) geht weiterhin.
+
+**Titelei:** Titelseite, Impressum, Hinweis und Widmung stehen ohne `:::` als eigene Abschnitte:
+```text
+## @TITEL
+{titel}
+{untertitel}
+{titel-zusatz}               weitere Zeilen werden mit « · » an den Untertitel gehängt
+
+## @IMPRESSUM
+© {jahr} {autor}
+{impressum-herstellung}      leere Variable = Zeile fällt weg
+{impressum-rechte}
+{impressum-kontakt}
+ISBN {isbn}
+
+## @HINWEIS
+Unten im Impressum, mit Abstand (z. B. «ersetzt keine Beratung»).
+
+## @WIDMUNG
+Im Druck allein auf der rechten Seite gegenüber dem Impressum; im Lese-PDF auf eigener Seite.
+```
+Was nur im Druck oder nur im E-Book stehen soll, kommt über Variablen mit Endung `-druck`, `-ebook`, `-bildschirm`
+(z. B. `impressum-herstellung-druck`) oder aus der Druckdatei. Im Druck: Seite 2 links Impressum (oben das Logo
+aus `impressum-logo`), Seite 3 rechts Widmung.
 
 **Seiten:** `@UMBRUCH` neue Seite · `@UMBRUCH-RECHTS` im Druck rechts · `@PLATZ 60` neue Seite, wenn
 weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen · `@SEITENMITTE`.
 
-**Weiteres:** `@TITEL`, `@IMPRESSUM`, `@WIDMUNG`, `@KERNSATZ`, `@INHALTSVERZEICHNIS`, `@ZITAT`, `@MOTTO`, `@UNTEN`,
+**Weiteres:** `@TITEL`, `@IMPRESSUM`, `@HINWEIS`, `@WIDMUNG`, `@KERNSATZ`, `@INHALTSVERZEICHNIS`, `@ZITAT`, `@MOTTO`, `@UNTEN`,
 `@ZIER 12`, `@ZIER-UNTEN`, `@ZIER-TRENNER`, `@QR url | Text`, `@QR-PAAR … ;; …`, `@PORTRAIT bild | Text`,
 `@KOPF`, `@STICHWORTE`, `@RUECKSEITE`. Vollständige Liste: `python3 motor/manuskript.py`.
 
@@ -78,7 +107,7 @@ weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen �
 | E-Book | `ebook-epub2` (ja = zusätzlich EPUB 2), `ebook-rueckseite` (bild / text / nein), `ebook-barrierefreiheit`, `farbe-akzent-ebook` |
 | Shop | `shop-beschreibung`, `shop-schlagwoerter`, `shop-kategorie`, `preis-buch`, `preis-ebook`, `shop-link` |
 | Leseprobe | `leseprobe`, `leseprobe-seiten`, `leseprobe-seiten-uz`, `leseprobe-text` |
-| Technik | `impressum-herstellung`, `impressum-kontakt`, `format`, `bindung`, `projekt`, `ruecken-…`, `beschnitt-…`, `deckel-hardcover`, `papier`, `druck-normal` / `-uz`, `kurz-…`, `datei-…`, `ordner-…` |
+| Technik | `impressum-herstellung`, `impressum-kontakt`, `impressum-rechte`, `impressum-logo`, `format`, `bindung`, `projekt`, `ruecken-…`, `beschnitt-…`, `deckel-hardcover`, `papier`, `druck-normal` / `-uz`, `kurz-…`, `datei-…`, `ordner-…` |
 | Weiteres | `stichworte`, `trennstellen` (Welt\|anschauung), `zier`, `zier-hell`, `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund` |
 | Sicherung | `sicherung-lokal`, `sicherung-cloud`, `sicherung-behalten` |
 | Layout | `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `blocksatz` |
@@ -93,7 +122,7 @@ Coverrechner übereinstimmen. Beschnitt und Deckel: `beschnitt-hardcover` (11 mm
 
 | Ordner | Was | Format | Pixel (300 dpi: Breite in mm × 12) |
 |---|---|---|---|
-| `fotos/` | Fotos im Text (`::: foto`) | JPG, RGB (nicht CMYK) | ganze Breite A5: mind. 1400 · `breite: 60`: 700 · `fluss`: 500 |
+| `fotos/` | Fotos im Text (`#### @FOTO`) | JPG, RGB (nicht CMYK) | ganze Breite A5: mind. 1400 · `breite: 60`: 700 · `fluss`: 500 |
 | `bilder/` | Porträt, Verzierung, Teil-Bilder | PNG, gern transparent | Porträt 600 × 600 · Teil-Bild 1200 |
 
 Dateinamen ohne Leerzeichen und Umlaute, z. B. `sommer-1980.jpg`. Handyfotos sind ideal.
@@ -224,8 +253,8 @@ vorhandenen PDF: `sh build.sh mockup`. Hintergrund ändern: `mockup-hintergrund:
 **Cover-Bilder** entstehen mit dem E-Book (`sh build.sh`, `final`, `nur-ebook`) im Ausgabeordner:
 `…_Cover-vorne.jpg` und `…_Cover-hinten.jpg` – Vorder- und Rückseite gerade, randlos, ohne Schatten,
 hochaufgelöst (lange Seite 2560 Pixel, kurze mindestens 1600, bei A5 etwa 300 dpi). Die Texte des Umschlags
-kommen aus Blöcken `::: nur-ebook`; gibt es keine, gelten die des Drucks (`::: nur-druck`, z. B. «Erstausgabe»
-statt «Stand»). Dasselbe gilt für das Titelbild im E-Book.
+kommen aus Zeilen `- name-ebook:` (oder Blöcken `::: nur-ebook`); gibt es keine, gelten die des Drucks
+(`- fuss-druck: Erstausgabe {jahr}` statt `- fuss-bildschirm: Stand {stand}`). Dasselbe gilt für das Titelbild im E-Book.
 Das Vorne-Bild ist das **Titelbild für E-Book-Shops** (tolino media, neobooks, BoD, KDP verlangen ein JPG im
 Hochformat, mindestens 1600 Pixel breit); beide eignen sich auch für Presse, Verlag und Webseite.
 Unterschied zu `<KURZ>_Cover_Vorderseite.jpg` im Druckordner: Jenes ist für die Druckerei (400 dpi, mit 3 mm
@@ -327,6 +356,7 @@ Ohne `druck`-Zeile gilt alles wie bisher.
 | `barcode-bild` | PNG aus `bilder/` auf weissem Feld; leer = nichts zeichnen (BoD: Strichcode aus der ISBN) |
 | `versatz-vertikal`, `versatz-horizontal` | ganzen Seiteninhalt verschieben, in mm: vertikal + = nach oben, horizontal + = nach aussen (nach Messung am Probeexemplar) |
 | `impressum-herstellung`, `impressum-kontakt` | Zeilen im Impressum des gedruckten Buchs (wer druckt, Kontakt nach EU-Produktsicherheitsverordnung); leer = Zeile fällt weg |
+| `impressum-logo` | Logo der Druckerei oben links im Impressum (PNG aus `bilder/`, 34 mm breit, z. B. tredition); leer = kein Logo |
 
 `name-normal` / `name-uz` gehen auch in der Druckdatei. Weicht das Druckformat vom Grundformat ab, meldet der
 Bau «Seitenzahlen im Druck anders als im Lese-PDF». Beim Bau steht `Druckangaben: druck/…md`, und eine Kopie der
@@ -338,8 +368,8 @@ in der Druckdatei `versatz-vertikal: -1.5`. Seitlich genauso mit `versatz-horizo
 Seitenzahl und Bilder verschieben sich gemeinsam, das Layout bleibt gleich; nur der Buchblock dieser Druckerei ist
 betroffen. Der Beschnitt reicht als Reserve (bei 5 mm bis etwa 3 mm Versatz); mehr meldet der Bau als Warnung.
 
-**Impressum je Druckerei:** Im Impressum der Buch-Datei stehen `{impressum-herstellung}` und `{impressum-kontakt}` (im Block
-`::: nur-buch`). Die Werte kommen aus der Variablen-Datei (Vorgabe epubli) bzw. aus der aktiven Druckdatei –
+**Impressum je Druckerei:** Im Impressum der Buch-Datei stehen `{impressum-herstellung}` und `{impressum-kontakt}`.
+Die Werte kommen aus der Variablen-Datei (`…-druck`, Vorgabe epubli) bzw. aus der aktiven Druckdatei –
 so stimmt das Impressum automatisch zur gewählten Druckerei. Weitere eigene `impressum-…`-Namen sind erlaubt.
 
 **Ausgabeordner:** Ein normaler Bau legt die Druckdateien immer in `ausgabe-normal/` bzw. `ausgabe-unzensiert/` –
@@ -353,7 +383,7 @@ testen. Als `plattform` passt meist `bod` (Strichcode-Feld selbst bestimmen, kei
 **Muster** (beim neuen Buch schon in `druck/`, sonst in `pureSATZ/vorlage/druck/`): `epubli-a5`,
 `epubli-taschenbuch`, `epubli-sachbuch`, `epubli-a4`, `epubli-quadrat`, `bod-a5-hardcover`, `tredition-a5-hardcover`.
 Aufbau jeder Druckdatei: `##` Abschnitte (Plattform, Innenteil, Umschlag, ISBN, Strichcode), darunter die Werte
-`- name: wert`; unter jedem Wert eine Zeile `#### default: … · optional: …` als Erklärung (der Motor übergeht sie).
+`- name: wert`; unter jedem Wert eine Zeile `> default: … · optional: …` als Erklärung (der Motor übergeht sie; ältere Dateien mit `####` gehen auch).
 Ausprobieren ohne Umstellen: `sh build.sh final druck=bod-a5-hardcover` → `ausgabe-test/bod-a5-hardcover/`.
 
 # Andere Plattformen

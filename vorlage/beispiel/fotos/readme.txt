@@ -19,7 +19,7 @@ Zu klein (z. B. aus WhatsApp oder vom Web, unter ca. 800 Pixel) wird im Druck un
 Im Bildschirm-PDF sieht man das oft nicht – im Probedruck-Booklet schon eher.
 
 Dateinamen: ohne Leerzeichen und Umlaute, z. B. sommer-1980.jpg
-Im Buch:    ::: foto Titel / datei: sommer-1980.jpg / text: Bildunterschrift / :::
+Im Buch:    #### @FOTO Titel / - datei: sommer-1980.jpg / - text: Bildunterschrift / Leerzeile
 
 Gleich gross:  Ohne Angaben ist jedes Foto so breit wie der Text und höchstens 75 mm hoch
                (Querformat breit, Hochformat schmaler). Alle Fotos gleich gross: in der

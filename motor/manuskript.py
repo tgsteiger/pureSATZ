@@ -15,6 +15,7 @@ Aufbau der Buch-MD
    Im Text: {titel}, {untertitel} … Gibt es «name-normal» und «name-uz», nimmt {name}
    automatisch den Wert der gebauten Fassung. Fehlt eine der beiden Varianten, ist sie leer.
    {isbn} ist besonders: im Druck isbn-buch (leer = «folgt»), im E-Book isbn-ebook.
+   Gibt es «name-druck», «name-ebook» oder «name-bildschirm», nimmt {name} den Wert des Mediums (2.24).
    Eine Zeile, in der eine Variable leer bleibt, fällt ganz weg.
 
 2. Blöcke  ::: art[-ausgabe] [Titel]  …  :::
@@ -103,6 +104,7 @@ _CACHE = {}
 VARIABLE = re.compile(r"^\s*(?:[-*]\s+)?([a-z][a-z0-9-]*)\s*:(?:\s+(.*?))?\s*$")
 BUCHSTART = re.compile(r"^#{1,6}\s*=*\s*BUCHSTART\b", re.I)
 BEFEHL_ALS_TITEL = re.compile(r"^#{1,6}\s+(@[A-Z].*)$")     # «## @TITEL» = «@TITEL»
+FOTO_KOPF = re.compile(r"^#{1,6}\s+@FOTO(-[A-Za-z]+)?(?:\s+(.*))?$")   # «#### @FOTO Titel» (2.24)
 
 
 def ist_buchstart(zeile):
@@ -190,6 +192,8 @@ class Ausgabe:
             return self.var.get("isbn-ebook", "") if self.medium == "ebook" else ""
         if name in self.var:
             return self.var[name]
+        if any(f"{name}-{t}" in self.var for t in ("druck", "ebook", "bildschirm")):    # 2.24: je Medium
+            return self.var.get(f"{name}-{self.medium}", "")
         if any(f"{name}-{t}" in self.var for t in ("normal", "uz", "dc")):
             if self.fassung == "uz":
                 return self.var.get(f"{name}-uz", self.var.get(f"{name}-dc", ""))
@@ -240,7 +244,23 @@ def zeilen(pfad, a, entwurf=False):
     while i < len(roh):
         nr, s = roh[i]
         s = s.rstrip()
-        if s.startswith(":::") and s.strip() != ":::":
+        fk = FOTO_KOPF.match(s)
+        if fk:                                  # «#### @FOTO Titel» … bis zur ersten Leerzeile (pureSATZ 2.24)
+            art, tag, titel = _art("foto" + (fk.group(1) or "").lower() + " " + (fk.group(2) or ""))
+            if art != "foto":
+                raise Fehler(f"{_wo(name, nr)}: unbekannter Foto-Befehl «{s.lstrip('# ')}» "
+                             "(möglich: @FOTO, @FOTO-UZ, @FOTO-NORMAL …).")
+            inhalt, i = [], i + 1
+            while i < len(roh) and roh[i][1].strip() and not roh[i][1].lstrip().startswith(("#", ":::")):
+                n2, z = roh[i]
+                z = z.strip()
+                if z[:2] in ("- ", "* "):
+                    z = z[2:].strip()
+                z = a.ersetze(z, f"{_wo(name, n2)}")
+                if z is not None:
+                    inhalt.append(_zeile(z, n2))
+                i += 1
+        elif s.startswith(":::") and s.strip() != ":::":
             art, tag, titel = _art(s[3:])
             if art is None:
                 raise Fehler(f"{_wo(name, nr)}: unbekannter Block «{s}».")
@@ -256,6 +276,7 @@ def zeilen(pfad, a, entwurf=False):
             if i >= len(roh):
                 raise Fehler(f"{_wo(name, nr)}: Block «{s}» wird nicht mit «:::» geschlossen.")
             i += 1
+        if fk or (s.startswith(":::") and s.strip() != ":::"):
             zeigen = tag is None or tag in a.tags()
             if art in ("uz", "dc"):
                 zeigen = a.fassung == "uz"
@@ -295,16 +316,26 @@ def umschlag(pfad, a):
             continue
         if not s:
             continue
-        if s.startswith("# "):
-            akt = (s[2:].strip().lower().replace("ü", "ue").replace("ä", "ae").replace("ö", "oe")
-                   .replace("buchruecken", "ruecken"))
-            teile[akt] = []
+        if s.startswith("#"):                    # «# Vorderseite» oder «## Vorderseite» (2.24)
+            name = (s.lstrip("#").strip().lower().replace("ü", "ue").replace("ä", "ae").replace("ö", "oe")
+                    .replace("buchruecken", "ruecken"))
+            if name in UMSCHLAG_TEILE:
+                akt = name; teile[akt] = []
             continue
         m = VARIABLE.match(s)
         if not m or akt is None:
-            continue                            # Überschrift oder erklärender Satz
-        teile[akt].append((m.group(1), (m.group(2) or "").strip()))
+            continue                            # Überschrift, «> Erklärung» oder erklärender Satz
+        k, w = m.group(1), (m.group(2) or "").strip()
+        basis, _, endung = k.rpartition("-")    # «fuss-druck: …» nur im Druck, «text-uz: …» nur zweite Ausgabe (2.24)
+        if basis and ALT.get(endung, endung) in TAGS:
+            if ALT.get(endung, endung) not in a.tags():
+                continue
+            k = basis
+        teile[akt].append((k, w))
     return teile
+
+
+UMSCHLAG_TEILE = {"vorderseite", "ruecken", "rueckseite"}
 
 
 UMSCHLAG_SCHLUESSEL = {"titel", "untertitel", "autor", "stempel", "stempel-farbe", "fuss", "bild",
@@ -327,7 +358,9 @@ def alle(teil, k):
 BEFEHLE = {
     "@TITEL":              "Titelseite; die nächsten Zeilen: Titel, Untertitel",
     "@IMPRESSUM":          "Impressum; die folgenden Zeilen (Leerzeile = Abstand)",
-    "@WIDMUNG":            "Widmung direkt unter dem Impressum; die folgenden Zeilen (oder ::: widmung)",
+    "@WIDMUNG":            "Widmung nach dem Impressum (Druck: eigene Seite rechts); die folgenden Zeilen (oder ::: widmung)",
+    "@FOTO":              "#### @FOTO Titel, darunter «- datei: …», «- text: …» usw.; Ende = erste Leerzeile. @FOTO-UZ = nur zweite Ausgabe",
+    "@HINWEIS":            "Hinweis unten im Impressum (z. B. keine medizinische Beratung); die folgenden Zeilen",
     "@KERNSATZ":           "@KERNSATZ Satz – allein, mittig auf einer Seite",
     "@INHALTSVERZEICHNIS": "Inhaltsverzeichnis an dieser Stelle",
     "@ZITAT":              "@ZITAT Text – Zitat, zentriert, ohne Lotus",

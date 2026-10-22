@@ -56,14 +56,14 @@ def esc(t):
 
 # --- Bilder -----------------------------------------------------------------
 # Titelbild: nur Vorder- und Rückseite zeichnen (viel schneller als das ganze Buch).
-# Texte des Umschlags: Blöcke «::: nur-ebook», gibt es keine, dann wie im Druck («::: nur-druck»,
+# Texte des Umschlags: Blöcke «::: nur-ebook» oder Zeilen «- name-ebook:», gibt es keine, dann wie im Druck («::: nur-druck»,
 # z. B. «Erstausgabe {jahr}» statt «Stand …» des Bildschirm-PDFs) – pureSATZ 2.18.
 def _umschlag_medium():
     try:
         text = open(os.path.join(BASE, bk.UMSCHLAG), encoding="utf-8").read()
     except OSError:
         return "druck"
-    return "ebook" if re.search(r"^\s*:::\s*nur-ebook\b", text, re.M | re.I) else "druck"
+    return "ebook" if re.search(r"^\s*(:::\s*nur-ebook\b|[-*]\s+[a-z-]+-ebook\s*:)", text, re.M | re.I) else "druck"
 
 
 from reportlab.pdfgen import canvas as _canvas
@@ -259,6 +259,8 @@ for zeile in bk.text_zeilen():
     if sammle is not None:
         if isinstance(zeile, tuple) and zeile[0] == "WIDMUNG":
             vorspann["widmung"] = " ".join(t.strip() for t in zeile[2] if t.strip()); continue
+        if not isinstance(zeile, tuple) and zeile.strip() == "@HINWEIS" and sammle in ("impressum", "widmung_z"):
+            sammle = "impressum"; vorspann["impressum"].append(""); continue     # Hinweis unten im Impressum
         if not isinstance(zeile, tuple) and zeile.strip() == "@WIDMUNG" and sammle == "impressum":
             sammle = "widmung_z"; vorspann["widmung_z"] = []; continue
         if isinstance(zeile, tuple) or zeile.lstrip().startswith(("#", "@")):
@@ -467,7 +469,7 @@ titel_html = f"""
 <section class="titel">
 <img class="titellotus" src="img/lotus.png" alt=""/>
 <h1 class="haupttitel">{esc(titelz[0] if titelz else TITEL)}</h1>
-<p class="untertitel">{esc(titelz[1] if len(titelz) > 1 else UNTERTITEL)}</p>
+<p class="untertitel">{esc(" · ".join(titelz[1:]) if len(titelz) > 1 else UNTERTITEL)}</p>
 <p class="autor">{esc(AUTOR)}</p>
 </section>
 <div class="impressum">

@@ -200,6 +200,8 @@ def druck_pruefen():
                 bk.masse_mm(v(n), n)
             if v("barcode-bild") and not bk.finde(v("barcode-bild"), ("bilder",)):
                 fehler.append(f"{d}: barcode-bild {v('barcode-bild')} fehlt im Ordner bilder/")
+            if v("impressum-logo") and not bk.finde(v("impressum-logo"), ("bilder",)):
+                fehler.append(f"{d}: impressum-logo {v('impressum-logo')} fehlt im Ordner bilder/")
         except SystemExit as e:
             fehler.append(f"{d}: {e}")
     for h in sorted(set(hinweise)):

@@ -4,6 +4,8 @@ Hier stehen alle Angaben zum Buch. Im Text und im Umschlag mit dem Namen in gesc
 ## Buch
 - titel: @@TITEL@@
 - untertitel: @@UNTERTITEL@@
+- titel-zusatz-normal:
+- titel-zusatz-uz: @@ZWEITNAME@@
 - autor: @@AUTOR@@
 - website: @@WEBSITE@@
 - ort: @@ORT@@
@@ -75,10 +77,12 @@ Statt der Angaben oben eine Datei aus dem Ordner druck/ (Muster: epubli-a5, epub
 - druck-normal:
 - druck-uz:
 
-### Impressum im gedruckten Buch
-Wer druckt (Pflichtangaben im Impressum). Gilt ohne Druckdatei; eine Druckdatei ersetzt es mit eigenen Werten. Leer = Zeile fällt weg.
-- impressum-herstellung: Herstellung: epubli – ein Service der neopubli GmbH, Köpenicker Strasse 154a, 10997 Berlin
-- impressum-kontakt: Kontaktadresse nach EU-Produktsicherheitsverordnung: produktsicherheit@epubli.com
+### Impressum
+Zeilen im Impressum der Buch-Datei. «-druck» gilt nur im gedruckten Buch, «-ebook» nur im E-Book, «-bildschirm» nur im Lese-PDF. Eine Druckdatei (druck/) ersetzt sie fürs gedruckte Buch mit eigenen Werten. Leer = Zeile fällt weg.
+- impressum-herstellung-druck: Herstellung: epubli – ein Service der neopubli GmbH, Köpenicker Strasse 154a, 10997 Berlin
+- impressum-kontakt-druck: Kontaktadresse nach EU-Produktsicherheitsverordnung: produktsicherheit@epubli.com
+- impressum-rechte: Das Werk, einschliesslich seiner Teile, ist urheberrechtlich geschützt. Jede Verwertung ist ohne Zustimmung des Autors unzulässig.
+- impressum-logo:
 
 ## Dateien und Ordner
 - kurz-normal: @@KUERZEL@@

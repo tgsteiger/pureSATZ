@@ -68,7 +68,7 @@ HARDCOVER = dict(deckel=deckel(), ruecken=RUECKEN_HART, einschlag=mm_wert("besch
 PAPIER = bk.V("papier")
 
 PROFILE = {
-    # Der Impressumstext (Verlag, Herstellung) steht in der Buch-MD unter @IMPRESSUM (::: nur-buch)
+    # Der Impressumstext (Verlag, Herstellung) steht in der Buch-MD unter @IMPRESSUM ({impressum-…} aus Druckdatei/Variablen)
     "epubli": dict(beschnitt_mm=3, min_seiten=36, eigener_barcode=False),
     "bod":    dict(beschnitt_mm=5, min_seiten=0, eigener_barcode=True),
 }
