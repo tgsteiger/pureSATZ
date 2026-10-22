@@ -74,6 +74,7 @@ for _name, _zeichnen in (("vorne", "cover"), ("hinten", "backpage")):
     _c = _canvas.Canvas(seiten_pdf[_name], pagesize=(bk.W, bk.H))
     getattr(bk.Doc(os.path.join(TMP, "_leer.pdf")), _zeichnen)(_c, None)
     _c.showPage(); _c.save()
+RUECK = bk.umschlag().get("rueckseite", [])     # Texte der Rückseite (für die letzte Seite des E-Books)
 bk.MEDIUM = "ebook"      # ab hier: Text und Blöcke der E-Book-Ausgabe
 import pdfwerkzeug
 if not pdfwerkzeug.als_jpg(seiten_pdf["vorne"], os.path.join(TMP, "img", "cover.jpg"), breite=1600, qualitaet=92):
@@ -83,6 +84,13 @@ if not LESEPROBE:        # Cover-Bilder für E-Book-Shops: lange Seite 2560 Pixe
     for _name, _pdf in seiten_pdf.items():
         pdfwerkzeug.als_jpg(_pdf, os.path.join(OUT_DIR, f"{bk.ausgabe()['datei']}_Cover-{_name}.jpg"),
                             breite=_breite, qualitaet=92)
+# Rückseite als letzte Seite des E-Books (pureSATZ 2.23): bild (Standard) | text | nein
+RUECKSEITE = (bk.V("ebook-rueckseite") or "bild").strip().lower()
+if RUECKSEITE not in ("bild", "text", "nein"):
+    print(f"Hinweis: ebook-rueckseite «{RUECKSEITE}» unbekannt (bild | text | nein) – nehme «bild».")
+    RUECKSEITE = "bild"
+if RUECKSEITE == "bild" and RUECK:    # ohne Strichcode: der gehört zum gedruckten Buch
+    pdfwerkzeug.als_jpg(seiten_pdf["hinten"], os.path.join(TMP, "img", "rueckseite.jpg"), breite=1600, qualitaet=90)
 lot = Image.open(bk.LOTUS); lot.thumbnail((240, 240))
 lot.save(os.path.join(TMP, "img", "lotus.png"))
 
@@ -604,6 +612,46 @@ cover_doc = f"""<?xml version="1.0" encoding="utf-8"?>
 <style>body{{margin:0;padding:0;text-align:center;}} img{{max-width:100%;max-height:100%;}}</style></head>
 <body epub:type="cover"><img src="img/cover.jpg" alt="Titelbild: {esc(TITEL)}"/></body></html>"""
 
+# --- Rückseite (letzte Seite) ------------------------------------------------------
+def _klartext(t):
+    t = re.sub(r"<br\s*/?>", " ", t)
+    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>|\*\*", "", t)).strip()
+
+
+def rueckseite_doc():
+    """Letzte Seite: Bild der Rückseite (mit vollem Text als Beschreibung) oder dieselben Texte als Text."""
+    slogan = [_klartext(z) for z in bk.M.alle(RUECK, "slogan")]
+    texte = [_klartext(z) for z in bk.M.alle(RUECK, "text")]
+    zitate = [_klartext(z) for z in bk.M.alle(RUECK, "auszug")]
+    fuss = [_klartext(z) for z in bk.M.alle(RUECK, "fuss")]
+    kopf = (f'<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" '
+            f'xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="{SPRACHE}" lang="{SPRACHE}">\n'
+            f'<head><meta charset="utf-8"/><title>Über dieses Buch</title>')
+    if RUECKSEITE == "bild":
+        beschreibung = " ".join(["Rückseite des Buchs."] + slogan + texte + zitate + fuss)
+        return (kopf + '<style>body{margin:0;padding:0;text-align:center;} img{max-width:100%;max-height:100%;}</style>'
+                '</head>\n<body epub:type="backmatter"><img src="img/rueckseite.jpg" alt="'
+                + html.escape(beschreibung, quote=True) + '"/></body></html>')
+    teile = [f'<h2 class="rs-titel">Über dieses Buch</h2>']
+    teile += [f'<p class="rs-slogan">{esc(z)}</p>' for z in slogan]
+    foto_ = rundbild(bk.M.eins(RUECK, "foto")) if bk.M.eins(RUECK, "foto") else None
+    if foto_:
+        teile.append(f'<div class="rs-foto"><img src="img/{foto_}" alt="{esc(PORTRAIT_ALT)}"/></div>')
+    teile += [f'<p class="rs-text">{esc(z)}</p>' for z in texte]
+    if zitate:
+        teile.append(ORN)
+        teile += [f'<p class="rs-zitat"><em>{esc(z)}</em></p>' for z in zitate]
+    teile += [f'<p class="rs-fuss">{esc(z)}</p>' for z in fuss]
+    return (kopf + '<link rel="stylesheet" href="style.css"/><style>'
+            '.rs-titel{text-align:center;} .rs-slogan{text-align:center;font-size:1.2em;margin:1em 0;} '
+            '.rs-foto{text-align:center;margin:1em 0;} .rs-foto img{width:40%;max-width:12em;} '
+            '.rs-text{text-align:center;text-indent:0;} .rs-zitat{text-align:center;text-indent:0;margin:0.3em 0;} '
+            '.rs-fuss{text-align:center;text-indent:0;font-size:0.9em;margin:0.2em 0;}</style></head>\n'
+            '<body epub:type="backmatter"><section>' + "\n".join(teile) + '</section></body></html>')
+
+
+RUECK_DOC = rueckseite_doc() if RUECKSEITE != "nein" and RUECK else None
+
 # --- Barrierefreiheit (EPUB Accessibility 1.1, schema.org) -------------------------------
 def barrierefrei():
     """Angaben zur Barrierefreiheit für Shops und Vorlesegeräte. Ehrlich: nur, was das E-Book wirklich hat."""
@@ -633,11 +681,14 @@ manifest = [
     '<item id="coverimg" href="img/cover.jpg" media-type="image/jpeg" properties="cover-image"/>',
     '<item id="cover" href="cover.xhtml" media-type="application/xhtml+xml"/>',
     '<item id="lotus" href="img/lotus.png" media-type="image/png"/>',
+] + (['<item id="rueckseite" href="rueckseite.xhtml" media-type="application/xhtml+xml"/>'] if RUECK_DOC else []) \
+  + (['<item id="rueckimg" href="img/rueckseite.jpg" media-type="image/jpeg"/>'] if RUECK_DOC and RUECKSEITE == "bild" else []) + [
 ] + [f'<item id="foto{i}" href="img/{n}" media-type="image/jpeg"/>' for i, n in enumerate(FOTOS)] + [
 ] + [f'<item id="f{i}" href="fonts/{f}" media-type="application/vnd.ms-opentype"/>' for i, f in enumerate(fonts)] \
   + [f'<item id="d{i}" href="{n}" media-type="application/xhtml+xml"/>' for i, (n, _, _) in enumerate(dateien)]
 spine = ['<itemref idref="cover" linear="yes"/>', f'<itemref idref="d0"/>', '<itemref idref="nav"/>'] + \
-        [f'<itemref idref="d{i}"/>' for i in range(1, len(dateien))]
+        [f'<itemref idref="d{i}"/>' for i in range(1, len(dateien))] + \
+        (['<itemref idref="rueckseite"/>'] if RUECK_DOC else [])
 opf = f"""<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="bookid" xml:lang="{SPRACHE}">
 <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
@@ -663,6 +714,8 @@ opf = f"""<?xml version="1.0" encoding="utf-8"?>
 
 # --- Schreiben + Prüfen ------------------------------------------------------------
 dateien_xml = {"nav.xhtml": nav_doc, "cover.xhtml": cover_doc, "toc.ncx": ncx, "content.opf": opf}
+if RUECK_DOC:
+    dateien_xml["rueckseite.xhtml"] = RUECK_DOC
 for n, t, inhalt in dateien:
     dateien_xml[n] = xhtml(t, inhalt)
 for n, inhalt in dateien_xml.items():

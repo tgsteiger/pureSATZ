@@ -29,6 +29,10 @@ Von epubli (Buch) bzw. eigene fürs E-Book. Leer = im Buch steht «ISBN folgt».
 Zusätzlich <datei>_EPUB2.epub für Shops, die nur EPUB 2 annehmen (z. B. epubli): ja / nein.
 - ebook-epub2: nein
 
+### Rückseite im E-Book
+Letzte Seite des E-Books (und der Leseprobe): bild = Rückseite des Covers als Bild (ohne Strichcode, Texte als Beschreibung für Vorleseprogramme) · text = dieselben Texte als Seite «Über dieses Buch» · nein = keine.
+- ebook-rueckseite: bild
+
 ## Shop
 Angaben für epubli, tolino und KDP. Nach «sh build.sh final» stehen sie zum Kopieren in shop-angaben.txt (im Ausgabeordner). Beschreibung und Schlagwörter gehen auch ins E-Book. shop-link: Adresse des Shops (für den QR-Code der Leseprobe).
 - shop-beschreibung: Worum geht es in diesem Buch? Zwei bis vier Sätze, die neugierig machen.

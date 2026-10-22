@@ -3,6 +3,12 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.23.0 (Oktober 2026)
+- **Rückseite im E-Book**: neue Variable `ebook-rueckseite` (Standard `bild`). Letzte Seite des E-Books ist die
+  Rückseite des Covers als Bild – ohne Strichcode; Slogan, Klappentext, Zitate und Fuss stehen als Beschreibung (alt)
+  für Vorleseprogramme dabei. `text` = dieselben Texte als Seite «Über dieses Buch», `nein` = wie bisher.
+  Gilt für EPUB 3, EPUB 2 und die Leseprobe. EPUBCheck 5.1 und 4.2.6: 0 Fehler in allen drei Varianten.
+
 ## 2.22.0 (Oktober 2026)
 - **Versatz im Buchblock**: `versatz-vertikal` und `versatz-horizontal` (mm) in der Druckdatei verschieben den ganzen
   Seiteninhalt – für die Korrektur nach dem Probeexemplar (vertikal + = nach oben, horizontal + = nach aussen, je nach

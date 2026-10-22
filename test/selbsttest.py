@@ -207,6 +207,10 @@ def main():
         fehlt.append("ausgabe-test/bod-a5-hardcover/00-UEBERSICHT.txt")
     if not os.path.exists(os.path.join(buch, "druck", "epubli-a5.md")):
         fehlt.append("druck/epubli-a5.md (Muster aus vorlage/druck/)")
+    for e in ("Testbuch.epub", "Testbuch_EPUB2.epub", "Testbuch_Leseprobe.epub"):   # Rückseite als letzte Seite (2.23)
+        ep = os.path.join(normal, e)
+        if os.path.exists(ep) and "OEBPS/img/rueckseite.jpg" not in zipfile.ZipFile(ep).namelist():
+            fehlt.append(f"{e}: Rückseite (ebook-rueckseite: bild) fehlt")
     try:
         from pypdf import PdfReader
         bb = os.path.join(bod, "TESTBUCH_Buchblock.pdf")

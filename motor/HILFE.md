@@ -75,7 +75,7 @@ weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen �
 | Buch | `titel`, `untertitel`, `autor`, `website`, `ort`, `jahr`, `auflage`, `stand`, `verlag` |
 | Zwei Ausgaben | `zweite-ausgabe` (ja/nein), `ausgabe-name-normal` / `-uz`, `stempel-uz` (z. B. UNZENSIERT), `kasten-hinweis` |
 | ISBN | `isbn-buch`, `isbn-ebook` |
-| E-Book | `ebook-epub2` (ja = zusätzlich EPUB 2), `ebook-barrierefreiheit`, `farbe-akzent-ebook` |
+| E-Book | `ebook-epub2` (ja = zusätzlich EPUB 2), `ebook-rueckseite` (bild / text / nein), `ebook-barrierefreiheit`, `farbe-akzent-ebook` |
 | Shop | `shop-beschreibung`, `shop-schlagwoerter`, `shop-kategorie`, `preis-buch`, `preis-ebook`, `shop-link` |
 | Leseprobe | `leseprobe`, `leseprobe-seiten`, `leseprobe-seiten-uz`, `leseprobe-text` |
 | Technik | `impressum-herstellung`, `impressum-kontakt`, `format`, `bindung`, `projekt`, `ruecken-…`, `beschnitt-…`, `deckel-hardcover`, `papier`, `druck-normal` / `-uz`, `kurz-…`, `datei-…`, `ordner-…` |
@@ -391,6 +391,11 @@ Das E-Book ist für alle Shops dasselbe – nur der Druck ist plattformabhängig
   Prüfprogramm EPUB 2 (z. B. epubli: «EPUB-Version zu hoch»), in der Variablen-Datei `ebook-epub2: ja` setzen –
   dann entsteht zusätzlich `<datei>_EPUB2.epub` («epub2-light»: gleicher Inhalt, mit den Angaben zur Barrierefreiheit).
   Von Hand aus einem fertigen E-Book: `python3 motor/epub2.py ausgabe-normal/<datei>.epub`.
+- **Vorder- und Rückseite im E-Book:** Erste Seite ist immer das Cover vorne. Als letzte Seite kommt die Rückseite
+  (`ebook-rueckseite`, Standard `bild`): das Bild der Rückseite ohne Strichcode, Slogan, Klappentext und Zitate stehen
+  als Beschreibung für Vorleseprogramme dabei. `text` = dieselben Texte als Seite «Über dieses Buch» (gut lesbar auf
+  kleinen Geräten), `nein` = keine Rückseite. Gilt auch für EPUB 2 und die Leseprobe. Die Texte kommen aus `# Rückseite`
+  der Umschlag-Datei. Das Bildschirm-PDF hat Vorder- und Rückseite schon immer.
 
 ## Selber drucken oder im Copyshop
 
