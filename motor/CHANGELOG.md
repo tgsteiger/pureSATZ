@@ -3,6 +3,14 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.24.2 (Oktober 2026)
+- **Widmung im Druck im unteren Drittel**: auf ihrer eigenen Seite (rechts) etwas kleiner (9 pt) und mittig im
+  unteren Drittel statt in der Seitenmitte.
+
+## 2.24.1 (Oktober 2026)
+- **Logo im Impressum kleiner und näher beim Text**: Höhe 1,5 × Schriftgrösse des Impressums, zwei Zeilenabstände
+  über dem ersten Absatz (statt 34 mm breit oben auf der Seite).
+
 ## 2.24.0 (Oktober 2026)
 - **Titelei ohne `:::`-Blöcke**: `## @TITEL`, `## @IMPRESSUM`, `## @HINWEIS`, `## @WIDMUNG` stehen als eigene Abschnitte.
   - `@TITEL`: weitere Zeilen unter Titel und Untertitel werden mit « · » an den Untertitel gehängt
@@ -13,7 +21,7 @@ Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.
   senkrecht mittig. Danach Kernsatz und Inhalt; das Vorwort beginnt so auf einer rechten Seite. Der Buchblock wird
   um eine Seite länger (oft fällt dafür eine Füllseite weg).
 - **Logo im Impressum**: neue Variable `impressum-logo` (Druckdatei oder Variablen-Datei, PNG aus bilder/), oben links,
-  34 mm breit wie in der tredition-Vorlage. Leer = kein Logo. `sh build.sh pruefen` meldet ein fehlendes Bild.
+  34 mm breit (ab 2.24.1: über dem Text, 1,5 × Schrifthöhe). Leer = kein Logo. `sh build.sh pruefen` meldet ein fehlendes Bild.
 - **Variablen je Medium**: gibt es `name-druck`, `name-ebook` oder `name-bildschirm`, nimmt `{name}` den Wert des
   Mediums (z. B. `impressum-herstellung-druck`). So braucht das Impressum keine `::: nur-buch`-Blöcke mehr.
   Neu in der Vorlage: `impressum-rechte` (Urheberrecht).

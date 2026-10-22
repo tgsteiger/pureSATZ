@@ -47,7 +47,7 @@
 ## Impressum
 > Text von tredition («Dein Impressum» im Autorenbereich) – Kontakt durch die eigene E-Mail ersetzen
 - impressum-logo:
-> Logo oben links im Impressum, 34 mm breit: Bild aus «Dein Impressum» als bilder/tredition-logo.png speichern und hier eintragen · leer = kein Logo
+> Logo über dem Impressumstext (1,5 × Schrifthöhe): Bild aus «Dein Impressum» als bilder/tredition-logo.png speichern und hier eintragen · leer = kein Logo
 - impressum-herstellung: Druck und Distribution im Auftrag des Autors: tredition GmbH, Heinz-Beusen-Stieg 5, 22926 Ahrensburg, Deutschland
 > Zeile im Impressum des gedruckten Buchs (wer druckt) · leer = Zeile fällt weg
 - impressum-kontakt: Kontaktadresse nach EU-Produktsicherheitsverordnung: (eigene E-Mail eintragen)

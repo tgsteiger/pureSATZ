@@ -2252,8 +2252,8 @@ class ZitatUnten(Flowable):
 
 
 class ImpressumSeite(Flowable):
-    """Impressum-Seite: Widmung kursiv, waagrecht und senkrecht in der Mitte; Angaben unten auf der Seite.
-    logo: Bild der Plattform oben links (Variable impressum-logo, nur Druck)."""
+    """Impressum-Seite: Angaben unten auf der Seite; Widmung kursiv, waagrecht mittig im unteren Drittel.
+    logo: Bild der Plattform links über den Angaben (Variable impressum-logo, nur Druck)."""
     def __init__(self, widmung, angaben, logo=None):
         super().__init__(); self.widmung = widmung; self.angaben = angaben; self.logo = logo
     def wrap(self, aw, ah):
@@ -2261,22 +2261,23 @@ class ImpressumSeite(Flowable):
         self.ah_ang = self.angaben.wrap(aw, ah)[1]
         self.w = None
         if self.widmung:
-            self.w = Paragraph(self.widmung, ParagraphStyle("widm", fontName=schrift("text_kursiv"), fontSize=9.6,
-                                                            leading=14, textColor=BLAU, alignment=TA_CENTER))
+            self.w = Paragraph(self.widmung, ParagraphStyle("widm", fontName=schrift("text_kursiv"), fontSize=9,
+                                                            leading=13, textColor=BLAU, alignment=TA_CENTER))
             self.wh = self.w.wrap(aw - 16 * mm, ah)[1]
         return aw, ah - 1
     def draw(self):
         self.angaben.drawOn(self.canv, 0, 0)
-        if self.logo:
+        if self.logo:              # Logo knapp über dem Text: Höhe 1,5 × Schrift, Abstand zwei Zeilen (2.24.1)
             from reportlab.lib.utils import ImageReader
             iw, ih = ImageReader(self.logo).getSize()
-            b = IMPRESSUM_LOGO_BREITE * mm; h = b * ih / iw
-            self.canv.drawImage(self.logo, 0, self.ah - h, b, h, mask="auto")
+            st = self.angaben.style
+            h = IMPRESSUM_LOGO_HOEHE * st.fontSize; b = h * iw / ih
+            self.canv.drawImage(self.logo, 0, self.ah_ang + 2 * st.leading, b, h, mask="auto")
         if self.w:
-            self.w.drawOn(self.canv, 8 * mm, (self.ah - self.wh) / 2 + 12 * mm)   # optisch etwas über der Mitte
+            self.w.drawOn(self.canv, 8 * mm, (self.ah / 3 - self.wh) / 2)   # mittig im unteren Drittel (2.24.2)
 
 
-IMPRESSUM_LOGO_BREITE = 34    # mm, wie in der tredition-Vorlage
+IMPRESSUM_LOGO_HOEHE = 1.5    # × Schriftgrösse des Impressums
 
 
 def impressum_logo():
@@ -2291,7 +2292,7 @@ def impressum_logo():
 
 
 def impressum(zeilen, widmung):
-    """Druck: Impressum links unten (Logo oben), Widmung auf eigener Seite rechts, senkrecht mittig.
+    """Druck: Impressum links unten (Logo oben), Widmung auf eigener Seite rechts, im unteren Drittel.
     Bildschirm: Impressum zentriert, Widmung auf eigener Seite."""
     html = zeilen_html(zeilen)
     if DRUCK:

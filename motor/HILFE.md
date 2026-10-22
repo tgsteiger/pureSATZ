@@ -73,7 +73,7 @@ ISBN {isbn}
 Unten im Impressum, mit Abstand (z. B. «ersetzt keine Beratung»).
 
 ## @WIDMUNG
-Im Druck allein auf der rechten Seite gegenüber dem Impressum; im Lese-PDF auf eigener Seite.
+Im Druck allein auf der rechten Seite gegenüber dem Impressum, im unteren Drittel; im Lese-PDF auf eigener Seite.
 ```
 Was nur im Druck oder nur im E-Book stehen soll, kommt über Variablen mit Endung `-druck`, `-ebook`, `-bildschirm`
 (z. B. `impressum-herstellung-druck`) oder aus der Druckdatei. Im Druck: Seite 2 links Impressum (oben das Logo
@@ -356,7 +356,7 @@ Ohne `druck`-Zeile gilt alles wie bisher.
 | `barcode-bild` | PNG aus `bilder/` auf weissem Feld; leer = nichts zeichnen (BoD: Strichcode aus der ISBN) |
 | `versatz-vertikal`, `versatz-horizontal` | ganzen Seiteninhalt verschieben, in mm: vertikal + = nach oben, horizontal + = nach aussen (nach Messung am Probeexemplar) |
 | `impressum-herstellung`, `impressum-kontakt` | Zeilen im Impressum des gedruckten Buchs (wer druckt, Kontakt nach EU-Produktsicherheitsverordnung); leer = Zeile fällt weg |
-| `impressum-logo` | Logo der Druckerei oben links im Impressum (PNG aus `bilder/`, 34 mm breit, z. B. tredition); leer = kein Logo |
+| `impressum-logo` | Logo der Druckerei links über dem Impressumstext (PNG aus `bilder/`, 1,5 × so hoch wie die Schrift, zwei Zeilen Abstand, z. B. tredition); leer = kein Logo |
 
 `name-normal` / `name-uz` gehen auch in der Druckdatei. Weicht das Druckformat vom Grundformat ab, meldet der
 Bau «Seitenzahlen im Druck anders als im Lese-PDF». Beim Bau steht `Druckangaben: druck/…md`, und eine Kopie der
