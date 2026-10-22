@@ -324,9 +324,29 @@ def standardbild(name, hell=False):
     return finde(name)
 
 
-def seitenverhaeltnis(pfad):
+def _bild_laden(pfad, umwandeln=None):
+    """Bild öffnen und die Datei SOFORT wieder schliessen (Windows sperrt offene Dateien).
+    Ein paralleler Lauf kann eine Cache-Datei gerade ersetzen: dann kurz warten und nochmals versuchen."""
+    import time
     from PIL import Image as _I
-    w, h = _I.open(pfad).size
+    for versuch in range(10):
+        try:
+            with _I.open(pfad) as im:
+                if umwandeln:
+                    return im.convert(umwandeln)        # convert() liest alles ein, Datei danach frei
+                return im.size, im.mode
+        except PermissionError:
+            if versuch == 9:
+                raise
+            time.sleep(0.2 * (versuch + 1))
+
+
+def bildgroesse(pfad):
+    return _bild_laden(pfad)[0]
+
+
+def seitenverhaeltnis(pfad):
+    w, h = bildgroesse(pfad)
     return h / w
 
 
@@ -353,7 +373,7 @@ def bild(pfad, hintergrund="weiss"):
     if not DRUCK:
         return pfad
     from PIL import Image
-    if Image.open(pfad).mode not in ("RGBA", "LA", "P"):   # ohne Transparenz: Original nehmen
+    if _bild_laden(pfad)[1] not in ("RGBA", "LA", "P"):   # ohne Transparenz: Original nehmen
         return pfad
     if hintergrund == "weiss":
         farbe = (255, 255, 255)
@@ -364,7 +384,7 @@ def bild(pfad, hintergrund="weiss"):
     os.makedirs(ordner, exist_ok=True)
     ziel = os.path.join(ordner, os.path.splitext(os.path.basename(pfad))[0] + "_" + hintergrund + ".png")
     if not os.path.exists(ziel) or os.path.getmtime(ziel) < os.path.getmtime(pfad):
-        im = Image.open(pfad).convert("RGBA")
+        im = _bild_laden(pfad, "RGBA")
         flach = Image.new("RGB", im.size, farbe)
         flach.paste(im, mask=im.getchannel("A"))
         tmp = f"{ziel}.{os.getpid()}.tmp"     # erst fertig schreiben, dann umbenennen (parallele Läufe)
@@ -491,7 +511,7 @@ def zugeschnitten(pfad, ratio, ausschnitt="mitte"):
     a = (ausschnitt or "mitte").strip().lower()
     ziel = os.path.join(BASE, "_bildcache", f"{os.path.splitext(os.path.basename(pfad))[0]}_{ratio:.3f}_{a}.jpg")
     if not os.path.exists(ziel) or os.path.getmtime(ziel) < os.path.getmtime(pfad):
-        im = PImg.open(pfad).convert("RGB")
+        im = _bild_laden(pfad, "RGB")
         w, h = im.size
         if w / h > ratio:                                   # zu breit: links/rechts wegschneiden
             nw = round(h * ratio); x = {"links": 0, "rechts": w - nw}.get(a, (w - nw) // 2)
@@ -523,7 +543,7 @@ def foto_hinweise():
             gesehen.add(datei)
             opt = foto_optionen(z[2])
             try:
-                px, py = PImg.open(pfad).size
+                px, py = bildgroesse(pfad)
             except Exception:
                 continue
             b = opt.get("breite") or (fb if opt.get("fluss") not in ("rechts", "links") else "") or ""
@@ -597,7 +617,7 @@ def verkleinert(pfad, maxpx=1800):
     ordner = os.path.join(BASE, "_bildcache"); os.makedirs(ordner, exist_ok=True)
     ziel = os.path.join(ordner, os.path.splitext(os.path.basename(pfad))[0] + ".jpg")
     if not os.path.exists(ziel) or os.path.getmtime(ziel) < os.path.getmtime(pfad):
-        im = PImg.open(pfad).convert("RGB")
+        im = _bild_laden(pfad, "RGB")
         im.thumbnail((maxpx, maxpx), PImg.LANCZOS)
         tmp = f"{ziel}.{os.getpid()}.tmp"
         im.save(tmp, "JPEG", quality=90); _ersetzen(tmp, ziel)
@@ -1183,7 +1203,8 @@ class Doc(BaseDocTemplate):
 def leerer_rand_unten(pfad):
     """Anteil (0..1) der Bildhöhe, der unten durchsichtig oder weiss ist (für genaues Ausrichten)."""
     from PIL import Image
-    im = Image.open(pfad)
+    with Image.open(pfad) as _f:
+        im = _f.copy()                                     # Datei gleich wieder schliessen (Windows)
     if im.mode in ("RGBA", "LA", "P"):
         maske = im.convert("RGBA").getchannel("A").point(lambda v: 255 if v > 40 else 0)
     else:
@@ -1463,7 +1484,7 @@ def foto(titel, inhalt):
     pfad, text, vorschlag, datei = foto_info(inhalt)
     if pfad:
         from PIL import Image as PImg
-        w, h = PImg.open(pfad).size
+        w, h = bildgroesse(pfad)
         maxw, maxh = W - IN - OUT, 75 * mm
         opt = foto_optionen(inhalt)
         breite = float(opt["breite"]) * mm if opt.get("breite") else None
