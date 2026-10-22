@@ -9,6 +9,8 @@ Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.
   einzige sichtbare Änderung: die Aufzählungspunkte sind nun in Lora statt Helvetica.
 - **Prüfung bei jedem Bau**: Enthält ein PDF eine nicht eingebettete Schrift, erscheint eine WARNUNG mit Datei und Seiten.
 - Strichcode aus der ISBN (BoD) ebenfalls mit eingebetteter Schrift.
+- Druck-Muster (`vorlage/druck/`) übersichtlich: `##` Abschnitte, nur Werte, unter jedem Wert `#### default: … · optional: …`;
+  neu `tredition-a5-hardcover.md` (Buchblock 15,8 x 22 cm).
 
 ## 2.21.0 (Oktober 2026)
 - **Inhaltsverzeichnis als PDF**: `<datei>_Inhalt.pdf` – die Inhaltsseiten aus dem Lese-PDF (z. B. für XinXii),

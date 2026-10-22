@@ -1,39 +1,49 @@
-# DRUCKANGABEN – epubli, Sachbuch
-Gilt nur für die Druckdateien (sh build.sh final / nur-druck). Die Werte hier haben Vorrang vor der
-Variablen-Datei. Lese-PDF, E-Book, Leseprobe und Korrektur bleiben beim Grundformat der Variablen-Datei.
-Verwenden: in <name>-variablen.md «- druck-normal: epubli-sachbuch» oder «- druck-uz: epubli-sachbuch».
-Testen, ohne etwas umzustellen: sh build.sh final druck=epubli-sachbuch
-Leer = Vorgabe des Motors. Masse in mm. «name-normal» / «name-uz» gelten nur für diese Fassung.
+# epubli – Sachbuch
 
-## Plattform und Format
-Plattform: epubli oder bod. Format: a5, taschenbuch, sachbuch, a4, quadrat (oder «seite: 148 x 210» für ein eigenes Mass).
-Bindung: hardcover, softcover, beide. Projekt: veroeffentlichen (mit ISBN) oder privatdruck.
+#### Test: sh build.sh final druck=epubli-sachbuch
+#### Verwenden: in <buch>-variablen.md «- druck-normal: epubli-sachbuch» (bzw. druck-uz)
+#### Rücken und Papier laut epubli-Coverrechner eintragen; Deckel 144 x 223 mm
+
+## Plattform
 - plattform: epubli
+#### default: epubli · optional: epubli | bod (bod auch für tredition, KDP und andere)
 - format: sachbuch
+#### default: a5 · optional: a5 | taschenbuch | sachbuch | a4 | quadrat
+- seite:
+#### default: leer = Mass laut format · optional: eigenes Mass in mm, z. B. 148 x 210
 - bindung: hardcover
+#### default: hardcover · optional: hardcover | softcover | beide
 - projekt:
+#### default: veroeffentlichen (zweite Fassung: privatdruck) · optional: veroeffentlichen | privatdruck
 
-## Rücken in mm laut epubli-Coverrechner
-Ändert sich mit Seitenzahl und Papier!
-- ruecken-hardcover:
-- ruecken-softcover:
-
-## Beschnitt, Deckel und Papier laut epubli-Coverrechner
-Hardcover: 11 mm Einschlag rundum. Softcover-Umschlag und Innenseiten: 3 mm. Deckel leer = laut Format (144 x 223 mm).
-Papier: wie bei der Bestellung gewählt (bestimmt die Rückenbreite).
-- beschnitt-hardcover: 11
-- beschnitt-softcover: 3
+## Innenteil
 - beschnitt-buchblock: 3
-- deckel-hardcover:
-- papier:
-
-## Zusätzliche Notizseiten
-Falls epubli eine bestimmte Seitenzahl verlangt.
+#### default: epubli 3, bod 5 · optional: mm rundum, 0 = ohne Beschnitt
 - extra-seiten:
+#### default: 0 · optional: Anzahl leere Notizseiten am Schluss
 
-## Barcode (Rückseite)
-epubli druckt Strichcode und ISBN selbst unten links auf die Rückseite – alles leer lassen (60 x 35 mm bleiben frei).
-Möglich: barcode-position links | mitte | rechts · barcode-groesse 40x20 · barcode-bild datei.png (aus bilder/)
+## Umschlag
+- ruecken-hardcover:
+#### default: leer = 6 mm (Platzhalter) · optional: mm laut Coverrechner (ändert sich mit Seitenzahl und Papier)
+- ruecken-softcover:
+#### default: leer = 3 mm (Platzhalter) · optional: mm laut Coverrechner
+- beschnitt-hardcover: 11
+#### default: 11 · optional: Einschlag rundum in mm laut Coverrechner
+- beschnitt-softcover: 3
+#### default: 3 · optional: mm rundum
+- deckel-hardcover:
+#### default: leer = laut format (A5: 157 x 228) · optional: Breite x Höhe in mm
+- papier:
+#### default: leer · optional: Papier wie bestellt (nur zur Info)
+
+## ISBN
+- isbn-buch:
+#### default: leer = «ISBN folgt» im Impressum · optional: ISBN der Plattform
+
+## Strichcode
 - barcode-position:
+#### default: leer = epubli links frei, bod rechts · optional: links | mitte | rechts
 - barcode-groesse:
+#### default: leer = 60 x 35 mm frei ab Ecke · optional: Breite x Höhe in mm, z. B. 40x20
 - barcode-bild:
+#### default: leer = nichts zeichnen (bod: Strichcode aus der ISBN) · optional: PNG aus bilder/

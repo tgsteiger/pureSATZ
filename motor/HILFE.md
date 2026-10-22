@@ -339,7 +339,9 @@ ein neuer Test überschreibt den alten. `ausgabe-test/` kommt nicht zu GitHub un
 dem Coverrechner der Plattform eintragen (Seite, Rücken, Beschnitt, Deckel, Barcode) und mit `druck=kdp-dein-format`
 testen. Als `plattform` passt meist `bod` (Strichcode-Feld selbst bestimmen, keine epubli-Füllseite).
 **Muster** (beim neuen Buch schon in `druck/`, sonst in `pureSATZ/vorlage/druck/`): `epubli-a5`,
-`epubli-taschenbuch`, `epubli-sachbuch`, `epubli-a4`, `epubli-quadrat`, `bod-a5-hardcover` (BoD noch ungetestet).
+`epubli-taschenbuch`, `epubli-sachbuch`, `epubli-a4`, `epubli-quadrat`, `bod-a5-hardcover`, `tredition-a5-hardcover`.
+Aufbau jeder Druckdatei: `##` Abschnitte (Plattform, Innenteil, Umschlag, ISBN, Strichcode), darunter die Werte
+`- name: wert`; unter jedem Wert eine Zeile `#### default: … · optional: …` als Erklärung (der Motor übergeht sie).
 Ausprobieren ohne Umstellen: `sh build.sh final druck=bod-a5-hardcover` → `ausgabe-test/bod-a5-hardcover/`.
 
 # Andere Plattformen
