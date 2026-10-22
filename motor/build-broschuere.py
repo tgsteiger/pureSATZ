@@ -91,7 +91,7 @@ OUT = os.path.join(bk.BASE, "ausgabe-test", os.path.splitext(os.path.basename(DR
 os.makedirs(OUT, exist_ok=True)
 if DRUCKDATEI:
     print(f"Druckangaben: {DRUCKDATEI}" + (f" (Test, Ordner {os.path.relpath(OUT, bk.BASE)}/)" if TEST else ""))
-    shutil.copy2(os.path.join(bk.BASE, DRUCKDATEI), os.path.join(OUT, os.path.basename(DRUCKDATEI)))
+    shutil.copy(os.path.join(bk.BASE, DRUCKDATEI), os.path.join(OUT, os.path.basename(DRUCKDATEI)))
 if tuple(bk.FMT["seite"]) != tuple(bk.GRUNDFORMAT["seite"]):
     print(f"Hinweis: Druckformat {bk.FMT['name']}" + ("" if " mm" in bk.FMT["name"] else
           f" ({bk.FMT['seite'][0]:g} x {bk.FMT['seite'][1]:g} mm)") + " weicht vom "

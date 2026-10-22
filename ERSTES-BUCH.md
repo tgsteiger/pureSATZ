@@ -50,6 +50,7 @@ sh build.sh
 ```
 Beim ersten Mal wird einmalig eine Python-Umgebung eingerichtet (Internet nötig, ca. 1 Minute).
 Danach liegt das PDF im Ordner `ausgabe-normal/`. Nach jeder Änderung: einfach wieder `sh build.sh`.
+Welche Datei wofür ist (Druckerei, E-Book, Werbung, Probedruck), steht zuoberst in `ausgabe-normal/00-UEBERSICHT.txt`.
 
 ## 5. Drucken lassen
 ```sh
@@ -57,7 +58,8 @@ sh build.sh final
 ```
 - Das **Probedruck-Booklet** ausdrucken (A4, doppelseitig, kurze Kante) und auf Papier lesen.
 - Die `CHECKLISTE.md` im Buchordner Punkt für Punkt abhaken.
-- Bei epubli: `…_Buchblock.pdf` und `…_Umschlag_Hardcover.jpg` (bzw. Softcover) hochladen.
+- Bei epubli: `…_Buchblock.pdf` und `…_Umschlag_Hardcover.jpg` (bzw. Softcover) hochladen – `00-UEBERSICHT.txt` zeigt sie unter «Bei der Druckerei hochladen».
+- Andere Plattform (BoD, KDP …) oder nur E-Book (XinXii, tolino …): Hilfe, Gruppe «Andere Plattformen».
 - Die Texte für den Shop stehen in `ausgabe-normal/shop-angaben.txt`.
 
 Zwischendurch sichern: `sh sicherung.sh` (Ziele in der Variablen-Datei unter `# TECHNIK`).

@@ -3,6 +3,18 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.19.2 (Oktober 2026)
+- **00-UEBERSICHT.txt** in jedem Ausgabeordner (auch `ausgabe-test/<datei>/`), bei jedem Bau neu: welche Datei
+  wofür (Druckerei, E-Book, Lesen/Korrektur, Werbung, Selber drucken, Shop-Texte, weitere), oben FINAL oder ENTWURF,
+  Art des Baus, Datum, Version und Druckdatei; bei jeder Datei Datum/Uhrzeit sowie Seiten und Masse bzw. Pixel.
+  Fehlt etwas, steht der Befehl dazu. Alle Dateien entstehen wie bisher.
+- **Hilfe neu gegliedert**: «Start» mit fünf Punkten (Erstes PDF in fünf Minuten, Computer einrichten, Hallo-PDF,
+  Dein Buch bauen, Wenn etwas klemmt). Darunter Gruppen (gelbe Titel): Schreiben, Bauen, Drucken und veröffentlichen,
+  **Andere Plattformen** (Druck bei KDP/Lulu, E-Book bei XinXii/tolino/KDP/BoD, Selber drucken/Copyshop),
+  Sichern und mehrere Computer, Nachschlagen. In `HILFE.md` steuert «# Gruppe» die Gliederung.
+- Hilfe ergänzt: alle Variablen der Vorlage auf einen Blick, `nur-ebook`, `sicherung`, neue Meldungen bei «Wenn etwas klemmt».
+- Landingpage: Text in zwei Absätzen (Plattformen; Leseprobe, Korrektur, Booklet, Werbebilder), Hinweis auf 00-UEBERSICHT.txt.
+
 ## 2.19.1 (Oktober 2026)
 - **Einfachere Ausgabeordner**: Ein normaler Bau legt die Druckdateien immer in `ausgabe-normal/` bzw. in den Ordner
   der zweiten Ausgabe – egal ob epubli, BoD oder eine andere Plattform. Die Ordner `BoD-<kurz>/` fallen weg.

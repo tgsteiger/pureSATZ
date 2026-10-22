@@ -1,6 +1,6 @@
 # Start
 
-## Erstes PDF in fünf Minuten
+## 1. Erstes PDF in fünf Minuten
 
 Einmal von oben nach unten. Die Häkchen kannst du anklicken, der Browser merkt sie sich.
 Oben rechts **Linux/Mac** oder **Windows** wählen, dann stimmen alle Befehle.
@@ -58,7 +58,46 @@ sh setup/setup.sh
 Weiter geht es mit **Mein erstes Buch** (fünf Schritte bis zur Bestellung) und mit der Hilfe im Buchordner
 (`hilfe.html`, neu mit `sh build.sh hilfe`).
 
-## Wenn etwas nicht klappt
+## 2. Computer einrichten
+
+Einmalig. Prüft Python und alles Nötige und installiert, was fehlt.
+**Erfolg:** Am Schluss steht «alles bereit». Danach das Terminal schliessen und neu öffnen.
+
+```sh
+bash pc-einrichten/linux-einrichten.sh     # Linux
+bash pc-einrichten/mac-einrichten.sh       # Mac
+```
+
+Windows: im Ordner `pc-einrichten` die Datei `win-einrichten.bat` doppelklicken.
+Details: Punkt 1, «Computer einrichten».
+
+## 3. Hallo-PDF
+
+Ein Befehl im Ordner pureSATZ legt das Beispielbuch «Hallo-Buch» an, baut es und öffnet das PDF.
+**Erfolg:** Das erste Buch-PDF ist offen. Beim ersten Mal etwa eine Minute (Internet nötig).
+
+```sh
+sh hallo.sh
+```
+
+Windows: `hallo.bat` doppelklicken. Das PDF liegt in `Hallo-Buch/ausgabe-normal/`.
+
+## 4. Dein Buch bauen
+
+1. **Anlegen** (im Ordner pureSATZ): fragt Titel, Autor, Format. `sh setup/setup.sh`
+2. **Schreiben** in `<buch>-buch.md`, Angaben in `<buch>-variablen.md`, Umschlag in `<buch>-umschlag.md`.
+3. **Ansehen** (im Buchordner): `sh build.sh schnell` – nur das Lese-PDF, in Sekunden.
+4. **Alles bauen**: `sh build.sh` (Entwurf) bzw. `sh build.sh final` (Druckfassung).
+5. **Welche Datei wofür?** Im Ausgabeordner zuoberst `00-UEBERSICHT.txt` öffnen: was zur Druckerei geht,
+   was ins E-Book, was für Werbung und Probedruck.
+
+**Erfolg:** Druckdateien, E-Book und Lese-PDF deines Buchs. Weiter: Hilfe «Bauen» und «Drucken und veröffentlichen».
+
+```sh
+sh build.sh final
+```
+
+## 5. Wenn etwas klemmt
 
 | Meldung | Was tun |
 |---|---|
@@ -68,4 +107,7 @@ Weiter geht es mit **Mein erstes Buch** (fünf Schritte bis zur Bestellung) und 
 | Hängt beim ersten Mal / «keine Verbindung» | Der erste Bau lädt Pakete aus dem Internet. Verbindung prüfen, nochmals starten. |
 | PDF öffnet sich nicht | Es liegt trotzdem da: `Hallo-Buch/ausgabe-normal/`. |
 | Windows: «Ausführung von Skripts deaktiviert» | Die `.bat`-Dateien nehmen (z. B. `.\hallo.bat`), nicht `.sh`. |
+| Welche Datei soll ich hochladen? | `00-UEBERSICHT.txt` im Ausgabeordner zeigt es, mit FINAL oder ENTWURF und Datum. |
+| `sh build.sh pruefen` meldet einen Fehler | Die Meldung nennt Datei und Zeile. Meist ein Tippfehler bei `{variable}` oder `@BEFEHL`. |
+| Druckdatei fehlt («Druckangaben: … fehlt») | Name bei `druck-normal` / `druck-uz` prüfen (ohne `.md`), Muster in `pureSATZ/vorlage/druck/`. |
 | Etwas anderes | Die Meldung kopieren und in die Suche oben eingeben, oder einer KI zeigen (mit `readme4ki.txt`). |

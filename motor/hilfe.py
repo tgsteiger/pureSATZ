@@ -3,7 +3,8 @@
 hilfe.py – erzeugt hilfe.html: die ganze Hilfe von pureSATZ als eine Seite mit Suche (ab 2.13).
 
 Quellen (Markdown, nur dort pflegen – die HTML-Seite entsteht daraus):
-    motor/HILFE.md        Hilfe zum Schreiben und Bauen (kommt mit jedem Motor-Update)
+    motor/HILFE.md        Hilfe zum Schreiben und Bauen (kommt mit jedem Motor-Update);
+                          «# Gruppe» = gelber Titel in der Navigation, «## Abschnitt» darunter
     meine-hilfe.md        eigene Praxis-Notizen im Buchordner (freiwillig, «Mein Alltag»)
     Befehle, Blöcke       direkt aus dem Motor (manuskript.py)
     Variablen             aus der Variablen-Datei des Buchs (mit den aktuellen Werten)
@@ -416,8 +417,18 @@ def erzeuge(basis, buchtitel=None, variablen=None, farben=None, oeffnen=False):
     meine = os.path.join(basis, "meine-hilfe.md")
     gruppen.append(("Alltag", [("Spickzettel", spick_html())]
                     + [(t, h) for _, t, h in md_html(_lies(meine)) if t and h.strip()]))
-    abschnitte = [(t, h) for e, t, h in md_html(_lies(os.path.join(MOTOR, "HILFE.md"))) if t and h.strip()]
-    gruppen.append(("Schreiben und Bauen", abschnitte))
+    # HILFE.md: «# Gruppe» = gelber Titel in der Navigation, «## Abschnitt» darunter (pureSATZ 2.19.2)
+    hilfe_gruppen = []
+    for e, t, h in md_html(_lies(os.path.join(MOTOR, "HILFE.md"))):
+        if e == 1 and t:
+            hilfe_gruppen.append((t, []))
+            if h.strip():
+                hilfe_gruppen[-1][1].append((t, h))
+        elif t and h.strip():
+            if not hilfe_gruppen:
+                hilfe_gruppen.append(("Schreiben und Bauen", []))
+            hilfe_gruppen[-1][1].append((t, h))
+    gruppen += [g for g in hilfe_gruppen if g[1]]
     nachschlagen = [("Befehle (@)", befehle_html()), ("Blöcke (:::)", bloecke_html()),
                     ("Buchformate", formate_html(variablen))]
     if variablen:

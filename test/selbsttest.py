@@ -157,7 +157,7 @@ def main():
     if os.path.exists(hh):
         ht = open(hh, encoding="utf-8").read()
         for muss in ('id="suche"', "Befehle (@)", "Variablen", "@@name", "Buchformate", "taschenbuch", "class=dies",
-                     "tgsteiger.github.io/pureSATZ"):
+                     "tgsteiger.github.io/pureSATZ", "Andere Plattformen", "00-UEBERSICHT.txt"):
             if muss not in ht:
                 fehlt.append(f"hilfe.html: «{muss}» fehlt")
     if not tippfehler_erkannt:
@@ -179,6 +179,11 @@ def main():
     for f in ("TESTBUCH_Buchblock.pdf", "TESTBUCH_Umschlag_Hardcover.pdf", "bod-a5-hardcover.md"):
         if not os.path.exists(os.path.join(bod, f)):
             fehlt.append(f"ausgabe-test/bod-a5-hardcover/{f} (druck=bod-a5-hardcover)")
+    ue = os.path.join(normal, "00-UEBERSICHT.txt")
+    if not os.path.exists(ue) or "BEI DER DRUCKEREI" not in open(ue, encoding="utf-8").read():
+        fehlt.append("ausgabe-normal/00-UEBERSICHT.txt (mit «BEI DER DRUCKEREI»)")
+    if not os.path.exists(os.path.join(bod, "00-UEBERSICHT.txt")):
+        fehlt.append("ausgabe-test/bod-a5-hardcover/00-UEBERSICHT.txt")
     if not os.path.exists(os.path.join(buch, "druck", "epubli-a5.md")):
         fehlt.append("druck/epubli-a5.md (Muster aus vorlage/druck/)")
     try:

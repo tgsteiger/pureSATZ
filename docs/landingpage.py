@@ -145,7 +145,7 @@ def seite(version):
     return f"""<!doctype html>
 <html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>pureSATZ – in fünf Minuten zu deinem ersten Buch</title>
-<meta name="description" content="pureSATZ macht aus Markdown ein druckfertiges Buch, E-Book und Umschlag für epubli oder BoD. Linux, Mac und Windows, kostenlos für eigene Bücher.">
+<meta name="description" content="pureSATZ macht aus Markdown ein druckfertiges Buch mit Umschlag und E-Book für epubli, BoD, KDP und andere – dazu Leseprobe, Korrektur-PDF und Probedruck-Booklet. Linux, Mac und Windows, kostenlos für eigene Bücher.">
 <style>
 @font-face{{font-family:Poppins;src:url(fonts/Poppins-Regular.ttf)}}
 @font-face{{font-family:Poppins;font-weight:500;src:url(fonts/Poppins-Medium.ttf)}}
@@ -196,7 +196,8 @@ summary{{font:500 16px Poppins,system-ui,sans-serif;color:var(--haupt);cursor:po
 
 <div class="held"><div>
 <h1>In fünf Minuten zu deinem ersten Buch.</h1>
-<p class="unter">Du schreibst in einfachen Textdateien (Markdown). pureSATZ macht daraus ein druckfertiges Buch im gewünschten Format, mit Umschlag und E-Book – für epubli, BoD oder zum Selberdrucken. Auf Linux, Mac und Windows.</p>
+<p class="unter">Du schreibst in einfachen Textdateien (Markdown). pureSATZ macht daraus ein druckfertiges Buch im gewünschten Format, mit Umschlag und E-Book – für epubli, BoD, KDP und andere Plattformen oder zum Selberdrucken.</p>
+<p class="unter">Dazu Leseprobe, Korrekturfassung fürs Lektorat, Booklet für den Probedruck und Werbebilder – alles aus denselben Dateien. Auf Linux, Mac und Windows.</p>
 <a class="knopf voll" href="{ZIP}">⬇ pureSATZ herunterladen (ZIP)</a><a class="knopf rand" href="{REPO}">Auf GitHub ansehen</a>
 <p class="klein">Version {html.escape(version)} · kostenlos für eigene Bücher · ohne Konto, ohne Cloud</p>
 </div>
@@ -208,7 +209,7 @@ summary{{font:500 16px Poppins,system-ui,sans-serif;color:var(--haupt);cursor:po
 <p class="leise">Dein System ist schon gewählt – sonst einfach umschalten.</p>
 <div class="tabs">{"".join(tabs)}</div>
 {"".join(panels)}
-<p>Klappt etwas nicht? Die <a href="hilfe.html#a1">Checkliste «Start»</a> hilft weiter, mit den häufigsten Meldungen und was zu tun ist.</p>
+<p>Klappt etwas nicht? In der Hilfe unter «Start» stehen <a href="hilfe.html#a1">die Checkliste</a> und <a href="hilfe.html#a5">«Wenn etwas klemmt»</a> mit den häufigsten Meldungen und was zu tun ist. Nach dem Bauen zeigt <b>00-UEBERSICHT.txt</b> im Ausgabeordner, welche Datei wofür ist.</p>
 </div></section>
 
 <section><div class="wrap">

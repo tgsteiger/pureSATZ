@@ -70,6 +70,11 @@ Details: `hilfe.html`, Abschnitte «Tabellen» und «Bauen».
 Jedes Buch hat eine `hilfe.html` (Doppelklick): alle Anleitungen, Befehle, Blöcke und die Variablen des Buchs auf
 einer Seite, mit Suche und Schalter Linux/Mac ↔ Windows. `sh build.sh hilfe` erzeugt und öffnet sie. Eigene
 Notizen in `meine-hilfe.md` stehen ganz oben. Diese Hilfe für den Ordner pureSATZ: `python3 motor/hilfe.py`.
+Ab 2.19.2: «Start» mit fünf Punkten (erstes PDF, Computer einrichten, Hallo-PDF, Buch bauen, wenn etwas klemmt),
+darunter die Hilfe in Gruppen – auch «Andere Plattformen» (KDP, XinXii, Lulu, Copyshop).
+
+**Welche Datei wofür?** Nach jedem Bau steht im Ausgabeordner zuoberst `00-UEBERSICHT.txt`: was zur Druckerei geht,
+was ins E-Book, was für Werbung und Probedruck – mit FINAL/ENTWURF, Datum und Uhrzeit jeder Datei.
 
 ## Aus LibreOffice oder Word (Testphase)
 

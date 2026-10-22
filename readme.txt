@@ -14,6 +14,14 @@ Ordner
   vorlage/        Vorlage für jedes neue Buch
   test/           Selbsttest
 
+Start in fünf Punkten (auch in hilfe.html unter «Start»)
+  1. Erstes PDF in 5 Minuten   der ganze Weg als Checkliste
+  2. Computer einrichten        einmalig, siehe «Erste Schritte» unten
+  3. Hallo-PDF                  sh hallo.sh   (Windows: hallo.bat doppelklicken)
+  4. Dein Buch bauen            sh setup/setup.sh, dann im Buchordner sh build.sh / sh build.sh final
+                                welche Datei wofür: ausgabe-normal/00-UEBERSICHT.txt
+  5. Wenn etwas klemmt          hilfe.html → Start → «Wenn etwas klemmt», oder die Suche
+
 Nur schnell sehen (im Ordner pureSATZ)
   sh hallo.sh              Beispielbuch anlegen und PDF öffnen (Windows: hallo.bat doppelklicken)
   Checkliste: START.md
@@ -29,5 +37,6 @@ Druck (ab 2.19)
   Druckangaben pro Fassung in druck/<datei>.md (Muster: vorlage/druck/, epubli und BoD).
   sh build.sh final                     Druckdateien in ausgabe-normal/, ausgabe-<zweite>/
   sh build.sh final druck=<datei>       Test mit einer anderen Druckdatei -> ausgabe-test/<datei>/
+  Andere Plattformen (KDP, XinXii, Lulu, Copyshop): hilfe.html, Gruppe «Andere Plattformen».
 
 Mehr: ERSTES-BUCH.md (fünf Schritte), INSTALLATION.md, GITHUB.md

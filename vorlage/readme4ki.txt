@@ -14,7 +14,7 @@ DATEIEN (nur diese darfst du ändern)
   geschichten/*.md        einzelne Geschichten (falls es den Ordner gibt), siehe GESCHICHTEN unten
   tabellen/*.csv          Tabellen (falls es den Ordner gibt), siehe TABELLEN unten
   druck/*.md              Druckangaben pro Fassung (Plattform, Rücken, Beschnitt, Papier, Barcode), siehe DRUCK unten
-NIE ändern: Ordner motor/, *.sh, *.bat, *.py, md-history/, geschichten/UEBERSICHT.md, geschichten-uebersicht.html.
+NIE ändern: ausgabe-*/ (auch 00-UEBERSICHT.txt, wird bei jedem Bau neu erstellt), Ordner motor/, *.sh, *.bat, *.py, md-history/, geschichten/UEBERSICHT.md, geschichten-uebersicht.html.
 
 GESCHICHTEN (nur wenn es den Ordner geschichten/ gibt)
 - Eine Geschichte = eine Datei geschichten/name.md. Erste Zeile «## Titel», darunter freiwillig

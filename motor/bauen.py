@@ -321,6 +321,106 @@ def shop_angaben():
         print(f"Shop-Angaben: {os.path.relpath(ziel, BASE)}")
 
 
+# --- 00-UEBERSICHT.txt (pureSATZ 2.19.2) -----------------------------------------------------
+def _datei_info(pfad):
+    """Kurzangabe zu einer Datei: Seiten und Masse (PDF), Pixel (JPG/PNG)."""
+    try:
+        if pfad.lower().endswith(".pdf"):
+            from pypdf import PdfReader
+            r = PdfReader(pfad); box = r.pages[0].mediabox
+            return f"{len(r.pages)} S., {round(float(box.width) / 72 * 25.4, 1):g} x {round(float(box.height) / 72 * 25.4, 1):g} mm"
+        if pfad.lower().endswith((".jpg", ".jpeg", ".png")):
+            from PIL import Image
+            with Image.open(pfad) as im:
+                return f"{im.size[0]} x {im.size[1]} px"
+    except Exception:
+        pass
+    return ""
+
+
+def ausgabe_uebersicht(art, final, test=None):
+    """00-UEBERSICHT.txt in jedem Ausgabeordner: welche Datei wofür, FINAL/ENTWURF, Datum (nie den Bau verhindern)."""
+    try:
+        _uebersicht(art, final, test)
+    except Exception as e:
+        print(f"Hinweis: 00-UEBERSICHT.txt nicht erstellt ({e})")
+
+
+def _uebersicht(art, final, test):
+    ordner = {}
+    for a in ausgaben():
+        g = bk.AUSGABEN["B" if a == "uz" else "A"]
+        o = os.path.join(BASE, "ausgabe-test", test) if test else os.path.join(BASE, g["ordner"])
+        ordner.setdefault(o, []).append((a, g))
+    jetzt = datetime.now()
+    for o, liste in ordner.items():
+        if not os.path.isdir(o):
+            continue
+        vorhanden = sorted(f for f in os.listdir(o) if os.path.isfile(os.path.join(o, f))
+                           and f != "00-UEBERSICHT.txt" and not f.startswith("_tmp"))
+        gebraucht = set()
+        z = []
+        alt = ""                                            # Stand der Druckdateien aus der letzten Übersicht
+        if os.path.exists(os.path.join(o, "00-UEBERSICHT.txt")):
+            alt = next((x for x in open(os.path.join(o, "00-UEBERSICHT.txt"), encoding="utf-8").read().split("\n")
+                        if x.startswith("Druckdateien: ")), "")
+        for a, g in liste:
+            K, D = g["kuerzel"], g["datei"]
+            v = lambda n, s="": bk.druck_V(n, s, a)
+            plattform = v("plattform", "epubli").strip().lower()
+            druck = bk.druck_datei(a)
+            z += [f"{bk.V('titel', fassung=a)} – {g['name']}" + (f" · TEST {test}" if test else ""),
+                  f"Letzter Bau: {'FINAL (Druckfassung)' if final else 'ENTWURF (offene Stellen sichtbar)'} · "
+                  f"«{art}» · {jetzt:%d.%m.%Y %H:%M} · pureSATZ {open(os.path.join(MOTOR, 'VERSION')).read().strip()}"
+                  + (f" · Druck: {druck}" if druck else ""),
+                  (f"Druckdateien: {'FINAL (Druckfassung)' if final else 'ENTWURF – nicht hochladen!'} · {jetzt:%d.%m.%Y %H:%M}"
+                   if art in ("alles", "nur-druck") else (alt or "Druckdateien: (noch nicht gebaut – sh build.sh final)")),
+                  "Bei jeder Datei: Datum/Uhrzeit – so siehst du, ob sie vom letzten Bau stammt.", ""]
+            hc = f"{K}_Umschlag_Hardcover"; sc = f"{K}_Umschlag_Softcover"
+            gruppen = [
+                ("BEI DER DRUCKEREI HOCHLADEN (" + ("epubli: Buchblock als PDF, Umschlag als JPG"
+                                                    if plattform == "epubli" else plattform) + ")",
+                 [f"{K}_Buchblock.pdf", hc + ".jpg", hc + ".pdf", sc + ".jpg", sc + ".pdf"], "sh build.sh final"),
+                ("E-BOOK (Wix-Shop, tolino, XinXii, KDP …)", [f"{D}.epub", f"{D}_Cover-vorne.jpg", f"{D}_Cover-hinten.jpg"],
+                 "sh build.sh nur-ebook final"),
+                ("ZUM LESEN, VERSCHICKEN UND KORRIGIEREN", [f"{D}.pdf", f"{D}_Leseprobe.pdf", f"{D}_Leseprobe.epub",
+                 f"{D}_Korrektur.pdf", f"{D}_Geschichten.pdf"], None),
+                ("WERBUNG (Webseite, Newsletter)", [f"{D}_Mockup.jpg", f"{D}_Vorderseite.jpg"], "sh build.sh mockup"),
+                ("SELBER DRUCKEN (A4 quer, kurze Kante wenden)", [f"{K}_Probedruck_booklet.pdf", f"{D}_booklet.pdf"], None),
+                ("TEXTE FÜR DEN SHOP", ["shop-angaben.txt"], "sh build.sh final"),
+            ]
+            if test:
+                gruppen = gruppen[:1]
+            for titel, namen, befehl in gruppen:
+                da = [n for n in namen if n in vorhanden]
+                gebraucht.update(da)
+                z.append(titel)
+                for n in da:
+                    p = os.path.join(o, n)
+                    info = _datei_info(p)
+                    zeit = datetime.fromtimestamp(os.path.getmtime(p))
+                    z.append(f"  {n:<52} {zeit:%d.%m. %H:%M}" + (f"   {info}" if info else ""))
+                if not da:
+                    z.append("  (noch keine)" + (f" – {befehl}" if befehl else ""))
+                elif titel.startswith("ZUM LESEN"):
+                    fehlt = [("Leseprobe", "leseprobe", f"{D}_Leseprobe.pdf"), ("Korrektur", "korrektur", f"{D}_Korrektur.pdf")]
+                    for was, b, n in fehlt:
+                        if n not in vorhanden:
+                            z.append(f"  ({was}: sh build.sh {b})")
+                z.append("")
+        rest = [n for n in vorhanden if n not in gebraucht]
+        if rest:
+            z.append("WEITERE DATEIEN (zur Auswahl, z. B. Vorder-/Rückseite einzeln; Kopie der Druckdatei)")
+            for n in rest:
+                p = os.path.join(o, n); info = _datei_info(p)
+                z.append(f"  {n:<52} {datetime.fromtimestamp(os.path.getmtime(p)):%d.%m. %H:%M}" + (f"   {info}" if info else ""))
+            z.append("")
+        z.append("Mehr: hilfe.html → «Was im Ausgabeordner liegt».")
+        with open(os.path.join(o, "00-UEBERSICHT.txt"), "w", encoding="utf-8") as f:
+            f.write("\n".join(z) + "\n")
+        print(f"Übersicht: {os.path.relpath(os.path.join(o, '00-UEBERSICHT.txt'), BASE)}")
+
+
 def zwischendatei(a, art):
     g = bk.AUSGABEN["B" if a == "uz" else "A"]
     ordner = os.path.join(BASE, g["ordner"])
@@ -400,13 +500,14 @@ def main():
     if art == "pruefen":
         pruefen(); return
     if art == "mockup":
-        mockups(); return
+        mockups(); ausgabe_uebersicht(art, final); return
     if art == "hilfe":
         hilfe(oeffnen=True); return
     if art == "geschichten":
         start = time.time()
         sicherung()
         sammlung("uz" in args)
+        ausgabe_uebersicht(art, False)
         print(f"\nFertig in {time.time() - start:.0f} Sekunden.")
         return
     if art == "schnell":                  # nur Lese-PDFs, ein Durchgang, ohne Booklet/Statistik/Prüfung
@@ -414,12 +515,14 @@ def main():
         sicherung()
         env = dict(os.environ, BUCH_FINAL="1" if final else "0", BUCH_BOOKLET="", BUCH_SCHNELL="1")
         parallel([(f"Schnell · {name(a)}", "build.py", a) for a in ausgaben()], env)
+        ausgabe_uebersicht(art, final)
         print(f"\nFertig in {time.time() - start:.0f} Sekunden (schnell: ohne Seitenausgleich – für den Druck: final).")
         return
     if art in ("leseprobe", "korrektur"):
         start = time.time()
         sicherung(); pruefen()
         fassung(art, final or art == "leseprobe")       # Leseprobe immer ohne offene Stellen und Notizen
+        ausgabe_uebersicht(art, final or art == "leseprobe")
         print(f"\nFertig in {time.time() - start:.0f} Sekunden.")
         return
     if art not in ("alles", "nur-pdf", "nur-druck", "nur-ebook"):
@@ -453,6 +556,7 @@ def main():
         shop_angaben()
         kontrast_pruefen()
     bk.zeige_offene_stellen()
+    ausgabe_uebersicht(art, final, os.path.splitext(os.path.basename(bk.druck_datei()))[0] if druck else None)
     ordner = ", ".join(bk.AUSGABEN["B" if a == "uz" else "A"]["ordner"] + "/" for a in ausgaben())
     if druck:
         ordner = "ausgabe-test/" + os.path.splitext(os.path.basename(bk.druck_datei()))[0] + "/"
