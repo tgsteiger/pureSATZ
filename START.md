@@ -111,4 +111,5 @@ sh build.sh final
 | Welche Datei soll ich hochladen? | `00-UEBERSICHT.txt` im Ausgabeordner zeigt es, mit FINAL oder ENTWURF und Datum. |
 | `sh build.sh pruefen` meldet einen Fehler | Die Meldung nennt Datei und Zeile. Meist ein Tippfehler bei `{variable}` oder `@BEFEHL`. |
 | Druckdatei fehlt («Druckangaben: … fehlt») | Name bei `druck-normal` / `druck-uz` prüfen (ohne `.md`), Muster in `pureSATZ/vorlage/druck/`. |
+| Druckerei meldet «nicht eingebettete Schriften» | Mit pureSATZ ab 2.21.1 neu bauen (`sh update.sh`, dann `sh build.sh final`). Der Bau warnt selbst, falls noch eine Schrift fehlt. |
 | Etwas anderes | Die Meldung kopieren und in die Suche oben eingeben, oder einer KI zeigen (mit `readme4ki.txt`). |

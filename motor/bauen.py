@@ -473,6 +473,38 @@ def inhalt_pdf(quelle, ziel):
     return seiten[-1] - seiten[0] + 1
 
 
+def nicht_eingebettet(pdf):
+    """{Schrift: [Seiten]} aller nicht eingebetteten Schriften eines PDFs (wie die Prüfung der Druckereien)."""
+    from pypdf import PdfReader
+    funde = {}
+    for nr, seite in enumerate(PdfReader(pdf).pages, 1):
+        res = seite.get("/Resources")
+        fonts = res.get_object().get("/Font") if res else None
+        for f in (fonts.get_object().values() if fonts else []):
+            f = f.get_object()
+            ds = [f] + [d.get_object() for d in f.get("/DescendantFonts", [])]
+            eingebettet = any(any(k in (d.get("/FontDescriptor") or {}) for k in ("/FontFile", "/FontFile2", "/FontFile3"))
+                              for d in ds)
+            if not eingebettet and f.get("/Subtype") != "/Type3":
+                funde.setdefault(str(f.get("/BaseFont", "?")).lstrip("/"), []).append(nr)
+    return funde
+
+
+def schriften_pruefen(test=None):
+    """Warnung, wenn ein Druck- oder Lese-PDF nicht eingebettete Schriften enthält (pureSATZ 2.21.1)."""
+    try:
+        ordner = [os.path.join(BASE, "ausgabe-test", test)] if test else \
+            sorted({os.path.join(BASE, bk.AUSGABEN["B" if a == "uz" else "A"]["ordner"]) for a in ausgaben()})
+        for o in ordner:
+            for f in sorted(os.listdir(o)) if os.path.isdir(o) else []:
+                if f.endswith(".pdf") and not f.startswith("_tmp") and "_Korrektur" not in f:
+                    for name_, seiten in nicht_eingebettet(os.path.join(o, f)).items():
+                        print(f"WARNUNG: {os.path.relpath(os.path.join(o, f), BASE)}: Schrift «{name_}» nicht eingebettet "
+                              f"(Seiten {seiten[0]}–{seiten[-1]}) – Druckereien melden das.")
+    except Exception as e:
+        print(f"Hinweis: Schriften nicht geprüft ({e})")
+
+
 def zwischendatei(a, art):
     g = bk.AUSGABEN["B" if a == "uz" else "A"]
     ordner = os.path.join(BASE, g["ordner"])
@@ -616,6 +648,8 @@ def main():
         fassung("leseprobe", True)
         fassung("korrektur", True)
     bk.zeige_offene_stellen()
+    if art in ("alles", "nur-pdf", "nur-druck"):
+        schriften_pruefen(os.path.splitext(os.path.basename(bk.druck_datei()))[0] if druck else None)
     ausgabe_uebersicht("komplett" if komplett else art, final, os.path.splitext(os.path.basename(bk.druck_datei()))[0] if druck else None)
     ordner = ", ".join(bk.AUSGABEN["B" if a == "uz" else "A"]["ordner"] + "/" for a in ausgaben())
     if druck:

@@ -328,6 +328,20 @@ for _name, _datei in L.SCHRIFTDATEIEN.items():
 FT = dict(L.SCHRIFT)
 pdfmetrics.registerFontFamily(FT["text"], normal=FT["text"], bold=FT["text_fett"],
                               italic=FT["text_kursiv"], boldItalic=FT["text_fettkursiv"])
+# Nur eingebettete Schriften im PDF (2.21.1): Seiten und Grafiken (QR-Codes) starten mit der Buchschrift
+# statt mit Helvetica/Times-Roman – sonst melden Druckereien «nicht eingebettete Schriften».
+from reportlab import rl_config as _rl
+from reportlab.graphics import shapes as _shapes
+if FT.get("text") in pdfmetrics.getRegisteredFontNames():
+    from reportlab.lib import styles as _st
+    from reportlab.platypus import tables as _tb
+    _rl.canvas_basefontname = FT["text"]
+    _shapes.STATE_DEFAULTS["fontName"] = FT["text"]
+    for _cls in (_st.ParagraphStyle, _st.ListStyle):          # Vorgaben für Absätze, Tabellen, Aufzählungszeichen
+        for _k in ("fontName", "bulletFontName"):
+            if _k in _cls.defaults:
+                _cls.defaults[_k] = FT["text"]
+    _tb.CellStyle.fontname = FT["text"]
 
 
 def schrift(rolle):
@@ -1375,11 +1389,11 @@ def barcode(c, x, y):
     c.setFillColor(colors.white); c.rect(x, y, 40 * mm, 24 * mm, fill=1, stroke=0)
     digits = ISBN.replace("-", "").replace(" ", "")
     if len(digits) == 13:
-        bc = Ean13BarcodeWidget(digits[:12]); bc.barHeight = 14 * mm; bc.fontName = "Helvetica"; bc.fontSize = 7
+        bc = Ean13BarcodeWidget(digits[:12]); bc.barHeight = 14 * mm; bc.fontName = schrift("titel"); bc.fontSize = 7
         b = bc.getBounds(); bw = b[2] - b[0]; sc = (34 * mm) / bw
         dr = Drawing(bw * sc, (b[3] - b[1]) * sc, transform=[sc, 0, 0, sc, 0, 0]); dr.add(bc)
         dr.drawOn(c, x + 3 * mm, y + 2 * mm)
-        c.setFillColor(INK); c.setFont("Helvetica", 7)
+        c.setFillColor(INK); c.setFont(schrift("titel"), 7)
         c.drawCentredString(x + 20 * mm, y + 20.5 * mm, "ISBN " + ISBN)
     else:
         c.setStrokeColor(SOFT); c.setDash(2, 2); c.rect(x, y, 40 * mm, 24 * mm, fill=0, stroke=1)

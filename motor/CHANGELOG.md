@@ -3,6 +3,13 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.21.1 (Oktober 2026)
+- **Nur eingebettete Schriften im PDF**: Seiten, Tabellen, Aufzählungszeichen und QR-Codes starteten intern mit
+  Helvetica bzw. Times-Roman (nicht eingebettet) – Druckereien wie tredition melden das. Jetzt überall die Buchschrift;
+  einzige sichtbare Änderung: die Aufzählungspunkte sind nun in Lora statt Helvetica.
+- **Prüfung bei jedem Bau**: Enthält ein PDF eine nicht eingebettete Schrift, erscheint eine WARNUNG mit Datei und Seiten.
+- Strichcode aus der ISBN (BoD) ebenfalls mit eingebetteter Schrift.
+
 ## 2.21.0 (Oktober 2026)
 - **Inhaltsverzeichnis als PDF**: `<datei>_Inhalt.pdf` – die Inhaltsseiten aus dem Lese-PDF (z. B. für XinXii),
   bei `sh build.sh`, `final`, `komplett` und `nur-pdf`.
