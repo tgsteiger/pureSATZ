@@ -102,7 +102,7 @@ def _grundvariablen():
 DRUCK_NAMEN = ("plattform", "format", "seite", "bindung", "projekt", "ruecken", "ruecken-hardcover",
                "ruecken-softcover", "beschnitt-hardcover", "beschnitt-softcover", "beschnitt-buchblock",
                "deckel-hardcover", "papier", "extra-seiten", "isbn-buch", "barcode-position",
-               "barcode-groesse", "barcode-bild")
+               "barcode-groesse", "barcode-bild", "versatz-vertikal", "versatz-horizontal")
 
 
 def druckmodus():

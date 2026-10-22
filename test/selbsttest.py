@@ -61,6 +61,11 @@ def main():
         lauf([py, os.path.join("motor", "bauen.py")] + art, buch)
     lauf([py, os.path.join("motor", "sicherung.py"), "lokal"], buch)
     # Druckangaben (2.19): Muster aus druck/, Testlauf BoD nur für die normale Fassung -> ausgabe-test/
+    bd = os.path.join(buch, "druck", "bod-a5-hardcover.md")             # 2.22: Versatz mittesten
+    with open(bd, encoding="utf-8") as f_:
+        bd_text = f_.read()
+    with open(bd, "w", encoding="utf-8") as f_:
+        f_.write(bd_text.replace("- versatz-vertikal:\n", "- versatz-vertikal: -1.5\n", 1))
     lauf([py, os.path.join("motor", "bauen.py"), "nur-druck", "final", "druck=bod-a5-hardcover", "normal"], buch)
 
     # Geschichten (2.11): zwei anlegen, eine einbinden, Sammel-PDF, Tippfehler muss als Fehler kommen
@@ -205,6 +210,8 @@ def main():
     try:
         from pypdf import PdfReader
         bb = os.path.join(bod, "TESTBUCH_Buchblock.pdf")
+        if os.path.exists(bb) and not (PdfReader(bb).pages[2].extract_text() or "").strip():
+            fehlt.append("BoD-Buchblock mit versatz-vertikal: Seite 3 ohne Text")
         if os.path.exists(bb):
             box = PdfReader(bb).pages[0].mediabox
             if (round(float(box.width) / 72 * 25.4), round(float(box.height) / 72 * 25.4)) != (148, 210):

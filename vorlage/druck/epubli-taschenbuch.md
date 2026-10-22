@@ -21,6 +21,10 @@
 #### default: epubli 3, bod 5 · optional: mm rundum, 0 = ohne Beschnitt
 - extra-seiten:
 #### default: 0 · optional: Anzahl leere Notizseiten am Schluss
+- versatz-vertikal:
+#### default: 0 · optional: mm, + = ganzer Inhalt nach oben, − = nach unten (nach Messung am Probeexemplar, z. B. -1.5)
+- versatz-horizontal:
+#### default: 0 · optional: mm, + = nach aussen, − = zum Bund hin
 
 ## Umschlag
 - ruecken-hardcover:

@@ -325,11 +325,18 @@ Ohne `druck`-Zeile gilt alles wie bisher.
 | `barcode-position` | `links` · `mitte` · `rechts` (leer = wie bisher: epubli links frei, BoD rechts) |
 | `barcode-groesse` | z. B. `40x20` (mm, 16 mm vom Rand seitlich, 8 mm von unten); leer = 60 × 35 mm ab der Ecke frei |
 | `barcode-bild` | PNG aus `bilder/` auf weissem Feld; leer = nichts zeichnen (BoD: Strichcode aus der ISBN) |
+| `versatz-vertikal`, `versatz-horizontal` | ganzen Seiteninhalt verschieben, in mm: vertikal + = nach oben, horizontal + = nach aussen (nach Messung am Probeexemplar) |
 | `impressum-herstellung`, `impressum-kontakt` | Zeilen im Impressum des gedruckten Buchs (wer druckt, Kontakt nach EU-Produktsicherheitsverordnung); leer = Zeile fällt weg |
 
 `name-normal` / `name-uz` gehen auch in der Druckdatei. Weicht das Druckformat vom Grundformat ab, meldet der
 Bau «Seitenzahlen im Druck anders als im Lese-PDF». Beim Bau steht `Druckangaben: druck/…md`, und eine Kopie der
 Datei liegt im Ausgabeordner. `sh build.sh pruefen` meldet fehlende Druckdateien und unbekannte Namen.
+
+**Versatz nach dem Probeexemplar:** Am gedruckten Buch messen: oben vom Papierrand bis zur Kopfzeile (Soll bei A5
+8 mm) und unten bis zur Seitenzahl (Soll 10,5 mm). Misst du z. B. oben 6,5 und unten 12 mm, sitzt alles 1,5 mm zu hoch:
+in der Druckdatei `versatz-vertikal: -1.5`. Seitlich genauso mit `versatz-horizontal` (+ = nach aussen). Text, Kopfzeile,
+Seitenzahl und Bilder verschieben sich gemeinsam, das Layout bleibt gleich; nur der Buchblock dieser Druckerei ist
+betroffen. Der Beschnitt reicht als Reserve (bei 5 mm bis etwa 3 mm Versatz); mehr meldet der Bau als Warnung.
 
 **Impressum je Druckerei:** Im Impressum der Buch-Datei stehen `{impressum-herstellung}` und `{impressum-kontakt}` (im Block
 `::: nur-buch`). Die Werte kommen aus der Variablen-Datei (Vorgabe epubli) bzw. aus der aktiven Druckdatei –

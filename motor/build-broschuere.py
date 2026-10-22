@@ -113,6 +113,23 @@ if ziel != n:
 print(f"Buchblock: {n} Seiten, {(bk.W + 2 * bk.B) / mm:.1f} x {(bk.H + 2 * bk.B) / mm:.1f} mm "
       f"(Seite + {P['beschnitt_mm']:g} mm Beschnitt rundum, nur Innenseiten)")
 
+# Versatz (pureSATZ 2.22): ganzen Seiteninhalt verschieben, z. B. nach Messung am Probeexemplar.
+# versatz-vertikal: + = nach oben · versatz-horizontal: + = nach aussen (rechte Seiten nach rechts, linke nach links)
+VERSATZ_V, VERSATZ_H = mm_wert("versatz-vertikal", 0), mm_wert("versatz-horizontal", 0)
+if VERSATZ_V or VERSATZ_H:
+    from pypdf import PdfReader, PdfWriter, Transformation
+    _r = PdfReader(BLOCK); _w = PdfWriter()
+    for _nr, _s in enumerate(_r.pages, 1):
+        _dx = VERSATZ_H * mm * (1 if _nr % 2 else -1)      # Seite 1 = rechte Seite, aussen = rechts
+        _w.add_page(_s).add_transformation(Transformation().translate(_dx, VERSATZ_V * mm))   # erst kopieren, dann verschieben
+    _w.add_metadata(_r.metadata or {})
+    with open(BLOCK + ".tmp", "wb") as _f:
+        _w.write(_f)
+    os.replace(BLOCK + ".tmp", BLOCK)
+    print(f"Versatz: Inhalt {VERSATZ_V:+g} mm vertikal (+ = nach oben), {VERSATZ_H:+g} mm horizontal (+ = nach aussen)"
+          + (" – WARNUNG: mehr als der Beschnitt minus 2 mm, Hintergründe können Blitzer zeigen"
+             if max(abs(VERSATZ_V), abs(VERSATZ_H)) > max(P["beschnitt_mm"] - 2, 0) else ""))
+
 # --- 2) Umschlag --------------------------------------------------------------
 W, H = bk.W, bk.H
 R = COVER_RAND_MM * mm
