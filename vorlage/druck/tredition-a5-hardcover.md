@@ -40,6 +40,13 @@
 - isbn-buch:
 #### default: leer = «ISBN folgt» im Impressum · optional: ISBN der Plattform
 
+## Impressum
+#### DEMO-Texte – durch die Angaben der Plattform ersetzen
+- impressum-herstellung: Druck und Vertrieb im Auftrag des Autors: tredition GmbH, Heinz-Beusen-Stieg 5, 22926 Ahrensburg (DEMO – Text von tredition prüfen)
+#### Zeile im Impressum des gedruckten Buchs (wer druckt) · leer = Zeile fällt weg
+- impressum-kontakt: Kontaktadresse nach EU-Produktsicherheitsverordnung: (DEMO – Angabe von tredition eintragen)
+#### Kontakt nach EU-Produktsicherheitsverordnung · leer = Zeile fällt weg
+
 ## Strichcode
 - barcode-position: rechts
 #### default: leer = epubli links frei, bod rechts · optional: links | mitte | rechts

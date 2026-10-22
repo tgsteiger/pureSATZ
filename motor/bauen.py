@@ -191,7 +191,7 @@ def druck_pruefen():
             for t in ("-normal", "-uz", "-dc"):
                 if k.endswith(t):
                     basis = k[:-len(t)]
-            if basis not in bk.DRUCK_NAMEN:
+            if basis not in bk.DRUCK_NAMEN and not basis.startswith("impressum-"):     # impressum-…: Zeilen fürs Impressum
                 hinweise.append(f"{d}: unbekannter Name «{k}» (wird nicht verwendet)")
         try:
             v = M.Ausgabe(bk.alle_variablen(a, druck=True), a, "druck")

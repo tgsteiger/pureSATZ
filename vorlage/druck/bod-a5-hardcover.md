@@ -40,6 +40,13 @@
 - isbn-buch:
 #### default: leer = «ISBN folgt» im Impressum · optional: ISBN der Plattform
 
+## Impressum
+#### DEMO-Texte – durch die Angaben der Plattform ersetzen
+- impressum-herstellung: Herstellung: BoD – Books on Demand GmbH, In de Tarpen 42, 22848 Norderstedt (DEMO – Text von BoD prüfen)
+#### Zeile im Impressum des gedruckten Buchs (wer druckt) · leer = Zeile fällt weg
+- impressum-kontakt: Kontaktadresse nach EU-Produktsicherheitsverordnung: (DEMO – Angabe von BoD eintragen)
+#### Kontakt nach EU-Produktsicherheitsverordnung · leer = Zeile fällt weg
+
 ## Strichcode
 - barcode-position: rechts
 #### default: leer = epubli links frei, bod rechts · optional: links | mitte | rechts

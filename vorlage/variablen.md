@@ -71,6 +71,11 @@ Statt der Angaben oben eine Datei aus dem Ordner druck/ (Muster: epubli-a5, epub
 - druck-normal:
 - druck-uz:
 
+### Impressum im gedruckten Buch
+Wer druckt (Pflichtangaben im Impressum). Gilt ohne Druckdatei; eine Druckdatei ersetzt es mit eigenen Werten. Leer = Zeile fällt weg.
+- impressum-herstellung: Herstellung: epubli – ein Service der neopubli GmbH, Köpenicker Strasse 154a, 10997 Berlin
+- impressum-kontakt: Kontaktadresse nach EU-Produktsicherheitsverordnung: produktsicherheit@epubli.com
+
 ## Dateien und Ordner
 - kurz-normal: @@KUERZEL@@
 - kurz-uz: @@KUERZEL@@-@@ZWEITKURZ@@

@@ -3,6 +3,11 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.21.2 (Oktober 2026)
+- **Impressum je Druckerei**: `{impressum-herstellung}` und `{impressum-kontakt}` im Impressum (Vorlage); Werte in der
+  Variablen-Datei (Vorgabe epubli) und in jeder Druckdatei (Abschnitt «Impressum»). Leer = Zeile fällt weg.
+  Druckdateien erlauben eigene `impressum-…`-Namen. Muster: epubli mit echtem Text, BoD und tredition mit DEMO-Text.
+
 ## 2.21.1 (Oktober 2026)
 - **Nur eingebettete Schriften im PDF**: Seiten, Tabellen, Aufzählungszeichen und QR-Codes starteten intern mit
   Helvetica bzw. Times-Roman (nicht eingebettet) – Druckereien wie tredition melden das. Jetzt überall die Buchschrift;

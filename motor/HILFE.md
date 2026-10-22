@@ -78,7 +78,7 @@ weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen �
 | E-Book | `ebook-epub2` (ja = zusätzlich EPUB 2), `ebook-barrierefreiheit`, `farbe-akzent-ebook` |
 | Shop | `shop-beschreibung`, `shop-schlagwoerter`, `shop-kategorie`, `preis-buch`, `preis-ebook`, `shop-link` |
 | Leseprobe | `leseprobe`, `leseprobe-seiten`, `leseprobe-seiten-uz`, `leseprobe-text` |
-| Technik | `format`, `bindung`, `projekt`, `ruecken-…`, `beschnitt-…`, `deckel-hardcover`, `papier`, `druck-normal` / `-uz`, `kurz-…`, `datei-…`, `ordner-…` |
+| Technik | `impressum-herstellung`, `impressum-kontakt`, `format`, `bindung`, `projekt`, `ruecken-…`, `beschnitt-…`, `deckel-hardcover`, `papier`, `druck-normal` / `-uz`, `kurz-…`, `datei-…`, `ordner-…` |
 | Weiteres | `stichworte`, `trennstellen` (Welt\|anschauung), `zier`, `zier-hell`, `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund` |
 | Sicherung | `sicherung-lokal`, `sicherung-cloud`, `sicherung-behalten` |
 | Layout | `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `blocksatz` |
@@ -325,10 +325,15 @@ Ohne `druck`-Zeile gilt alles wie bisher.
 | `barcode-position` | `links` · `mitte` · `rechts` (leer = wie bisher: epubli links frei, BoD rechts) |
 | `barcode-groesse` | z. B. `40x20` (mm, 16 mm vom Rand seitlich, 8 mm von unten); leer = 60 × 35 mm ab der Ecke frei |
 | `barcode-bild` | PNG aus `bilder/` auf weissem Feld; leer = nichts zeichnen (BoD: Strichcode aus der ISBN) |
+| `impressum-herstellung`, `impressum-kontakt` | Zeilen im Impressum des gedruckten Buchs (wer druckt, Kontakt nach EU-Produktsicherheitsverordnung); leer = Zeile fällt weg |
 
 `name-normal` / `name-uz` gehen auch in der Druckdatei. Weicht das Druckformat vom Grundformat ab, meldet der
 Bau «Seitenzahlen im Druck anders als im Lese-PDF». Beim Bau steht `Druckangaben: druck/…md`, und eine Kopie der
 Datei liegt im Ausgabeordner. `sh build.sh pruefen` meldet fehlende Druckdateien und unbekannte Namen.
+
+**Impressum je Druckerei:** Im Impressum der Buch-Datei stehen `{impressum-herstellung}` und `{impressum-kontakt}` (im Block
+`::: nur-buch`). Die Werte kommen aus der Variablen-Datei (Vorgabe epubli) bzw. aus der aktiven Druckdatei –
+so stimmt das Impressum automatisch zur gewählten Druckerei. Weitere eigene `impressum-…`-Namen sind erlaubt.
 
 **Ausgabeordner:** Ein normaler Bau legt die Druckdateien immer in `ausgabe-normal/` bzw. `ausgabe-unzensiert/` –
 egal welche Plattform die aktive Druckdatei nennt. **Testlauf:** `sh build.sh final druck=<datei>` baut nur

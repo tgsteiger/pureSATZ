@@ -15,8 +15,8 @@ Text, Gestaltung und Satz: {autor}<br/>
 Satzsystem: pureSATZ (Markdown, Python)
 ::: nur-buch
 {verlag}
-Herstellung: epubli – ein Service der neopubli GmbH, Köpenicker Strasse 154a, 10997 Berlin
-Kontaktadresse nach EU-Produktsicherheitsverordnung: produktsicherheit@epubli.com
+{impressum-herstellung}
+{impressum-kontakt}
 
 **ISBN {isbn}**
 

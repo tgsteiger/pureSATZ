@@ -40,6 +40,12 @@
 - isbn-buch:
 #### default: leer = «ISBN folgt» im Impressum · optional: ISBN der Plattform
 
+## Impressum
+- impressum-herstellung: Herstellung: epubli – ein Service der neopubli GmbH, Köpenicker Strasse 154a, 10997 Berlin
+#### Zeile im Impressum des gedruckten Buchs (wer druckt) · leer = Zeile fällt weg
+- impressum-kontakt: Kontaktadresse nach EU-Produktsicherheitsverordnung: produktsicherheit@epubli.com
+#### Kontakt nach EU-Produktsicherheitsverordnung · leer = Zeile fällt weg
+
 ## Strichcode
 - barcode-position:
 #### default: leer = epubli links frei, bod rechts · optional: links | mitte | rechts
