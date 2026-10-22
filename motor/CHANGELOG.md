@@ -3,6 +3,15 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.18.0 (Oktober 2026)
+- **Cover-Bilder für E-Book-Shops**: Mit dem E-Book entstehen im Ausgabeordner `…_Cover-vorne.jpg` und
+  `…_Cover-hinten.jpg`: Vorder- und Rückseite gerade, randlos, ohne Schatten (lange Seite 2560 Pixel, kurze
+  mindestens 1600; bei A5 etwa 300 dpi). Passt für tolino media, neobooks, BoD und KDP (JPG, Hochformat,
+  mind. 1600 Pixel breit). Anders als `…_Cover_Vorderseite.jpg` (Druck, mit Beschnitt) genau im Buchformat.
+- **Umschlag im E-Book**: Texte aus `::: nur-ebook`; gibt es keine, die des Drucks (`::: nur-druck`). So steht auf
+  Titelbild und Cover-Bildern z. B. «Erstausgabe 2027» statt «Stand 2027» (bisher wie im Bildschirm-PDF).
+- Selbsttest prüft die beiden Cover-Bilder.
+
 ## 2.17.2 (Oktober 2026)
 - **Windows**: Bilddateien unter Windows sofort schliessen. Die korrigierte build.py. Neue Hilfsfunktion _bild_laden() (mit bildgroesse()): Sie öffnet jedes Bild mit with, damit die Datei sofort wieder frei ist. Ist die Datei gerade gesperrt, wartet sie kurz 
 -

@@ -52,6 +52,16 @@ Bildschirm-PDF: `…_Mockup.jpg` (Vorder- und Rückseite leicht gedreht, mit Sch
 Newsletter, Shop, Social Media) und `…_Vorderseite.jpg` (nur die Vorderseite, gerade). Jederzeit neu aus dem
 vorhandenen PDF: `sh build.sh mockup`. Hintergrund ändern: `mockup-hintergrund: #E9EEF4, #C9D3DF` (oben, unten).
 
+**Cover-Bilder** entstehen mit dem E-Book (`sh build.sh`, `final`, `nur-ebook`) im Ausgabeordner:
+`…_Cover-vorne.jpg` und `…_Cover-hinten.jpg` – Vorder- und Rückseite gerade, randlos, ohne Schatten,
+hochaufgelöst (lange Seite 2560 Pixel, kurze mindestens 1600, bei A5 etwa 300 dpi). Die Texte des Umschlags
+kommen aus Blöcken `::: nur-ebook`; gibt es keine, gelten die des Drucks (`::: nur-druck`, z. B. «Erstausgabe»
+statt «Stand»). Dasselbe gilt für das Titelbild im E-Book.
+Das Vorne-Bild ist das **Titelbild für E-Book-Shops** (tolino media, neobooks, BoD, KDP verlangen ein JPG im
+Hochformat, mindestens 1600 Pixel breit); beide eignen sich auch für Presse, Verlag und Webseite.
+Unterschied zu `<KURZ>_Cover_Vorderseite.jpg` im Druckordner: Jenes ist für die Druckerei (400 dpi, mit 3 mm
+Beschnitt rundum, der beim Schneiden wegfällt) – fürs E-Book also das `…_Cover-vorne.jpg` nehmen.
+
 **Leseprobe** (`…_Leseprobe.pdf` und `…_Leseprobe.epub`, Schlussseite mit QR-Code zu `shop-link:`, sonst zur Website):
 Umschlag und Titelei bis zum Inhaltsverzeichnis, dann die Seiten aus `leseprobe-seiten:` (gedruckte Seitenzahlen,
 z. B. `14,16,17-20,22`; für die zweite Ausgabe eigene mit `leseprobe-seiten-uz:`). Ohne Seiten gilt `leseprobe:`

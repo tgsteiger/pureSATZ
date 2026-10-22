@@ -55,16 +55,34 @@ def esc(t):
 
 
 # --- Bilder -----------------------------------------------------------------
-# Titelbild: nur die Vorderseite zeichnen (wie Seite 1 des Bildschirm-PDFs, viel schneller als das ganze Buch)
-pdf = os.path.join(TMP, "_titel.pdf")
+# Titelbild: nur Vorder- und Rückseite zeichnen (viel schneller als das ganze Buch).
+# Texte des Umschlags: Blöcke «::: nur-ebook», gibt es keine, dann wie im Druck («::: nur-druck»,
+# z. B. «Erstausgabe {jahr}» statt «Stand …» des Bildschirm-PDFs) – pureSATZ 2.18.
+def _umschlag_medium():
+    try:
+        text = open(os.path.join(BASE, bk.UMSCHLAG), encoding="utf-8").read()
+    except OSError:
+        return "druck"
+    return "ebook" if re.search(r"^\s*:::\s*nur-ebook\b", text, re.M | re.I) else "druck"
+
+
 from reportlab.pdfgen import canvas as _canvas
-_c = _canvas.Canvas(pdf, pagesize=(bk.W, bk.H))
-bk.Doc(os.path.join(TMP, "_leer.pdf")).cover(_c, None)
-_c.showPage(); _c.save()
+bk.MEDIUM = _umschlag_medium()
+seiten_pdf = {}
+for _name, _zeichnen in (("vorne", "cover"), ("hinten", "backpage")):
+    seiten_pdf[_name] = os.path.join(TMP, f"_{_name}.pdf")
+    _c = _canvas.Canvas(seiten_pdf[_name], pagesize=(bk.W, bk.H))
+    getattr(bk.Doc(os.path.join(TMP, "_leer.pdf")), _zeichnen)(_c, None)
+    _c.showPage(); _c.save()
 bk.MEDIUM = "ebook"      # ab hier: Text und Blöcke der E-Book-Ausgabe
 import pdfwerkzeug
-if not pdfwerkzeug.als_jpg(pdf, os.path.join(TMP, "img", "cover.jpg"), breite=1600, qualitaet=92):
+if not pdfwerkzeug.als_jpg(seiten_pdf["vorne"], os.path.join(TMP, "img", "cover.jpg"), breite=1600, qualitaet=92):
     raise SystemExit(pdfwerkzeug.HINWEIS)
+if not LESEPROBE:        # Cover-Bilder für E-Book-Shops: lange Seite 2560 Pixel, kurze mind. 1600 (pureSATZ 2.18)
+    _breite = round(bk.W * max(2560 / max(bk.W, bk.H), 1600 / min(bk.W, bk.H)))
+    for _name, _pdf in seiten_pdf.items():
+        pdfwerkzeug.als_jpg(_pdf, os.path.join(OUT_DIR, f"{bk.ausgabe()['datei']}_Cover-{_name}.jpg"),
+                            breite=_breite, qualitaet=92)
 lot = Image.open(bk.LOTUS); lot.thumbnail((240, 240))
 lot.save(os.path.join(TMP, "img", "lotus.png"))
 
