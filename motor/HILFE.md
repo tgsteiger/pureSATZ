@@ -26,7 +26,7 @@ sh build.sh schnell         # nur die Lese-PDFs, so schnell wie möglich – bei
 sh build.sh nur-pdf         # nur die Bildschirm-PDFs (mit Booklet und Statistik)
 sh build.sh nur-pdf final   # nur Bildschirm-PDFs als Druckfassung
 sh build.sh nur-druck       # nur Buchblock und Umschlag    (auch: nur-ebook)
-sh build.sh final druck=bod-a5-normal       # Druckdateien mit einer anderen Datei aus druck/ (zum Testen)
+sh build.sh final druck=bod-a5-normal       # Test: nur Druckdateien mit einer anderen Datei aus druck/ → ausgabe-test/
 sh build.sh final druck=bod-a5-normal uz    # … nur für eine Fassung (normal oder uz)
 sh build.sh pruefen         # nur die MD prüfen
 sh build.sh leseprobe       # Leseprobe: Umschlag, Titelei, gewählte Seiten, Schlussseite, Rückseite
@@ -268,7 +268,7 @@ Ohne `druck`-Zeile gilt alles wie bisher.
 
 | In der Druckdatei | Bedeutung |
 |---|---|
-| `plattform` | `epubli` (Ausgabeordner wie bisher) oder `bod` (Ordner `BoD-<kurz>/`) |
+| `plattform` | `epubli` oder `bod` (bestimmt Strichcode-Platz und Füllseite) |
 | `format` / `seite` | Format wie oben; `seite: 148 x 210` = eigenes Mass in mm (Ränder und Schrift vom nächstliegenden Format) |
 | `bindung`, `projekt`, `papier`, `extra-seiten`, `isbn-buch` | wie in der Variablen-Datei |
 | `ruecken-hardcover`, `ruecken-softcover` | Rücken in mm laut Coverrechner der Plattform |
@@ -280,9 +280,18 @@ Ohne `druck`-Zeile gilt alles wie bisher.
 `name-normal` / `name-uz` gehen auch in der Druckdatei. Weicht das Druckformat vom Grundformat ab, meldet der
 Bau «Seitenzahlen im Druck anders als im Lese-PDF». Beim Bau steht `Druckangaben: druck/…md`, und eine Kopie der
 Datei liegt im Ausgabeordner. `sh build.sh pruefen` meldet fehlende Druckdateien und unbekannte Namen.
+
+**Ausgabeordner:** Ein normaler Bau legt die Druckdateien immer in `ausgabe-normal/` bzw. `ausgabe-unzensiert/` –
+egal welche Plattform die aktive Druckdatei nennt. **Testlauf:** `sh build.sh final druck=<datei>` baut nur
+Buchblock und Umschlag mit dieser Datei nach `ausgabe-test/<datei>/` (mit `normal` oder `uz`: nur diese Fassung);
+ein neuer Test überschreibt den alten. `ausgabe-test/` kommt nicht zu GitHub und nicht in die Sicherung,
+`sh cleanup.sh ausgaben` löscht ihn mit. Gefällt der Test, in der Variablen-Datei `druck-normal:` / `druck-uz:` umstellen.
+**Andere Plattform** (z. B. KDP): eine Musterdatei kopieren, z. B. als `druck/kdp-dein-format.md`, die Werte aus
+dem Coverrechner der Plattform eintragen (Seite, Rücken, Beschnitt, Deckel, Barcode) und mit `druck=kdp-dein-format`
+testen. Als `plattform` passt meist `bod` (Strichcode-Feld selbst bestimmen, keine epubli-Füllseite).
 **Muster** (beim neuen Buch schon in `druck/`, sonst in `pureSATZ/vorlage/druck/`): `epubli-a5`,
 `epubli-taschenbuch`, `epubli-sachbuch`, `epubli-a4`, `epubli-quadrat`, `bod-a5-hardcover` (BoD noch ungetestet).
-Ausprobieren ohne Umstellen: `sh build.sh final druck=bod-a5-hardcover`.
+Ausprobieren ohne Umstellen: `sh build.sh final druck=bod-a5-hardcover` → `ausgabe-test/bod-a5-hardcover/`.
 
 ## Mit einer anderen KI arbeiten
 

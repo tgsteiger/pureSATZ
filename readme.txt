@@ -25,4 +25,9 @@ Erste Schritte (im Ordner pureSATZ)
   2. Neues Buch anlegen    sh setup/setup.sh          (Windows: setup\setup.bat)
   3. Im neuen Buchordner   sh build.sh                (Windows: build.bat)
 
+Druck (ab 2.19)
+  Druckangaben pro Fassung in druck/<datei>.md (Muster: vorlage/druck/, epubli und BoD).
+  sh build.sh final                     Druckdateien in ausgabe-normal/, ausgabe-<zweite>/
+  sh build.sh final druck=<datei>       Test mit einer anderen Druckdatei -> ausgabe-test/<datei>/
+
 Mehr: ERSTES-BUCH.md (fünf Schritte), INSTALLATION.md, GITHUB.md

@@ -75,7 +75,7 @@ def dateien(ausschluss):
     for wurzel, ordner, namen in os.walk(BASE):
         rel = os.path.relpath(wurzel, BASE)
         oben = rel.split(os.sep)[0]
-        ordner[:] = sorted(o for o in ordner if o not in WEGLASSEN and not o.startswith(("motor-alt-", "BoD-"))
+        ordner[:] = sorted(o for o in ordner if o not in WEGLASSEN and not o.startswith("motor-alt-") and o != "ausgabe-test"
                            and os.path.join(wurzel, o) not in ausschluss)
         for n in sorted(namen):
             pfad = os.path.join(wurzel, n)

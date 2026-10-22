@@ -3,6 +3,14 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.19.1 (Oktober 2026)
+- **Einfachere Ausgabeordner**: Ein normaler Bau legt die Druckdateien immer in `ausgabe-normal/` bzw. in den Ordner
+  der zweiten Ausgabe – egal ob epubli, BoD oder eine andere Plattform. Die Ordner `BoD-<kurz>/` fallen weg.
+- **Testlauf** `sh build.sh final druck=<datei>` baut nur Buchblock und Umschlag nach `ausgabe-test/<datei>/`
+  (nicht zu GitHub, nicht in die Sicherung, `sh cleanup.sh ausgaben` löscht ihn mit).
+- Hilfe: andere Plattformen (z. B. KDP) über eine kopierte Musterdatei mit Werten aus deren Coverrechner.
+- Landingpage-Text: «druckfertiges Buch im gewünschten Format, mit Umschlag und E-Book».
+
 ## 2.19.0 (Oktober 2026)
 - **Druckangaben in eigenen Dateien** (`druck/`): pro Fassung eine Datei mit allem, was nur den Druck betrifft
   (plattform, format, seite, bindung, projekt, ruecken-…, beschnitt-…, deckel-hardcover, papier, extra-seiten,
@@ -17,8 +25,7 @@ Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.
 - **Barcode-Feld** auf der Rückseite: `barcode-position` (links, mitte, rechts), `barcode-groesse` (z. B. 40x20),
   `barcode-bild` (PNG aus bilder/, auf weissem Feld). Alles leer = wie bisher. Warnung, wenn Text ins Feld ragt.
 - **Muster** in `vorlage/druck/`: epubli-a5, -taschenbuch, -sachbuch, -a4, -quadrat und bod-a5-hardcover
-  (ungetestet). Neue Bücher bekommen sie in `druck/`. BoD-Ausgabeordner `BoD-*/` kommen nicht zu GitHub und nicht
-  in die ZIP-Sicherung (`sh update.sh` ergänzt die .gitignore).
+  (ungetestet). Neue Bücher bekommen sie in `druck/`.
 - Meldungen nennen den Coverrechner der gewählten Plattform (epubli oder BoD); Umschlagmasse mit Nachkommastelle.
 - Selbsttest: BoD-Druckdateien mit `druck=bod-a5-hardcover normal` (Buchblock 148 × 210 mm, Umschlag 250 mm hoch).
 

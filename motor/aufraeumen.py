@@ -68,7 +68,7 @@ def kandidaten(mit_ausgaben):
             if os.path.exists(os.path.join(BASE, o, rest)):
                 liste.append(f"{o}/{rest}")
     if mit_ausgaben:
-        liste += [o for o in sorted(ausgaben) if os.path.isdir(os.path.join(BASE, o))]
+        liste += [o for o in sorted(ausgaben | {"ausgabe-test"}) if os.path.isdir(os.path.join(BASE, o))]
     # Sicherheit: nie etwas Geschütztes, nie ausserhalb des Buchordners
     return [p for p in liste if p.split("/")[0] not in SCHUETZEN or p == "motor/__pycache__"]
 

@@ -83,11 +83,14 @@ bk.EIGENER_BARCODE = P["eigener_barcode"]
 bk.PRIVATDRUCK = PROJEKT == "privatdruck"
 bk.ISBN = "" if bk.PRIVATDRUCK else ISBN  # leer = Platzhalter «ISBN folgt»
 
-OUT = os.path.join(bk.BASE, bk.ausgabe()["ordner"] if PLATTFORM == "epubli" else "BoD-" + KUERZEL)
-os.makedirs(OUT, exist_ok=True)
 DRUCKDATEI = bk.druck_datei()
+TEST = bool(os.environ.get("BUCH_DRUCK_DATEI"))      # «sh build.sh final druck=<datei>» = Testlauf
+# Ausgabeordner: immer der Ordner der Fassung (egal welche Plattform); ein Testlauf nach ausgabe-test/<datei>/
+OUT = os.path.join(bk.BASE, "ausgabe-test", os.path.splitext(os.path.basename(DRUCKDATEI))[0]) if TEST \
+    else os.path.join(bk.BASE, bk.ausgabe()["ordner"])
+os.makedirs(OUT, exist_ok=True)
 if DRUCKDATEI:
-    print(f"Druckangaben: {DRUCKDATEI}")
+    print(f"Druckangaben: {DRUCKDATEI}" + (f" (Test, Ordner {os.path.relpath(OUT, bk.BASE)}/)" if TEST else ""))
     shutil.copy2(os.path.join(bk.BASE, DRUCKDATEI), os.path.join(OUT, os.path.basename(DRUCKDATEI)))
 if tuple(bk.FMT["seite"]) != tuple(bk.GRUNDFORMAT["seite"]):
     print(f"Hinweis: Druckformat {bk.FMT['name']}" + ("" if " mm" in bk.FMT["name"] else

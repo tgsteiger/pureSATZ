@@ -105,7 +105,7 @@ ein fertiges Buch auch in Jahren noch genau gleich erstellen.
 
 Einschlag Hardcover 11 mm, Beschnitt Softcover und Innenseiten 3 mm – alles in der Variablen-Datei änderbar (`beschnitt-…`, `deckel-hardcover`). Weitere Formate: in `motor/build.py` bei `FORMATE`.
 
-**Druckangaben pro Plattform (ab 2.19):** Alles für den Druck (Plattform, Format oder eigenes Mass `seite: 148 x 210`, Rücken, Beschnitt, Deckel, Papier, Barcode-Feld) kann pro Fassung in einer Datei im Ordner `druck/` stehen – Muster in `vorlage/druck/` (epubli in allen Formaten, BoD A5 Hardcover, noch ungetestet). In der Variablen-Datei: `druck-normal: epubli-a5`, `druck-uz: …`. Testen ohne Umstellen: `sh build.sh final druck=bod-a5-hardcover`.
+**Druckangaben pro Plattform (ab 2.19):** Alles für den Druck (Plattform, Format oder eigenes Mass `seite: 148 x 210`, Rücken, Beschnitt, Deckel, Papier, Barcode-Feld) kann pro Fassung in einer Datei im Ordner `druck/` stehen – Muster in `vorlage/druck/` (epubli in allen Formaten, BoD A5 Hardcover, noch ungetestet). In der Variablen-Datei: `druck-normal: epubli-a5`, `druck-uz: …`. Testen ohne Umstellen: `sh build.sh final druck=bod-a5-hardcover` – baut nur die Druckdateien nach `ausgabe-test/bod-a5-hardcover/`. Der normale Bau schreibt immer nach `ausgabe-normal/` bzw. in den Ordner der zweiten Ausgabe. Andere Plattform (z. B. KDP): Musterdatei kopieren und die Werte aus deren Coverrechner eintragen.
 
 ## setup/start.txt
 

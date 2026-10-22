@@ -84,7 +84,7 @@ WAS DER MOTOR MACHT (zur Info)
   sh build.sh            Entwurf: Bildschirm-PDF, Druckdateien, E-Book (offene Stellen sichtbar)
   sh build.sh schnell    nur Lese-PDFs (beim Schreiben)
   sh build.sh final      Druckfassung für epubli, mit Seitenbilanz, Shop-Angaben, Kontrast-Prüfung
-  sh build.sh final druck=bod-a5-normal   Druckdateien mit einer anderen Datei aus druck/ (Test)
+  sh build.sh final druck=bod-a5-normal   Test: nur Druckdateien mit dieser Datei aus druck/ -> ausgabe-test/
   sh build.sh pruefen    prüft die MD: unbekannte Variablen, Befehle, fehlende Fotos (mit Zeilennummer)
   sh build.sh leseprobe  Leseprobe · sh build.sh korrektur  Korrekturfassung mit Zeilennummern
   sh neu.sh "Titel"      neue Geschichte · sh neu.sh tabelle "Titel"  neue Tabelle (Windows: neu.bat)

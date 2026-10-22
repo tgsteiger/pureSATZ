@@ -20,8 +20,8 @@ Booklets zum Selberdrucken entstehen automatisch: im «final» der Probedruck au
     python motor/bauen.py hilfe           hilfe.html erzeugen und im Browser öffnen
     python motor/bauen.py mockup          Werbebilder (…_Mockup.jpg, …_Vorderseite.jpg) aus dem Bildschirm-PDF
     python motor/bauen.py final druck=bod-a5-normal [normal|uz]
-                                          Druckdateien mit einer anderen Datei aus druck/ (zum Testen),
-                                          mit «normal» oder «uz» nur diese Fassung
+                                          Test: nur Druckdateien mit einer anderen Datei aus druck/,
+                                          nach ausgabe-test/<datei>/; mit «normal» oder «uz» nur diese Fassung
 Vor jedem Bau: Sicherung nach md-history/ und Prüfung der MD. Gebaut wird parallel.
 """
 import os
@@ -393,6 +393,8 @@ def main():
         NUR_FASSUNG = next((a for a in args if a in ("normal", "uz")), None)
     final = "final" in args
     art = next((a for a in args if a not in ("final", "uz", "normal")), "alles")
+    if druck and art in ("alles", "nur-druck"):
+        art = "nur-druck"                   # Testlauf: nur Druckdateien, nach ausgabe-test/<datei>/
     if art == "sicherung":
         sicherung(); return
     if art == "pruefen":
@@ -452,6 +454,8 @@ def main():
         kontrast_pruefen()
     bk.zeige_offene_stellen()
     ordner = ", ".join(bk.AUSGABEN["B" if a == "uz" else "A"]["ordner"] + "/" for a in ausgaben())
+    if druck:
+        ordner = "ausgabe-test/" + os.path.splitext(os.path.basename(bk.druck_datei()))[0] + "/"
     print(f"\nFertig in {time.time() - start:.0f} Sekunden. Ordner: {ordner}")
 
 

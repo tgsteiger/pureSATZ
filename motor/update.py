@@ -40,8 +40,7 @@ BASE = os.path.dirname(MOTOR)
 HILFSDATEIEN = ("update.sh", "update.bat", "sync.sh", "sync.bat", "build.sh", "build.bat",
                 "cleanup.sh", "cleanup.bat", "sicherung.sh", "sicherung.bat", "neu.sh", "neu.bat")
 # Erzeugte Dateien, die nicht zu GitHub gehören (werden in .gitignore ergänzt, falls sie fehlen)
-IGNORIEREN = ("geschichten-uebersicht.html", "geschichten/UEBERSICHT.md", "_geschichten-sammlung.md", "hilfe.html",
-              "BoD-*/")
+IGNORIEREN = ("geschichten-uebersicht.html", "geschichten/UEBERSICHT.md", "_geschichten-sammlung.md", "hilfe.html")
 
 
 def version(ordner):

@@ -60,7 +60,7 @@ def main():
     for art in (["final"], ["schnell"], ["leseprobe"], ["korrektur"]):
         lauf([py, os.path.join("motor", "bauen.py")] + art, buch)
     lauf([py, os.path.join("motor", "sicherung.py"), "lokal"], buch)
-    # Druckangaben (2.19): Muster aus druck/, BoD-Druckdateien nur für die normale Fassung
+    # Druckangaben (2.19): Muster aus druck/, Testlauf BoD nur für die normale Fassung -> ausgabe-test/
     lauf([py, os.path.join("motor", "bauen.py"), "nur-druck", "final", "druck=bod-a5-hardcover", "normal"], buch)
 
     # Geschichten (2.11): zwei anlegen, eine einbinden, Sammel-PDF, Tippfehler muss als Fehler kommen
@@ -175,10 +175,10 @@ def main():
         with zipfile.ZipFile(os.path.join(tmp, "Sicherungen", zips[0])) as z:
             if "Testbuch/Testbuch-buch.md" not in z.namelist():
                 fehlt.append("Testbuch-buch.md in der Sicherung")
-    bod = os.path.join(buch, "BoD-TESTBUCH")
+    bod = os.path.join(buch, "ausgabe-test", "bod-a5-hardcover")
     for f in ("TESTBUCH_Buchblock.pdf", "TESTBUCH_Umschlag_Hardcover.pdf", "bod-a5-hardcover.md"):
         if not os.path.exists(os.path.join(bod, f)):
-            fehlt.append(f"BoD-TESTBUCH/{f} (druck=bod-a5-hardcover)")
+            fehlt.append(f"ausgabe-test/bod-a5-hardcover/{f} (druck=bod-a5-hardcover)")
     if not os.path.exists(os.path.join(buch, "druck", "epubli-a5.md")):
         fehlt.append("druck/epubli-a5.md (Muster aus vorlage/druck/)")
     try:
