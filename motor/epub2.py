@@ -4,7 +4,7 @@ epub2.py – «epub2-light»: macht aus dem fertigen EPUB 3 eine zusätzliche EP
 
 Für Shops und Prüfprogramme, die nur EPUB 2 annehmen (z. B. epubli). Das EPUB 3 bleibt unverändert.
 Was geändert wird:
-  - content.opf: Version 2.0, Metadaten in EPUB-2-Form (ohne Barrierefreiheit), Titelbild per <meta name="cover">,
+  - content.opf: Version 2.0, Metadaten in EPUB-2-Form (Barrierefreiheit als <meta name>), Titelbild per <meta name="cover">,
     nav.xhtml bleibt als normale Inhaltsseite, Inhaltsverzeichnis für das Lesegerät ist toc.ncx
   - Seiten: XHTML 1.1 – section, nav, aside, figure … werden zu div; epub:type, role, aria-*, lang entfernt
 Ein- und ausschalten: Variable «ebook-epub2: ja» (Standard nein) – dann entsteht <datei>_EPUB2.epub.
@@ -67,7 +67,10 @@ def _opf(t):
                '<package xmlns="http://www.idpf.org/2007/opf" version="2.0" unique-identifier="bookid">', t, count=1)
     t = t.replace('<metadata xmlns:dc="http://purl.org/dc/elements/1.1/">',
                   '<metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">')
-    t = re.sub(r"<meta property=[^>]*>.*?</meta>\n?", "", t, flags=re.S)        # dcterms:modified, schema:* …
+    # Barrierefreiheit (schema.org) bleibt erhalten – in EPUB 2 als <meta name="…" content="…"/> (Ace by DAISY)
+    t = re.sub(r'<meta property="(schema:[^"]+)">(.*?)</meta>',
+               lambda m: f'<meta name="{m.group(1)}" content="{m.group(2)}"/>', t, flags=re.S)
+    t = re.sub(r"<meta property=[^>]*>.*?</meta>\n?", "", t, flags=re.S)        # dcterms:modified u. ä.
     t = re.sub(r'\s+properties="[^"]*"', "", t)                                  # nav, cover-image
     t = t.replace('media-type="font/ttf"', 'media-type="application/vnd.ms-opentype"')
     t = t.replace("</spine>", "</spine>\n<guide>\n<reference type=\"cover\" title=\"Titelbild\" href=\"cover.xhtml\"/>\n"

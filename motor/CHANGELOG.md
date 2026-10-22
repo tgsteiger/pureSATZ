@@ -3,6 +3,11 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.21.3 (Oktober 2026)
+- **EPUB 2 mit Angaben zur Barrierefreiheit**: schema.org-Metadaten (accessMode, accessibilityFeature, -Hazard,
+  -Summary, accessModeSufficient) bleiben im EPUB 2 erhalten, als `<meta name="…" content="…"/>` – Ace by DAISY
+  meldete sie als fehlend. EPUBCheck 4.2.6 und 5.1: weiterhin 0 Fehler.
+
 ## 2.21.2 (Oktober 2026)
 - **Impressum je Druckerei**: `{impressum-herstellung}` und `{impressum-kontakt}` im Impressum (Vorlage); Werte in der
   Variablen-Datei (Vorgabe epubli) und in jeder Druckdatei (Abschnitt «Impressum»). Leer = Zeile fällt weg.

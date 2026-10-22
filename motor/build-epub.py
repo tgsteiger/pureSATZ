@@ -690,4 +690,4 @@ if not ISBN_EBOOK and not LESEPROBE:
     print("Hinweis: Noch keine E-Book-ISBN eingetragen.")
 if bk.ja("ebook-epub2", "nein") and not LESEPROBE:      # «epub2-light» für Shops, die nur EPUB 2 annehmen (2.20)
     import epub2
-    print(f"Fertig: {os.path.relpath(epub2.wandle(EPUB, EPUB[:-5] + '_EPUB2.epub'), BASE)}  (EPUB 2, ohne Barrierefreiheit)")
+    print(f"Fertig: {os.path.relpath(epub2.wandle(EPUB, EPUB[:-5] + '_EPUB2.epub'), BASE)}  (EPUB 2)")
