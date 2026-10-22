@@ -120,7 +120,8 @@ PYTHON = {"linux": "", "mac": "https://www.python.org/downloads/macos/",
 
 KACHELN = [
     ("Zwei Ausgaben, eine Datei", "Öffentliche Fassung und z. B. «Unzensiert» oder «Director's Cut» aus demselben Text."),
-    ("Druckfertig für epubli", "Buchblock und Umschlag mit Rücken, für Hardcover und Softcover. Probedruck als Booklet."),
+    ("Fünf Buchformate, druckfertig", "A5, Taschenbuch, Sachbuch, A4 oder Quadrat. Buchblock und Umschlag mit Rücken "
+     "für epubli (Hardcover und Softcover), Probedruck als Booklet."),
     ("E-Book", "EPUB mit Inhaltsverzeichnis, Bildbeschreibungen und Leseprobe – aus denselben Dateien."),
     ("Geschichten sammeln", "Jede Geschichte eine Datei, mit Stand von der Idee bis fertig und einer Übersicht."),
     ("Tabellen, Fotos, Listen", "Tabellen aus CSV, Fotos in einheitlicher Grösse, Aufzählungen, Zeitstrahl."),
