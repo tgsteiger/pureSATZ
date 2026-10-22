@@ -179,15 +179,19 @@ def main():
             if "Testbuch/Testbuch-buch.md" not in z.namelist():
                 fehlt.append("Testbuch-buch.md in der Sicherung")
     bod = os.path.join(buch, "ausgabe-test", "bod-a5-hardcover")
-    try:                                                     # 2.21.1: nur eingebettete Schriften
-        sys.path.insert(0, os.path.join(buch, "motor"))
-        import bauen as _b
-        for pdf in ("TESTBUCH_Buchblock.pdf", "Testbuch.pdf", "TESTBUCH_Umschlag_Hardcover.pdf"):
-            p_ = os.path.join(normal, pdf)
-            if os.path.exists(p_) and _b.nicht_eingebettet(p_):
-                fehlt.append(f"{pdf}: nicht eingebettete Schrift {list(_b.nicht_eingebettet(p_))}")
-    except Exception as e:
-        fehlt.append(f"Schriftprüfung nicht möglich ({e})")
+    # 2.21.1: nur eingebettete Schriften – geprüft mit dem Python des Buchs (dort sind reportlab und pypdf)
+    pruef = ("import sys, json; sys.path.insert(0, 'motor'); import bauen\n"
+             "print(json.dumps({f: bauen.nicht_eingebettet('ausgabe-normal/' + f) for f in sys.argv[1:]}))")
+    r = subprocess.run([py, "-c", pruef, "TESTBUCH_Buchblock.pdf", "Testbuch.pdf", "TESTBUCH_Umschlag_Hardcover.pdf"],
+                       cwd=buch, capture_output=True, text=True, encoding="utf-8", errors="replace",
+                       env=dict(os.environ, PYTHONIOENCODING="utf-8"))
+    try:
+        import json
+        for pdf, funde in json.loads(r.stdout.strip().splitlines()[-1]).items():
+            if funde:
+                fehlt.append(f"{pdf}: nicht eingebettete Schrift {list(funde)}")
+    except Exception:
+        fehlt.append(f"Schriftprüfung nicht möglich ({(r.stderr or r.stdout).strip()[-300:]})")
     for f in ("TESTBUCH_Buchblock.pdf", "TESTBUCH_Umschlag_Hardcover.pdf", "bod-a5-hardcover.md"):
         if not os.path.exists(os.path.join(bod, f)):
             fehlt.append(f"ausgabe-test/bod-a5-hardcover/{f} (druck=bod-a5-hardcover)")
