@@ -57,7 +57,7 @@ def main():
     else:
         py = os.path.join(buch, ".venv", "Scripts" if os.name == "nt" else "bin",
                           "python.exe" if os.name == "nt" else "python3")
-    for art in (["final"], ["schnell"], ["leseprobe"], ["korrektur"]):
+    for art in (["komplett"], ["schnell"]):              # komplett = final + Leseprobe + Korrektur (2.20.1)
         lauf([py, os.path.join("motor", "bauen.py")] + art, buch)
     lauf([py, os.path.join("motor", "sicherung.py"), "lokal"], buch)
     # Druckangaben (2.19): Muster aus druck/, Testlauf BoD nur für die normale Fassung -> ausgabe-test/
@@ -115,7 +115,7 @@ def main():
         "Testbuch.pdf", "Testbuch.epub", "Testbuch_Leseprobe.pdf", "Testbuch_Leseprobe.epub", "Testbuch_Korrektur.pdf",
         "shop-angaben.txt", "TESTBUCH_Buchblock.pdf", "TESTBUCH_Umschlag_Hardcover.pdf", "TESTBUCH_Umschlag_Hardcover.jpg",
         "TESTBUCH_Umschlag_Softcover.pdf", "TESTBUCH_Umschlag_Softcover.jpg", "TESTBUCH_Probedruck_booklet.pdf", "Testbuch_Mockup.jpg", "Testbuch_Vorderseite.jpg",
-        "Testbuch_Cover-vorne.jpg", "Testbuch_Cover-hinten.jpg")]
+        "Testbuch_Cover-vorne.jpg", "Testbuch_Cover-hinten.jpg", "Testbuch_Inhalt.pdf", "Testbuch_Cover-vorne_900px.jpg")]
     erwartet += [os.path.join(zweite, "Testbuch_Directors-Cut.pdf"), os.path.join(zweite, "Testbuch_Directors-Cut.epub")]
     erwartet.append(os.path.join(normal, "Testbuch_EPUB2.epub"))          # epub2-light, auch für EPUBCheck
     fehlt = [os.path.relpath(p, buch) for p in erwartet if not os.path.exists(p) or os.path.getsize(p) == 0]

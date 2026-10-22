@@ -5,6 +5,7 @@ bauen.py – steuert den Bau des Buchs (wird von build.sh aufgerufen).
 Aufruf (im Buchordner, mit der Python-Umgebung .venv):
     python motor/bauen.py                 alles als Entwurf: Bildschirm-PDF, Druckdateien, E-Book
     python motor/bauen.py final           alles als Druckfassung (offene Stellen, Notizen, Vorschläge ausgeblendet)
+    python motor/bauen.py komplett        final + Leseprobe + Korrektur in einem Durchgang (vor Bestellung/Veröffentlichung)
     python motor/bauen.py nur-pdf         nur Bildschirm-PDFs (Entwurf)
     python motor/bauen.py nur-pdf final   nur Bildschirm-PDFs (Druckfassung)
 Booklets zum Selberdrucken entstehen automatisch: im «final» der Probedruck aus der Druckfassung
@@ -374,7 +375,7 @@ def _uebersicht(art, final, test):
                   f"«{art}» · {jetzt:%d.%m.%Y %H:%M} · pureSATZ {open(os.path.join(MOTOR, 'VERSION')).read().strip()}"
                   + (f" · Druck: {druck}" if druck else ""),
                   (f"Druckdateien: {'FINAL (Druckfassung)' if final else 'ENTWURF – nicht hochladen!'} · {jetzt:%d.%m.%Y %H:%M}"
-                   if art in ("alles", "nur-druck") else (alt or "Druckdateien: (noch nicht gebaut – sh build.sh final)")),
+                   if art in ("alles", "nur-druck", "komplett") else (alt or "Druckdateien: (noch nicht gebaut – sh build.sh final)")),
                   "Bei jeder Datei: Datum/Uhrzeit – so siehst du, ob sie vom letzten Bau stammt.", ""]
             hc = f"{K}_Umschlag_Hardcover"; sc = f"{K}_Umschlag_Softcover"
             gruppen = [
@@ -382,7 +383,8 @@ def _uebersicht(art, final, test):
                                                     if plattform == "epubli" else plattform) + ")",
                  [f"{K}_Buchblock.pdf", hc + ".jpg", hc + ".pdf", sc + ".jpg", sc + ".pdf"], "sh build.sh final"),
                 ("E-BOOK (Wix-Shop, tolino, XinXii, KDP …; …_EPUB2.epub nur, wo EPUB 2 verlangt wird)",
-                 [f"{D}.epub", f"{D}_EPUB2.epub", f"{D}_Cover-vorne.jpg", f"{D}_Cover-hinten.jpg"],
+                 [f"{D}.epub", f"{D}_EPUB2.epub", f"{D}_Inhalt.pdf", f"{D}_Cover-vorne.jpg"]
+                 + [f"{D}_Cover-vorne_{px}px.jpg" for px in COVER_GROESSEN] + [f"{D}_Cover-hinten.jpg"],
                  "sh build.sh nur-ebook final"),
                 ("ZUM LESEN, VERSCHICKEN UND KORRIGIEREN", [f"{D}.pdf", f"{D}_Leseprobe.pdf", f"{D}_Leseprobe.epub",
                  f"{D}_Korrektur.pdf", f"{D}_Geschichten.pdf"], None),
@@ -420,6 +422,55 @@ def _uebersicht(art, final, test):
         with open(os.path.join(o, "00-UEBERSICHT.txt"), "w", encoding="utf-8") as f:
             f.write("\n".join(z) + "\n")
         print(f"Übersicht: {os.path.relpath(os.path.join(o, '00-UEBERSICHT.txt'), BASE)}")
+
+
+# --- Zusatzdateien für Shops (pureSATZ 2.21) ------------------------------------------------
+COVER_GROESSEN = (2000, 1600, 900)          # lange Seite in Pixel: …_Cover-vorne_2000px.jpg usw.
+
+
+def zusatz_dateien(art):
+    """<datei>_Inhalt.pdf (Inhaltsverzeichnis-Seiten aus dem Lese-PDF, z. B. für XinXii) und das Titelbild
+    …_Cover-vorne.jpg in kleineren Grössen. Nie den Bau verhindern."""
+    for a in ausgaben():
+        g = bk.AUSGABEN["B" if a == "uz" else "A"]
+        stamm = os.path.join(BASE, g["ordner"], g["datei"])
+        try:
+            if art in ("alles", "nur-pdf") and os.path.exists(stamm + ".pdf"):
+                n = inhalt_pdf(stamm + ".pdf", stamm + "_Inhalt.pdf")
+                if n:
+                    print(f"Inhaltsverzeichnis · {name(a)}: {os.path.relpath(stamm + '_Inhalt.pdf', BASE)} ({n} Seite(n))")
+            if art in ("alles", "nur-ebook") and os.path.exists(stamm + "_Cover-vorne.jpg"):
+                from PIL import Image
+                with Image.open(stamm + "_Cover-vorne.jpg") as im:
+                    bild = im.convert("RGB")
+                for px in COVER_GROESSEN:
+                    k = bild.copy(); k.thumbnail((px, px), Image.LANCZOS)
+                    k.save(f"{stamm}_Cover-vorne_{px}px.jpg", "JPEG", quality=90, dpi=(300, 300))
+                print(f"Titelbild · {name(a)}: …_Cover-vorne_" + "px, _".join(map(str, COVER_GROESSEN)) + "px.jpg")
+        except Exception as e:
+            print(f"Hinweis: Zusatzdateien {name(a)} nicht erstellt ({e})")
+
+
+def inhalt_pdf(quelle, ziel):
+    """Seiten des Inhaltsverzeichnisses (mit Punktlinien, vor dem ersten Kapitel) als eigenes PDF. 0 = keines gefunden."""
+    import re
+    import fassungen
+    from pypdf import PdfReader, PdfWriter
+    r = PdfReader(quelle)
+    bis = fassungen.erste_inhaltsseite(r) - 1               # Seite vor dem ersten Kapitel (Seiten ab 1)
+    punkte = re.compile(r"(\.\s+){5,}")
+    seiten = [i for i in range(min(bis, len(r.pages))) if punkte.search(r.pages[i].extract_text() or "")]
+    if not seiten:
+        return 0
+    w = PdfWriter()
+    for i in range(seiten[0], seiten[-1] + 1):
+        w.add_page(r.pages[i])
+        if "/Annots" in w.pages[-1]:
+            del w.pages[-1]["/Annots"]                       # Links ins Buch gibt es hier nicht
+    w.add_metadata({"/Title": f"{bk.V('titel')} – Inhaltsverzeichnis", "/Author": bk.V("autor")})
+    with open(ziel, "wb") as f:
+        w.write(f)
+    return seiten[-1] - seiten[0] + 1
 
 
 def zwischendatei(a, art):
@@ -494,6 +545,9 @@ def main():
         NUR_FASSUNG = next((a for a in args if a in ("normal", "uz")), None)
     final = "final" in args
     art = next((a for a in args if a not in ("final", "uz", "normal")), "alles")
+    komplett = art == "komplett"            # final + Leseprobe + Korrektur (pureSATZ 2.20.1)
+    if komplett:
+        art, final = "alles", True
     if druck and art in ("alles", "nur-druck"):
         art = "nur-druck"                   # Testlauf: nur Druckdateien, nach ausgabe-test/<datei>/
     if art == "sicherung":
@@ -549,6 +603,7 @@ def main():
             schritte.append((f"E-Book · {name(a)}", "build-epub.py", a))
     parallel(schritte, env)
     bk.ENTWURF = not final
+    zusatz_dateien(art)
     statistik()
     if final and art in ("alles", "nur-pdf"):
         mockups()
@@ -556,8 +611,12 @@ def main():
         print()
         shop_angaben()
         kontrast_pruefen()
+    if komplett:
+        print("\n=== Leseprobe und Korrektur ===")
+        fassung("leseprobe", True)
+        fassung("korrektur", True)
     bk.zeige_offene_stellen()
-    ausgabe_uebersicht(art, final, os.path.splitext(os.path.basename(bk.druck_datei()))[0] if druck else None)
+    ausgabe_uebersicht("komplett" if komplett else art, final, os.path.splitext(os.path.basename(bk.druck_datei()))[0] if druck else None)
     ordner = ", ".join(bk.AUSGABEN["B" if a == "uz" else "A"]["ordner"] + "/" for a in ausgaben())
     if druck:
         ordner = "ausgabe-test/" + os.path.splitext(os.path.basename(bk.druck_datei()))[0] + "/"

@@ -186,6 +186,7 @@ Text, wie im Buch: Absätze, **fett**, > Zitat, ::: Blöcke, Fotos, {variablen}.
 ```sh
 sh build.sh                 # alles als Entwurf (offene Stellen und Notizen sichtbar)
 sh build.sh final           # alles als Druckfassung für epubli
+sh build.sh komplett        # final + Leseprobe + Korrektur in einem Durchgang (vor Bestellung/Veröffentlichung)
 sh build.sh schnell         # nur die Lese-PDFs, so schnell wie möglich – beim Schreiben
 sh build.sh nur-pdf         # nur die Bildschirm-PDFs (mit Booklet und Statistik)
 sh build.sh nur-pdf final   # nur Bildschirm-PDFs als Druckfassung
@@ -263,7 +264,7 @@ Druckdatei) und eine eigene Zeile **Druckdateien: FINAL** bzw. **ENTWURF – nic
 | Gruppe | Dateien |
 |---|---|
 | Bei der Druckerei hochladen | `<kurz>_Buchblock.pdf`, `<kurz>_Umschlag_Hardcover` bzw. `_Softcover` (PDF und JPG) |
-| E-Book | `<datei>.epub`, `<datei>_Cover-vorne.jpg` (Titelbild für die Shops) |
+| E-Book | `<datei>.epub` (und `_EPUB2.epub`), `<datei>_Inhalt.pdf` (Inhaltsverzeichnis), `<datei>_Cover-vorne.jpg` (Titelbild, auch als `_2000px`, `_1600px`, `_900px`) |
 | Zum Lesen und Verschicken | `<datei>.pdf`, `_Leseprobe.pdf`, `_Korrektur.pdf` (fürs Lektorat) |
 | Werbung | `<datei>_Mockup.jpg`, `<datei>_Vorderseite.jpg` |
 | Selber drucken | `<kurz>_Probedruck_booklet.pdf` bzw. `<datei>_booklet.pdf` |
@@ -365,8 +366,10 @@ das kann der Motor noch nicht. Masse nur in mm.
 Das E-Book ist für alle Shops dasselbe – nur der Druck ist plattformabhängig:
 
 - Datei: `<datei>.epub` (EPUB 3, mit Inhaltsverzeichnis und Angaben zur Barrierefreiheit).
-- Titelbild: `<datei>_Cover-vorne.jpg` (Hochformat, mind. 1600 Pixel breit – passt für XinXii, tolino media,
-  KDP, BoD, neobooks).
+- Titelbild: `<datei>_Cover-vorne.jpg` (Hochformat, lange Seite 2560 Pixel – passt für tolino media, KDP, BoD,
+  neobooks). Für Shops mit Höchstgrösse zusätzlich `…_Cover-vorne_2000px.jpg`, `_1600px.jpg` und `_900px.jpg`
+  (Zahl = lange Seite).
+- Inhaltsverzeichnis als PDF: `<datei>_Inhalt.pdf` – die Inhaltsseiten aus dem Lese-PDF (verlangt z. B. XinXii).
 - Texte: Beschreibung, Schlagwörter, Kategorie aus `shop-angaben.txt` kopieren.
 - ISBN: eigene E-Book-ISBN bei `isbn-ebook:` eintragen und neu bauen (manche Shops vergeben selbst eine).
 - Leseprobe als E-Book: `<datei>_Leseprobe.epub` (`sh build.sh leseprobe`).

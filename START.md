@@ -88,6 +88,7 @@ Windows: `hallo.bat` doppelklicken. Das PDF liegt in `Hallo-Buch/ausgabe-normal/
 2. **Schreiben** in `<buch>-buch.md`, Angaben in `<buch>-variablen.md`, Umschlag in `<buch>-umschlag.md`.
 3. **Ansehen** (im Buchordner): `sh build.sh schnell` – nur das Lese-PDF, in Sekunden.
 4. **Alles bauen**: `sh build.sh` (Entwurf) bzw. `sh build.sh final` (Druckfassung).
+   Vor Bestellung oder Veröffentlichung: `sh build.sh komplett` (dazu Leseprobe und Korrektur-PDF).
 5. **Welche Datei wofür?** Im Ausgabeordner zuoberst `00-UEBERSICHT.txt` öffnen: was zur Druckerei geht,
    was ins E-Book, was für Werbung und Probedruck.
 

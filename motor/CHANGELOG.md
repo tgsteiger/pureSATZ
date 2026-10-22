@@ -3,6 +3,16 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.21.0 (Oktober 2026)
+- **Inhaltsverzeichnis als PDF**: `<datei>_Inhalt.pdf` – die Inhaltsseiten aus dem Lese-PDF (z. B. für XinXii),
+  bei `sh build.sh`, `final`, `komplett` und `nur-pdf`.
+- **Titelbild in mehreren Grössen**: `…_Cover-vorne_2000px.jpg`, `_1600px.jpg`, `_900px.jpg` (lange Seite) neben
+  dem bisherigen `…_Cover-vorne.jpg` – für Shops mit Höchstgrössen. Beides in 00-UEBERSICHT.txt unter «E-Book».
+
+## 2.20.1 (Oktober 2026)
+- **`sh build.sh komplett`**: final + Leseprobe + Korrektur in einem Durchgang (Sicherung und Prüfung einmal,
+  eine 00-UEBERSICHT.txt am Schluss) – für vor der Bestellung oder Veröffentlichung. `final` bleibt wie bisher.
+
 ## 2.20.0 (Oktober 2026)
 - **E-Book zusätzlich als EPUB 2** («epub2-light», neues Modul `motor/epub2.py`): mit `ebook-epub2: ja` entsteht
   neben dem EPUB 3 auch `<datei>_EPUB2.epub` – für Shops und Prüfprogramme, die nur EPUB 2 annehmen (z. B. epubli).

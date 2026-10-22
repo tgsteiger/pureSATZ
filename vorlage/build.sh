@@ -2,6 +2,7 @@
 # Buch bauen. Vorher werden die MD-Dateien gesichert (md-history/) und geprüft.
 #   sh build.sh                 alles als Entwurf: Bildschirm-PDF, Druckdateien, E-Book
 #   sh build.sh final           alles als Druckfassung (für epubli)
+#   sh build.sh komplett        final + Leseprobe + Korrektur in einem Durchgang
 #   sh build.sh schnell         nur Lese-PDFs, so schnell wie möglich (beim Schreiben, ca. halbe Zeit)
 #   sh build.sh nur-pdf         nur Bildschirm-PDFs mit Booklet und Statistik
 #   sh build.sh nur-pdf final   nur Bildschirm-PDFs als Druckfassung + Booklets zum Selberdrucken

@@ -19,6 +19,7 @@ Start in fünf Punkten (auch in hilfe.html unter «Start»)
   2. Computer einrichten        einmalig, siehe «Erste Schritte» unten
   3. Hallo-PDF                  sh hallo.sh   (Windows: hallo.bat doppelklicken)
   4. Dein Buch bauen            sh setup/setup.sh, dann im Buchordner sh build.sh / sh build.sh final
+                                alles inkl. Leseprobe und Korrektur: sh build.sh komplett
                                 welche Datei wofür: ausgabe-normal/00-UEBERSICHT.txt
   5. Wenn etwas klemmt          hilfe.html → Start → «Wenn etwas klemmt», oder die Suche
 
