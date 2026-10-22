@@ -35,7 +35,8 @@ Hier steht eine Widmung. Im gedruckten Buch steht sie allein auf der rechten Sei
 
 Dieses Demo-Kapitel zeigt alle Möglichkeiten. Schau dir das PDF an und vergleiche es mit dieser Datei: So siehst du, welche Zeile was bewirkt. Danach einfach alles ab hier löschen und dein Buch schreiben.
 
-Ein neuer Absatz beginnt nach einer leeren Zeile. **Fett** steht zwischen zwei Sternchen. Ein Link sieht so aus: [{website}](https://{website}).<br/>Ein Zeilenumbruch innerhalb des Absatzes geht mit br in spitzen Klammern.
+Ein neuer Absatz beginnt nach einer leeren Zeile. **Fett** steht zwischen zwei Sternchen. Ein Link sieht so aus: [{website}](https://{website}).\
+Diese Zeile beginnt neu, gehört aber zum selben Absatz: In der MD steht am Ende der Zeile davor ein umgekehrter Schrägstrich (Backslash).
 
 ~ Eine Zeile mit Tilde ist eine kursive Randbemerkung.
 
@@ -154,7 +155,7 @@ Zahlen stehen rechtsbündig. Ist eine Tabelle zu breit, wird sie kleiner oder qu
 
 ## Seiten steuern
 
-Eine Zeile mit @UMBRUCH beginnt eine neue Seite. @UMBRUCH-RECHTS beginnt im Druck immer auf einer rechten Seite. @PLATZ 60 beginnt eine neue Seite nur, wenn weniger als 60 mm Platz bleiben. @ABSTAND 8 lässt 8 mm frei.
+Eine Zeile mit drei Strichen (---, davor eine Leerzeile) beginnt eine neue Seite, gleich wie @UMBRUCH. @UMBRUCH-RECHTS beginnt im Druck immer auf einer rechten Seite. @PLATZ 60 beginnt eine neue Seite nur, wenn weniger als 60 mm Platz bleiben. @ABSTAND 8 lässt 8 mm frei.
 
 @ABSTAND 8
 

@@ -21,6 +21,15 @@ das PDF ansehen und mit der MD vergleichen – danach das Demo löschen und schr
 
 ## Schreiben
 
+**Die Regel – vier Formen, je nach Aufgabe:**
+
+| Form | Wofür | Beispiel |
+|---|---|---|
+| Markdown | alles, was Markdown kann: Absatz, Zeilenumbruch, neue Seite, fett, Zitat, Liste | `\` am Zeilenende · `---` · `**fett**` · `> Zitat` |
+| `@BEFEHL` | eine Zeile, eine Wirkung – nur für das, was Markdown nicht kann | `@PLATZ 40`, `@KOPF Ecuador`, `@ZITAT …` |
+| `## @…` / `#### @…` | Titelei-Seite (`##`) bzw. Element mit Angaben darunter (`####`, Ende = Leerzeile); steht in der Gliederung des Editors | `## @IMPRESSUM`, `#### @FOTO Sommer` |
+| `::: art` … `:::` | Textbereich mit Anfang und Ende: nur in einer Fassung, umrahmt oder zusammenhaltend | `::: nur-uz`, `::: uz Titel`, `::: mitte` |
+
 | Im Text | Wirkung |
 |---|---|
 | `# Teil 1\|Titel\|Untertitel` (`\|bild.jpg`) | neuer Teil mit Teil-Seite (optional eigenes Bild) |
@@ -31,7 +40,9 @@ das PDF ansehen und mit der MD vergleichen – danach das Demo löschen und schr
 | `1. Punkt` `2. Punkt` | nummerierte Aufzählung (zählt selbst: die erste Zahl ist der Start) |
 | `  - Unterpunkt` | Unterpunkt, 2–4 Leerzeichen eingerückt (unter `-` und unter `1.`) |
 | `3\. Mai war …` | Zahl mit Punkt am Zeilenanfang, aber keine Aufzählung |
-| Leerzeile / `<br/>` | neuer Absatz / Zeilenumbruch im Absatz |
+| Leerzeile | neuer Absatz |
+| `\` am Zeilenende | Zeilenumbruch im Absatz: die nächste Zeile gehört zum selben Absatz (alt: `<br/>`, geht weiterhin, z. B. in Variablen) |
+| `---` (eigene Zeile, davor eine Leerzeile) | neue Seite, wie `@UMBRUCH` (im Editor eine waagrechte Linie) |
 
 **Blöcke** `::: art-ausgabe Titel` … `:::` – Art: `nur`, `mitte`, `zusammen`, `offen`,
 `offen-notiz`, `zeitstrahl`, `uz` (Kasten der zweiten Ausgabe). Endung: keine (überall),
@@ -79,7 +90,7 @@ Was nur im Druck oder nur im E-Book stehen soll, kommt über Variablen mit Endun
 (z. B. `impressum-herstellung-druck`) oder aus der Druckdatei. Im Druck: Seite 2 links Impressum (oben das Logo
 aus `impressum-logo`), Seite 3 rechts Widmung.
 
-**Seiten:** `@UMBRUCH` neue Seite · `@UMBRUCH-RECHTS` im Druck rechts · `@PLATZ 60` neue Seite, wenn
+**Seiten:** `---` oder `@UMBRUCH` neue Seite · `@UMBRUCH-RECHTS` im Druck rechts · `@PLATZ 60` neue Seite, wenn
 weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen · `@SEITENMITTE`.
 
 **Weiteres:** `@TITEL`, `@IMPRESSUM`, `@HINWEIS`, `@WIDMUNG`, `@KERNSATZ`, `@INHALTSVERZEICHNIS`, `@ZITAT`, `@MOTTO`, `@UNTEN`,

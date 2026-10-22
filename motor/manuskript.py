@@ -236,10 +236,33 @@ def _art(kopf):
     return art, tag, titel.strip()
 
 
+UMBRUCH_LINIE = re.compile(r"^\s*-{3,}\s*$")      # «---» = @UMBRUCH (2.25)
+
+
+def markdown_zeilen(roh):
+    """Markdown-Schreibweisen vor dem Lesen umsetzen (pureSATZ 2.25):
+    «\\» am Zeilenende = Zeilenumbruch im Absatz (wie <br/>; die nächste Zeile gehört zum selben Absatz),
+    eine Zeile «---» = neue Seite (wie @UMBRUCH)."""
+    out, i = [], 0
+    while i < len(roh):
+        nr, s = roh[i]
+        t = s.rstrip()
+        while t.endswith("\\") and not t.endswith("\\\\") and i + 1 < len(roh) and roh[i + 1][1].strip():
+            i += 1
+            t = t[:-1].rstrip() + "<br/>" + roh[i][1].strip()
+            t = t.rstrip()
+        if UMBRUCH_LINIE.match(t):
+            t = "@UMBRUCH"
+        out.append((nr, t))
+        i += 1
+    return out
+
+
 def zeilen(pfad, a, entwurf=False):
     """Text der Ausgabe a: Zeilen (str) und Blöcke als Tupel (ART, titel, [zeilen])."""
     name = os.path.basename(pfad)
     _, roh = lies(pfad)
+    roh = markdown_zeilen(roh)
     out, i = [], 0
     while i < len(roh):
         nr, s = roh[i]

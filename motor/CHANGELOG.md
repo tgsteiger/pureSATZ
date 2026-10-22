@@ -3,6 +3,18 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.25.0 (Oktober 2026)
+- **Markdown für Zeilenumbruch und neue Seite**:
+  - `\` am Zeilenende = Zeilenumbruch im Absatz (wie `<br/>`); die nächste Zeile gehört zum selben Absatz.
+    Gilt im Buch, in Blöcken und in der Umschlag-Datei. `<br/>` geht weiterhin (z. B. in Variablen).
+  - Eine Zeile `---` = neue Seite (wie `@UMBRUCH`). Davor eine Leerzeile, sonst macht der Editor aus der Zeile
+    darüber eine Überschrift.
+- **Hilfe: die Regel der vier Formen** oben unter «Schreiben»: Markdown für alles, was Markdown kann; `@BEFEHL` für
+  eine Zeile mit einer Wirkung; `## @…` / `#### @…` für Titelei und Elemente mit Angaben; `::: … :::` für
+  Textbereiche mit Anfang und Ende. Vorlage und readme4ki.txt angepasst.
+- Geprüft: Leben123 umgestellt (18 × `<br/>` → `\`, 4 × `@UMBRUCH` → `---`); alle PDFs, Umschläge und E-Books
+  Seite für Seite und Pixel für Pixel gleich wie mit 2.24.2.
+
 ## 2.24.2 (Oktober 2026)
 - **Widmung im Druck im unteren Drittel**: auf ihrer eigenen Seite (rechts) etwas kleiner (9 pt) und mittig im
   unteren Drittel statt in der Seitenmitte.
