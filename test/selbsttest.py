@@ -4,7 +4,7 @@ selbsttest.py – prüft pureSATZ von A bis Z (läuft bei jedem «git push» auf
 
 Legt in einem leeren Ordner ein Testbuch an (wie setup/setup.sh), richtet die Python-Umgebung ein und baut:
 final (Bildschirm-PDF, Buchblock, Hardcover- und Softcover-Umschlag, E-Book), schnell, leseprobe, korrektur,
-sicherung, Geschichten (neu, einbinden, Sammel-PDF, Tippfehler). Danach wird geprüft, ob alle Dateien da sind. Fehler = Abbruch mit Meldung.
+sicherung, Geschichten (neu, einbinden, Sammel-PDF, Tippfehler), Druckangaben (druck=…, BoD). Danach wird geprüft, ob alle Dateien da sind. Fehler = Abbruch mit Meldung.
 
 Auch von Hand möglich (im Ordner pureSATZ):   python3 test/selbsttest.py
 """
@@ -60,6 +60,8 @@ def main():
     for art in (["final"], ["schnell"], ["leseprobe"], ["korrektur"]):
         lauf([py, os.path.join("motor", "bauen.py")] + art, buch)
     lauf([py, os.path.join("motor", "sicherung.py"), "lokal"], buch)
+    # Druckangaben (2.19): Muster aus druck/, BoD-Druckdateien nur für die normale Fassung
+    lauf([py, os.path.join("motor", "bauen.py"), "nur-druck", "final", "druck=bod-a5-hardcover", "normal"], buch)
 
     # Geschichten (2.11): zwei anlegen, eine einbinden, Sammel-PDF, Tippfehler muss als Fehler kommen
     lauf([py, os.path.join("motor", "geschichten.py"), "Erste Geschichte"], buch)
@@ -173,6 +175,26 @@ def main():
         with zipfile.ZipFile(os.path.join(tmp, "Sicherungen", zips[0])) as z:
             if "Testbuch/Testbuch-buch.md" not in z.namelist():
                 fehlt.append("Testbuch-buch.md in der Sicherung")
+    bod = os.path.join(buch, "BoD-TESTBUCH")
+    for f in ("TESTBUCH_Buchblock.pdf", "TESTBUCH_Umschlag_Hardcover.pdf", "bod-a5-hardcover.md"):
+        if not os.path.exists(os.path.join(bod, f)):
+            fehlt.append(f"BoD-TESTBUCH/{f} (druck=bod-a5-hardcover)")
+    if not os.path.exists(os.path.join(buch, "druck", "epubli-a5.md")):
+        fehlt.append("druck/epubli-a5.md (Muster aus vorlage/druck/)")
+    try:
+        from pypdf import PdfReader
+        bb = os.path.join(bod, "TESTBUCH_Buchblock.pdf")
+        if os.path.exists(bb):
+            box = PdfReader(bb).pages[0].mediabox
+            if (round(float(box.width) / 72 * 25.4), round(float(box.height) / 72 * 25.4)) != (148, 210):
+                fehlt.append("BoD-Buchblock: erwartet 148 x 210 mm (ohne Beschnitt)")
+        hc = os.path.join(bod, "TESTBUCH_Umschlag_Hardcover.pdf")
+        if os.path.exists(hc):
+            box = PdfReader(hc).pages[0].mediabox
+            if round(float(box.height) / 72 * 25.4) != 250:
+                fehlt.append("BoD-Umschlag: erwartet 250 mm hoch (Deckel 216 + 2 x 17 mm)")
+    except ImportError:
+        pass
     if fehlt:
         print("\nVorhanden:", *sorted(os.listdir(normal)), sep="\n  ")
         sys.exit("FEHLER – es fehlt:\n  " + "\n  ".join(fehlt))

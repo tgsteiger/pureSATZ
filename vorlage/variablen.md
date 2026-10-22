@@ -62,6 +62,11 @@ Beschnitt in mm. Hardcover: der Coverrechner nennt 11 mm (Einschlag rundum). Sof
 - deckel-hardcover:
 - papier:
 
+### Druckangaben aus einer Datei (wahlweise)
+Statt der Angaben oben eine Datei aus dem Ordner druck/ (Muster: epubli-a5, epubli-taschenbuch, bod-a5-hardcover …; Name ohne .md). Ihre Werte gelten nur für die Druckdateien und haben Vorrang. Leer = die Angaben oben gelten. Testen: sh build.sh final druck=bod-a5-hardcover
+- druck-normal:
+- druck-uz:
+
 ## Dateien und Ordner
 - kurz-normal: @@KUERZEL@@
 - kurz-uz: @@KUERZEL@@-@@ZWEITKURZ@@

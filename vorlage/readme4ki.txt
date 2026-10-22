@@ -13,6 +13,7 @@ DATEIEN (nur diese darfst du ändern)
   stichworte-@@NAME@@.txt Stichwortverzeichnis: ein Stichwort pro Zeile, Varianten mit |, # = Kommentar
   geschichten/*.md        einzelne Geschichten (falls es den Ordner gibt), siehe GESCHICHTEN unten
   tabellen/*.csv          Tabellen (falls es den Ordner gibt), siehe TABELLEN unten
+  druck/*.md              Druckangaben pro Fassung (Plattform, Rücken, Beschnitt, Papier, Barcode), siehe DRUCK unten
 NIE ändern: Ordner motor/, *.sh, *.bat, *.py, md-history/, geschichten/UEBERSICHT.md, geschichten-uebersicht.html.
 
 GESCHICHTEN (nur wenn es den Ordner geschichten/ gibt)
@@ -28,6 +29,14 @@ TABELLEN (nur wenn es den Ordner tabellen/ gibt)
 - Im Buch bindet eine eigene Zeile «@#name» die Tabelle ein (optional «@#name quer» oder «@#name hoch»).
   @#-Zeilen nie ändern ohne Auftrag. Werte nur in der CSV ändern, nie als Text ins Buch kopieren.
 - Jede Zeile braucht gleich viele Werte wie Spaltenüberschriften.
+
+DRUCK (nur wenn es den Ordner druck/ gibt)
+- Eine Datei pro Druckvariante, z. B. druck/epubli-a5-normal.md, druck/bod-a5-hardcover.md. Werte als «- name: wert».
+- Erlaubte Namen: plattform, format, seite, bindung, projekt, ruecken-hardcover, ruecken-softcover,
+  beschnitt-buchblock, beschnitt-hardcover, beschnitt-softcover, deckel-hardcover, papier, extra-seiten,
+  isbn-buch, barcode-position, barcode-groesse, barcode-bild. Masse in mm, z. B. «seite: 148 x 210».
+- Welche Datei gilt, steht in der Variablen-Datei: druck-normal / druck-uz (Name ohne .md).
+- Werte nur aus dem Coverrechner der Plattform übernehmen, nie schätzen. Danach «sh build.sh pruefen».
 
 LESEPROBE (Variablen-Datei)
 - leseprobe-seiten: 14,16,17-20,22  = gedruckte Seitenzahlen; leseprobe-seiten-uz: eigene für die zweite Ausgabe.
@@ -75,6 +84,7 @@ WAS DER MOTOR MACHT (zur Info)
   sh build.sh            Entwurf: Bildschirm-PDF, Druckdateien, E-Book (offene Stellen sichtbar)
   sh build.sh schnell    nur Lese-PDFs (beim Schreiben)
   sh build.sh final      Druckfassung für epubli, mit Seitenbilanz, Shop-Angaben, Kontrast-Prüfung
+  sh build.sh final druck=bod-a5-normal   Druckdateien mit einer anderen Datei aus druck/ (Test)
   sh build.sh pruefen    prüft die MD: unbekannte Variablen, Befehle, fehlende Fotos (mit Zeilennummer)
   sh build.sh leseprobe  Leseprobe · sh build.sh korrektur  Korrekturfassung mit Zeilennummern
   sh neu.sh "Titel"      neue Geschichte · sh neu.sh tabelle "Titel"  neue Tabelle (Windows: neu.bat)

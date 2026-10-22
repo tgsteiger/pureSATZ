@@ -40,7 +40,8 @@ BASE = os.path.dirname(MOTOR)
 HILFSDATEIEN = ("update.sh", "update.bat", "sync.sh", "sync.bat", "build.sh", "build.bat",
                 "cleanup.sh", "cleanup.bat", "sicherung.sh", "sicherung.bat", "neu.sh", "neu.bat")
 # Erzeugte Dateien, die nicht zu GitHub gehören (werden in .gitignore ergänzt, falls sie fehlen)
-IGNORIEREN = ("geschichten-uebersicht.html", "geschichten/UEBERSICHT.md", "_geschichten-sammlung.md", "hilfe.html")
+IGNORIEREN = ("geschichten-uebersicht.html", "geschichten/UEBERSICHT.md", "_geschichten-sammlung.md", "hilfe.html",
+              "BoD-*/")
 
 
 def version(ordner):
@@ -185,7 +186,7 @@ def main():
             fehlt = [x for x in IGNORIEREN if x not in alt_gi.split("\n")]
             if fehlt:
                 with open(gi, "a", encoding="utf-8") as fh:
-                    fh.write(("" if alt_gi.endswith("\n") else "\n") + "# pureSATZ 2.11: Geschichten-Übersicht (wird erzeugt)\n"
+                    fh.write(("" if alt_gi.endswith("\n") else "\n") + "# pureSATZ: erzeugte Dateien und Ordner\n"
                              + "\n".join(fehlt) + "\n")
                 print("  .gitignore ergänzt: " + ", ".join(fehlt))
 

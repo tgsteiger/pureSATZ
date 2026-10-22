@@ -88,11 +88,83 @@ if os.environ.get("BUCH_TEXT"):                      # Sammel-PDF der Geschichte
     TEXT = os.environ["BUCH_TEXT"]
 
 
-def alle_variablen():
-    """Alle Variablen: aus <name>-variablen.md, sonst aus dem Kopf der Buch-MD."""
+def _grundvariablen():
+    """Variablen aus <name>-variablen.md, sonst aus dem Kopf der Buch-MD."""
     if VARIABLEN:
         return M.lies_variablen(os.path.join(BASE, VARIABLEN))[0]
     return M.lies(os.path.join(BASE, TEXT))[0]
+
+
+# --- Druckangaben (pureSATZ 2.19) ----------------------------------------------
+#   Pro Fassung eine Datei in druck/ (Variable «druck-normal: epubli-a5-normal», «druck-uz: …»).
+#   Ihre Werte gelten nur für die Druckdateien (build-broschuere.py) und haben dort Vorrang vor der
+#   Variablen-Datei. Ohne «druck»-Zeile bleibt alles wie bisher. Test: sh build.sh final druck=<datei>
+DRUCK_NAMEN = ("plattform", "format", "seite", "bindung", "projekt", "ruecken", "ruecken-hardcover",
+               "ruecken-softcover", "beschnitt-hardcover", "beschnitt-softcover", "beschnitt-buchblock",
+               "deckel-hardcover", "papier", "extra-seiten", "isbn-buch", "barcode-position",
+               "barcode-groesse", "barcode-bild")
+
+
+def druckmodus():
+    """True im Prozess, der die Druckdateien baut (build-broschuere.py setzt BUCH_DRUCKMODUS=1)."""
+    return os.environ.get("BUCH_DRUCKMODUS") == "1"
+
+
+def druck_datei(fassung=None):
+    """Druckdatei der Fassung als Pfad relativ zum Buchordner (z. B. druck/epubli-a5-normal.md), sonst None.
+    Vorrang hat «druck=<datei>» beim Aufruf (Umgebungsvariable BUCH_DRUCK_DATEI)."""
+    w = os.environ.get("BUCH_DRUCK_DATEI", "").strip() or \
+        M.Ausgabe(_grundvariablen(), fassung or FASSUNG)("druck").strip()
+    if not w:
+        return None
+    w = w.replace("\\", "/")
+    if not w.lower().endswith(".md"):
+        w += ".md"
+    return w if w.startswith("druck/") else "druck/" + w
+
+
+def druck_variablen(fassung=None):
+    """Variablen aus der Druckdatei der Fassung ({} ohne Druckdatei)."""
+    d = druck_datei(fassung)
+    if not d:
+        return {}
+    pfad = os.path.join(BASE, d)
+    if not os.path.exists(pfad):
+        raise SystemExit(f"Druckangaben: {d} fehlt. Name prüfen (Variable «druck-…» bzw. druck=…); "
+                         "Musterdateien liegen in pureSATZ/vorlage/druck/.")
+    return M.lies_variablen(pfad)[0]
+
+
+def mit_druckangaben(v, fassung=None):
+    """Variablen v, überlagert mit der Druckdatei der Fassung (deren Werte haben Vorrang)."""
+    dv = druck_variablen(fassung)
+    if not dv:
+        return v
+    f = fassung or FASSUNG
+    v = dict(v)
+
+    def zerlege(k):
+        for t in ("normal", "uz", "dc"):
+            if k.endswith("-" + t):
+                return k[:-len(t) - 1], t
+        return k, None
+    for k in sorted(dv, key=lambda k: zerlege(k)[1] is not None):     # erst allgemein, dann «-normal»/«-uz»
+        basis, tag = zerlege(k)
+        if tag and (tag == "normal") != (f == "normal"):
+            continue                                                  # gilt für die andere Fassung
+        for x in (basis, basis + "-normal", basis + "-uz", basis + "-dc"):
+            v.pop(x, None)
+        v[basis] = dv[k]
+    return v
+
+
+def alle_variablen(fassung=None, druck=None):
+    """Alle Variablen: aus <name>-variablen.md, sonst aus dem Kopf der Buch-MD.
+    Beim Bau der Druckdateien (oder druck=True) mit den Druckangaben der Fassung überlagert."""
+    v = _grundvariablen()
+    if druck is None:
+        druck = druckmodus()
+    return mit_druckangaben(v, fassung) if druck else v
 
 
 def stichwort_datei():
@@ -139,7 +211,13 @@ def medium():
 
 def var(fassung=None):
     """Variablen der MD für eine Ausgabe:  var()("titel")"""
-    return M.Ausgabe(alle_variablen(), fassung or FASSUNG, medium(), PRIVATDRUCK)
+    return M.Ausgabe(alle_variablen(fassung or FASSUNG), fassung or FASSUNG, medium(), PRIVATDRUCK)
+
+
+def druck_V(name, standard="", fassung=None):
+    """Wert für den Druck (mit Druckangaben), auch ausserhalb von build-broschuere.py (z. B. shop-angaben.txt)."""
+    f = fassung or FASSUNG
+    return M.Ausgabe(alle_variablen(f, druck=True), f, "druck", PRIVATDRUCK)(name, standard)
 
 
 def V(name, standard="", fassung=None):
@@ -405,16 +483,42 @@ FORMATE = {
 EINSCHLAG_MM = 11
 
 
-def _format():
-    f = (V("format") or str(L.SEITE.get("format", "a5"))).strip().lower().replace(" ", "")
+def _format(wert=None):
+    f = ((wert if wert is not None else V("format")) or str(L.SEITE.get("format", "a5"))).strip().lower().replace(" ", "")
     f = {"a5hoch": "a5", "dina5": "a5", "a4hoch": "a4", "dina4": "a4", "tb": "taschenbuch"}.get(f, f)
     if f not in FORMATE:
         raise SystemExit(f"Unbekanntes Format «{f}». Möglich: " + ", ".join(FORMATE))
     return f
 
 
-FORMAT = _format()
-FMT = FORMATE[FORMAT]
+def masse_mm(wert, name="seite"):
+    """«148 x 210» (mm, Komma oder Punkt, × oder x) -> (148.0, 210.0); leer -> None."""
+    w = (wert or "").lower().replace("×", "x").replace("mm", "").replace(" ", "")
+    if not w:
+        return None
+    try:
+        b, h = (float(x.replace(",", ".")) for x in w.split("x"))
+        return (b, h)
+    except ValueError:
+        raise SystemExit(f"Variable «{name}»: «{wert}» – Form: 148 x 210 (Breite x Höhe in mm)")
+
+
+def format_angaben(wert_format, wert_seite=""):
+    """(Formatname, Angaben) aus «format» und «seite». Mit «seite: 148 x 210» ein freies Format: Ränder und
+    Schrift vom nächstliegenden Format, Deckel = Seite + 9 x 18 mm (wie bei epubli)."""
+    seite = masse_mm(wert_seite)
+    if not seite:
+        f = _format(wert_format)
+        return f, FORMATE[f]
+    f = min(FORMATE, key=lambda k: abs(FORMATE[k]["seite"][0] - seite[0]) + abs(FORMATE[k]["seite"][1] - seite[1]))
+    if tuple(FORMATE[f]["seite"]) == seite:
+        return f, FORMATE[f]
+    return f, dict(FORMATE[f], name=f"Eigenes Format {seite[0]:g} x {seite[1]:g} mm", seite=seite,
+                   deckel=(seite[0] + 9, seite[1] + 18))
+
+
+FORMAT, FMT = format_angaben(V("format"), V("seite"))
+GRUNDFORMAT = format_angaben(M.Ausgabe(_grundvariablen(), FASSUNG)("format"))[1]   # ohne Druckangaben (Lese-PDF)
 W, H = FMT["seite"][0] * mm, FMT["seite"][1] * mm
 S = ((W * H) / (148 * mm * 210 * mm)) ** 0.5     # Grössenfaktor für Umschlag und Teil-Seiten (A5 = 1)
 # ENTWURF = True : offene Stellen und Foto-Vorschläge werden als Kästen gezeigt.
@@ -1119,6 +1223,33 @@ class Doc(BaseDocTemplate):
         lw = 13 * mm * S; lh = lw * LOTUS_RATIO
         if y < 19 * mm * S + lh + 4 * mm:
             print(f"WARNUNG: Text der Rückseite ist zu lang, bitte in {UMSCHLAG} kürzen.")
+        feld = barcode_feld() if DRUCK else None
+        if feld:   # Barcode-Feld aus den Druckangaben (barcode-position, -groesse, -bild; pureSATZ 2.19)
+            fx, fy, fw, fh = feld["x"], feld["y"], feld["b"], feld["h"]
+            if y < fy + fh + 3 * mm:
+                print(f"WARNUNG: Text der Rückseite reicht ins Barcode-Feld ({feld['position']}, "
+                      f"{fw / mm:g} x {fh / mm:g} mm), bitte in {UMSCHLAG} kürzen.")
+            if feld["position"] == "links":      # Fuss rechtsbündig, Verzierung in der Mitte (wie epubli)
+                xr = W - x0
+                mitte = (13 * mm * S + 8.5 * mm * S + 0.7 * 9 * S) / 2
+                c.drawImage(bild(LOTUS, "creme"), W / 2 - lw / 2, mitte - lh * leerer_rand_unten(LOTUS), lw, lh, mask="auto")
+                c.setFillColor(SOFT); c.setFont(schrift("titel_leicht"), 8.5 * S)
+                if fuss: c.drawRightString(xr, 13 * mm * S, fuss[0])
+                c.setFillColor(BLAU); c.setFont(schrift("titel"), 9 * S)
+                if len(fuss) > 1: c.drawRightString(xr, 8.5 * mm * S, fuss[1])
+            else:                                # mitte oder rechts: Fuss und Verzierung links (wie BoD)
+                c.drawImage(bild(LOTUS, "creme"), x0, 19 * mm * S, lw, lh, mask="auto")
+                c.setFillColor(SOFT); c.setFont(schrift("titel_leicht"), 8.5 * S)
+                if fuss: c.drawString(x0, 13 * mm * S, fuss[0])
+                c.setFillColor(BLAU); c.setFont(schrift("titel"), 9 * S)
+                if len(fuss) > 1: c.drawString(x0, 8.5 * mm * S, fuss[1])
+            if feld["bild"]:                     # weisses Feld + Bild (z. B. Strichcode der Plattform als PNG)
+                c.setFillColor(colors.white); c.rect(fx, fy, fw, fh, fill=1, stroke=0)
+                c.drawImage(feld["bild"], fx, fy, fw, fh, mask="auto", preserveAspectRatio=True, anchor="c")
+            elif EIGENER_BARCODE:                # Strichcode aus der ISBN (bzw. Platzhalter), in Feldgrösse
+                c.saveState(); c.translate(fx, fy); c.scale(fw / (40 * mm), fh / (24 * mm))
+                barcode(c, 0, 0); c.restoreState()
+            c.restoreState(); return
         if DRUCK and EIGENER_BARCODE:  # BoD: Fuss links, rechts eigener ISBN-Strichcode
             c.drawImage(bild(LOTUS, "creme"), x0, 19 * mm * S, lw, lh, mask="auto")
             c.setFillColor(SOFT); c.setFont(schrift("titel_leicht"), 8.5 * S)
@@ -1211,6 +1342,30 @@ def leerer_rand_unten(pfad):
         maske = im.convert("L").point(lambda v: 255 if v < 235 else 0)
     box = maske.getbbox()
     return (im.size[1] - box[3]) / im.size[1] if box else 0
+
+
+def barcode_feld():
+    """Barcode-Feld der Rückseite aus den Druckangaben, None = wie bisher (epubli links frei, BoD rechts).
+    barcode-position: links | mitte | rechts · barcode-groesse: 40x20 (mm; leer = 60 x 35 frei ab der Ecke)
+    barcode-bild: Datei aus bilder/ (leer = nichts zeichnen, Platz bleibt frei; BoD: Strichcode aus der ISBN)"""
+    pos, gr, bd = (V(n).strip() for n in ("barcode-position", "barcode-groesse", "barcode-bild"))
+    if not (pos or gr or bd):
+        return None
+    pos = (pos or "links").lower()
+    if pos not in ("links", "mitte", "rechts"):
+        raise SystemExit(f"Variable «barcode-position»: «{pos}» – möglich: links, mitte, rechts")
+    masse = masse_mm(gr, "barcode-groesse")
+    if masse:            # Feld mit Abstand zum Rand: seitlich wie der Text, unten 8 mm
+        b, h, rand, unten = masse[0] * mm, masse[1] * mm, 16 * mm * S, 8 * mm
+    else:                # wie bisher bei epubli: 60 x 35 mm ab der Ecke frei
+        b, h, rand, unten = 60 * mm, 35 * mm, 0, 0
+    x = {"links": rand, "mitte": (W - b) / 2, "rechts": W - rand - b}[pos]
+    pfad = None
+    if bd:
+        pfad = finde(bd, ("bilder",))
+        if not pfad or not os.path.exists(pfad):
+            raise SystemExit(f"Variable «barcode-bild»: {bd} fehlt im Ordner bilder/.")
+    return dict(position=pos, x=x, y=unten, b=b, h=h, bild=pfad)
 
 
 def barcode(c, x, y):

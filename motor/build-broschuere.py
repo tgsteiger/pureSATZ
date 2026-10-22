@@ -3,7 +3,9 @@ Druckdateien für epubli oder BoD erstellen: Buchblock (Innenteil) und Umschlag.
 Aufruf (im Buchordner):  python3 motor/build-broschuere.py      (normale Ausgabe)
                          python3 motor/build-broschuere.py uz   (zweite Ausgabe)
 Ergebnis: im Ordner der Ausgabe: <kurz>_Buchblock.pdf, Umschlag und Cover (PDF und JPG).
-Alle Angaben stehen oben in der Buch-MD: format, bindung, ruecken, projekt, isbn-buch …
+Alle Angaben stehen in der Variablen-Datei (format, bindung, ruecken, projekt, isbn-buch …) oder –
+ab pureSATZ 2.19 – in einer Druckdatei pro Fassung (druck/…md, Variable «druck-normal» / «druck-uz»).
+Die Werte der Druckdatei haben Vorrang. Test mit einer anderen Datei: sh build.sh final druck=<datei>
 Benötigt: reportlab, Pillow, pypdfium2 für die JPG-Dateien (sonst poppler)
 """
 import os
@@ -12,6 +14,7 @@ import shutil
 import subprocess
 from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas
+os.environ["BUCH_DRUCKMODUS"] = "1"              # Druckangaben (druck/…md) gelten nur in diesem Prozess
 import build as bk
 import manuskript as M
 try:                                            # Windows: «sh build.sh» in Meldungen als «.\build.bat»
@@ -26,7 +29,7 @@ bk.DRUCK = True
 A = bk.AUSGABE
 KUERZEL = bk.ausgabe().get("kuerzel", A)
 
-PLATTFORM = bk.V("plattform", "epubli")            # "epubli" oder "bod"
+PLATTFORM = bk.V("plattform", "epubli").strip().lower()   # "epubli" oder "bod"
 # "veroeffentlichen" = Buch veröffentlichen (mit ISBN) / "privatdruck" = ohne ISBN
 PROJEKT = bk.ausgabe()["epubli"]
 ISBN = bk.V("isbn-buch")
@@ -71,6 +74,8 @@ PROFILE = {
 }
 # ===========================================================================
 
+if PLATTFORM not in PROFILE:
+    raise SystemExit(f"Unbekannte Plattform «{PLATTFORM}». Möglich: " + ", ".join(PROFILE))
 P = dict(PROFILE[PLATTFORM])
 P["beschnitt_mm"] = mm_wert("beschnitt-buchblock", P["beschnitt_mm"])
 bk.B = P["beschnitt_mm"] * mm
@@ -80,6 +85,14 @@ bk.ISBN = "" if bk.PRIVATDRUCK else ISBN  # leer = Platzhalter «ISBN folgt»
 
 OUT = os.path.join(bk.BASE, bk.ausgabe()["ordner"] if PLATTFORM == "epubli" else "BoD-" + KUERZEL)
 os.makedirs(OUT, exist_ok=True)
+DRUCKDATEI = bk.druck_datei()
+if DRUCKDATEI:
+    print(f"Druckangaben: {DRUCKDATEI}")
+    shutil.copy2(os.path.join(bk.BASE, DRUCKDATEI), os.path.join(OUT, os.path.basename(DRUCKDATEI)))
+if tuple(bk.FMT["seite"]) != tuple(bk.GRUNDFORMAT["seite"]):
+    print(f"Hinweis: Druckformat {bk.FMT['name']}" + ("" if " mm" in bk.FMT["name"] else
+          f" ({bk.FMT['seite'][0]:g} x {bk.FMT['seite'][1]:g} mm)") + " weicht vom "
+          f"Grundformat {bk.GRUNDFORMAT['name']} ab – Seitenzahlen im Druck anders als im Lese-PDF.")
 BLOCK = os.path.join(OUT, KUERZEL + "_Buchblock.pdf")
 
 # --- 1) Buchblock -----------------------------------------------------------
@@ -178,7 +191,7 @@ def hardcover(pfad, m):
     if m["ruecken"] >= 5:
         buchruecken(c, e + dw + rk / 2, e + dh / 2, m["ruecken"], dh)
     c.showPage(); c.save()
-    print(f"Hardcover-Umschlag: {br / mm:.0f} x {ho / mm:.0f} mm (Deckel {m['deckel'][0]:g} x {m['deckel'][1]:g}, "
+    print(f"Hardcover-Umschlag: {round(br / mm, 1):g} x {round(ho / mm, 1):g} mm (Deckel {m['deckel'][0]:g} x {m['deckel'][1]:g}, "
           f"Rücken {m['ruecken']:g}, Beschnitt/Einschlag {m['einschlag']:g} mm)")
 
 
@@ -202,8 +215,8 @@ print()
 print(f"*** {KUERZEL}: {bk.FMT['name']}, {BINDUNG}" + (f", {PAPIER}" if PAPIER else "") + f", Buchblock {n} Seiten. Rücken "
       + ", ".join(x for x in (f"Softcover {RUECKEN_SOFT:g} mm" if ganz else "",
                               f"Hardcover {RUECKEN_HART:g} mm" if hc else "") if x) + ".")
-print("*** Stimmt das mit dem epubli-Coverrechner überein (Seitenzahl, Papier, Gesamtbreite, Gesamthöhe)? "
-      "Sonst in der Variablen-Datei anpassen (ruecken-…, beschnitt-…, deckel-hardcover).")
+print(f"*** Stimmt das mit dem {'BoD' if PLATTFORM == 'bod' else 'epubli'}-Coverrechner überein (Seitenzahl, Papier, Gesamtbreite, Gesamthöhe)? "
+      f"Sonst in {DRUCKDATEI or 'der Variablen-Datei'} anpassen (ruecken-…, beschnitt-…, deckel-hardcover).")
 print()
 
 # epubli möchte das Cover als JPG (mind. 300 dpi)

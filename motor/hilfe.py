@@ -255,7 +255,8 @@ def formate_html(variablen=None):
                       f"<td>{tb * 12} px</td></tr>")
     return ("<p>In der Variablen-Datei: <code>- format: a5</code> (auch <code>format-uz</code> für die zweite Ausgabe) und "
             "<code>- bindung: hardcover</code>, <code>softcover</code> oder <code>beide</code>. Ränder, Schrift, Rücken und "
-            "Umschlag rechnet der Motor selbst (Masse laut epubli).</p>"
+            "Umschlag rechnet der Motor selbst (Masse laut epubli). Für den Druck kann eine Datei in <code>druck/</code> "
+            "ein anderes Format oder ein eigenes Mass (<code>seite: 148 x 210</code>) setzen.</p>"
             "<table><thead><tr><th>format</th><th>Name</th><th>Seite</th><th>Textbreite</th><th>Schrift</th>"
             "<th>Foto ganze Breite</th></tr></thead><tbody>" + "".join(zeilen) + "</tbody></table>"
             "<p class='leise'>Foto ganze Breite = nötige Pixel für 300 dpi (Breite in mm × 12).</p>")

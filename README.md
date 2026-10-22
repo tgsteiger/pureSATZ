@@ -2,7 +2,7 @@
 
 Ein Satzsystem für Bücher aus Markdown: **alles steht in drei MD-Dateien**, der Motor macht das
 Layout. Zwei Ausgaben (normal und z. B. Director's Cut / Unzensiert), daraus Bildschirm-PDF,
-Druckdateien für epubli (Hardcover/Softcover), E-Book und Booklets. Entstanden aus «Leben 1.0, 2.0, 3.0».
+Druckdateien für epubli oder BoD (Hardcover/Softcover), E-Book und Booklets. Entstanden aus «Leben 1.0, 2.0, 3.0».
 
 **Webseite:** [tgsteiger.github.io/pureSATZ](https://tgsteiger.github.io/pureSATZ/) – Download, fünf Schritte, Hilfe online.
 
@@ -104,6 +104,8 @@ ein fertiges Buch auch in Jahren noch genau gleich erstellen.
 | `quadrat` | 205 × 205 mm | 214 × 223 mm |
 
 Einschlag Hardcover 11 mm, Beschnitt Softcover und Innenseiten 3 mm – alles in der Variablen-Datei änderbar (`beschnitt-…`, `deckel-hardcover`). Weitere Formate: in `motor/build.py` bei `FORMATE`.
+
+**Druckangaben pro Plattform (ab 2.19):** Alles für den Druck (Plattform, Format oder eigenes Mass `seite: 148 x 210`, Rücken, Beschnitt, Deckel, Papier, Barcode-Feld) kann pro Fassung in einer Datei im Ordner `druck/` stehen – Muster in `vorlage/druck/` (epubli in allen Formaten, BoD A5 Hardcover, noch ungetestet). In der Variablen-Datei: `druck-normal: epubli-a5`, `druck-uz: …`. Testen ohne Umstellen: `sh build.sh final druck=bod-a5-hardcover`.
 
 ## setup/start.txt
 

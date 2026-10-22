@@ -26,6 +26,8 @@ sh build.sh schnell         # nur die Lese-PDFs, so schnell wie möglich – bei
 sh build.sh nur-pdf         # nur die Bildschirm-PDFs (mit Booklet und Statistik)
 sh build.sh nur-pdf final   # nur Bildschirm-PDFs als Druckfassung
 sh build.sh nur-druck       # nur Buchblock und Umschlag    (auch: nur-ebook)
+sh build.sh final druck=bod-a5-normal       # Druckdateien mit einer anderen Datei aus druck/ (zum Testen)
+sh build.sh final druck=bod-a5-normal uz    # … nur für eine Fassung (normal oder uz)
 sh build.sh pruefen         # nur die MD prüfen
 sh build.sh leseprobe       # Leseprobe: Umschlag, Titelei, gewählte Seiten, Schlussseite, Rückseite
 sh build.sh korrektur       # Korrekturfassung: A4, Zeilennummern pro Seite, Rand für Notizen
@@ -197,6 +199,7 @@ Quelle: eigene Praxisstatistik         ← optional: letzte Zeile, klein darunte
 - Eine Zeile, in der eine Variable leer ist, fällt weg. `{isbn}`: Buch bzw. E-Book, leer = «folgt».
 - `format`: `a5` · `taschenbuch` · `sachbuch` · `a4` · `quadrat` (Masse laut epubli)
 - `bindung`: `hardcover` · `softcover` · `beide`; `ruecken`: Rückenbreite in mm **laut epubli-Coverrechner**
+- `druck-normal` / `druck-uz`: Datei aus `druck/` mit allen Angaben für den Druck (siehe «Druckangaben»)
 - `zier`: eigenes Bild für die Verzierung (sonst die Standard-Verzierung)
 - `# LAYOUT`: `farbe-haupt`, `farbe-akzent` …, `schrift-text`, `schrift-titel`, `schriftgroesse`, `blocksatz`
 
@@ -254,10 +257,37 @@ Das E-Book enthält Angaben zur **Barrierefreiheit** (Gliederung, Inhaltsverzeic
 `sh build.sh` warnt bei Fotos ohne `alt:` und ohne `text:`. Eigene Zusammenfassung: `ebook-barrierefreiheit:`. Die Akzentfarbe für Text wird im E-Book automatisch
 lesbar dunkel gesetzt (Kontrast 4,5:1); eigene Farbe mit `farbe-akzent-ebook:`.
 
+## Druckangaben (druck/)
+
+Alles, was nur den **Druck** betrifft, kann pro Fassung in einer eigenen Datei im Ordner `druck/` stehen –
+so lassen sich epubli, BoD (und später andere) nebeneinander vorbereiten, ohne die Variablen-Datei umzubauen.
+In der Variablen-Datei: `- druck-normal: epubli-a5-normal` und `- druck-uz: epubli-a5-uz` (Name ohne `.md`).
+Die Werte der Druckdatei gelten **nur für Buchblock und Umschlag** und haben Vorrang. Lese-PDF, E-Book,
+Leseprobe, Korrektur und Mockup bleiben beim `format:` der Variablen-Datei (Grundformat).
+Ohne `druck`-Zeile gilt alles wie bisher.
+
+| In der Druckdatei | Bedeutung |
+|---|---|
+| `plattform` | `epubli` (Ausgabeordner wie bisher) oder `bod` (Ordner `BoD-<kurz>/`) |
+| `format` / `seite` | Format wie oben; `seite: 148 x 210` = eigenes Mass in mm (Ränder und Schrift vom nächstliegenden Format) |
+| `bindung`, `projekt`, `papier`, `extra-seiten`, `isbn-buch` | wie in der Variablen-Datei |
+| `ruecken-hardcover`, `ruecken-softcover` | Rücken in mm laut Coverrechner der Plattform |
+| `beschnitt-buchblock`, `beschnitt-hardcover`, `beschnitt-softcover`, `deckel-hardcover` | Masse in mm (BoD: Buchblock 0, Deckel 153x216, Einschlag 17) |
+| `barcode-position` | `links` · `mitte` · `rechts` (leer = wie bisher: epubli links frei, BoD rechts) |
+| `barcode-groesse` | z. B. `40x20` (mm, 16 mm vom Rand seitlich, 8 mm von unten); leer = 60 × 35 mm ab der Ecke frei |
+| `barcode-bild` | PNG aus `bilder/` auf weissem Feld; leer = nichts zeichnen (BoD: Strichcode aus der ISBN) |
+
+`name-normal` / `name-uz` gehen auch in der Druckdatei. Weicht das Druckformat vom Grundformat ab, meldet der
+Bau «Seitenzahlen im Druck anders als im Lese-PDF». Beim Bau steht `Druckangaben: druck/…md`, und eine Kopie der
+Datei liegt im Ausgabeordner. `sh build.sh pruefen` meldet fehlende Druckdateien und unbekannte Namen.
+**Muster** (beim neuen Buch schon in `druck/`, sonst in `pureSATZ/vorlage/druck/`): `epubli-a5`,
+`epubli-taschenbuch`, `epubli-sachbuch`, `epubli-a4`, `epubli-quadrat`, `bod-a5-hardcover` (BoD noch ungetestet).
+Ausprobieren ohne Umstellen: `sh build.sh final druck=bod-a5-hardcover`.
+
 ## Mit einer anderen KI arbeiten
 
 Gib der KI zuerst `readme4ki.txt` (kurze Regeln, passt auch in kostenlose KI-Chats), dann die MD-Datei,
-an der sie arbeiten soll. Danach `sh build.sh pruefen` – der Motor meldet sofort, falls etwas nicht passt.
+an der sie arbeiten soll (auch eine Druckdatei aus `druck/`). Danach `sh build.sh pruefen` – der Motor meldet sofort, falls etwas nicht passt.
 
 ## Motor aktualisieren
 

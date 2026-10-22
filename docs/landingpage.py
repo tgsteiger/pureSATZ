@@ -121,7 +121,7 @@ PYTHON = {"linux": "", "mac": "https://www.python.org/downloads/macos/",
 KACHELN = [
     ("Zwei Ausgaben, eine Datei", "Öffentliche Fassung und z. B. «Unzensiert» oder «Director's Cut» aus demselben Text."),
     ("Fünf Buchformate, druckfertig", "A5, Taschenbuch, Sachbuch, A4 oder Quadrat. Buchblock und Umschlag mit Rücken "
-     "für epubli (Hardcover und Softcover), Probedruck als Booklet."),
+     "für epubli (Hardcover und Softcover), Probedruck als Booklet. Neu: Druckangaben pro Plattform, auch für BoD."),
     ("E-Book", "EPUB mit Inhaltsverzeichnis, Bildbeschreibungen und Leseprobe – aus denselben Dateien."),
     ("Geschichten sammeln", "Jede Geschichte eine Datei, mit Stand von der Idee bis fertig und einer Übersicht."),
     ("Tabellen, Fotos, Listen", "Tabellen aus CSV, Fotos in einheitlicher Grösse, Aufzählungen, Zeitstrahl."),
@@ -145,7 +145,7 @@ def seite(version):
     return f"""<!doctype html>
 <html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>pureSATZ – in fünf Minuten zu deinem ersten Buch</title>
-<meta name="description" content="pureSATZ macht aus Markdown ein druckfertiges Buch, E-Book und Umschlag für epubli. Linux, Mac und Windows, kostenlos für eigene Bücher.">
+<meta name="description" content="pureSATZ macht aus Markdown ein druckfertiges Buch, E-Book und Umschlag für epubli oder BoD. Linux, Mac und Windows, kostenlos für eigene Bücher.">
 <style>
 @font-face{{font-family:Poppins;src:url(fonts/Poppins-Regular.ttf)}}
 @font-face{{font-family:Poppins;font-weight:500;src:url(fonts/Poppins-Medium.ttf)}}
@@ -196,7 +196,7 @@ summary{{font:500 16px Poppins,system-ui,sans-serif;color:var(--haupt);cursor:po
 
 <div class="held"><div>
 <h1>In fünf Minuten zu deinem ersten Buch.</h1>
-<p class="unter">Du schreibst in einfachen Textdateien (Markdown). pureSATZ macht daraus ein druckfertiges Buch in fünf Formaten von Taschenbuch bis A4, den Umschlag und ein E-Book – für epubli oder zum Selberdrucken. Auf Linux, Mac und Windows.</p>
+<p class="unter">Du schreibst in einfachen Textdateien (Markdown). pureSATZ macht daraus ein druckfertiges Buch in fünf Formaten von Taschenbuch bis A4, den Umschlag und ein E-Book – für epubli, BoD oder zum Selberdrucken. Auf Linux, Mac und Windows.</p>
 <a class="knopf voll" href="{ZIP}">⬇ pureSATZ herunterladen (ZIP)</a><a class="knopf rand" href="{REPO}">Auf GitHub ansehen</a>
 <p class="klein">Version {html.escape(version)} · kostenlos für eigene Bücher · ohne Konto, ohne Cloud</p>
 </div>

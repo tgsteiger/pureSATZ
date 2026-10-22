@@ -19,6 +19,9 @@ Booklets zum Selberdrucken entstehen automatisch: im «final» der Probedruck au
     python motor/bauen.py geschichten [uz]   Sammel-PDF aller Geschichten aus geschichten/ (normal; mit uz auch unzensiert)
     python motor/bauen.py hilfe           hilfe.html erzeugen und im Browser öffnen
     python motor/bauen.py mockup          Werbebilder (…_Mockup.jpg, …_Vorderseite.jpg) aus dem Bildschirm-PDF
+    python motor/bauen.py final druck=bod-a5-normal [normal|uz]
+                                          Druckdateien mit einer anderen Datei aus druck/ (zum Testen),
+                                          mit «normal» oder «uz» nur diese Fassung
 Vor jedem Bau: Sicherung nach md-history/ und Prüfung der MD. Gebaut wird parallel.
 """
 import os
@@ -156,14 +159,52 @@ def sammlung(mit_uz):
 
 def pruefen():
     M.pruefen(BASE, bk.TEXT, bk.UMSCHLAG, bk.finde, bk.alle_variablen())
+    druck_pruefen()
     try:
         bk.foto_hinweise()                  # Fotos mit zu wenig Pixeln (pureSATZ 2.15)
     except Exception as e:                  # nie den Bau verhindern
         print(f"Hinweis: Fotos nicht geprüft ({e})")
 
 
+NUR_FASSUNG = None          # «normal» oder «uz» zusammen mit druck=… : nur diese Fassung bauen
+
+
 def ausgaben():
-    return ["normal", "uz"] if bk.zweite_ausgabe() else ["normal"]
+    alle = ["normal", "uz"] if bk.zweite_ausgabe() else ["normal"]
+    return [a for a in alle if a == NUR_FASSUNG] if NUR_FASSUNG in alle else alle
+
+
+def druck_pruefen():
+    """Druckdateien (druck/…md): vorhanden? unbekannte Namen? (pureSATZ 2.19)"""
+    fehler, hinweise = [], []
+    for a in ausgaben():
+        d = bk.druck_datei(a)
+        if not d:
+            continue
+        pfad = os.path.join(BASE, d)
+        if not os.path.exists(pfad):
+            fehler.append(f"Druckangaben {name(a)}: {d} fehlt")
+            continue
+        for k in M.lies_variablen(pfad)[0]:
+            basis = k
+            for t in ("-normal", "-uz", "-dc"):
+                if k.endswith(t):
+                    basis = k[:-len(t)]
+            if basis not in bk.DRUCK_NAMEN:
+                hinweise.append(f"{d}: unbekannter Name «{k}» (wird nicht verwendet)")
+        try:
+            v = M.Ausgabe(bk.alle_variablen(a, druck=True), a, "druck")
+            bk.format_angaben(v("format"), v("seite"))
+            for n in ("barcode-groesse", "deckel-hardcover"):
+                bk.masse_mm(v(n), n)
+            if v("barcode-bild") and not bk.finde(v("barcode-bild"), ("bilder",)):
+                fehler.append(f"{d}: barcode-bild {v('barcode-bild')} fehlt im Ordner bilder/")
+        except SystemExit as e:
+            fehler.append(f"{d}: {e}")
+    for h in sorted(set(hinweise)):
+        print("Hinweis: " + h)
+    if fehler:
+        sys.exit("FEHLER in den Druckangaben:\n  " + "\n  ".join(sorted(set(fehler))))
 
 
 def name(a):
@@ -261,11 +302,11 @@ def shop_angaben():
         PdfReader = None
     for a in ausgaben():
         g = bk.AUSGABEN["B" if a == "uz" else "A"]
-        V = lambda n, s="": bk.V(n, s, a)
+        V = lambda n, s="": bk.druck_V(n, s, a)        # mit Druckangaben (druck/…md)
         block = os.path.join(BASE, g["ordner"], g["kuerzel"] + "_Buchblock.pdf")
         seiten = len(PdfReader(block).pages) if PdfReader and os.path.exists(block) else "?"
         zeilen = [f"Titel:          {V('titel')}", f"Untertitel:     {V('untertitel')}", f"Autor:          {V('autor')}",
-                  f"Format:         {bk.FMT['name']}, {V('bindung', 'hardcover')}, {seiten} Seiten",
+                  f"Format:         {bk.format_angaben(V('format'), V('seite'))[1]['name']}, {V('bindung', 'hardcover')}, {seiten} Seiten",
                   f"Papier:         {V('papier')}",
                   f"ISBN Buch:      {V('isbn-buch') or '(noch keine)'}", f"ISBN E-Book:    {V('isbn-ebook') or '(noch keine)'}",
                   f"Sprache:        {V('sprache', 'de')}", f"Kategorie:      {V('shop-kategorie')}",
@@ -344,9 +385,14 @@ def fassung(art, final):
 def main():
     import geschichten
     geschichten.hilfsdateien(BASE)          # neu.sh / neu.bat, .gitignore (pureSATZ 2.11)
-    args = [a.lower() for a in sys.argv[1:]]
+    global NUR_FASSUNG
+    druck = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.lower().startswith("druck=")), None)
+    args = [a.lower() for a in sys.argv[1:] if not a.lower().startswith("druck=")]
+    if druck:                               # andere Druckdatei zum Testen (gilt für alle Teilschritte)
+        os.environ["BUCH_DRUCK_DATEI"] = druck
+        NUR_FASSUNG = next((a for a in args if a in ("normal", "uz")), None)
     final = "final" in args
-    art = next((a for a in args if a not in ("final", "uz")), "alles")
+    art = next((a for a in args if a not in ("final", "uz", "normal")), "alles")
     if art == "sicherung":
         sicherung(); return
     if art == "pruefen":
@@ -383,7 +429,10 @@ def main():
     sicherung()
     pruefen()
     print("Modus:", "FINAL (Druckfassung)" if final else "ENTWURF (offene Stellen und Notizen sichtbar)",
-          f"· Format {bk.FMT['name']} · Bindung {bk.V('bindung', 'hardcover')}")
+          f"· Format {bk.FMT['name']} · Bindung {bk.druck_V('bindung', 'hardcover', 'normal')}")
+    for a in ausgaben():
+        if bk.druck_datei(a) and art in ("alles", "nur-druck"):
+            print(f"Druckangaben {name(a)}: {bk.druck_datei(a)}")
     schritte = []
     for a in ausgaben():
         if art in ("alles", "nur-pdf"):

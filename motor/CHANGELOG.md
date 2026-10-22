@@ -3,6 +3,25 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.19.0 (Oktober 2026)
+- **Druckangaben in eigenen Dateien** (`druck/`): pro Fassung eine Datei mit allem, was nur den Druck betrifft
+  (plattform, format, seite, bindung, projekt, ruecken-…, beschnitt-…, deckel-hardcover, papier, extra-seiten,
+  isbn-buch, barcode-…). In der Variablen-Datei `druck-normal: epubli-a5-normal` / `druck-uz: …`. Die Werte gelten
+  nur für Buchblock und Umschlag und haben dort Vorrang; Lese-PDF, E-Book, Leseprobe, Korrektur und Mockup bleiben
+  beim Grundformat. Ohne `druck`-Zeile ändert sich nichts (Leben123 Seite für Seite gleich geprüft).
+- **Testen ohne Umstellen**: `sh build.sh final druck=<datei>` (mit `normal` oder `uz`: nur diese Fassung).
+  Der Bau zeigt «Druckangaben: druck/…md» und legt eine Kopie in den Ausgabeordner. `pruefen` meldet fehlende
+  Druckdateien, unbekannte Namen und fehlende Barcode-Bilder.
+- **Eigenes Seitenmass** `seite: 148 x 210` (mm): Ränder und Schrift vom nächstliegenden Format, Deckel = Seite +
+  9 × 18 mm. Weicht das Druckformat vom Grundformat ab: Hinweis «Seitenzahlen im Druck anders als im Lese-PDF».
+- **Barcode-Feld** auf der Rückseite: `barcode-position` (links, mitte, rechts), `barcode-groesse` (z. B. 40x20),
+  `barcode-bild` (PNG aus bilder/, auf weissem Feld). Alles leer = wie bisher. Warnung, wenn Text ins Feld ragt.
+- **Muster** in `vorlage/druck/`: epubli-a5, -taschenbuch, -sachbuch, -a4, -quadrat und bod-a5-hardcover
+  (ungetestet). Neue Bücher bekommen sie in `druck/`. BoD-Ausgabeordner `BoD-*/` kommen nicht zu GitHub und nicht
+  in die ZIP-Sicherung (`sh update.sh` ergänzt die .gitignore).
+- Meldungen nennen den Coverrechner der gewählten Plattform (epubli oder BoD); Umschlagmasse mit Nachkommastelle.
+- Selbsttest: BoD-Druckdateien mit `druck=bod-a5-hardcover normal` (Buchblock 148 × 210 mm, Umschlag 250 mm hoch).
+
 ## 2.18.0 (Oktober 2026)
 - **Cover-Bilder für E-Book-Shops**: Mit dem E-Book entstehen im Ausgabeordner `…_Cover-vorne.jpg` und
   `…_Cover-hinten.jpg`: Vorder- und Rückseite gerade, randlos, ohne Schatten (lange Seite 2560 Pixel, kurze

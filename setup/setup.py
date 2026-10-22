@@ -167,7 +167,7 @@ def buch(ordner, w):
     d = platzhalter(w)
     os.makedirs(ordner, exist_ok=True)
     print(f"\nBuch in {os.path.abspath(ordner)}")
-    for o in ("fotos", "bilder", "fonts", "md-history", "geschichten", "tabellen"):
+    for o in ("fotos", "bilder", "fonts", "md-history", "geschichten", "tabellen", "druck"):
         os.makedirs(os.path.join(ordner, o), exist_ok=True)
     vorhanden = [f for f in os.listdir(ordner) if f.endswith("-buch.md")]
     name = vorhanden[0][:-8] if len(vorhanden) == 1 else d["NAME"]
@@ -182,6 +182,8 @@ def buch(ordner, w):
         kopiere(os.path.join(VORLAGE, f), os.path.join(ordner, f), f)
     for f in ("LIESMICH.txt", "muster.csv"):
         kopiere(os.path.join(VORLAGE, "tabellen", f), os.path.join(ordner, "tabellen", f), f"tabellen/{f}")
+    for f in sorted(os.listdir(os.path.join(VORLAGE, "druck"))):       # Druckangaben-Muster (pureSATZ 2.19)
+        kopiere(os.path.join(VORLAGE, "druck", f), os.path.join(ordner, "druck", f), f"druck/{f}")
     kopiere(os.path.join(VORLAGE, "geschichten", "LIESMICH.txt"), os.path.join(ordner, "geschichten", "LIESMICH.txt"),
             "geschichten/LIESMICH.txt (einzelne Geschichten sammeln)")
     kopiere(os.path.join(VORLAGE, "buch.gitignore"), os.path.join(ordner, ".gitignore"),
