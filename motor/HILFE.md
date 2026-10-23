@@ -166,7 +166,7 @@ Unter `## Farben` stehen mehrere Farbschemas; eine Zahl wählt, welches gilt –
 Schema 1 ist immer die Grundlage; das gewählte Schema ersetzt nur die Werte, die darin stehen. Andere Schemas
 werden übergangen. Ausprobieren: Zahl ändern, `sh build.sh nur-pdf`, PDF ansehen (vorher das alte PDF unter
 anderem Namen sichern – jeder Bau überschreibt es). Zurück auf `1`: beim nächsten Bau ist alles wie vorher.
-Fehlt das gewählte Schema, meldet der Bau «Farbschema … fehlt – nehme Schema 1». Ohne `{farbschema}` gelten
+Der Bau zeigt am Anfang und am Ende, welches gilt (z. B. «Farben: Farbschema 2: dunkler für den Druck»). Fehlt das gewählte Schema, meldet der Bau «Farbschema … fehlt – nehme Schema 1». Ohne `{farbschema}` gelten
 die `{farbe-…}`-Zeilen direkt unter `## Farben`.
 
 ## Bilder und Fotos

@@ -140,6 +140,7 @@ AUSGABE_KOPF = re.compile(r"^ausgabe\s*:\s*(.+)$", re.I)       # «## Ausgabe: D
 ROHDATEN_KOPF = re.compile(r"coverrechner|rohdaten", re.I)       # «## Coverrechner (Rohdaten)»: wird nicht gelesen
 SCHEMA_KOPF = re.compile(r"^farbschema\s*(\d+)\b", re.I)          # «### Farbschema 2: dunkler für den Druck»
 FARBSCHEMA_FEHLT = {}                                             # Pfad -> gewählte Nummer ohne Abschnitt
+FARBSCHEMA_NAME = {}                                              # Pfad -> «Farbschema 2: dunkler für den Druck»
 
 
 def ausgabe_abschnitt(titel):
@@ -170,7 +171,7 @@ def lies_variablen(pfad):
     key = ("V", pfad)
     if key in _CACHE:
         return _CACHE[key]
-    var, stw, schemas = {}, [], {}
+    var, stw, schemas, titel_schema = {}, [], {}, {}
     bereich = None          # (art, stufe, medium, fassung): art = stw | roh | ausgabe | schema
     for z in open(pfad, encoding="utf-8").read().split("\n"):
         t = z.strip()
@@ -190,6 +191,7 @@ def lies_variablen(pfad):
                 elif SCHEMA_KOPF.match(titel):
                     bereich = ("schema", stufe, SCHEMA_KOPF.match(titel).group(1), None)
                     schemas.setdefault(bereich[2], {})
+                    titel_schema.setdefault(bereich[2], titel)
                 elif aus and ausgabe_abschnitt(aus.group(1)):
                     bereich = ("ausgabe", stufe) + ausgabe_abschnitt(aus.group(1))
             continue
@@ -214,6 +216,7 @@ def lies_variablen(pfad):
         if wahl not in schemas:
             FARBSCHEMA_FEHLT[pfad] = wahl
             wahl = "1"
+        FARBSCHEMA_NAME[pfad] = titel_schema.get(wahl, f"Farbschema {wahl}")
         var.update(schemas.get("1", {}))
         if wahl != "1":
             var.update(schemas[wahl])
