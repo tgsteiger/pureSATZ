@@ -29,12 +29,14 @@ gehen weiterhin.
 
 | Was | Wo | Im Buch / Umschlag |
 |---|---|---|
-| alle **Texte** (Titel, Impressum, ISBN, Shop …) | `<buch>-variablen.md`, z. B. `{impressum-kontakt}: …` | `{impressum-kontakt}` |
-| **Technik** einer Druckerei (Format, Rücken, Beschnitt, Strichcode) | `druck/<datei>.md` – gilt nur für die Druckdateien | – |
+| alles, was fürs ganze Buch gilt (Titel, ISBN E-Book, Shop, gemeinsames Impressum) | `<buch>-variablen.md`, z. B. `{impressum-rechte}: …` | `{impressum-rechte}` |
+| **welche Ausgabe** bei welcher Plattform | `<buch>-variablen.md`: `{druck-normal}`, `{druck-uz}`, `{ebook}` | – |
+| alles, was nur für **eine Plattform** gilt: Technik (Format, Rücken, Beschnitt, Strichcode) und ihre Impressum-Zeilen (`{impressum-herstellung}`, `{impressum-logo}` …) | Plattform-Datei `druck/<datei>.md` | `{impressum-herstellung}` |
 
 Suchst du nach `{name}`, findest du beide Stellen: wo der Wert steht und wo er erscheint.
-Endungen: `{name-druck}` / `{name-ebook}` / `{name-bildschirm}` = nur dort, `{name-normal}` / `{name-uz}` = nur in
-dieser Ausgabe. Der genauere Name gewinnt (`{impressum-kontakt-ebook}` vor `{impressum-kontakt}`).
+Ein Wert in der Plattform-Datei ersetzt den gleichnamigen der Variablen-Datei – so bekommt jede Ausgabe das Impressum
+ihrer Plattform, mit kurzen Namen. Endungen gibt es weiterhin (`{name-uz}`, `{name-druck}` …, der genauere Name
+gewinnt), fürs Impressum braucht es sie aber nicht mehr.
 
 Das **Demo-Kapitel** in der Buch-Datei zeigt alle Möglichkeiten. Einmal `sh build.sh` laufen lassen,
 das PDF ansehen und mit der MD vergleichen – danach das Demo löschen und schreiben.
@@ -106,8 +108,8 @@ Unten im Impressum, mit Abstand (z. B. «ersetzt keine Beratung»).
 ## @WIDMUNG
 Im Druck allein auf der rechten Seite gegenüber dem Impressum, im unteren Drittel; im Lese-PDF auf eigener Seite.
 ```
-Was nur im Druck oder nur im E-Book stehen soll, kommt über Variablen mit Endung `-druck`, `-ebook`, `-bildschirm`
-(z. B. `impressum-herstellung-druck`) oder aus der Druckdatei. Im Druck: Seite 2 links Impressum (oben das Logo
+Was nur für eine Plattform gilt (Herstellung, Kontakt der Druckerei, Logo), steht in deren Plattform-Datei
+(`{druck-normal}`, `{druck-uz}`, `{ebook}` in der Variablen-Datei). Im Druck: Seite 2 links Impressum (oben das Logo
 aus `impressum-logo`), Seite 3 rechts Widmung.
 
 **Seiten:** `---` oder `@UMBRUCH` neue Seite · `@UMBRUCH-RECHTS` im Druck rechts · `@PLATZ 60` neue Seite, wenn
@@ -386,8 +388,8 @@ Ohne `druck`-Zeile gilt alles wie bisher.
 | `barcode-groesse` | z. B. `40x20` (mm, 16 mm vom Rand seitlich, 8 mm von unten); leer = 60 × 35 mm ab der Ecke frei |
 | `barcode-bild` | PNG aus `bilder/` auf weissem Feld; leer = nichts zeichnen (BoD: Strichcode aus der ISBN) |
 | `versatz-vertikal`, `versatz-horizontal` | ganzen Seiteninhalt verschieben, in mm: vertikal + = nach oben, horizontal + = nach aussen (nach Messung am Probeexemplar) |
-| `impressum-…` | besser in der Variablen-Datei (`{impressum-herstellung-druck}` usw.); ein Wert hier ersetzt ihn im gedruckten Buch (z. B. Privatdruck-Hinweis) |
-| `impressum-logo-druck` (Variablen-Datei) | Logo der Druckerei links über dem Impressumstext (PNG aus `bilder/`, 1,5 × so hoch wie die Schrift, zwei Zeilen Abstand, z. B. tredition); leer = kein Logo |
+| `impressum-herstellung`, `impressum-kontakt` | Impressum-Zeilen dieser Plattform (wer druckt, Kontakt nach EU-Produktsicherheitsverordnung; Privatdruck-Hinweis); ersetzen die gleichnamigen der Variablen-Datei |
+| `impressum-logo` | Logo der Druckerei links über dem Impressumstext (PNG aus `bilder/`, 1,5 × so hoch wie die Schrift, zwei Zeilen Abstand, z. B. tredition); leer = kein Logo |
 
 `name-normal` / `name-uz` gehen auch in der Druckdatei. Weicht das Druckformat vom Grundformat ab, meldet der
 Bau «Seitenzahlen im Druck anders als im Lese-PDF». Beim Bau steht `Druckangaben: druck/…md`, und eine Kopie der
@@ -399,11 +401,20 @@ in der Druckdatei `versatz-vertikal: -1.5`. Seitlich genauso mit `versatz-horizo
 Seitenzahl und Bilder verschieben sich gemeinsam, das Layout bleibt gleich; nur der Buchblock dieser Druckerei ist
 betroffen. Der Beschnitt reicht als Reserve (bei 5 mm bis etwa 3 mm Versatz); mehr meldet der Bau als Warnung.
 
-**Impressum:** Alle Zeilen stehen in der Variablen-Datei unter «Impressum», für Druck und E-Book zusammen, z. B. bei
-tredition `{impressum-herstellung-druck}: Druck und Distribution … tredition …`, `{impressum-herstellung-ebook}:
-Distribution … tredition …`, `{impressum-kontakt}: …`, `{impressum-logo-druck}: tredition-logo.png`. Die Druckdatei
-enthält nur Technik. Wechselst du die Druckerei, passt du dort die Technik und hier die Impressum-Zeilen an.
-Nicht gebrauchte Druckdateien kannst du in `druck/reserve/` aufbewahren (`druck-normal: reserve/bod-a5`).
+**Impressum je Plattform:** Gemeinsame Zeilen (`{impressum-rechte}`, `{impressum-kontakt}`) stehen in der
+Variablen-Datei. Was zur Plattform gehört, steht in deren Plattform-Datei: `{impressum-herstellung}`, `{impressum-logo}`,
+evtl. ein eigener `{impressum-kontakt}`. Beispiel Leben123: Normal gedruckt bei tredition (mit Logo), Unzensiert als
+Privatdruck bei epubli (ohne Logo), E-Book bei tredition:
+
+```text
+{druck-normal}: tredition-a5-normal     druck/tredition-a5-normal.md  – Technik + «Druck und Distribution … tredition», Logo
+{druck-uz}: epubli-a5-uz                druck/epubli-a5-uz.md         – Technik + «Privatdruck · Herstellung: epubli …»
+{ebook}: tredition-ebook                druck/tredition-ebook.md      – nur «Distribution … tredition»
+```
+
+Wechselst du die Plattform, änderst du nur die Zeile in der Variablen-Datei – das passende Impressum kommt mit.
+Nicht gebrauchte Plattform-Dateien kannst du in `druck/reserve/` aufbewahren (`{druck-normal}: reserve/bod-a5`).
+Das Lese-PDF hat keine Plattform-Datei und zeigt nur die gemeinsamen Zeilen.
 
 **Ausgabeordner:** Ein normaler Bau legt die Druckdateien immer in `ausgabe-normal/` bzw. `ausgabe-unzensiert/` –
 egal welche Plattform die aktive Druckdatei nennt. **Testlauf:** `sh build.sh final druck=<datei>` baut nur

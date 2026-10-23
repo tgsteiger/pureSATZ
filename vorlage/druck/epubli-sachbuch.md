@@ -1,7 +1,7 @@
 # epubli – Sachbuch
 
 > Test: sh build.sh final druck=epubli-sachbuch
-> Verwenden: in <buch>-variablen.md «{druck-normal}: epubli-sachbuch» (bzw. druck-uz)
+> Verwenden: in <buch>-variablen.md «{druck-normal}: epubli-sachbuch» (bzw. {druck-uz})
 > Rücken und Papier laut epubli-Coverrechner eintragen; Deckel 144 x 223 mm
 
 ## Plattform
@@ -45,8 +45,11 @@
 > default: leer = «ISBN folgt» im Impressum · optional: ISBN der Plattform
 
 ## Impressum
-> Die Zeilen des Impressums stehen in der Variablen-Datei unter «Impressum» ({impressum-herstellung-druck}, {impressum-kontakt-druck}, {impressum-logo-druck} …). Hier nur Technik.
-> Ausnahme Privatdruck: hier «{impressum-herstellung}: Privatdruck · nicht im Handel erhältlich» eintragen – ein Wert hier ersetzt den der Variablen-Datei im gedruckten Buch.
+> Impressum-Zeilen dieser Plattform. Sie ersetzen die gleichnamigen der Variablen-Datei. Leer = Zeile fällt weg.
+{impressum-herstellung}: Herstellung: epubli – ein Service der neopubli GmbH, Köpenicker Strasse 154a, 10997 Berlin
+{impressum-kontakt}: Kontaktadresse nach EU-Produktsicherheitsverordnung: produktsicherheit@epubli.com
+{impressum-logo}:
+> Privatdruck: z. B. «{impressum-herstellung}: Privatdruck · nicht im Handel erhältlich · Herstellung: epubli …»
 
 ## Strichcode
 {barcode-position}:

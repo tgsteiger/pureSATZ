@@ -204,6 +204,10 @@ def druck_pruefen():
                 fehler.append(f"{d}: impressum-logo {v('impressum-logo')} fehlt im Ordner bilder/")
         except SystemExit as e:
             fehler.append(f"{d}: {e}")
+    for a in ausgaben():                                # Plattform-Datei des E-Books (2.28)
+        d = bk.ebook_datei(a)
+        if d and not os.path.exists(os.path.join(BASE, d)):
+            fehler.append(f"E-Book-Angaben {name(a)}: {d} fehlt (Variable «ebook»)")
     for h in sorted(set(hinweise)):
         print("Hinweis: " + h)
     if fehler:

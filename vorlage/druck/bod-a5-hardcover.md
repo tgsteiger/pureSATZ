@@ -45,8 +45,11 @@
 > default: leer = «ISBN folgt» im Impressum · optional: ISBN der Plattform
 
 ## Impressum
-> Die Zeilen des Impressums stehen in der Variablen-Datei unter «Impressum» ({impressum-herstellung-druck}, {impressum-kontakt-druck}, {impressum-logo-druck} …). Hier nur Technik.
-> Ausnahme Privatdruck: hier «{impressum-herstellung}: Privatdruck · nicht im Handel erhältlich» eintragen – ein Wert hier ersetzt den der Variablen-Datei im gedruckten Buch.
+> Impressum-Zeilen dieser Plattform. Sie ersetzen die gleichnamigen der Variablen-Datei. Leer = Zeile fällt weg.
+> DEMO-Texte – vor Gebrauch durch die Angaben von BoD ersetzen
+{impressum-herstellung}: Herstellung: BoD – Books on Demand GmbH, In de Tarpen 42, 22848 Norderstedt
+{impressum-kontakt}: Kontaktadresse nach EU-Produktsicherheitsverordnung: (Angabe von BoD eintragen)
+{impressum-logo}:
 
 ## Strichcode
 {barcode-position}: rechts

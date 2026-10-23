@@ -1,7 +1,7 @@
 # epubli – DIN A4
 
 > Test: sh build.sh final druck=epubli-a4
-> Verwenden: in <buch>-variablen.md «{druck-normal}: epubli-a4» (bzw. druck-uz)
+> Verwenden: in <buch>-variablen.md «{druck-normal}: epubli-a4» (bzw. {druck-uz})
 > Rücken und Papier laut epubli-Coverrechner eintragen; Deckel 219 x 315 mm
 
 ## Plattform
@@ -45,8 +45,11 @@
 > default: leer = «ISBN folgt» im Impressum · optional: ISBN der Plattform
 
 ## Impressum
-> Die Zeilen des Impressums stehen in der Variablen-Datei unter «Impressum» ({impressum-herstellung-druck}, {impressum-kontakt-druck}, {impressum-logo-druck} …). Hier nur Technik.
-> Ausnahme Privatdruck: hier «{impressum-herstellung}: Privatdruck · nicht im Handel erhältlich» eintragen – ein Wert hier ersetzt den der Variablen-Datei im gedruckten Buch.
+> Impressum-Zeilen dieser Plattform. Sie ersetzen die gleichnamigen der Variablen-Datei. Leer = Zeile fällt weg.
+{impressum-herstellung}: Herstellung: epubli – ein Service der neopubli GmbH, Köpenicker Strasse 154a, 10997 Berlin
+{impressum-kontakt}: Kontaktadresse nach EU-Produktsicherheitsverordnung: produktsicherheit@epubli.com
+{impressum-logo}:
+> Privatdruck: z. B. «{impressum-herstellung}: Privatdruck · nicht im Handel erhältlich · Herstellung: epubli …»
 
 ## Strichcode
 {barcode-position}:

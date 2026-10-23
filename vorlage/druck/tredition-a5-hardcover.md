@@ -45,8 +45,12 @@
 > default: leer = «ISBN folgt» im Impressum · optional: ISBN der Plattform
 
 ## Impressum
-> Die Zeilen des Impressums stehen in der Variablen-Datei unter «Impressum» ({impressum-herstellung-druck}, {impressum-kontakt-druck}, {impressum-logo-druck} …). Hier nur Technik.
-> Ausnahme Privatdruck: hier «{impressum-herstellung}: Privatdruck · nicht im Handel erhältlich» eintragen – ein Wert hier ersetzt den der Variablen-Datei im gedruckten Buch.
+> Impressum-Zeilen dieser Plattform. Sie ersetzen die gleichnamigen der Variablen-Datei. Leer = Zeile fällt weg.
+> Text von tredition («Dein Impressum» im Autorenbereich)
+{impressum-herstellung}: Druck und Distribution im Auftrag des Autors: tredition GmbH, Heinz-Beusen-Stieg 5, 22926 Ahrensburg, Deutschland
+{impressum-kontakt}: Kontaktadresse nach EU-Produktsicherheitsverordnung: (eigene E-Mail eintragen)
+{impressum-logo}:
+> Logo: Bild aus «Dein Impressum» als bilder/tredition-logo.png speichern und hier eintragen (1,5 × Schrifthöhe)
 
 ## Strichcode
 {barcode-position}: rechts

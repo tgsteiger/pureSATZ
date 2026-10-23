@@ -71,19 +71,22 @@
 {deckel-hardcover}:
 {papier}:
 
-### Druckangaben aus einer Datei (wahlweise)
-> Statt der Angaben oben eine Datei aus dem Ordner druck/ (Muster: epubli-a5, epubli-taschenbuch, bod-a5-hardcover …; Name ohne .md). Ihre Werte gelten nur für die Druckdateien und haben Vorrang. Leer = die Angaben oben gelten. Testen: sh build.sh final druck=bod-a5-hardcover
+### Ausgaben – wer macht was (wahlweise)
+> Jede Ausgabe kann eine Plattform-Datei im Ordner druck/ haben (Muster: epubli-a5, epubli-taschenbuch, bod-a5-hardcover, tredition-a5-hardcover, tredition-ebook …; Name ohne .md). Darin: Technik (Format, Rücken, Beschnitt, Strichcode) und die Impressum-Zeilen dieser Plattform; ihre Werte haben Vorrang. Leer = die Angaben oben gelten. Testen: sh build.sh final druck=bod-a5-hardcover
 {druck-normal}:
+> gedrucktes Buch, normale Ausgabe
 {druck-uz}:
+> gedrucktes Buch, zweite Ausgabe
+{ebook}:
+> E-Book (beide Ausgaben)
+> Lese-PDF, Leseprobe, Korrektur: keine Plattform-Datei, nur die Zeilen unten.
 
 ### Impressum
-> Alle Zeilen des Impressums stehen hier – für Druck, E-Book und Lese-PDF. Im Buch: {impressum-…}. Endung -druck = nur im gedruckten Buch, -ebook = nur im E-Book; ohne Endung = überall. Leer oder fehlend = Zeile fällt weg. Druckdateien (druck/) enthalten nur Technik.
-{impressum-herstellung-druck}: Herstellung: epubli – ein Service der neopubli GmbH, Köpenicker Strasse 154a, 10997 Berlin
-{impressum-herstellung-ebook}:
+> Gemeinsame Zeilen für alle Ausgaben. Im Buch: {impressum-…}. Die Plattform-Datei ergänzt oder ersetzt sie ({impressum-herstellung}, {impressum-kontakt}, {impressum-logo}). Leer oder fehlend = Zeile fällt weg.
 {impressum-rechte}: Das Werk, einschliesslich seiner Teile, ist urheberrechtlich geschützt. Jede Verwertung ist ohne Zustimmung des Autors unzulässig. Zu erreichen unter: @@AUTOR@@, @@ADRESSE@@.
+> Ohne Plattform-Datei für den Druck gelten im gedruckten Buch diese Zeilen (Vorgabe epubli; «-druck» = nur im Druck):
+{impressum-herstellung-druck}: Herstellung: epubli – ein Service der neopubli GmbH, Köpenicker Strasse 154a, 10997 Berlin
 {impressum-kontakt-druck}: Kontaktadresse nach EU-Produktsicherheitsverordnung: produktsicherheit@epubli.com
-{impressum-logo-druck}:
-> Logo der Druckerei über dem Impressum (z. B. tredition-logo.png aus bilder/), 1,5 × Schrifthöhe
 
 ## Dateien und Ordner
 {kurz-normal}: @@KUERZEL@@

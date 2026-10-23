@@ -3,6 +3,18 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.28.0 (Oktober 2026)
+- **Eine Plattform-Datei pro Ausgabe, auch fürs E-Book**: neue Variable `{ebook}` (z. B. `tredition-ebook` →
+  `druck/tredition-ebook.md`). Ihre Werte gelten nur im E-Book und ersetzen die gleichnamigen der Variablen-Datei –
+  genau wie `{druck-normal}` / `{druck-uz}` fürs gedruckte Buch. `sh build.sh pruefen` meldet eine fehlende Datei.
+- **Impressum gehört zur Plattform**: `{impressum-herstellung}`, `{impressum-logo}` (und ein eigener
+  `{impressum-kontakt}`) stehen in der Plattform-Datei, kurze Namen ohne Endungen; gemeinsame Zeilen
+  (`{impressum-rechte}`, `{impressum-kontakt}`) in der Variablen-Datei. Die Zuordnung «welche Ausgabe → welche
+  Plattform» steht in der Variablen-Datei unter «Ausgaben – wer macht was».
+- Muster in vorlage/druck/ wieder mit den Impressum-Zeilen ihrer Plattform; neues Muster `tredition-ebook.md`.
+  Ohne Plattform-Datei gelten weiterhin `{impressum-herstellung-druck}` usw. aus der Variablen-Datei (Vorgabe epubli).
+- Leben123: Normal gedruckt bei tredition, Unzensiert als Privatdruck bei epubli, E-Book bei tredition.
+
 ## 2.27.0 (Oktober 2026)
 - **Eine Schreibweise für alle Einstellungs-Dateien** (Variablen, Druckdateien, Umschlag, Kopf der Geschichten, Fotos):
   `# / ##` Gliederung · `> …` Erklärung · `{name}: wert` setzt eine Variable · `feld: text` Feld des Umschlags,

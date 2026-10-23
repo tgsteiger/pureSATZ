@@ -123,21 +123,50 @@ def druck_datei(fassung=None):
     return w if w.startswith("druck/") else "druck/" + w
 
 
-def druck_variablen(fassung=None):
-    """Variablen aus der Druckdatei der Fassung ({} ohne Druckdatei)."""
-    d = druck_datei(fassung)
+def ebook_datei(fassung=None):
+    """Plattform-Datei des E-Books (Variable «ebook», z. B. tredition-ebook → druck/tredition-ebook.md), sonst None.
+    Sie enthält, was nur fürs E-Book dieser Plattform gilt, z. B. die Impressum-Zeilen (pureSATZ 2.28)."""
+    w = M.Ausgabe(_grundvariablen(), fassung or FASSUNG)("ebook").strip()
+    if not w:
+        return None
+    w = w.replace("\\", "/")
+    if not w.lower().endswith(".md"):
+        w += ".md"
+    return w if w.startswith("druck/") else "druck/" + w
+
+
+def _plattform_variablen(d, was):
     if not d:
         return {}
     pfad = os.path.join(BASE, d)
     if not os.path.exists(pfad):
-        raise SystemExit(f"Druckangaben: {d} fehlt. Name prüfen (Variable «druck-…» bzw. druck=…); "
+        raise SystemExit(f"{was}: {d} fehlt. Name prüfen (Variable «druck-…», «ebook» bzw. druck=…); "
                          "Musterdateien liegen in pureSATZ/vorlage/druck/.")
     return M.lies_variablen(pfad)[0]
 
 
+def druck_variablen(fassung=None):
+    """Variablen aus der Druckdatei der Fassung ({} ohne Druckdatei)."""
+    return _plattform_variablen(druck_datei(fassung), "Druckangaben")
+
+
+def ebook_variablen(fassung=None):
+    """Variablen aus der Plattform-Datei des E-Books ({} ohne)."""
+    return _plattform_variablen(ebook_datei(fassung), "E-Book-Angaben")
+
+
 def mit_druckangaben(v, fassung=None):
     """Variablen v, überlagert mit der Druckdatei der Fassung (deren Werte haben Vorrang)."""
-    dv = druck_variablen(fassung)
+    return _ueberlagern(v, druck_variablen(fassung), fassung, "druck")
+
+
+def mit_ebookangaben(v, fassung=None):
+    """Variablen v, überlagert mit der Plattform-Datei des E-Books (pureSATZ 2.28)."""
+    return _ueberlagern(v, ebook_variablen(fassung), fassung, "ebook")
+
+
+def _ueberlagern(v, dv, fassung, medium):
+    """Werte der Plattform-Datei dv haben Vorrang, auch vor «name-normal/-uz» und «name-<medium>»."""
     if not dv:
         return v
     f = fassung or FASSUNG
@@ -152,19 +181,24 @@ def mit_druckangaben(v, fassung=None):
         basis, tag = zerlege(k)
         if tag and (tag == "normal") != (f == "normal"):
             continue                                                  # gilt für die andere Fassung
-        for x in (basis, basis + "-normal", basis + "-uz", basis + "-dc", basis + "-druck"):
-            v.pop(x, None)                                            # Druckdatei schlägt auch «name-druck» (2.26)
+        for x in (basis, basis + "-normal", basis + "-uz", basis + "-dc", basis + "-" + medium):
+            v.pop(x, None)                                            # Plattform-Datei schlägt auch «name-druck» (2.26)
         v[basis] = dv[k]
     return v
 
 
 def alle_variablen(fassung=None, druck=None):
     """Alle Variablen: aus <name>-variablen.md, sonst aus dem Kopf der Buch-MD.
-    Beim Bau der Druckdateien (oder druck=True) mit den Druckangaben der Fassung überlagert."""
+    Beim Bau der Druckdateien (oder druck=True) mit den Druckangaben der Fassung überlagert,
+    beim E-Book mit der Plattform-Datei des E-Books (Variable «ebook», 2.28)."""
     v = _grundvariablen()
     if druck is None:
         druck = druckmodus()
-    return mit_druckangaben(v, fassung) if druck else v
+    if druck:
+        return mit_druckangaben(v, fassung)
+    if MEDIUM == "ebook":
+        return mit_ebookangaben(v, fassung)
+    return v
 
 
 def stichwort_datei():
