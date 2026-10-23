@@ -54,7 +54,7 @@ def sicherung():
         if datei and os.path.exists(os.path.join(BASE, datei)):
             stamm, endung = os.path.splitext(datei)
             shutil.copy2(os.path.join(BASE, datei), os.path.join(ordner, f"{stamm}_{zeit}{endung}"))
-    import geschichten as G                 # Geschichten (pureSATZ 2.11) mitsichern
+    import geschichten as G                 # Geschichten mitsichern
     for name, p in G.alle(BASE).items():
         z = os.path.join(ordner, "geschichten", f"{name}_{zeit}.md")
         os.makedirs(os.path.dirname(z), exist_ok=True)
@@ -91,7 +91,7 @@ def aufraeumen_history(ordner):
 
 
 def mockups():
-    """Werbebilder aus dem Bildschirm-PDF jeder Ausgabe: …_Mockup.jpg und …_Vorderseite.jpg (pureSATZ 2.17)."""
+    """Werbebilder aus dem Bildschirm-PDF jeder Ausgabe: …_Mockup.jpg und …_Vorderseite.jpg."""
     try:
         import mockup
     except ImportError:
@@ -110,7 +110,7 @@ def mockups():
 
 
 def hilfe(oeffnen=False):
-    """hilfe.html im Buchordner (Hilfe mit Suche, pureSATZ 2.13)."""
+    """hilfe.html im Buchordner (Hilfe mit Suche)."""
     try:
         import hilfe as H
         farben = {n: bk.hexfarbe(n) for n in ("papier", "text", "leise", "haupt", "akzent")}
@@ -162,7 +162,7 @@ def pruefen():
     M.pruefen(BASE, bk.TEXT, bk.UMSCHLAG, bk.finde, bk.alle_variablen())
     druck_pruefen()
     try:
-        bk.foto_hinweise()                  # Fotos mit zu wenig Pixeln (pureSATZ 2.15)
+        bk.foto_hinweise()                  # Fotos mit zu wenig Pixeln
     except Exception as e:                  # nie den Bau verhindern
         print(f"Hinweis: Fotos nicht geprüft ({e})")
 
@@ -176,7 +176,7 @@ def ausgaben():
 
 
 def druck_pruefen():
-    """Druckdateien (druck/…md): vorhanden? unbekannte Namen? (pureSATZ 2.19)"""
+    """Druckdateien (druck/…md): vorhanden? unbekannte Namen?"""
     fehler, hinweise = [], []
     for a in ausgaben():
         d = bk.druck_datei(a)
@@ -204,7 +204,7 @@ def druck_pruefen():
                 fehler.append(f"{d}: impressum-logo {v('impressum-logo')} fehlt im Ordner bilder/")
         except SystemExit as e:
             fehler.append(f"{d}: {e}")
-    for a in ausgaben():                                # Plattform-Datei des E-Books (2.28)
+    for a in ausgaben():                                # Plattform-Datei des E-Books
         d = bk.ebook_datei(a)
         if d and not os.path.exists(os.path.join(BASE, d)):
             fehler.append(f"E-Book-Angaben {name(a)}: {d} fehlt ({{druck-datei}} unter «## Ausgabe: E-Book»)")
@@ -330,7 +330,7 @@ def shop_angaben():
         print(f"Shop-Angaben: {os.path.relpath(ziel, BASE)}")
 
 
-# --- 00-UEBERSICHT.txt (pureSATZ 2.19.2) -----------------------------------------------------
+# --- 00-UEBERSICHT.txt -----------------------------------------------------
 def _datei_info(pfad):
     """Kurzangabe zu einer Datei: Seiten und Masse (PDF), Pixel (JPG/PNG)."""
     try:
@@ -435,7 +435,7 @@ def _uebersicht(art, final, test):
         print(f"Übersicht: {os.path.relpath(os.path.join(o, '00-UEBERSICHT.txt'), BASE)}")
 
 
-# --- Zusatzdateien für Shops (pureSATZ 2.21) ------------------------------------------------
+# --- Zusatzdateien für Shops ------------------------------------------------
 COVER_GROESSEN = (2000, 1600, 900)          # lange Seite in Pixel: …_Cover-vorne_2000px.jpg usw.
 
 
@@ -514,7 +514,7 @@ def nicht_eingebettet(pdf):
 
 
 def schriften_pruefen(test=None):
-    """Warnung, wenn ein Druck- oder Lese-PDF nicht eingebettete Schriften enthält (pureSATZ 2.21.1)."""
+    """Warnung, wenn ein Druck- oder Lese-PDF nicht eingebettete Schriften enthält."""
     try:
         ordner = [os.path.join(BASE, "ausgabe-test", test)] if test else \
             sorted({os.path.join(BASE, bk.AUSGABEN["B" if a == "uz" else "A"]["ordner"]) for a in ausgaben()})
@@ -597,7 +597,7 @@ def farbschema_zeigen():
 
 def main():
     import geschichten
-    geschichten.hilfsdateien(BASE)          # neu.sh / neu.bat, .gitignore (pureSATZ 2.11)
+    geschichten.hilfsdateien(BASE)          # neu.sh / neu.bat, .gitignore
     global NUR_FASSUNG
     for nr in M.FARBSCHEMA_FEHLT.values():   # «{farbschema}: 5» ohne Abschnitt «### Farbschema 5»
         print(f"Hinweis: Farbschema {nr} fehlt – nehme Schema 1.")
@@ -609,7 +609,7 @@ def main():
         NUR_FASSUNG = next((a for a in args if a in ("normal", "uz")), None)
     final = "final" in args
     art = next((a for a in args if a not in ("final", "uz", "normal")), "alles")
-    komplett = art == "komplett"            # final + Leseprobe + Korrektur (pureSATZ 2.20.1)
+    komplett = art == "komplett"            # final + Leseprobe + Korrektur
     if komplett:
         art, final = "alles", True
     if druck and art in ("alles", "nur-druck"):

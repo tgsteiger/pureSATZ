@@ -172,7 +172,7 @@ def mit_druckangaben(v, fassung=None):
 
 
 def mit_ebookangaben(v, fassung=None):
-    """Variablen v, überlagert mit der Plattform-Datei des E-Books (pureSATZ 2.28)."""
+    """Variablen v, überlagert mit der Plattform-Datei des E-Books."""
     return _ueberlagern(v, ebook_variablen(fassung), fassung, "ebook")
 
 
@@ -194,7 +194,7 @@ def _ueberlagern(v, dv, fassung, medium):
             continue                                                  # gilt für die andere Fassung
         for x in (basis, basis + "-normal", basis + "-uz", basis + "-dc", basis + "-" + medium,
                   f"{basis}-{medium}-normal", f"{basis}-{medium}-uz"):
-            v.pop(x, None)                                            # Plattform-Datei schlägt auch «name-druck» (2.26)
+            v.pop(x, None)                                            # Plattform-Datei schlägt auch «name-druck»
         v[basis] = dv[k]
     return v
 
@@ -374,7 +374,7 @@ for _name, _datei in L.SCHRIFTDATEIEN.items():
 FT = dict(L.SCHRIFT)
 pdfmetrics.registerFontFamily(FT["text"], normal=FT["text"], bold=FT["text_fett"],
                               italic=FT["text_kursiv"], boldItalic=FT["text_fettkursiv"])
-# Nur eingebettete Schriften im PDF (2.21.1): Seiten und Grafiken (QR-Codes) starten mit der Buchschrift
+# Nur eingebettete Schriften im PDF: Seiten und Grafiken (QR-Codes) starten mit der Buchschrift
 # statt mit Helvetica/Times-Roman – sonst melden Druckereien «nicht eingebettete Schriften».
 from reportlab import rl_config as _rl
 from reportlab.graphics import shapes as _shapes
@@ -1284,7 +1284,7 @@ class Doc(BaseDocTemplate):
         if y < 19 * mm * S + lh + 4 * mm:
             print(f"WARNUNG: Text der Rückseite ist zu lang, bitte in {UMSCHLAG} kürzen.")
         feld = barcode_feld() if DRUCK else None
-        if feld:   # Barcode-Feld aus den Druckangaben (barcode-position, -groesse, -bild; pureSATZ 2.19)
+        if feld:   # Barcode-Feld aus den Druckangaben (barcode-position, -groesse, -bild)
             fx, fy, fw, fh = feld["x"], feld["y"], feld["b"], feld["h"]
             if y < fy + fh + 3 * mm:
                 print(f"WARNUNG: Text der Rückseite reicht ins Barcode-Feld ({feld['position']}, "
@@ -2131,7 +2131,7 @@ def zeitstrahl_tabelle(inhalt):
 
 
 
-# --- Tabellen aus tabellen/*.csv (pureSATZ 2.12) ------------------------------------------
+# --- Tabellen aus tabellen/*.csv ------------------------------------------
 class QuerTabelle(Flowable):
     """Tabelle um 90° gedreht auf der hochformatigen Seite (Buch zum Lesen drehen)."""
     def __init__(self, t):
@@ -2316,14 +2316,14 @@ class ImpressumSeite(Flowable):
         return aw, ah - 1
     def draw(self):
         self.angaben.drawOn(self.canv, 0, 0)
-        if self.logo:              # Logo knapp über dem Text: Höhe 1,5 × Schrift, Abstand zwei Zeilen (2.24.1)
+        if self.logo:              # Logo knapp über dem Text: Höhe 1,5 × Schrift, Abstand zwei Zeilen
             from reportlab.lib.utils import ImageReader
             iw, ih = ImageReader(self.logo).getSize()
             st = self.angaben.style
             h = IMPRESSUM_LOGO_HOEHE * st.fontSize; b = h * iw / ih
             self.canv.drawImage(self.logo, 0, self.ah_ang + 2 * st.leading, b, h, mask="auto")
         if self.w:
-            self.w.drawOn(self.canv, 8 * mm, (self.ah / 3 - self.wh) / 2)   # mittig im unteren Drittel (2.24.2)
+            self.w.drawOn(self.canv, 8 * mm, (self.ah / 3 - self.wh) / 2)   # mittig im unteren Drittel
 
 
 IMPRESSUM_LOGO_HOEHE = 1.5    # × Schriftgrösse des Impressums

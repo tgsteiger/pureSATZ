@@ -57,7 +57,7 @@ def esc(t):
 # --- Bilder -----------------------------------------------------------------
 # Titelbild: nur Vorder- und Rückseite zeichnen (viel schneller als das ganze Buch).
 # Texte des Umschlags: Blöcke «::: nur-ebook» oder Zeilen «- name-ebook:», gibt es keine, dann wie im Druck («::: nur-druck»,
-# z. B. «Erstausgabe {jahr}» statt «Stand …» des Bildschirm-PDFs) – pureSATZ 2.18.
+# z. B. «Erstausgabe {jahr}» statt «Stand …» des Bildschirm-PDFs).
 def _umschlag_medium():
     try:
         text = open(os.path.join(BASE, bk.UMSCHLAG), encoding="utf-8").read()
@@ -79,12 +79,12 @@ bk.MEDIUM = "ebook"      # ab hier: Text und Blöcke der E-Book-Ausgabe
 import pdfwerkzeug
 if not pdfwerkzeug.als_jpg(seiten_pdf["vorne"], os.path.join(TMP, "img", "cover.jpg"), breite=1600, qualitaet=92):
     raise SystemExit(pdfwerkzeug.HINWEIS)
-if not LESEPROBE:        # Cover-Bilder für E-Book-Shops: lange Seite 2560 Pixel, kurze mind. 1600 (pureSATZ 2.18)
+if not LESEPROBE:        # Cover-Bilder für E-Book-Shops: lange Seite 2560 Pixel, kurze mind. 1600
     _breite = round(bk.W * max(2560 / max(bk.W, bk.H), 1600 / min(bk.W, bk.H)))
     for _name, _pdf in seiten_pdf.items():
         pdfwerkzeug.als_jpg(_pdf, os.path.join(OUT_DIR, f"{bk.ausgabe()['datei']}_Cover-{_name}.jpg"),
                             breite=_breite, qualitaet=92)
-# Rückseite als letzte Seite des E-Books (pureSATZ 2.23): bild (Standard) | text | nein
+# Rückseite als letzte Seite des E-Books: bild (Standard) | text | nein
 RUECKSEITE = (bk.V("ebook-rueckseite") or "bild").strip().lower()
 if RUECKSEITE not in ("bild", "text", "nein"):
     print(f"Hinweis: ebook-rueckseite «{RUECKSEITE}» unbekannt (bild | text | nein) – nehme «bild».")
@@ -425,7 +425,7 @@ for zeile in bk.text_zeilen():
         flush_absatz()
         if not bn_gesetzt:
             bildnachweis_datei()
-    elif s.startswith("@#"):                     # Tabelle aus tabellen/*.csv (pureSATZ 2.12)
+    elif s.startswith("@#"):                     # Tabelle aus tabellen/*.csv
         flush_absatz(); aktuell["html"].append(tabelle_html(s))
     elif s.startswith("@"):
         flush_absatz()      # Steuerzeilen für das Seitenlayout gelten im E-Book nicht
@@ -743,6 +743,6 @@ if OHNE_ALT:
           + ", ".join(OHNE_ALT))
 if not ISBN_EBOOK and not LESEPROBE:
     print("Hinweis: Noch keine E-Book-ISBN eingetragen.")
-if bk.ja("ebook-epub2", "nein") and not LESEPROBE:      # «epub2-light» für Shops, die nur EPUB 2 annehmen (2.20)
+if bk.ja("ebook-epub2", "nein") and not LESEPROBE:      # «epub2-light» für Shops, die nur EPUB 2 annehmen
     import epub2
     print(f"Fertig: {os.path.relpath(epub2.wandle(EPUB, EPUB[:-5] + '_EPUB2.epub'), BASE)}  (EPUB 2)")

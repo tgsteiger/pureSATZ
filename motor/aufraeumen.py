@@ -8,7 +8,7 @@ aufraeumen.py – entfernt im Buchordner, was nicht mehr gebraucht wird (wird vo
 Gelöscht werden nur bekannte, entbehrliche Dinge:
   Zwischenspeicher (_bildcache, _druckbilder, __pycache__, _epub_tmp, _tmp.pdf),
   Sicherungen (_backup/, *.backup), alte Motoren (motor-alt-*), stichworte-vorschlag.txt;
-  mit «ausgaben»: auch alte Ausgabeordner «ausgabe-…», die zu keiner Fassung mehr gehören (2.26).
+  mit «ausgaben»: auch alte Ausgabeordner «ausgabe-…», die zu keiner Fassung mehr gehören.
 NIE gelöscht: md-history/, die MD-Dateien, stichworte-*.txt, fotos/, bilder/, motor/, .venv/,
 und alles, was das Skript nicht kennt.
 """
@@ -63,7 +63,7 @@ def kandidaten(mit_ausgaben):
             liste.append(name)
     if os.path.isdir(os.path.join(MOTOR, "__pycache__")):
         liste.append("motor/__pycache__")
-    for ordner in ("", "druck", "motor"):                      # Sicherungskopien *.backup (2.26)
+    for ordner in ("", "druck", "motor"):                      # Sicherungskopien *.backup
         pfad = os.path.join(BASE, ordner)
         if os.path.isdir(pfad):
             for name in sorted(os.listdir(pfad)):
@@ -76,7 +76,7 @@ def kandidaten(mit_ausgaben):
                 liste.append(f"{o}/{rest}")
     if mit_ausgaben:
         liste += [o for o in sorted(ausgaben | {"ausgabe-test"}) if os.path.isdir(os.path.join(BASE, o))]
-        if ausgaben:                                            # alte Ausgabeordner ohne Fassung (2.26)
+        if ausgaben:                                            # alte Ausgabeordner ohne Fassung
             liste += [n for n in sorted(os.listdir(BASE)) if n.startswith("ausgabe-") and n not in ausgaben
                       and n != "ausgabe-test" and os.path.isdir(os.path.join(BASE, n))]
     # Sicherheit: nie etwas Geschütztes, nie ausserhalb des Buchordners

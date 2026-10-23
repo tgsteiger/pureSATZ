@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-epub2.py – «epub2-light»: macht aus dem fertigen EPUB 3 eine zusätzliche EPUB-2-Datei (pureSATZ 2.20).
+epub2.py – «epub2-light»: macht aus dem fertigen EPUB 3 eine zusätzliche EPUB-2-Datei.
 
 Für Shops und Prüfprogramme, die nur EPUB 2 annehmen (z. B. epubli). Das EPUB 3 bleibt unverändert.
 Was geändert wird:

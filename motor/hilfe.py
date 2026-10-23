@@ -460,7 +460,7 @@ def erzeuge(basis, buchtitel=None, variablen=None, farben=None, oeffnen=False):
     meine = os.path.join(basis, "meine-hilfe.md")
     gruppen.append(("Alltag", [("Spickzettel", spick_html())]
                     + [(t, h) for _, t, h in md_html(_lies(meine)) if t and h.strip()]))
-    # HILFE.md: «# Gruppe» = gelber Titel in der Navigation, «## Abschnitt» darunter (pureSATZ 2.19.2)
+    # HILFE.md: «# Gruppe» = gelber Titel in der Navigation, «## Abschnitt» darunter
     hilfe_gruppen = []
     for e, t, h in md_html(_lies(os.path.join(MOTOR, "HILFE.md"))):
         if e == 1 and t:

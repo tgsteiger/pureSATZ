@@ -165,6 +165,8 @@ an der sie arbeiten soll. Danach `sh build.sh pruefen` – der Motor meldet sofo
 
 Anleitung: **`GITHUB.md`** (einrichten, hochladen, Alltag, anderer Computer). Bei jedem `git push` baut GitHub
 ein Testbuch auf Linux, Mac und Windows (`test/selbsttest.py`) und prüft das E-Book mit EPUBCheck.
+Nach einer Motor-Änderung: dasselbe Buch mit altem und neuem Motor bauen und mit `python3 test/vergleich.py <alt> <neu>`
+Seite für Seite vergleichen (Text und Pixel, dazu die E-Books).
 `motor/VERSION` und `motor/CHANGELOG.md` führen die Versionen. Bücher gehören nicht ins Repository.
 
 ## Lizenz

@@ -60,7 +60,7 @@ def _wo(name, nr):
 
 
 def _geschichten_einsetzen(pfad, zeilen_mit_nr):
-    """Zeilen «@@name» durch die Geschichte geschichten/name.md ersetzen (pureSATZ 2.11).
+    """Zeilen «@@name» durch die Geschichte geschichten/name.md ersetzen.
     Ohne @@-Zeilen bleibt alles, wie es war."""
     import geschichten as G
     if not any(G.VERWEIS.match(z) for _, z in zeilen_mit_nr):
@@ -95,10 +95,10 @@ def _geschichten_einsetzen(pfad, zeilen_mit_nr):
 _CACHE = {}
 
 
-VARIABLE = re.compile(r"^\s*(?:[-*]\s+)?\{?([a-z][a-z0-9-]*)\}?\s*:(?:\s+(.*?))?\s*$")   # «{name}: wert» (2.27), auch «- name:» / «- {name}:»
+VARIABLE = re.compile(r"^\s*(?:[-*]\s+)?\{?([a-z][a-z0-9-]*)\}?\s*:(?:\s+(.*?))?\s*$")   # «{name}: wert», auch «- name:» / «- {name}:»
 BUCHSTART = re.compile(r"^#{1,6}\s*=*\s*BUCHSTART\b", re.I)
 BEFEHL_ALS_TITEL = re.compile(r"^#{1,6}\s+(@[A-Z].*)$")     # «## @TITEL» = «@TITEL»
-FOTO_KOPF = re.compile(r"^#{1,6}\s+@FOTO(-[A-Za-z]+)?(?:\s+(.*))?$")   # «#### @FOTO Titel» (2.24)
+FOTO_KOPF = re.compile(r"^#{1,6}\s+@FOTO(-[A-Za-z]+)?(?:\s+(.*))?$")   # «#### @FOTO Titel»
 
 
 def ist_buchstart(zeile):
@@ -300,7 +300,7 @@ ZITAT_ZIER = re.compile(r"^@ZITAT-ZIER\s+")         # «@ZITAT-ZIER Satz» = «>
 
 
 def markdown_zeilen(roh):
-    """Markdown-Schreibweisen vor dem Lesen umsetzen (pureSATZ 2.25):
+    """Markdown-Schreibweisen vor dem Lesen umsetzen:
     «\\» am Zeilenende = Zeilenumbruch im Absatz (wie <br/>; die nächste Zeile gehört zum selben Absatz),
     eine Zeile «---» = neue Seite (wie @UMBRUCH), «@ZITAT-ZIER Satz» = «> Satz» (Zitat mit Verzierung)."""
     out, i = [], 0
@@ -353,7 +353,7 @@ def zeilen(pfad, a, entwurf=False):
         nr, s = roh[i]
         s = s.rstrip()
         fk = FOTO_KOPF.match(s)
-        if fk:                                  # «#### @FOTO Titel» … bis zur ersten Leerzeile (pureSATZ 2.24)
+        if fk:                                  # «#### @FOTO Titel» … bis zur ersten Leerzeile
             art, tag, titel = _art("foto" + (fk.group(1) or "").lower() + " " + (fk.group(2) or ""))
             if art != "foto":
                 raise Fehler(f"{_wo(name, nr)}: unbekannter Foto-Befehl «{s.lstrip('# ')}» "
@@ -424,7 +424,7 @@ def umschlag(pfad, a):
             continue
         if not s:
             continue
-        if s.startswith("#"):                    # «# Vorderseite» oder «## Vorderseite» (2.24)
+        if s.startswith("#"):                    # «# Vorderseite» oder «## Vorderseite»
             name = (s.lstrip("#").strip().lower().replace("ü", "ue").replace("ä", "ae").replace("ö", "oe")
                     .replace("buchruecken", "ruecken"))
             if name in UMSCHLAG_TEILE:
@@ -434,7 +434,7 @@ def umschlag(pfad, a):
         if not m or akt is None:
             continue                            # Überschrift, «> Erklärung» oder erklärender Satz
         k, w = m.group(1), (m.group(2) or "").strip()
-        basis, _, endung = k.rpartition("-")    # «fuss-druck: …» nur im Druck, «text-uz: …» nur zweite Ausgabe (2.24)
+        basis, _, endung = k.rpartition("-")    # «fuss-druck: …» nur im Druck, «text-uz: …» nur zweite Ausgabe
         if basis and ALT.get(endung, endung) in TAGS:
             if ALT.get(endung, endung) not in a.tags():
                 continue
@@ -520,7 +520,7 @@ def pruefen(basis, text, umschlag_datei=None, finde=None, var=None):
                                                     "(Entwurf: Vorschlags-Kasten, Druck: wird weggelassen)")
                     continue
                 s = z.strip()
-                if s.startswith("@#"):                     # Tabelle (pureSATZ 2.12)
+                if s.startswith("@#"):                     # Tabelle
                     import tabellen as T
                     for f in T.pruefe(basis, s):
                         meldungen.append(f"Zeile {z.nr}: {f}")
@@ -542,7 +542,7 @@ def pruefen(basis, text, umschlag_datei=None, finde=None, var=None):
                         if k not in UMSCHLAG_SCHLUESSEL:
                             meldungen.append(f"{umschlag_datei}: unbekannter Schlüssel «{k}». Möglich: "
                                              + ", ".join(sorted(UMSCHLAG_SCHLUESSEL)))
-    try:                                          # Geschichten (pureSATZ 2.11): nicht oder doppelt eingebunden
+    try:                                          # Geschichten: nicht oder doppelt eingebunden
         import geschichten as G
         if os.path.isdir(G.ordner(basis)):
             benutzt = [n for _, n in G.verweise(pfad)]
@@ -554,7 +554,7 @@ def pruefen(basis, text, umschlag_datei=None, finde=None, var=None):
                 hinweise.append(f"Noch nicht im Buch ({len(frei)}): " + ", ".join("@@" + n for n in frei))
     except SystemExit as e:
         meldungen.append(str(e))
-    try:                                          # Aufzählung (2.16): einzelne Zeile «3. Mai …» = wohl keine
+    try:                                          # Aufzählung: einzelne Zeile «3. Mai …» = wohl keine
         roh = open(pfad, encoding="utf-8").read().split("\n")
         ist = lambda z: bool(re.match(r"^ *(-|\d{1,3}\.)\s", z))
         for i, z in enumerate(roh):

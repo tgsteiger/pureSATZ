@@ -18,7 +18,7 @@ Im Buch bindet eine eigene Zeile «@@schutzschild-hoch» die Geschichte ein (Nam
 Aufruf über neu.sh / neu.bat im Buchordner:
     sh neu.sh "Schutzschild hoch!"    neue Geschichte anlegen
     sh neu.sh                         Übersicht zeigen (und geschichten-uebersicht.html schreiben)
-    sh neu.sh tabelle "Titel"         neue Tabelle in tabellen/ anlegen (pureSATZ 2.12)
+    sh neu.sh tabelle "Titel"         neue Tabelle in tabellen/ anlegen
 Ohne Ordner geschichten/ ändert sich nichts: ein Buch aus einer einzigen Buchdatei läuft wie bisher.
 """
 import html
@@ -36,7 +36,7 @@ except ImportError:
 ORDNER = "geschichten"
 STAENDE = ("idee", "entwurf", "ueberarbeiten", "fertig")
 STAND_TEXT = {"idee": "Idee", "entwurf": "Entwurf", "ueberarbeiten": "überarbeiten", "fertig": "fertig"}
-KOPF = re.compile(r"^\s*(?:-\s*)?(stand|stichworte|quelle)\s*:\s*(.*?)\s*$", re.I)   # «- » freiwillig (2.27)
+KOPF = re.compile(r"^\s*(?:-\s*)?(stand|stichworte|quelle)\s*:\s*(.*?)\s*$", re.I)   # «- » freiwillig
 VERWEIS = re.compile(r"^\s*@@([A-Za-z0-9][A-Za-z0-9._-]*)\s*$")
 NICHT = {"liesmich", "readme", "uebersicht"}            # Hilfedateien im Ordner sind keine Geschichten
 
