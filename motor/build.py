@@ -287,6 +287,11 @@ def zweite_ausgabe():
     return any(k.endswith(("-uz", "-dc")) for k in alle_variablen())
 
 
+def teil_eintrag(num, titel, sub=""):
+    """Eintrag eines Teils im Inhaltsverzeichnis: «Teil 1 · Titel: Untertitel»; ohne Nummer nur «Titel: Untertitel»."""
+    return " · ".join(x for x in (num, titel) if x) + (f": {sub}" if sub else "")
+
+
 class _Einstellungen:
     """Alte Namen (E.TITEL, E.JAHR …) lesen jetzt die Variablen der MD (titel, jahr …)."""
     STANDARD = {"SPRACHE": "de", "PLATTFORM": "epubli", "KASTEN_HINWEIS": "darf übersprungen werden",
@@ -1180,7 +1185,7 @@ class Doc(BaseDocTemplate):
             lvl, text = f._toc
             self.link_entry(lvl, text)
         if isinstance(f, PartMarker):
-            self.link_entry(0, f"{f.num} · {f.title}: {f.sub}")
+            self.link_entry(0, teil_eintrag(f.num, f.title, f.sub))
             self.kopf = f.title; self.kap = None; self.zusatz = None
         if isinstance(f, Paragraph) and getattr(f, "_toc", None) and f._toc[0] == 0:
             self.kopf = f._toc[1]     # Vorwort, Zeitstrahl, Über den Autor …

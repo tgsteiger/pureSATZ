@@ -375,11 +375,11 @@ for zeile in bk.text_zeilen():
         num, titel, sub = [x.strip() for x in s[2:].split("|")][:3]
         teilnr += 1
         name = f"teil{teilnr}.xhtml"
-        neue_datei(name, f"{num} · {titel}")
-        aktuell["html"].append(f'<section class="teil"><img class="teillotus" src="img/lotus.png" alt=""/>'
-                               f'<p class="teilnr">{esc(num)}</p><h1>{esc(titel)}</h1>'
-                               f'<p class="teilsub">{esc(sub)}</p></section>')
-        nav.append((1, f"{num} · {titel}: {sub}", name))
+        neue_datei(name, bk.teil_eintrag(num, titel))
+        nr_html = f'<p class="teilnr">{esc(num)}</p>' if num else ""
+        aktuell["html"].append('<section class="teil"><img class="teillotus" src="img/lotus.png" alt=""/>'
+                               f'{nr_html}<h1>{esc(titel)}</h1><p class="teilsub">{esc(sub)}</p></section>')
+        nav.append((1, bk.teil_eintrag(num, titel, sub), name))
     elif s.startswith("### "):
         flush_absatz(); aktuell["html"].append(f'<h3>{esc(s[4:])}</h3>')
     elif s.startswith("## "):

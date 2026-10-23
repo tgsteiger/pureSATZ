@@ -63,6 +63,7 @@ das PDF ansehen und mit der MD vergleichen – danach das Demo löschen und schr
 | Im Text | Wirkung |
 |---|---|
 | `# Teil 1\|Titel\|Untertitel` (`\|bild.jpg`) | neuer Teil mit Teil-Seite (optional eigenes Bild) |
+| `# \|Anhang\|Untertitel` | Teil-Seite ohne Nummer, z. B. für den Anhang; darunter Kapitel mit `##` (Kopfzeile «Anhang · Kapitel») |
 | `# Titel` | Kapitel oberster Ebene, neue Seite (Anhang, Zeitstrahl, Über den Autor) |
 | `## Kapitel` / `### Zwischentitel` | Kapitel (im Inhalt) / kleiner Titel |
 | `## @BEFEHL` | Befehl als Überschrift (sichtbar in der Navigation des Editors) |
