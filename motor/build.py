@@ -152,8 +152,8 @@ def mit_druckangaben(v, fassung=None):
         basis, tag = zerlege(k)
         if tag and (tag == "normal") != (f == "normal"):
             continue                                                  # gilt für die andere Fassung
-        for x in (basis, basis + "-normal", basis + "-uz", basis + "-dc"):
-            v.pop(x, None)
+        for x in (basis, basis + "-normal", basis + "-uz", basis + "-dc", basis + "-druck"):
+            v.pop(x, None)                                            # Druckdatei schlägt auch «name-druck» (2.26)
         v[basis] = dv[k]
     return v
 

@@ -3,6 +3,22 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.26.0 (Oktober 2026)
+- **`{name}` auch dort, wo der Wert steht**: in Variablen- und Druckdateien darf (und soll) der Name in Klammern stehen:
+  `- {impressum-kontakt}: …`. Die Suche nach `{impressum-kontakt}` findet so den Wert und die Stelle im Buch.
+  `- name: wert` ohne Klammern geht weiterhin. Vorlage umgestellt; hilfe.html zeigt die Namen mit Klammern.
+- **Der genauere Name gewinnt**: `{name-ebook}` / `{name-druck}` / `{name-bildschirm}` haben Vorrang vor `{name}`.
+  Ein Wert in der Druckdatei schlägt auch `{name-druck}` der Variablen-Datei.
+- **Regel: Texte in die Variablen-Datei, Technik in die Druckdatei.** Das Impressum steht vollständig in der
+  Variablen-Datei (`impressum-herstellung-druck`, `-ebook`, `impressum-rechte`, `impressum-kontakt`,
+  `impressum-logo-druck`); so bekommt auch das E-Book die Zeilen der Druckerei (z. B. tredition). Die Muster in
+  vorlage/druck/ haben keinen Impressum-Abschnitt mehr (nur einen Hinweis, z. B. für den Privatdruck).
+- Vorlage: Impressum wie Leben123 (©, Website, Herstellung, Rechte, Kontakt, ISBN); `verlag` entfällt (Adresse steht
+  in `impressum-rechte`).
+- **`plattform: tredition` und `kdp`**: verhalten sich wie `bod` (Strichcode-Feld rechts, keine epubli-Füllseite).
+- **cleanup.sh** räumt zusätzlich `.backup`-Dateien auf, und mit `sh cleanup.sh ausgaben` auch alte Ausgabeordner,
+  die zu keiner Fassung mehr gehören (z. B. `ausgabe-normal epubli`).
+
 ## 2.25.0 (Oktober 2026)
 - **Markdown für Zeilenumbruch und neue Seite**:
   - `\` am Zeilenende = Zeilenumbruch im Absatz (wie `<br/>`); die nächste Zeile gehört zum selben Absatz.

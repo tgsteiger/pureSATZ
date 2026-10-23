@@ -31,7 +31,7 @@ TABELLEN (nur wenn es den Ordner tabellen/ gibt)
 - Jede Zeile braucht gleich viele Werte wie Spaltenüberschriften.
 
 DRUCK (nur wenn es den Ordner druck/ gibt)
-- Eine Datei pro Druckvariante, z. B. druck/epubli-a5-normal.md, druck/bod-a5-hardcover.md. Werte als «- name: wert».
+- Eine Datei pro Druckvariante, z. B. druck/epubli-a5-normal.md, druck/bod-a5-hardcover.md. Werte als «- {name}: wert». Nur Technik (Plattform, Format, Rücken, Beschnitt, Strichcode) – Texte und Impressum stehen in der Variablen-Datei.
 - Erlaubte Namen: plattform, format, seite, bindung, projekt, ruecken-hardcover, ruecken-softcover,
   beschnitt-buchblock, beschnitt-hardcover, beschnitt-softcover, deckel-hardcover, papier, extra-seiten,
   isbn-buch, barcode-position, barcode-groesse, barcode-bild. Masse in mm, z. B. «seite: 148 x 210».
@@ -43,7 +43,9 @@ LESEPROBE (Variablen-Datei)
 - Sonst leseprobe: Anzahl Kapitel oder Titel. Beides leer = 4 Seiten nach dem Inhaltsverzeichnis.
 
 GRUNDREGELN FÜR ALLE MD-DATEIEN
-- Gliederung mit # / ## / ###. Werte als Listenzeile:  - name: wert
+- Gliederung mit # / ## / ###. Werte als Listenzeile:  - {name}: wert   (im Buch erscheint derselbe Name als {name})
+- Endung -druck / -ebook / -bildschirm / -normal / -uz am Namen = nur dort; der genauere Name gewinnt.
+- Alle Texte (auch das ganze Impressum: impressum-herstellung-druck/-ebook, impressum-rechte, impressum-kontakt) stehen hier.
 - Namen von Werten (vor dem Doppelpunkt) nie ändern, nie erfinden. Nur den Wert danach.
 - {name} im Text = Wert aus der Variablen-Datei, z. B. {titel}, {autor}. So stehen lassen.
 - Eine Zeile mit leerer Variable fällt im Buch weg.

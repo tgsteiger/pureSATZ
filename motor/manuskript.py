@@ -15,7 +15,9 @@ Aufbau der Buch-MD
    Im Text: {titel}, {untertitel} … Gibt es «name-normal» und «name-uz», nimmt {name}
    automatisch den Wert der gebauten Fassung. Fehlt eine der beiden Varianten, ist sie leer.
    {isbn} ist besonders: im Druck isbn-buch (leer = «folgt»), im E-Book isbn-ebook.
-   Gibt es «name-druck», «name-ebook» oder «name-bildschirm», nimmt {name} den Wert des Mediums (2.24).
+   Gibt es «name-druck», «name-ebook» oder «name-bildschirm», nimmt {name} den Wert des Mediums (2.24);
+   er hat Vorrang vor «name» ohne Endung (2.26). In Variablen- und Druckdateien darf der Name in Klammern
+   stehen: «- {isbn-buch}: …» (2.26), damit die Suche nach {name} beide Stellen findet.
    Eine Zeile, in der eine Variable leer bleibt, fällt ganz weg.
 
 2. Blöcke  ::: art[-ausgabe] [Titel]  …  :::
@@ -101,7 +103,7 @@ def _geschichten_einsetzen(pfad, zeilen_mit_nr):
 _CACHE = {}
 
 
-VARIABLE = re.compile(r"^\s*(?:[-*]\s+)?([a-z][a-z0-9-]*)\s*:(?:\s+(.*?))?\s*$")
+VARIABLE = re.compile(r"^\s*(?:[-*]\s+)?\{?([a-z][a-z0-9-]*)\}?\s*:(?:\s+(.*?))?\s*$")   # «- name:» oder «- {name}:» (2.26)
 BUCHSTART = re.compile(r"^#{1,6}\s*=*\s*BUCHSTART\b", re.I)
 BEFEHL_ALS_TITEL = re.compile(r"^#{1,6}\s+(@[A-Z].*)$")     # «## @TITEL» = «@TITEL»
 FOTO_KOPF = re.compile(r"^#{1,6}\s+@FOTO(-[A-Za-z]+)?(?:\s+(.*))?$")   # «#### @FOTO Titel» (2.24)
@@ -190,10 +192,12 @@ class Ausgabe:
             if self.medium == "druck":
                 return "" if self.privatdruck else (self.var.get("isbn-buch") or "folgt")
             return self.var.get("isbn-ebook", "") if self.medium == "ebook" else ""
+        if f"{name}-{self.medium}" in self.var:          # 2.26: der genauere Name gewinnt («name-ebook» vor «name»)
+            return self.var[f"{name}-{self.medium}"]
         if name in self.var:
             return self.var[name]
         if any(f"{name}-{t}" in self.var for t in ("druck", "ebook", "bildschirm")):    # 2.24: je Medium
-            return self.var.get(f"{name}-{self.medium}", "")
+            return ""
         if any(f"{name}-{t}" in self.var for t in ("normal", "uz", "dc")):
             if self.fassung == "uz":
                 return self.var.get(f"{name}-uz", self.var.get(f"{name}-dc", ""))

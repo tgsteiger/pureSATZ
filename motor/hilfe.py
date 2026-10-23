@@ -190,7 +190,7 @@ def md_html(text):
 def befehle_html():
     sys.path.insert(0, MOTOR)
     import manuskript as M
-    reihen = "".join(f"<tr><td><code>{html.escape(k)}</code></td><td>{html.escape(v)}</td></tr>"
+    reihen = "".join(f"<tr><td><code>{{{html.escape(k)}}}</code></td><td>{html.escape(v)}</td></tr>"
                      for k, v in M.BEFEHLE.items())
     return ("<p>Jeder Befehl steht auf einer eigenen Zeile, genau so geschrieben (GROSS). "
             "<code>## @TITEL</code> wirkt wie <code>@TITEL</code>.</p>"
@@ -218,14 +218,15 @@ def variablen_html(pfad):
         if m:
             fertig(); gruppe, erkl, reihen = m.group(2), [], []
             continue
-        m = re.match(r"^[-*]\s+([a-z][a-z0-9-]*)\s*:\s*(.*)$", s)
+        m = re.match(r"^[-*]\s+\{?([a-z][a-z0-9-]*)\}?\s*:\s*(.*)$", s)
         if m:
             reihen.append((m.group(1), m.group(2)))
         elif s:
-            erkl.append(s)
+            erkl.append(s[1:].strip() if s.startswith(">") else s)
     fertig()
     out = [f"<p>Aus <code>{html.escape(os.path.basename(pfad))}</code> – mit den Werten dieses Buchs. "
-           "Namen vor dem Doppelpunkt nie ändern, nur den Wert. <code>name-uz</code> = Wert für die zweite Ausgabe.</p>"]
+           "Namen vor dem Doppelpunkt nie ändern, nur den Wert. <code>{name-uz}</code> = Wert für die zweite Ausgabe, "
+           "<code>{name-druck}</code> / <code>{name-ebook}</code> = nur im Druck / im E-Book. Im Buch steht derselbe Name als <code>{name}</code>.</p>"]
     for g, e, r in teile:
         if not r and not e:
             continue
@@ -246,7 +247,7 @@ def formate_html(variablen=None):
         return ""
     aktuell = ""
     if variablen and os.path.exists(variablen):
-        m = re.search(r"^[-*]\s+format\s*:\s*(\S+)", _lies(variablen), re.M)
+        m = re.search(r"^[-*]\s+\{?format\}?\s*:\s*(\S+)", _lies(variablen), re.M)
         aktuell = m.group(1).strip().lower() if m else ""
     zeilen = []
     for k, name, b, h, ri, ra, _, _, pt in reihen:

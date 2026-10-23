@@ -2,7 +2,7 @@
 
 Ein Satzsystem für Bücher aus Markdown: **alles steht in drei MD-Dateien**, der Motor macht das
 Layout. Zwei Ausgaben (normal und z. B. Director's Cut / Unzensiert), daraus Bildschirm-PDF,
-Druckdateien für epubli oder BoD (Hardcover/Softcover), E-Book und Booklets. Entstanden aus «Leben 1.0, 2.0, 3.0».
+Druckdateien für epubli, BoD, tredition oder KDP (Hardcover/Softcover), E-Book und Booklets. Entstanden aus «Leben 1.0, 2.0, 3.0».
 
 **Webseite:** [tgsteiger.github.io/pureSATZ](https://tgsteiger.github.io/pureSATZ/) – Download, fünf Schritte, Hilfe online.
 
@@ -38,7 +38,7 @@ Das legt **neben** `pureSATZ` einen Buchordner an (z. B. `../Mein-Buch/`):
 | `sync.sh`, `update.sh`, `.gitignore` | Buch zwischen Computern abgleichen, Motor-Update von GitHub (siehe `GITHUB.md`) |
 | `fotos/`, `bilder/`, `build.sh`, `cleanup.sh`, `sicherung.sh`, `README.md`, `motor/` | Bilder, Bauen, Aufräumen, Sicherung, Hilfe, Satzsystem |
 
-Alle drei MD-Dateien haben dieselben Regeln: Überschriften `#`, `##`, `###`, Werte als `- name: wert`,
+Alle drei MD-Dateien haben dieselben Regeln: Überschriften `#`, `##`, `###`, Werte als `- {name}: wert` (derselbe Name erscheint im Buch als `{name}`),
 erklärende Sätze sind erlaubt. Danach im Buchordner:
 
 ```sh
@@ -110,7 +110,7 @@ ein fertiges Buch auch in Jahren noch genau gleich erstellen.
 
 Einschlag Hardcover 11 mm, Beschnitt Softcover und Innenseiten 3 mm – alles in der Variablen-Datei änderbar (`beschnitt-…`, `deckel-hardcover`). Weitere Formate: in `motor/build.py` bei `FORMATE`.
 
-**Druckangaben pro Plattform (ab 2.19):** Alles für den Druck (Plattform, Format oder eigenes Mass `seite: 148 x 210`, Rücken, Beschnitt, Deckel, Papier, Barcode-Feld) kann pro Fassung in einer Datei im Ordner `druck/` stehen – Muster in `vorlage/druck/` (epubli in allen Formaten, BoD A5 Hardcover, noch ungetestet). In der Variablen-Datei: `druck-normal: epubli-a5`, `druck-uz: …`. Testen ohne Umstellen: `sh build.sh final druck=bod-a5-hardcover` – baut nur die Druckdateien nach `ausgabe-test/bod-a5-hardcover/`. Der normale Bau schreibt immer nach `ausgabe-normal/` bzw. in den Ordner der zweiten Ausgabe. Andere Plattform (z. B. KDP): Musterdatei kopieren und die Werte aus deren Coverrechner eintragen.
+**Druckangaben pro Plattform (ab 2.19):** Alles für den Druck (Plattform, Format oder eigenes Mass `seite: 148 x 210`, Rücken, Beschnitt, Deckel, Papier, Barcode-Feld) kann pro Fassung in einer Datei im Ordner `druck/` stehen – Muster in `vorlage/druck/` (epubli in allen Formaten, BoD A5 Hardcover, tredition A5 Hardcover). Druckdateien enthalten nur Technik; alle Texte, auch das Impressum, stehen in der Variablen-Datei. In der Variablen-Datei: `druck-normal: epubli-a5`, `druck-uz: …`. Testen ohne Umstellen: `sh build.sh final druck=bod-a5-hardcover` – baut nur die Druckdateien nach `ausgabe-test/bod-a5-hardcover/`. Der normale Bau schreibt immer nach `ausgabe-normal/` bzw. in den Ordner der zweiten Ausgabe. Andere Plattform (z. B. KDP): Musterdatei kopieren und die Werte aus deren Coverrechner eintragen.
 
 ## setup/start.txt
 

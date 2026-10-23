@@ -6,9 +6,7 @@
 ## @IMPRESSUM
 © {jahr} {autor}
 {website}
-Satzsystem: pureSATZ
 
-{verlag}
 {impressum-herstellung}
 
 {impressum-rechte}
@@ -16,10 +14,6 @@ Satzsystem: pureSATZ
 {impressum-kontakt}
 
 ISBN {isbn}
-{auflage}
-::: nur-privatdruck
-Privatdruck {jahr} · nicht im Handel erhältlich
-:::
 
 ## @HINWEIS
 Hier steht ein Hinweis unten im Impressum, z. B. «Dieses Buch ersetzt keine Beratung». Keiner gewünscht? Diese zwei Zeilen löschen.

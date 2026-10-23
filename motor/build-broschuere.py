@@ -29,7 +29,8 @@ bk.DRUCK = True
 A = bk.AUSGABE
 KUERZEL = bk.ausgabe().get("kuerzel", A)
 
-PLATTFORM = bk.V("plattform", "epubli").strip().lower()   # "epubli" oder "bod"
+PLATTFORM_NAME = bk.V("plattform", "epubli").strip().lower()   # epubli, bod, tredition, kdp
+PLATTFORM = {"tredition": "bod", "kdp": "bod"}.get(PLATTFORM_NAME, PLATTFORM_NAME)   # tredition/KDP wie BoD (2.26)
 # "veroeffentlichen" = Buch veröffentlichen (mit ISBN) / "privatdruck" = ohne ISBN
 PROJEKT = bk.ausgabe()["epubli"]
 ISBN = bk.V("isbn-buch")
@@ -75,7 +76,7 @@ PROFILE = {
 # ===========================================================================
 
 if PLATTFORM not in PROFILE:
-    raise SystemExit(f"Unbekannte Plattform «{PLATTFORM}». Möglich: " + ", ".join(PROFILE))
+    raise SystemExit(f"Unbekannte Plattform «{PLATTFORM_NAME}». Möglich: epubli, bod, tredition, kdp")
 P = dict(PROFILE[PLATTFORM])
 P["beschnitt_mm"] = mm_wert("beschnitt-buchblock", P["beschnitt_mm"])
 bk.B = P["beschnitt_mm"] * mm
@@ -235,7 +236,7 @@ print()
 print(f"*** {KUERZEL}: {bk.FMT['name']}, {BINDUNG}" + (f", {PAPIER}" if PAPIER else "") + f", Buchblock {n} Seiten. Rücken "
       + ", ".join(x for x in (f"Softcover {RUECKEN_SOFT:g} mm" if ganz else "",
                               f"Hardcover {RUECKEN_HART:g} mm" if hc else "") if x) + ".")
-print(f"*** Stimmt das mit dem {'BoD' if PLATTFORM == 'bod' else 'epubli'}-Coverrechner überein (Seitenzahl, Papier, Gesamtbreite, Gesamthöhe)? "
+print(f"*** Stimmt das mit dem {dict(bod='BoD', kdp='KDP').get(PLATTFORM_NAME, PLATTFORM_NAME)}-Coverrechner überein (Seitenzahl, Papier, Gesamtbreite, Gesamthöhe)? "
       f"Sonst in {DRUCKDATEI or 'der Variablen-Datei'} anpassen (ruecken-…, beschnitt-…, deckel-hardcover).")
 print()
 

@@ -14,7 +14,18 @@
 | `readme4ki.txt` | kurze Anleitung für eine andere KI (siehe unten) |
 
 Alle drei Dateien haben dieselben Regeln: Überschriften `#`, `##`, `###` gliedern, Werte stehen als
-`- name: wert`, erklärende Sätze sind erlaubt.
+`- {name}: wert` (die Klammern sind freiwillig, `- name: wert` geht auch), Erklärungen als `> …` oder Satz.
+
+**Wo steht was?**
+
+| Was | Wo | Im Buch / Umschlag |
+|---|---|---|
+| alle **Texte** (Titel, Impressum, ISBN, Shop …) | `<buch>-variablen.md`, z. B. `- {impressum-kontakt}: …` | `{impressum-kontakt}` |
+| **Technik** einer Druckerei (Format, Rücken, Beschnitt, Strichcode) | `druck/<datei>.md` – gilt nur für die Druckdateien | – |
+
+Suchst du nach `{name}`, findest du beide Stellen: wo der Wert steht und wo er erscheint.
+Endungen: `{name-druck}` / `{name-ebook}` / `{name-bildschirm}` = nur dort, `{name-normal}` / `{name-uz}` = nur in
+dieser Ausgabe. Der genauere Name gewinnt (`{impressum-kontakt-ebook}` vor `{impressum-kontakt}`).
 
 Das **Demo-Kapitel** in der Buch-Datei zeigt alle Möglichkeiten. Einmal `sh build.sh` laufen lassen,
 das PDF ansehen und mit der MD vergleichen – danach das Demo löschen und schreiben.
@@ -99,7 +110,7 @@ weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen �
 
 ## Variablen
 
-- Im Buch und im Umschlag: Name in geschweiften Klammern, z. B. `{titel}`, `{autor}`.
+- In der Variablen-Datei `- {titel}: …`, im Buch und im Umschlag `{titel}` – derselbe Name an beiden Stellen.
 - `name-normal` / `name-uz`: Wert je Ausgabe. `{name}` nimmt automatisch den richtigen.
 - Eine Zeile, in der eine Variable leer ist, fällt weg. `{isbn}`: Buch bzw. E-Book, leer = «folgt».
 - `format`: `a5` · `taschenbuch` · `sachbuch` · `a4` · `quadrat` (Masse laut epubli)
@@ -112,7 +123,7 @@ weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen �
 
 | Bereich | Variablen |
 |---|---|
-| Buch | `titel`, `untertitel`, `autor`, `website`, `ort`, `jahr`, `auflage`, `stand`, `verlag` |
+| Buch | `titel`, `untertitel`, `autor`, `website`, `ort`, `jahr`, `auflage`, `stand` |
 | Zwei Ausgaben | `zweite-ausgabe` (ja/nein), `ausgabe-name-normal` / `-uz`, `stempel-uz` (z. B. UNZENSIERT), `kasten-hinweis` |
 | ISBN | `isbn-buch`, `isbn-ebook` |
 | E-Book | `ebook-epub2` (ja = zusätzlich EPUB 2), `ebook-rueckseite` (bild / text / nein), `ebook-barrierefreiheit`, `farbe-akzent-ebook` |
@@ -357,7 +368,7 @@ Ohne `druck`-Zeile gilt alles wie bisher.
 
 | In der Druckdatei | Bedeutung |
 |---|---|
-| `plattform` | `epubli` oder `bod` (bestimmt Strichcode-Platz und Füllseite) |
+| `plattform` | `epubli`, `bod`, `tredition` oder `kdp` (bestimmt Strichcode-Platz und Füllseite; tredition und kdp wie bod) |
 | `format` / `seite` | Format wie oben; `seite: 148 x 210` = eigenes Mass in mm (Ränder und Schrift vom nächstliegenden Format) |
 | `bindung`, `projekt`, `papier`, `extra-seiten`, `isbn-buch` | wie in der Variablen-Datei |
 | `ruecken-hardcover`, `ruecken-softcover` | Rücken in mm laut Coverrechner der Plattform |
@@ -366,8 +377,8 @@ Ohne `druck`-Zeile gilt alles wie bisher.
 | `barcode-groesse` | z. B. `40x20` (mm, 16 mm vom Rand seitlich, 8 mm von unten); leer = 60 × 35 mm ab der Ecke frei |
 | `barcode-bild` | PNG aus `bilder/` auf weissem Feld; leer = nichts zeichnen (BoD: Strichcode aus der ISBN) |
 | `versatz-vertikal`, `versatz-horizontal` | ganzen Seiteninhalt verschieben, in mm: vertikal + = nach oben, horizontal + = nach aussen (nach Messung am Probeexemplar) |
-| `impressum-herstellung`, `impressum-kontakt` | Zeilen im Impressum des gedruckten Buchs (wer druckt, Kontakt nach EU-Produktsicherheitsverordnung); leer = Zeile fällt weg |
-| `impressum-logo` | Logo der Druckerei links über dem Impressumstext (PNG aus `bilder/`, 1,5 × so hoch wie die Schrift, zwei Zeilen Abstand, z. B. tredition); leer = kein Logo |
+| `impressum-…` | besser in der Variablen-Datei (`{impressum-herstellung-druck}` usw.); ein Wert hier ersetzt ihn im gedruckten Buch (z. B. Privatdruck-Hinweis) |
+| `impressum-logo-druck` (Variablen-Datei) | Logo der Druckerei links über dem Impressumstext (PNG aus `bilder/`, 1,5 × so hoch wie die Schrift, zwei Zeilen Abstand, z. B. tredition); leer = kein Logo |
 
 `name-normal` / `name-uz` gehen auch in der Druckdatei. Weicht das Druckformat vom Grundformat ab, meldet der
 Bau «Seitenzahlen im Druck anders als im Lese-PDF». Beim Bau steht `Druckangaben: druck/…md`, und eine Kopie der
@@ -379,9 +390,11 @@ in der Druckdatei `versatz-vertikal: -1.5`. Seitlich genauso mit `versatz-horizo
 Seitenzahl und Bilder verschieben sich gemeinsam, das Layout bleibt gleich; nur der Buchblock dieser Druckerei ist
 betroffen. Der Beschnitt reicht als Reserve (bei 5 mm bis etwa 3 mm Versatz); mehr meldet der Bau als Warnung.
 
-**Impressum je Druckerei:** Im Impressum der Buch-Datei stehen `{impressum-herstellung}` und `{impressum-kontakt}`.
-Die Werte kommen aus der Variablen-Datei (`…-druck`, Vorgabe epubli) bzw. aus der aktiven Druckdatei –
-so stimmt das Impressum automatisch zur gewählten Druckerei. Weitere eigene `impressum-…`-Namen sind erlaubt.
+**Impressum:** Alle Zeilen stehen in der Variablen-Datei unter «Impressum», für Druck und E-Book zusammen, z. B. bei
+tredition `{impressum-herstellung-druck}: Druck und Distribution … tredition …`, `{impressum-herstellung-ebook}:
+Distribution … tredition …`, `{impressum-kontakt}: …`, `{impressum-logo-druck}: tredition-logo.png`. Die Druckdatei
+enthält nur Technik. Wechselst du die Druckerei, passt du dort die Technik und hier die Impressum-Zeilen an.
+Nicht gebrauchte Druckdateien kannst du in `druck/reserve/` aufbewahren (`druck-normal: reserve/bod-a5`).
 
 **Ausgabeordner:** Ein normaler Bau legt die Druckdateien immer in `ausgabe-normal/` bzw. `ausgabe-unzensiert/` –
 egal welche Plattform die aktive Druckdatei nennt. **Testlauf:** `sh build.sh final druck=<datei>` baut nur
