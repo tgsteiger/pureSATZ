@@ -3,6 +3,15 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.31.0 (Oktober 2026)
+- **`@ZITAT-ZIER Satz`**: Zitat mit Verzierung oben und unten – dasselbe wie `> Satz`, als Paar zu `@ZITAT Satz`
+  (schlicht). `-ZIER` weglassen = Verzierung weg. `> Satz` geht im Buchtext weiter.
+- Hilfe: jede Befehlszeile mit **Schreibweise** (die ganze Zeile, wie sie im Buch steht) und **Wirkung**;
+  `@KOPF` unter «Seite, Umbruch, Kopfzeile»; «Text hervorheben» von leicht bis stark (`~`, `@ZITAT`, `@ZITAT-ZIER`,
+  `@UNTEN`, `@MOTTO`). Neue Tabelle: `>` im Buchtext = Zitat, in den Einstellungs-Dateien = Erklärung.
+- `python3 motor/manuskript.py` zeigt die Befehle ebenso mit Schreibweise und Wirkung.
+- Vorlage und Leben123: Zitate als `@ZITAT-ZIER`. Geprüft: alle PDFs, Umschläge und E-Books gleich wie vorher.
+
 ## 2.30.3 (Oktober 2026)
 - Hilfe: Befehle nach Aufgabe gruppiert (Titelei · Seiten und Umbruch · Text hervorheben · Verzierung ·
   Bilder, Links, Tabellen · Verzeichnisse), dazu «Seite sieht nicht gut aus? – Lösungen». Befehle stehen wieder

@@ -187,12 +187,11 @@ def md_html(text):
 
 
 # --- Automatische Abschnitte ---------------------------------------------------------------
-BEFEHL_GRUPPEN = [      # Reihenfolge und Gruppen in hilfe.html; Markdown-Zeilen ohne @ stehen dabei, wo sie hingehören
+BEFEHL_GRUPPEN = [      # Gruppen in hilfe.html; Einträge ohne @ (Markdown) stehen als (Schreibweise, Wirkung) dabei
     ("Titelei", ["@TITEL", "@IMPRESSUM", "@HINWEIS", "@WIDMUNG", "@KERNSATZ", "@INHALTSVERZEICHNIS"]),
-    ("Seiten und Umbruch", [("---", "neue Seite (eigene Zeile, davor eine Leerzeile), wie @UMBRUCH"),
-                            "@UMBRUCH", "@UMBRUCH-RECHTS", "@PLATZ", "@ABSTAND", "@SEITENMITTE"]),
-    ("Text hervorheben", [("> Zitat", "Zitat, eingerahmt von der Verzierung (Markdown)"), "@ZITAT", "@MOTTO", "@UNTEN",
-                          ("~ Notiz", "kursive Randbemerkung"), "@KOPF"]),
+    ("Seite, Umbruch, Kopfzeile", ["@UMBRUCH", "@UMBRUCH-RECHTS", "@PLATZ", "@ABSTAND", "@SEITENMITTE", "@KOPF"]),
+    ("Text hervorheben (von leicht bis stark)", [("~ Satz", "kursive Randbemerkung, klein"),
+                                                 "@ZITAT", "@ZITAT-ZIER", "@UNTEN", "@MOTTO"]),
     ("Verzierung", ["@ZIER", "@ZIER-UNTEN", "@ZIER-TRENNER"]),
     ("Bilder, Links, Tabellen, Geschichten", ["@FOTO", "@PORTRAIT", "@QR", "@QR-PAAR", "@#name", "@@name"]),
     ("Verzeichnisse und Schluss", ["@STICHWORTE", "@BILDNACHWEIS", "@RUECKSEITE"]),
@@ -219,7 +218,7 @@ def befehle_html():
     def reihe(k, v):
         return f"<tr><td><code>{html.escape(k)}</code></td><td>{html.escape(v)}</td></tr>"
     out = ["<p>Jeder Befehl steht auf einer eigenen Zeile, genau so geschrieben (GROSS). "
-           "<code>## @TITEL</code> wirkt wie <code>@TITEL</code>.</p>",
+           "<code>## @TITEL</code> wirkt wie <code>@TITEL</code>. Links steht die ganze Zeile, wie sie im Buch steht.</p>",
            "<h3>Seite sieht nicht gut aus? – Lösungen</h3>",
            "<table><thead><tr><th>Problem</th><th>Lösung</th></tr></thead><tbody>"
            + "".join(f"<tr><td>{html.escape(p)}</td><td>{html.escape(l)}</td></tr>" for p, l in LOESUNGEN)
@@ -231,12 +230,12 @@ def befehle_html():
             if isinstance(e, tuple):
                 reihen.append(reihe(*e))
             elif e in M.BEFEHLE:
-                reihen.append(reihe(e, M.BEFEHLE[e])); gezeigt.add(e)
-        out.append(f"<h3>{html.escape(titel)}</h3><table><thead><tr><th>Befehl</th><th>Wirkung</th></tr></thead>"
+                reihen.append(reihe(*M.BEFEHLE[e])); gezeigt.add(e)
+        out.append(f"<h3>{html.escape(titel)}</h3><table><thead><tr><th>Schreibweise</th><th>Wirkung</th></tr></thead>"
                    f"<tbody>{''.join(reihen)}</tbody></table>")
     rest = [k for k in M.BEFEHLE if k not in gezeigt and k not in BEFEHL_VERSTECKT]
     if rest:
-        out.append("<h3>Weitere</h3><table><tbody>" + "".join(reihe(k, M.BEFEHLE[k]) for k in rest) + "</tbody></table>")
+        out.append("<h3>Weitere</h3><table><tbody>" + "".join(reihe(*M.BEFEHLE[k]) for k in rest) + "</tbody></table>")
     return "\n".join(out)
 
 

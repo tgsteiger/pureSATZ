@@ -196,7 +196,7 @@ summary{{font:500 16px Poppins,system-ui,sans-serif;color:var(--haupt);cursor:po
 
 <div class="held"><div>
 <h1>In fünf Minuten zu deinem ersten Buch.</h1>
-<p class="unter">Du schreibst in einfachen Textdateien (Markdown). pureSATZ macht daraus ein druckfertiges Buch im gewünschten Format, mit Umschlag und E-Book – für epubli, BoD, KDP und andere Plattformen oder zum Selberdrucken.</p>
+<p class="unter">Du schreibst in einfachen Textdateien (Markdown), für Besonderes gibt es kurze Befehle wie <code>@ZITAT-ZIER</code> oder <code>@PLATZ</code>. pureSATZ macht daraus ein druckfertiges Buch im gewünschten Format, mit Umschlag und E-Book – für epubli, BoD, KDP und andere Plattformen oder zum Selberdrucken.</p>
 <p class="unter">Dazu Leseprobe, Korrekturfassung fürs Lektorat, Booklet für den Probedruck und Werbebilder – alles aus denselben Dateien.</p> 
 <p class="unter">Auf Linux, Mac und Windows.</p>
 <a class="knopf voll" href="{ZIP}">⬇ pureSATZ herunterladen (ZIP)</a><a class="knopf rand" href="{REPO}">Auf GitHub ansehen</a>

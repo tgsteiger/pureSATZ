@@ -41,7 +41,7 @@ Das legt **neben** `pureSATZ` einen Buchordner an (z. B. `../Mein-Buch/`; ein le
 | `fotos/`, `bilder/`, `build.sh`, `cleanup.sh`, `sicherung.sh`, `README.md`, `motor/` | Bilder, Bauen, Aufräumen, Sicherung, Hilfe, Satzsystem |
 
 Alle MD-Dateien haben dieselben Regeln: Überschriften `#`, `##`, `###`, Werte als `{name}: wert` (derselbe Name erscheint im Buch als `{name}`),
-darunter die Erklärungen als `> {name}: …`. Danach im Buchordner:
+darunter die Erklärungen als `> {name}: …`. Im Buchtext ist `> Satz` dagegen ein Zitat (wie `@ZITAT-ZIER Satz`). Danach im Buchordner:
 
 ```sh
 sh build.sh             # Entwurf

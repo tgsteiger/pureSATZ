@@ -24,9 +24,9 @@ Diese Zeile beginnt neu, gehört aber zum selben Absatz: In der MD steht am Ende
 
 ~ Eine Zeile mit Tilde ist eine kursive Randbemerkung.
 
-> Eine Zeile mit > ist ein Zitat, eingerahmt von der Verzierung.
+@ZITAT-ZIER Ein Zitat mit @ZITAT-ZIER, eingerahmt von der Verzierung (kurz geht auch eine Zeile mit «> »).
 
-@ZITAT Ein Zitat mit @ZITAT, ohne Verzierung.
+@ZITAT Ein Zitat mit @ZITAT, schlicht, ohne Verzierung.
 
 {autor}, {ort}
 

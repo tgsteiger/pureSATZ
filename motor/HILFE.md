@@ -23,6 +23,13 @@
 | `{name}: wert` | setzt eine Variable; im Buch erscheint sie als `{name}` |
 | `feld: text` | Feld des Umschlags, eines Fotos oder einer Geschichte (keine Variable, darum ohne Klammern) |
 
+**Das Zeichen `>` heisst je nach Datei etwas anderes:**
+
+| Datei | `> …` heisst |
+|---|---|
+| Buchtext (`<buch>-buch.md`, Geschichten) | Zitat mit Verzierung – Markdown-Kurzform von `@ZITAT-ZIER` |
+| Einstellungs-Dateien (Variablen, Umschlag, Plattform-Dateien) | Erklärung, wird nie gedruckt |
+
 In jedem Abschnitt zuerst die Werte, darunter die Erklärungen: `> {name}: …`. Kein `- ` davor – das ist nur für
 echte Listen (Aufzählung im Buch, Stichwort-Liste).
 
@@ -48,8 +55,8 @@ das PDF ansehen und mit der MD vergleichen – danach das Demo löschen und schr
 
 | Form | Wofür | Beispiel |
 |---|---|---|
-| Markdown | alles, was Markdown kann: Absatz, Zeilenumbruch, neue Seite, fett, Zitat, Liste | `\` am Zeilenende · `---` · `**fett**` · `> Zitat` |
-| `@BEFEHL` | eine Zeile, eine Wirkung – nur für das, was Markdown nicht kann | `@PLATZ 40`, `@KOPF Ecuador`, `@ZITAT …` |
+| Markdown | alles, was Markdown kann: Absatz, Zeilenumbruch, neue Seite, fett, Liste | `\` am Zeilenende · `---` · `**fett**` · `- Punkt` |
+| `@BEFEHL` | eine Zeile, eine Wirkung – nur für das, was Markdown nicht kann | `@PLATZ 40`, `@KOPF Ecuador`, `@ZITAT-ZIER …` |
 | `## @…` / `#### @…` | Titelei-Seite (`##`) bzw. Element mit Angaben darunter (`####`, Ende = Leerzeile); steht in der Gliederung des Editors | `## @IMPRESSUM`, `#### @FOTO Sommer` |
 | `::: art` … `:::` | Textbereich mit Anfang und Ende: nur in einer Fassung, umrahmt oder zusammenhaltend | `::: nur-uz`, `::: uz Titel`, `::: mitte` |
 
@@ -59,7 +66,8 @@ das PDF ansehen und mit der MD vergleichen – danach das Demo löschen und schr
 | `# Titel` | Kapitel oberster Ebene, neue Seite (Anhang, Zeitstrahl, Über den Autor) |
 | `## Kapitel` / `### Zwischentitel` | Kapitel (im Inhalt) / kleiner Titel |
 | `## @BEFEHL` | Befehl als Überschrift (sichtbar in der Navigation des Editors) |
-| `> Zitat` · `~ Notiz` · `- Punkt` · `**fett**` · `[Text](https://…)` | Zitat · Randbemerkung · Liste · fett · Link |
+| `@ZITAT Satz` · `@ZITAT-ZIER Satz` (kurz `> Satz`) · `~ Satz` | Zitat schlicht · Zitat mit Verzierung · Randbemerkung |
+| `- Punkt` · `**fett**` · `[Text](https://…)` | Liste · fett · Link |
 | `1. Punkt` `2. Punkt` | nummerierte Aufzählung (zählt selbst: die erste Zahl ist der Start) |
 | `  - Unterpunkt` | Unterpunkt, 2–4 Leerzeichen eingerückt (unter `-` und unter `1.`) |
 | `3\. Mai war …` | Zahl mit Punkt am Zeilenanfang, aber keine Aufzählung |
@@ -114,7 +122,7 @@ Seite 3 rechts Widmung.
 **Seiten:** `---` oder `@UMBRUCH` neue Seite · `@UMBRUCH-RECHTS` im Druck rechts · `@PLATZ 60` neue Seite, wenn
 weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen · `@SEITENMITTE`.
 
-**Weiteres:** `@TITEL`, `@IMPRESSUM`, `@HINWEIS`, `@WIDMUNG`, `@KERNSATZ`, `@INHALTSVERZEICHNIS`, `@ZITAT`, `@MOTTO`, `@UNTEN`,
+**Weiteres:** `@TITEL`, `@IMPRESSUM`, `@HINWEIS`, `@WIDMUNG`, `@KERNSATZ`, `@INHALTSVERZEICHNIS`, `@ZITAT`, `@ZITAT-ZIER`, `@MOTTO`, `@UNTEN`,
 `@ZIER 12`, `@ZIER-UNTEN`, `@ZIER-TRENNER`, `@QR url | Text`, `@QR-PAAR … ;; …`, `@PORTRAIT bild | Text`,
 `@KOPF`, `@STICHWORTE`, `@RUECKSEITE`. Vollständige Liste: `python3 motor/manuskript.py`.
 
@@ -243,7 +251,7 @@ stand: entwurf
 stichworte: Emotionscode, Schutz
 quelle: Praxis 2018
 
-Text, wie im Buch: Absätze, **fett**, > Zitat, ::: Blöcke, Fotos, {variablen}.
+Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {variablen}.
 ```
 
 - Die drei Zeilen unter dem Titel sind freiwillig und werden nicht gedruckt.

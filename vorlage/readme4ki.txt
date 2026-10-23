@@ -70,7 +70,8 @@ BUCHTEXT (@@NAME@@-buch.md)
   ### Zwischentitel             kleiner Titel
   Leerzeile                     neuer Absatz.   \ am Zeilenende = Zeilenumbruch im Absatz
   ---                           neue Seite (eigene Zeile, davor Leerzeile), wie @UMBRUCH
-  > Zitat   ~ Notiz an mich   - Listenpunkt   **fett**   [Text](https://…)
+  ~ Randbemerkung   - Listenpunkt   **fett**   [Text](https://…)
+  > Satz = Zitat mit Verzierung (wie @ZITAT-ZIER). Nur im Buchtext; in den Einstellungs-Dateien ist «> …» eine Erklärung.
   1. Aufzählung (zählt selbst)   «  - Unterpunkt» (eingerückt)   «3\. Mai» = Zahl ohne Aufzählung
   ## @BEFEHL                    Befehl als Überschrift, wirkt wie @BEFEHL
 
@@ -84,7 +85,7 @@ Foto (ohne «:::»):  «#### @FOTO Titel», darunter Zeilen «datei: bild.jpg» 
 
 Befehle (eine eigene Zeile, GROSS, genau so geschrieben):
   @TITEL @IMPRESSUM @HINWEIS @WIDMUNG @KERNSATZ Satz @INHALTSVERZEICHNIS   (als «## @…» geschrieben)
-  @ZITAT Text  @MOTTO Text  @UNTEN Text  @KOPF Text
+  @ZITAT Satz (schlicht)  @ZITAT-ZIER Satz (mit Verzierung)  @MOTTO Satz  @UNTEN Satz  @KOPF Text
   @UMBRUCH (= ---)  @UMBRUCH-RECHTS  @PLATZ 40  @ABSTAND 8  @SEITENMITTE
   @ZIER 12  @ZIER-UNTEN  @ZIER-TRENNER
   @QR url | Text   @QR-PAAR url | Text ;; url | Text   @PORTRAIT bild.png | Text

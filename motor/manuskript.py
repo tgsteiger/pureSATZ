@@ -295,13 +295,14 @@ def _art(kopf):
     return art, tag, titel.strip()
 
 
-UMBRUCH_LINIE = re.compile(r"^\s*-{3,}\s*$")      # «---» = @UMBRUCH (2.25)
+UMBRUCH_LINIE = re.compile(r"^\s*-{3,}\s*$")      # «---» = @UMBRUCH
+ZITAT_ZIER = re.compile(r"^@ZITAT-ZIER\s+")         # «@ZITAT-ZIER Satz» = «> Satz»
 
 
 def markdown_zeilen(roh):
     """Markdown-Schreibweisen vor dem Lesen umsetzen (pureSATZ 2.25):
     «\\» am Zeilenende = Zeilenumbruch im Absatz (wie <br/>; die nächste Zeile gehört zum selben Absatz),
-    eine Zeile «---» = neue Seite (wie @UMBRUCH)."""
+    eine Zeile «---» = neue Seite (wie @UMBRUCH), «@ZITAT-ZIER Satz» = «> Satz» (Zitat mit Verzierung)."""
     out, i = [], 0
     while i < len(roh):
         nr, s = roh[i]
@@ -312,6 +313,8 @@ def markdown_zeilen(roh):
             t = t.rstrip()
         if UMBRUCH_LINIE.match(t):
             t = "@UMBRUCH"
+        elif ZITAT_ZIER.match(t):
+            t = ZITAT_ZIER.sub("> ", t, 1)
         out.append((nr, t))
         i += 1
     return out
@@ -460,38 +463,39 @@ def alle(teil, k):
 
 # --------------------------------------------------------------------------- Befehle
 # Alle @-Befehle der Buch-MD an einer Stelle (für Prüfung und Hilfe).
-BEFEHLE = {
-    "@TITEL":              "Titelseite; die nächsten Zeilen: Titel, Untertitel",
-    "@IMPRESSUM":          "Impressum; die folgenden Zeilen (Leerzeile = Abstand)",
-    "@WIDMUNG":            "Widmung nach dem Impressum (Druck: eigene Seite rechts); die folgenden Zeilen (oder ::: widmung)",
-    "@FOTO":              "#### @FOTO Titel, darunter «datei: …», «text: …» usw.; Ende = erste Leerzeile. @FOTO-UZ = nur zweite Ausgabe",
-    "@HINWEIS":            "Hinweis unten im Impressum (z. B. keine medizinische Beratung); die folgenden Zeilen",
-    "@KERNSATZ":           "@KERNSATZ Satz – allein, mittig auf einer Seite",
-    "@INHALTSVERZEICHNIS": "Inhaltsverzeichnis an dieser Stelle",
-    "@ZITAT":              "@ZITAT Text – Zitat, zentriert, ohne Lotus",
-    "@MOTTO":              "@MOTTO Text – Seite mit einem Satz in der Mitte",
-    "@UNTEN":              "@UNTEN Text – kursiv unten auf die Seite",
-    "@KOPF":               "@KOPF Text – Kopfzeile ersetzen; @KOPF allein beendet es",
-    "@PLATZ":              "@PLATZ 40 – neue Seite, wenn weniger als 40 mm Platz bleibt",
-    "@UMBRUCH":            "neue Seite",
-    "@UMBRUCH-RECHTS":     "neue Seite, im Druck immer eine rechte Seite (z. B. vor einem Kapitel)",
-    "@ABSTAND":            "@ABSTAND 8 – 8 mm Leerraum",
-    "@SEITENMITTE":        "Inhalt dieser Seite senkrecht zentrieren",
-    "@ZIER":               "@ZIER 12 – kleine Verzierung, zentriert (Breite in mm; Bild: Variable «zier»)",
-    "@ZIER-UNTEN":         "@ZIER-UNTEN 10 – Verzierung unten auf die Seite, danach neue Seite",
-    "@ZIER-TRENNER":       "kleine Verzierung in die Lücke vor der nächsten Überschrift",
-    "@LOTUS":              "(gleich wie @ZIER)",
-    "@LOTUS-UNTEN":        "(gleich wie @ZIER-UNTEN)",
-    "@LOTUS-TRENNER":      "(gleich wie @ZIER-TRENNER)",
-    "@QR":                 "@QR https://… | Text – QR-Code mit Link",
-    "@QR-PAAR":            "@QR-PAAR url | Text ;; url | Text – zwei QR-Codes nebeneinander",
-    "@PORTRAIT":           "@PORTRAIT bild.png | Bildtext – rundes Foto mit Ring",
-    "@STICHWORTE":         "Stichwortverzeichnis (Liste: stichworte.txt)",
-    "@BILDNACHWEIS":       "Bildnachweis (Fotos mit «quelle:»); ohne Zeile automatisch vor den Stichworten",
-    "@RUECKSEITE":         "Rückseite (nur Bildschirm-PDF)",
-    "@@name":              "Geschichte geschichten/name.md einbinden (eigene Zeile)",
-    "@#name":              "Tabelle tabellen/name.csv einbinden; «@#name quer» / «@#name hoch» = Ausrichtung",
-    "@ANHANG":             "(alt) wie «# Titel»",
+BEFEHLE = {             # Befehl: (Schreibweise im Buch, Wirkung)
+    "@TITEL":              ("## @TITEL", "Titelseite; die Zeilen darunter: Titel, Untertitel, Zusatz"),
+    "@IMPRESSUM":          ("## @IMPRESSUM", "Impressum; leer = der Motor setzt es je Ausgabe zusammen"),
+    "@HINWEIS":            ("## @HINWEIS", "Hinweis unten im Impressum (z. B. keine medizinische Beratung); die Zeilen darunter"),
+    "@WIDMUNG":            ("## @WIDMUNG", "Widmung (Druck: eigene Seite rechts, unteres Drittel); die Zeilen darunter"),
+    "@KERNSATZ":           ("## @KERNSATZ Satz", "der Satz allein, mittig auf einer Seite"),
+    "@INHALTSVERZEICHNIS": ("## @INHALTSVERZEICHNIS", "Inhaltsverzeichnis an dieser Stelle"),
+    "@UMBRUCH":            ("--- oder @UMBRUCH", "neue Seite («---» auf eigener Zeile, davor eine Leerzeile)"),
+    "@UMBRUCH-RECHTS":     ("@UMBRUCH-RECHTS", "neue Seite, im Druck immer eine rechte (z. B. vor einem Kapitel)"),
+    "@PLATZ":              ("@PLATZ 40", "neue Seite, wenn weniger als 40 mm Platz bleiben"),
+    "@ABSTAND":            ("@ABSTAND 8", "8 mm Leerraum"),
+    "@SEITENMITTE":        ("@SEITENMITTE", "Inhalt dieser Seite senkrecht zentrieren"),
+    "@KOPF":               ("@KOPF Text", "Kopfzeile ab hier ersetzen; «@KOPF» allein beendet es"),
+    "@ZITAT":              ("@ZITAT Satz", "Zitat, zentriert, schlicht"),
+    "@ZITAT-ZIER":         ("@ZITAT-ZIER Satz", "Zitat, zentriert, mit Verzierung oben und unten (kurz: «> Satz»)"),
+    "@UNTEN":              ("@UNTEN Satz", "kursiv unten auf die Seite"),
+    "@MOTTO":              ("@MOTTO Satz", "eigene Seite, der Satz in der Mitte"),
+    "@ZIER":               ("@ZIER 12", "kleine Verzierung, zentriert, 12 mm breit (Bild: Variable {zier})"),
+    "@ZIER-UNTEN":         ("@ZIER-UNTEN 10", "Verzierung unten auf die Seite, danach neue Seite"),
+    "@ZIER-TRENNER":       ("@ZIER-TRENNER", "kleine Verzierung in die Lücke vor der nächsten Überschrift"),
+    "@FOTO":               ("#### @FOTO Titel", "Foto; darunter «datei: …», «text: …» usw., Ende = erste Leerzeile; @FOTO-UZ = nur zweite Ausgabe"),
+    "@PORTRAIT":           ("@PORTRAIT bild.png | Bildtext", "rundes Foto mit Ring"),
+    "@QR":                 ("@QR https://… | Text", "QR-Code mit Link"),
+    "@QR-PAAR":            ("@QR-PAAR url | Text ;; url | Text", "zwei QR-Codes nebeneinander"),
+    "@#name":              ("@#name", "Tabelle tabellen/name.csv; «@#name quer» / «@#name hoch» = Ausrichtung"),
+    "@@name":              ("@@name", "Geschichte geschichten/name.md einbinden"),
+    "@STICHWORTE":         ("@STICHWORTE", "Stichwortverzeichnis (Liste: stichworte-<buch>.txt)"),
+    "@BILDNACHWEIS":       ("@BILDNACHWEIS", "Bildnachweis (Fotos mit «quelle:»); ohne Zeile automatisch vor den Stichworten"),
+    "@RUECKSEITE":         ("@RUECKSEITE", "Rückseite (nur Bildschirm-PDF)"),
+    "@LOTUS":              ("@LOTUS", "(gleich wie @ZIER)"),
+    "@LOTUS-UNTEN":        ("@LOTUS-UNTEN", "(gleich wie @ZIER-UNTEN)"),
+    "@LOTUS-TRENNER":      ("@LOTUS-TRENNER", "(gleich wie @ZIER-TRENNER)"),
+    "@ANHANG":             ("@ANHANG", "(gleich wie «# Titel»)"),
 }
 
 
@@ -581,5 +585,5 @@ if __name__ == "__main__":
     else:
         print(__doc__)
         print("Befehle:")
-        for k, v in BEFEHLE.items():
-            print(f"  {k:22} {v}")
+        for k, (form, wirkung) in BEFEHLE.items():
+            print(f"  {form:34} {wirkung}")
