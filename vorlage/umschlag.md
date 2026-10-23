@@ -11,10 +11,10 @@ untertitel: {untertitel}
 autor: {autor}
 stempel: {stempel}
 stempel-farbe: rot
-> stempel-farbe: rot = schräger Stempel (Farbe: {farbe-stempel} im LAYOUT) · zeile = feine Zeile über dem Titel · keine
 fuss: {ort} · {website}
 fuss-druck: Erstausgabe {jahr}
 fuss-bildschirm: Stand {stand}
+> stempel-farbe: rot = schräger Stempel (Farbe: {farbe-stempel} im LAYOUT) · zeile = feine Zeile über dem Titel · keine
 > fuss: Fusszeilen unten auf der Vorderseite, höchstens zwei (die ersten zwei, die gelten)
 
 ## Buchrücken
@@ -23,12 +23,14 @@ fuss-bildschirm: Stand {stand}
 ## Rückseite
 slogan: Ein Satz, der neugierig macht.
 foto: autor-beispiel.png
-> foto: rundes Foto aus bilder/
 text: Hier steht der Klappentext: Worum geht es in diesem Buch?
 text: Ein zweiter Absatz, wenn nötig.
-> text: Klappentext, ein Absatz pro Zeile
 auszug: «Ein kurzer Satz aus dem Buch.»
 auszug: «Noch einer.»
-> auszug: kurze Sätze aus dem Buch
 fuss: {autor} · {ort}
 fuss: {website}
+> slogan: Satz oben auf der Rückseite; «\» = neue Zeile
+> foto: rundes Foto aus bilder/
+> text: Klappentext, ein Absatz pro Zeile
+> auszug: kurze Sätze aus dem Buch
+> fuss: Fusszeilen unten auf der Rückseite, höchstens zwei (die ersten zwei, die gelten)
