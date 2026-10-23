@@ -154,6 +154,9 @@
 {farbe-akzent}: #8C672D
 > Falls kleine Schrift im Druck unscharf oder zu hell wirkt. {farbe-text} ganz schwarz wäre #000000.
 
+### Farbschema 3: deine eigenen Farben
+> Hier kannst du deine eigenen Farben angeben. Viel Spass.
+
 ## Schrift
 {schrift-text}: Lora
 {schrift-titel}: Poppins
