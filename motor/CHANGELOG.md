@@ -3,6 +3,11 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.30.3 (Oktober 2026)
+- Hilfe: Befehle nach Aufgabe gruppiert (Titelei · Seiten und Umbruch · Text hervorheben · Verzierung ·
+  Bilder, Links, Tabellen · Verzeichnisse), dazu «Seite sieht nicht gut aus? – Lösungen». Befehle stehen wieder
+  ohne Klammern da (`@TITEL` statt `{@TITEL}`). Gleichbedeutende alte Namen (@LOTUS …, @ANHANG) nicht mehr aufgeführt.
+
 ## 2.30.2 (Oktober 2026)
 - Der Bau zeigt am Anfang und am Ende das gewählte Farbschema, z. B. «Farben: Farbschema 2: dunkler für den Druck».
 

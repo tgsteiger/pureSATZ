@@ -464,7 +464,7 @@ BEFEHLE = {
     "@TITEL":              "Titelseite; die nächsten Zeilen: Titel, Untertitel",
     "@IMPRESSUM":          "Impressum; die folgenden Zeilen (Leerzeile = Abstand)",
     "@WIDMUNG":            "Widmung nach dem Impressum (Druck: eigene Seite rechts); die folgenden Zeilen (oder ::: widmung)",
-    "@FOTO":              "#### @FOTO Titel, darunter «- datei: …», «- text: …» usw.; Ende = erste Leerzeile. @FOTO-UZ = nur zweite Ausgabe",
+    "@FOTO":              "#### @FOTO Titel, darunter «datei: …», «text: …» usw.; Ende = erste Leerzeile. @FOTO-UZ = nur zweite Ausgabe",
     "@HINWEIS":            "Hinweis unten im Impressum (z. B. keine medizinische Beratung); die folgenden Zeilen",
     "@KERNSATZ":           "@KERNSATZ Satz – allein, mittig auf einer Seite",
     "@INHALTSVERZEICHNIS": "Inhaltsverzeichnis an dieser Stelle",

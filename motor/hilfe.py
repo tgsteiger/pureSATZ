@@ -187,14 +187,57 @@ def md_html(text):
 
 
 # --- Automatische Abschnitte ---------------------------------------------------------------
+BEFEHL_GRUPPEN = [      # Reihenfolge und Gruppen in hilfe.html; Markdown-Zeilen ohne @ stehen dabei, wo sie hingehören
+    ("Titelei", ["@TITEL", "@IMPRESSUM", "@HINWEIS", "@WIDMUNG", "@KERNSATZ", "@INHALTSVERZEICHNIS"]),
+    ("Seiten und Umbruch", [("---", "neue Seite (eigene Zeile, davor eine Leerzeile), wie @UMBRUCH"),
+                            "@UMBRUCH", "@UMBRUCH-RECHTS", "@PLATZ", "@ABSTAND", "@SEITENMITTE"]),
+    ("Text hervorheben", [("> Zitat", "Zitat, eingerahmt von der Verzierung (Markdown)"), "@ZITAT", "@MOTTO", "@UNTEN",
+                          ("~ Notiz", "kursive Randbemerkung"), "@KOPF"]),
+    ("Verzierung", ["@ZIER", "@ZIER-UNTEN", "@ZIER-TRENNER"]),
+    ("Bilder, Links, Tabellen, Geschichten", ["@FOTO", "@PORTRAIT", "@QR", "@QR-PAAR", "@#name", "@@name"]),
+    ("Verzeichnisse und Schluss", ["@STICHWORTE", "@BILDNACHWEIS", "@RUECKSEITE"]),
+]
+BEFEHL_VERSTECKT = {"@LOTUS", "@LOTUS-UNTEN", "@LOTUS-TRENNER", "@ANHANG"}     # gehen noch, stehen nicht in der Hilfe
+
+LOESUNGEN = [
+    ("Ein einzelner Satz rutscht allein auf die nächste Seite",
+     "«@PLATZ 70» vor die letzte Überschrift davor (sie geht dann mit auf die neue Seite) – oder den Absatz kürzen"),
+    ("Neue Seite erzwingen", "«---» auf eigener Zeile (davor eine Leerzeile)"),
+    ("Kapitel soll auf einer rechten Seite beginnen", "«@UMBRUCH-RECHTS» davor"),
+    ("Überschrift steht allein unten auf der Seite", "«@PLATZ 50» vor die Überschrift"),
+    ("Seite mit wenig Text wirkt verloren", "«@SEITENMITTE» an den Anfang der Seite"),
+    ("Grosse Lücke unten auf der Seite", "Foto kleiner («breite: 60»), Text kürzen oder «@ZIER-UNTEN»"),
+    ("Mehr Luft zwischen zwei Absätzen", "«@ABSTAND 8» (8 mm)"),
+    ("Text soll nicht getrennt werden", "Block «::: zusammen» … «:::»"),
+]
+
+
 def befehle_html():
     sys.path.insert(0, MOTOR)
     import manuskript as M
-    reihen = "".join(f"<tr><td><code>{{{html.escape(k)}}}</code></td><td>{html.escape(v)}</td></tr>"
-                     for k, v in M.BEFEHLE.items())
-    return ("<p>Jeder Befehl steht auf einer eigenen Zeile, genau so geschrieben (GROSS). "
-            "<code>## @TITEL</code> wirkt wie <code>@TITEL</code>.</p>"
-            f"<table><thead><tr><th>Befehl</th><th>Wirkung</th></tr></thead><tbody>{reihen}</tbody></table>")
+
+    def reihe(k, v):
+        return f"<tr><td><code>{html.escape(k)}</code></td><td>{html.escape(v)}</td></tr>"
+    out = ["<p>Jeder Befehl steht auf einer eigenen Zeile, genau so geschrieben (GROSS). "
+           "<code>## @TITEL</code> wirkt wie <code>@TITEL</code>.</p>",
+           "<h3>Seite sieht nicht gut aus? – Lösungen</h3>",
+           "<table><thead><tr><th>Problem</th><th>Lösung</th></tr></thead><tbody>"
+           + "".join(f"<tr><td>{html.escape(p)}</td><td>{html.escape(l)}</td></tr>" for p, l in LOESUNGEN)
+           + "</tbody></table>"]
+    gezeigt = set()
+    for titel, eintraege in BEFEHL_GRUPPEN:
+        reihen = []
+        for e in eintraege:
+            if isinstance(e, tuple):
+                reihen.append(reihe(*e))
+            elif e in M.BEFEHLE:
+                reihen.append(reihe(e, M.BEFEHLE[e])); gezeigt.add(e)
+        out.append(f"<h3>{html.escape(titel)}</h3><table><thead><tr><th>Befehl</th><th>Wirkung</th></tr></thead>"
+                   f"<tbody>{''.join(reihen)}</tbody></table>")
+    rest = [k for k in M.BEFEHLE if k not in gezeigt and k not in BEFEHL_VERSTECKT]
+    if rest:
+        out.append("<h3>Weitere</h3><table><tbody>" + "".join(reihe(k, M.BEFEHLE[k]) for k in rest) + "</tbody></table>")
+    return "\n".join(out)
 
 
 def bloecke_html():
