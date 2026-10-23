@@ -3,6 +3,13 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.30.0 (Oktober 2026)
+- **Farbschemas**: unter `## Farben` Abschnitte `### Farbschema 1: …`, `### Farbschema 2: …` usw.; `{farbschema}: 2`
+  wählt eines für alle Ausgaben. Schema 1 ist die Grundlage, das gewählte ersetzt nur seine Werte, andere werden
+  übergangen. Fehlt das gewählte, meldet der Bau es und nimmt Schema 1. Ohne `{farbschema}` bleibt alles wie bisher.
+- Vorlage und Leben123: Schema 1 = bisherige Farben, Schema 2 = dunkler für den Druck (Text, Kopfzeile, Gold).
+- Geprüft: Leben123 mit Schema 1 Seite für Seite und Pixel für Pixel gleich wie mit 2.29.0.
+
 ## 2.29.0 (Oktober 2026)
 - **Ein Abschnitt pro Ausgabe in der Variablen-Datei**: `## Ausgabe: PDF`, `## Ausgabe: Druck normal`,
   `## Ausgabe: Druck unzensiert` (auch «Druck zweite Ausgabe»), `## Ausgabe: E-Book`, `## Ausgabe: E-Book unzensiert`.

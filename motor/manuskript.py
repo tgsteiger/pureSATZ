@@ -138,6 +138,8 @@ def lies(pfad):
 
 AUSGABE_KOPF = re.compile(r"^ausgabe\s*:\s*(.+)$", re.I)       # «## Ausgabe: Druck normal»
 ROHDATEN_KOPF = re.compile(r"coverrechner|rohdaten", re.I)       # «## Coverrechner (Rohdaten)»: wird nicht gelesen
+SCHEMA_KOPF = re.compile(r"^farbschema\s*(\d+)\b", re.I)          # «### Farbschema 2: dunkler für den Druck»
+FARBSCHEMA_FEHLT = {}                                             # Pfad -> gewählte Nummer ohne Abschnitt
 
 
 def ausgabe_abschnitt(titel):
@@ -162,12 +164,14 @@ def lies_variablen(pfad):
     Jede Zeile «{name}: wert» ist eine Variable, «> …» eine Erklärung.
     Unter «## Ausgabe: Druck normal» (… unzensiert, E-Book, PDF) gilt ein Wert nur für diese Ausgabe:
     er wird intern «name-druck-normal» genannt. Ein Abschnitt «Coverrechner (Rohdaten)» wird nicht gelesen.
+    «{farbschema}: 2» = die Werte unter «### Farbschema 1» gelten als Grundlage, die unter «### Farbschema 2»
+    ersetzen sie; andere Farbschemas werden übergangen.
     Unter «STICHWORTE» ist jede Listenzeile ein Stichwort («- Seele | Seelen»)."""
     key = ("V", pfad)
     if key in _CACHE:
         return _CACHE[key]
-    var, stw = {}, []
-    bereich = None          # (art, stufe, medium, fassung): art = stw | roh | ausgabe
+    var, stw, schemas = {}, [], {}
+    bereich = None          # (art, stufe, medium, fassung): art = stw | roh | ausgabe | schema
     for z in open(pfad, encoding="utf-8").read().split("\n"):
         t = z.strip()
         if not t or t.startswith(("<!--", ">")):
@@ -183,6 +187,9 @@ def lies_variablen(pfad):
                     bereich = ("stw", stufe, None, None)
                 elif ROHDATEN_KOPF.search(titel):
                     bereich = ("roh", stufe, None, None)
+                elif SCHEMA_KOPF.match(titel):
+                    bereich = ("schema", stufe, SCHEMA_KOPF.match(titel).group(1), None)
+                    schemas.setdefault(bereich[2], {})
                 elif aus and ausgabe_abschnitt(aus.group(1)):
                     bereich = ("ausgabe", stufe) + ausgabe_abschnitt(aus.group(1))
             continue
@@ -193,11 +200,23 @@ def lies_variablen(pfad):
                 stw.append(t[2:].strip())
             continue
         m = VARIABLE.match(t)
+        if m and bereich and bereich[0] == "schema":
+            schemas[bereich[2]][m.group(1)] = (m.group(2) or "").strip()
+            continue
         if m:
             name = m.group(1)
             if bereich and bereich[0] == "ausgabe":
                 name = f"{name}-{bereich[2]}" + (f"-{bereich[3]}" if bereich[3] else "")
             var[name] = (m.group(2) or "").strip()
+    if schemas:
+        wahl = (var.get("farbschema") or "1").strip()
+        wahl = str(int(wahl)) if wahl.isdigit() else wahl
+        if wahl not in schemas:
+            FARBSCHEMA_FEHLT[pfad] = wahl
+            wahl = "1"
+        var.update(schemas.get("1", {}))
+        if wahl != "1":
+            var.update(schemas[wahl])
     _CACHE[key] = (var, stw)
     return _CACHE[key]
 

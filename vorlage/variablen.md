@@ -133,6 +133,12 @@
 > Aussehen des Buchs. Leer lassen = Vorgabe des Motors.
 
 ## Farben
+{farbschema}: 1
+> {farbschema}: 1 = Standard · 2 = dunkler für den Druck · weitere Schemas unten möglich (z. B. «### Farbschema 3: …»)
+> Schema 1 gilt immer als Grundlage, das gewählte Schema ersetzt nur die Werte, die darin stehen. Gilt für alle Ausgaben.
+> Farben als #RRGGBB.
+
+### Farbschema 1: Standard
 {farbe-text}: #2E2A26
 {farbe-leise}: #6E655C
 {farbe-haupt}: #1E428A
@@ -140,7 +146,13 @@
 {farbe-papier}: #FBF6EC
 {farbe-kasten}: #EEF2F9
 {farbe-stempel}: #A8322A
-> Farben als #RRGGBB.
+> {farbe-text}: Fliesstext · {farbe-leise}: Kopfzeile, Seitenzahl, Bildtexte · {farbe-haupt}: Titel, Linien · {farbe-akzent}: Gold (Teil-Nummern, Jahre)
+
+### Farbschema 2: dunkler für den Druck
+{farbe-text}: #1A1714
+{farbe-leise}: #4E4741
+{farbe-akzent}: #8C672D
+> Falls kleine Schrift im Druck unscharf oder zu hell wirkt. {farbe-text} ganz schwarz wäre #000000.
 
 ## Schrift
 {schrift-text}: Lora

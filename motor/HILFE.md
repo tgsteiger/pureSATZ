@@ -126,7 +126,7 @@ weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen �
 - `format`: `a5` · `taschenbuch` · `sachbuch` · `a4` · `quadrat` (Masse laut epubli) oder eigenes Mass `150 x 215` (mm)
 - `## Ausgabe: …`: Werte nur für diese Ausgabe (siehe «Ausgaben»)
 - `zier`: eigenes Bild für die Verzierung (sonst die Standard-Verzierung)
-- `# LAYOUT`: `farbe-haupt`, `farbe-akzent` …, `schrift-text`, `schrift-titel`, `schriftgroesse`, `blocksatz`
+- `# LAYOUT`: `farbschema`, `farbe-haupt`, `farbe-akzent` …, `schrift-text`, `schrift-titel`, `schriftgroesse`, `blocksatz`
 
 **Alle Variablen der Vorlage auf einen Blick** (Erklärungen auch direkt in der Variablen-Datei):
 
@@ -142,9 +142,32 @@ weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen �
 | Technik | `kurz-…`, `datei-…`, `ordner-…` |
 | Weiteres | `stichworte`, `trennstellen` (Welt\|anschauung), `zier`, `zier-hell`, `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund` |
 | Sicherung | `sicherung-lokal`, `sicherung-cloud`, `sicherung-behalten` |
-| Layout | `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `blocksatz` |
+| Layout | `farbschema`, `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `blocksatz` |
 
 **Rückenbreite:** steht in der Plattform-Datei (siehe «Plattform-Dateien», Coverrechner).
+
+## Farbschemas
+
+Unter `## Farben` stehen mehrere Farbschemas; eine Zahl wählt, welches gilt – für alle Ausgaben:
+
+```text
+## Farben
+{farbschema}: 2
+
+### Farbschema 1: Standard
+{farbe-text}: #2E2A26
+{farbe-leise}: #6E655C
+…                                alle Farben
+### Farbschema 2: dunkler für den Druck
+{farbe-text}: #1A1714
+{farbe-leise}: #4E4741          nur was anders ist
+```
+
+Schema 1 ist immer die Grundlage; das gewählte Schema ersetzt nur die Werte, die darin stehen. Andere Schemas
+werden übergangen. Ausprobieren: Zahl ändern, `sh build.sh nur-pdf`, PDF ansehen (vorher das alte PDF unter
+anderem Namen sichern – jeder Bau überschreibt es). Zurück auf `1`: beim nächsten Bau ist alles wie vorher.
+Fehlt das gewählte Schema, meldet der Bau «Farbschema … fehlt – nehme Schema 1». Ohne `{farbschema}` gelten
+die `{farbe-…}`-Zeilen direkt unter `## Farben`.
 
 ## Bilder und Fotos
 

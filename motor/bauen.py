@@ -593,6 +593,8 @@ def main():
     import geschichten
     geschichten.hilfsdateien(BASE)          # neu.sh / neu.bat, .gitignore (pureSATZ 2.11)
     global NUR_FASSUNG
+    for nr in M.FARBSCHEMA_FEHLT.values():   # «{farbschema}: 5» ohne Abschnitt «### Farbschema 5»
+        print(f"Hinweis: Farbschema {nr} fehlt – nehme Schema 1.")
     druck = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.lower().startswith("druck=")), None)
     args = [a.lower() for a in sys.argv[1:] if not a.lower().startswith("druck=")]
     if druck:                               # andere Druckdatei zum Testen (gilt für alle Teilschritte)

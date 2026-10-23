@@ -110,6 +110,8 @@ ein fertiges Buch auch in Jahren noch genau gleich erstellen.
 | `a4` | 210 × 297 mm | 219 × 315 mm |
 | `quadrat` | 205 × 205 mm | 214 × 223 mm |
 
+Farben: unter `## Farben` mehrere Farbschemas, `{farbschema}: 2` schaltet um (Schema 1 = Grundlage).
+
 Einschlag Hardcover 11 mm, Beschnitt Softcover und Innenseiten 3 mm – in der Plattform-Datei änderbar (`beschnitt-…`, `deckel-hardcover`). Eigenes Mass: `{format}: 150 x 215`. Weitere Formate: in `motor/build.py` bei `FORMATE`.
 
 **Ausgaben und Plattformen:** In der Variablen-Datei hat jede Ausgabe einen Abschnitt (`## Ausgabe: Druck normal`, `Druck unzensiert`, `E-Book`, `E-Book unzensiert`, `PDF`) mit Plattform-Datei, ISBN, Preis und den Impressum-Zeilen dieser Ausgabe; das Impressum setzt der Motor daraus selbst zusammen. Die Plattform-Datei in `druck/` enthält nur Technik (Rücken, Beschnitt, Deckel, Papier, Strichcode) und zuunterst die Rohdaten aus dem Coverrechner; ändert sich die Seitenzahl, warnt der Bau. Muster in `vorlage/druck/` (epubli in allen Formaten, BoD A5 Hardcover, tredition A5 Hardcover). Testen ohne Umstellen: `sh build.sh final druck=bod-a5-hardcover` – baut nur die Druckdateien nach `ausgabe-test/bod-a5-hardcover/`. Andere Plattform (z. B. KDP): Musterdatei kopieren und die Werte aus deren Coverrechner eintragen.

@@ -60,6 +60,7 @@ GRUNDREGELN FÜR ALLE MD-DATEIEN
 - {name} im Text = Wert aus der Variablen-Datei, z. B. {titel}, {autor}. So stehen lassen.
 - Eine Zeile mit leerer Variable fällt im Buch weg.
 - name-normal / name-uz: Wert je Ausgabe (normale und zweite Ausgabe).
+- Farben: «{farbschema}: N» wählt «### Farbschema N» (Schema 1 = Grundlage, gewähltes ersetzt nur seine Werte).
 - Pro Abschnitt zuerst die Werte, darunter die Erklärungen als «> {name}: …». Kein «- » vor Werten.
 
 BUCHTEXT (@@NAME@@-buch.md)
