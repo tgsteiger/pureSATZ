@@ -8,19 +8,28 @@
 |---|---|
 | `<buch>-variablen.md` | `# VARIABLEN` (Titel, Autor, ISBN …), `# TECHNIK` (Format, Bindung, Rücken, Dateien), `# LAYOUT` (Farben, Schriften) |
 | `<buch>-buch.md` | das Buch: `## @TITEL`, `## @IMPRESSUM`, `## @HINWEIS`, `## @WIDMUNG`, `## @KERNSATZ`, `## @INHALTSVERZEICHNIS`, Kapitel und Teile |
-| `<buch>-umschlag.md` | `## Vorderseite`, `## Buchrücken`, `## Rückseite`, darunter `- name: text` (`-druck`, `-bildschirm`, `-ebook`, `-uz` am Namen = nur dort), `> Erklärung` |
+| `<buch>-umschlag.md` | `## Vorderseite`, `## Buchrücken`, `## Rückseite`, darunter `feld: text` (`-druck`, `-bildschirm`, `-ebook`, `-uz` am Namen = nur dort), `> Erklärung` |
 | `stichworte-<buch>.txt` | Stichwortverzeichnis: eine Zeile pro Stichwort, Varianten mit `\|`, `#` = Kommentar |
 | `fotos/`, `bilder/` | Fotos und Bilder (Porträt, eigene Verzierung) |
 | `readme4ki.txt` | kurze Anleitung für eine andere KI (siehe unten) |
 
-Alle drei Dateien haben dieselben Regeln: Überschriften `#`, `##`, `###` gliedern, Werte stehen als
-`- {name}: wert` (die Klammern sind freiwillig, `- name: wert` geht auch), Erklärungen als `> …` oder Satz.
+**Schreibweise der Einstellungs-Dateien** (Variablen, Druckdateien, Umschlag, Kopf der Geschichten) – überall gleich:
+
+| Zeile | Bedeutung |
+|---|---|
+| `# Titel`, `## Abschnitt` | Gliederung (Navigation im Editor) |
+| `> Erklärung` | Kommentar, wird nie gedruckt und nie als Wert gelesen |
+| `{name}: wert` | setzt eine Variable; im Buch erscheint sie als `{name}` |
+| `feld: text` | Feld des Umschlags, eines Fotos oder einer Geschichte (keine Variable, darum ohne Klammern) |
+
+Kein `- ` davor – das ist nur für echte Listen (Aufzählung im Buch, Stichwort-Liste). Ältere Dateien mit `- name: wert`
+gehen weiterhin.
 
 **Wo steht was?**
 
 | Was | Wo | Im Buch / Umschlag |
 |---|---|---|
-| alle **Texte** (Titel, Impressum, ISBN, Shop …) | `<buch>-variablen.md`, z. B. `- {impressum-kontakt}: …` | `{impressum-kontakt}` |
+| alle **Texte** (Titel, Impressum, ISBN, Shop …) | `<buch>-variablen.md`, z. B. `{impressum-kontakt}: …` | `{impressum-kontakt}` |
 | **Technik** einer Druckerei (Format, Rücken, Beschnitt, Strichcode) | `druck/<datei>.md` – gilt nur für die Druckdateien | – |
 
 Suchst du nach `{name}`, findest du beide Stellen: wo der Wert steht und wo er erscheint.
@@ -59,23 +68,23 @@ das PDF ansehen und mit der MD vergleichen – danach das Demo löschen und schr
 `offen-notiz`, `zeitstrahl`, `uz` (Kasten der zweiten Ausgabe). Endung: keine (überall),
 `-normal`, `-uz` (`-dc`), `-bildschirm`, `-druck`, `-ebook`, `-buch`, `-privatdruck`.
 
-**Foto:** beginnt mit `#### @FOTO Titel` (steht so in der Gliederung des Editors), darunter die Angaben als
-Liste. **Die erste Leerzeile beendet das Foto** – ein `:::` braucht es nicht. `#### @FOTO-UZ Titel` = nur in der
+**Foto:** beginnt mit `#### @FOTO Titel` (steht so in der Gliederung des Editors), darunter die Angaben,
+eine pro Zeile. **Die erste Leerzeile beendet das Foto** – ein `:::` braucht es nicht. `#### @FOTO-UZ Titel` = nur in der
 zweiten Ausgabe (auch `-NORMAL`, `-DRUCK`, `-EBOOK` …).
 ```text
 #### @FOTO Sommer
-- datei: sommer-1980.jpg     Bild im Ordner fotos/ (Grösse: fotos/readme.txt)
-- text: Bildunterschrift     (optional)
-- breite: 60                 (optional) Breite in mm
-- fluss: rechts              (optional) Text umfliesst das Bild, rechts oder links
-- quelle: Foto: Max Muster   (optional) erscheint im Bildnachweis im Anhang
-- alt: Kind auf rotem Dreirad (optional) Beschreibung fürs E-Book (Vorlesefunktion); sonst gilt text:
-- ausschnitt: oben           (optional, nur mit foto-format) was beim Zuschneiden bleibt: oben, unten, links, rechts
+datei: sommer-1980.jpg     Bild im Ordner fotos/ (Grösse: fotos/readme.txt)
+text: Bildunterschrift     (optional)
+breite: 60                 (optional) Breite in mm
+fluss: rechts              (optional) Text umfliesst das Bild, rechts oder links
+quelle: Foto: Max Muster   (optional) erscheint im Bildnachweis im Anhang
+alt: Kind auf rotem Dreirad (optional) Beschreibung fürs E-Book (Vorlesefunktion); sonst gilt text:
+ausschnitt: oben           (optional, nur mit foto-format) was beim Zuschneiden bleibt: oben, unten, links, rechts
 
 Hier geht der Text weiter.
 ```
-Eine Zeile ohne `name:` (z. B. `- Vorschlag: …`) erscheint im Entwurf im Kasten, solange das Foto fehlt.
-Die alte Form `::: foto Sommer` … `:::` (ohne `- `) geht weiterhin.
+Eine Zeile ohne bekanntes Feld (z. B. `Vorschlag: …`) erscheint im Entwurf im Kasten, solange das Foto fehlt.
+Die alte Form `::: foto Sommer` … `:::` und Zeilen mit `- ` gehen weiterhin.
 
 **Titelei:** Titelseite, Impressum, Hinweis und Widmung stehen ohne `:::` als eigene Abschnitte:
 ```text
@@ -110,7 +119,7 @@ weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen �
 
 ## Variablen
 
-- In der Variablen-Datei `- {titel}: …`, im Buch und im Umschlag `{titel}` – derselbe Name an beiden Stellen.
+- In der Variablen-Datei `{titel}: …`, im Buch und im Umschlag `{titel}` – derselbe Name an beiden Stellen.
 - `name-normal` / `name-uz`: Wert je Ausgabe. `{name}` nimmt automatisch den richtigen.
 - Eine Zeile, in der eine Variable leer ist, fällt weg. `{isbn}`: Buch bzw. E-Book, leer = «folgt».
 - `format`: `a5` · `taschenbuch` · `sachbuch` · `a4` · `quadrat` (Masse laut epubli)
@@ -210,9 +219,9 @@ sh build.sh geschichten            # Sammel-PDF aller Geschichten (normal) · «
 
 ```
 ## Schutzschild hoch!
-- stand: entwurf
-- stichworte: Emotionscode, Schutz
-- quelle: Praxis 2018
+stand: entwurf
+stichworte: Emotionscode, Schutz
+quelle: Praxis 2018
 
 Text, wie im Buch: Absätze, **fett**, > Zitat, ::: Blöcke, Fotos, {variablen}.
 ```
@@ -275,8 +284,8 @@ vorhandenen PDF: `sh build.sh mockup`. Hintergrund ändern: `mockup-hintergrund:
 **Cover-Bilder** entstehen mit dem E-Book (`sh build.sh`, `final`, `nur-ebook`) im Ausgabeordner:
 `…_Cover-vorne.jpg` und `…_Cover-hinten.jpg` – Vorder- und Rückseite gerade, randlos, ohne Schatten,
 hochaufgelöst (lange Seite 2560 Pixel, kurze mindestens 1600, bei A5 etwa 300 dpi). Die Texte des Umschlags
-kommen aus Zeilen `- name-ebook:` (oder Blöcken `::: nur-ebook`); gibt es keine, gelten die des Drucks
-(`- fuss-druck: Erstausgabe {jahr}` statt `- fuss-bildschirm: Stand {stand}`). Dasselbe gilt für das Titelbild im E-Book.
+kommen aus Zeilen `feld-ebook:` (oder Blöcken `::: nur-ebook`); gibt es keine, gelten die des Drucks
+(`fuss-druck: Erstausgabe {jahr}` statt `fuss-bildschirm: Stand {stand}`). Dasselbe gilt für das Titelbild im E-Book.
 Das Vorne-Bild ist das **Titelbild für E-Book-Shops** (tolino media, neobooks, BoD, KDP verlangen ein JPG im
 Hochformat, mindestens 1600 Pixel breit); beide eignen sich auch für Presse, Verlag und Webseite.
 Unterschied zu `<KURZ>_Cover_Vorderseite.jpg` im Druckordner: Jenes ist für die Druckerei (400 dpi, mit 3 mm
@@ -361,7 +370,7 @@ lesbar dunkel gesetzt (Kontrast 4,5:1); eigene Farbe mit `farbe-akzent-ebook:`.
 
 Alles, was nur den **Druck** betrifft, kann pro Fassung in einer eigenen Datei im Ordner `druck/` stehen –
 so lassen sich epubli, BoD (und später andere) nebeneinander vorbereiten, ohne die Variablen-Datei umzubauen.
-In der Variablen-Datei: `- druck-normal: epubli-a5-normal` und `- druck-uz: epubli-a5-uz` (Name ohne `.md`).
+In der Variablen-Datei: `{druck-normal}: epubli-a5-normal` und `{druck-uz}: epubli-a5-uz` (Name ohne `.md`).
 Die Werte der Druckdatei gelten **nur für Buchblock und Umschlag** und haben Vorrang. Lese-PDF, E-Book,
 Leseprobe, Korrektur und Mockup bleiben beim `format:` der Variablen-Datei (Grundformat).
 Ohne `druck`-Zeile gilt alles wie bisher.
@@ -407,7 +416,7 @@ testen. Als `plattform` passt meist `bod` (Strichcode-Feld selbst bestimmen, kei
 **Muster** (beim neuen Buch schon in `druck/`, sonst in `pureSATZ/vorlage/druck/`): `epubli-a5`,
 `epubli-taschenbuch`, `epubli-sachbuch`, `epubli-a4`, `epubli-quadrat`, `bod-a5-hardcover`, `tredition-a5-hardcover`.
 Aufbau jeder Druckdatei: `##` Abschnitte (Plattform, Innenteil, Umschlag, ISBN, Strichcode), darunter die Werte
-`- name: wert`; unter jedem Wert eine Zeile `> default: … · optional: …` als Erklärung (der Motor übergeht sie; ältere Dateien mit `####` gehen auch).
+`{name}: wert`; unter jedem Wert eine Zeile `> default: … · optional: …` als Erklärung (der Motor übergeht sie; ältere Dateien mit `####` gehen auch).
 Ausprobieren ohne Umstellen: `sh build.sh final druck=bod-a5-hardcover` → `ausgabe-test/bod-a5-hardcover/`.
 
 # Andere Plattformen

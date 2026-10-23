@@ -55,7 +55,7 @@ BLOECKE = [
     ("::: nur-uz", "Text nur in der zweiten Ausgabe (auch -normal, -bildschirm, -druck, -ebook, -buch, -privatdruck)"),
     ("::: uz Titel", "Heller Kasten «Unzensiert» – nur in der zweiten Ausgabe"),
     ("::: mitte", "Text mittig auf einer eigenen Seite (z. B. Überleitung)"),
-    ("#### @FOTO Titel", "Foto: darunter - datei:, - text:, - alt:, - breite:, - fluss:, - quelle:; Ende = Leerzeile"),
+    ("#### @FOTO Titel", "Foto: darunter datei:, text:, alt:, breite:, fluss:, quelle: (je eine Zeile); Ende = Leerzeile"),
     ("::: zusammen", "Zeilen bleiben auf derselben Seite"),
     ("::: offen", "Noch offener Text: im Entwurf gelb, im Druck normal"),
     ("::: offen-notiz", "Notiz an dich: nur im Entwurf sichtbar, nie gedruckt"),
@@ -218,7 +218,7 @@ def variablen_html(pfad):
         if m:
             fertig(); gruppe, erkl, reihen = m.group(2), [], []
             continue
-        m = re.match(r"^[-*]\s+\{?([a-z][a-z0-9-]*)\}?\s*:\s*(.*)$", s)
+        m = re.match(r"^(?:[-*]\s+)?\{?([a-z][a-z0-9-]*)\}?\s*:\s*(.*)$", s)
         if m:
             reihen.append((m.group(1), m.group(2)))
         elif s:
@@ -247,7 +247,7 @@ def formate_html(variablen=None):
         return ""
     aktuell = ""
     if variablen and os.path.exists(variablen):
-        m = re.search(r"^[-*]\s+\{?format\}?\s*:\s*(\S+)", _lies(variablen), re.M)
+        m = re.search(r"^(?:[-*]\s+)?\{?format\}?\s*:\s*(\S+)", _lies(variablen), re.M)
         aktuell = m.group(1).strip().lower() if m else ""
     zeilen = []
     for k, name, b, h, ri, ra, _, _, pt in reihen:

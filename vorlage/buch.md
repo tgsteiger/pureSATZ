@@ -105,31 +105,31 @@ Eine Notiz an dich selbst: erscheint nur im Entwurf als roter Kasten und wird ni
 
 ## Bilder
 
-Ein Foto beginnt mit «#### @FOTO Titel» (so steht es auch in der Gliederung des Editors), darunter die Angaben als Liste. Die erste Leerzeile beendet den Foto-Block. Ein Foto über die ganze Breite (ohne «fluss»):
+Ein Foto beginnt mit «#### @FOTO Titel» (so steht es auch in der Gliederung des Editors), darunter die Angaben, eine pro Zeile (ohne «- »). Die erste Leerzeile beendet den Foto-Block. Ein Foto über die ganze Breite (ohne «fluss»):
 
 #### @FOTO Landschaft
-- datei: beispiel.jpg
-- text: Ein Bild mit Bildunterschrift
-- quelle: Foto: Vorname Nachname
-- alt: Weite Landschaft mit Hügeln unter blauem Himmel
-- breite: 80
+datei: beispiel.jpg
+text: Ein Bild mit Bildunterschrift
+quelle: Foto: Vorname Nachname
+alt: Weite Landschaft mit Hügeln unter blauem Himmel
+breite: 80
 
 Ein Hochformat wird bei gleicher Breite höher; der Motor begrenzt Fotos auf 75 mm Höhe, darum wird es schmaler. Sollen alle Fotos gleich gross sein: in der Variablen-Datei «foto-format: 3:2» (alle gleich zugeschnitten), «foto-breite» und «foto-anpassen: nein».
 
 #### @FOTO Hochformat
-- datei: beispiel-hoch.jpg
-- text: Ein Hochformat: gleich hoch, aber schmaler
-- alt: Ein Baum vor einem Abendhimmel
+datei: beispiel-hoch.jpg
+text: Ein Hochformat: gleich hoch, aber schmaler
+alt: Ein Baum vor einem Abendhimmel
 
 #### @FOTO Ein Foto, das noch fehlt
-- Vorschlag: Hier könnte ein Foto vom Garten stehen. Im Entwurf ein Kasten, im Druck nichts.
-- datei: garten.jpg
+Vorschlag: Hier könnte ein Foto vom Garten stehen. Im Entwurf ein Kasten, im Druck nichts.
+datei: garten.jpg
 
 #### @FOTO Klein mit Textfluss
-- datei: beispiel.jpg
-- fluss: rechts
-- breite: 40
-- text: Text fliesst um das Bild
+datei: beispiel.jpg
+fluss: rechts
+breite: 40
+text: Text fliesst um das Bild
 
 Dieser Absatz fliesst links um das kleine Bild herum. Das ist praktisch für Porträts oder kleine Erinnerungsstücke. Die folgenden Absätze (bis zu fünf) umfliessen das Bild, bis es zu Ende ist.
 

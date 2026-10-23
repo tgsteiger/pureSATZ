@@ -38,7 +38,7 @@ Das legt **neben** `pureSATZ` einen Buchordner an (z. B. `../Mein-Buch/`):
 | `sync.sh`, `update.sh`, `.gitignore` | Buch zwischen Computern abgleichen, Motor-Update von GitHub (siehe `GITHUB.md`) |
 | `fotos/`, `bilder/`, `build.sh`, `cleanup.sh`, `sicherung.sh`, `README.md`, `motor/` | Bilder, Bauen, Aufräumen, Sicherung, Hilfe, Satzsystem |
 
-Alle drei MD-Dateien haben dieselben Regeln: Überschriften `#`, `##`, `###`, Werte als `- {name}: wert` (derselbe Name erscheint im Buch als `{name}`),
+Alle drei MD-Dateien haben dieselben Regeln: Überschriften `#`, `##`, `###`, Werte als `{name}: wert` (derselbe Name erscheint im Buch als `{name}`), Erklärungen als `> …`,
 erklärende Sätze sind erlaubt. Danach im Buchordner:
 
 ```sh

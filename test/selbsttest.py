@@ -88,13 +88,13 @@ def main():
     vd = os.path.join(buch, "Testbuch-variablen.md")
     v = open(vd, encoding="utf-8").read()
     with open(vd, "w", encoding="utf-8") as f:
-        neu = (v.replace("- {leseprobe-seiten}:\n", "- {leseprobe-seiten}: 5,7-8\n- leseprobe-seiten-uz: 6\n", 1)
-               .replace("- {foto-format}:\n", "- {foto-format}: 3:2\n", 1)
-               .replace("- {md-history-behalten}: 200\n", "- {md-history-behalten}: 3\n", 1)
-               .replace("- {ebook-epub2}: nein\n", "- {ebook-epub2}: ja\n", 1))
+        neu = (v.replace("{leseprobe-seiten}:\n", "{leseprobe-seiten}: 5,7-8\n- leseprobe-seiten-uz: 6\n", 1)
+               .replace("{foto-format}:\n", "{foto-format}: 3:2\n", 1)
+               .replace("{md-history-behalten}: 200\n", "{md-history-behalten}: 3\n", 1)
+               .replace("{ebook-epub2}: nein\n", "{ebook-epub2}: ja\n", 1))
         if neu.count("\n") != v.count("\n") + 1 or "{foto-format}: 3:2" not in neu or "{ebook-epub2}: ja" not in neu:
             sys.exit("FEHLER: Selbsttest konnte die Variablen-Datei nicht anpassen (Schreibweise geändert?)")
-        f.write(neu)                  # «- leseprobe-seiten-uz» ohne Klammern: alte Schreibweise geht auch (2.26)
+        f.write(neu)                  # «- leseprobe-seiten-uz» mit «- » ohne Klammern: alte Schreibweise geht auch
     lauf([py, os.path.join("motor", "bauen.py"), "schnell"], buch)
     lauf([py, os.path.join("motor", "bauen.py"), "nur-ebook", "final"], buch)       # mit ebook-epub2: ja (2.20)
     lauf([py, os.path.join("motor", "bauen.py"), "leseprobe"], buch)

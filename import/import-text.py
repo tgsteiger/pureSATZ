@@ -441,14 +441,14 @@ def buch_md(blocks, fotos_ordner):
                 with open(os.path.join(fotos_ordner, datei), "wb") as f:
                     f.write(d["daten"])
             else:
-                zeilen.append(f"- Bild «{d['name']}» war im Dokument ohne Bilddaten (verknüpft?). "
+                zeilen.append(f"Bild «{d['name']}» war im Dokument ohne Bilddaten (verknüpft?). "
                               f"Bitte als fotos/{datei} ablegen.")
                 BERICHT(f"Bild «{d['name']}»: keine Bilddaten im Dokument – Platzhalter gesetzt (fotos/{datei}).")
-            zeilen.append(f"- datei: {datei}")
+            zeilen.append(f"datei: {datei}")
             if text:
-                zeilen.append(f"- text: {text}")
+                zeilen.append(f"text: {text}")
             if d["alt"]:
-                zeilen.append(f"- alt: {d['alt']}")
+                zeilen.append(f"alt: {d['alt']}")
             if not text and not d["alt"]:
                 BERICHT(f"Bild «{d['name']}»: ohne Beschriftung und ohne Alternativtext (fürs E-Book «alt:» ergänzen).")
             zeilen += [""]                    # Foto-Block endet an der Leerzeile

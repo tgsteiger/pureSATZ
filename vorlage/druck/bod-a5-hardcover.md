@@ -5,53 +5,53 @@
 > Rücken und Papier laut BoD-Coverrechner eintragen
 
 ## Plattform
-- {plattform}: bod
+{plattform}: bod
 > default: epubli · optional: epubli | bod | tredition | kdp (tredition und kdp verhalten sich wie bod)
-- {format}: a5
+{format}: a5
 > default: a5 · optional: a5 | taschenbuch | sachbuch | a4 | quadrat
-- {seite}:
+{seite}:
 > default: leer = Mass laut format · optional: eigenes Mass in mm, z. B. 148 x 210
-- {bindung}: hardcover
+{bindung}: hardcover
 > default: hardcover · optional: hardcover | softcover | beide
-- {projekt}:
+{projekt}:
 > default: veroeffentlichen (zweite Fassung: privatdruck) · optional: veroeffentlichen | privatdruck
 
 ## Innenteil
-- {beschnitt-buchblock}: 0
+{beschnitt-buchblock}: 0
 > default: epubli 3, bod 5 · optional: mm rundum, 0 = ohne Beschnitt
-- {extra-seiten}:
+{extra-seiten}:
 > default: 0 · optional: Anzahl leere Notizseiten am Schluss
-- {versatz-vertikal}:
+{versatz-vertikal}:
 > default: 0 · optional: mm, + = ganzer Inhalt nach oben, − = nach unten (nach Messung am Probeexemplar, z. B. -1.5)
-- {versatz-horizontal}:
+{versatz-horizontal}:
 > default: 0 · optional: mm, + = nach aussen, − = zum Bund hin
 
 ## Umschlag
-- {ruecken-hardcover}:
+{ruecken-hardcover}:
 > default: leer = 6 mm (Platzhalter) · optional: mm laut Coverrechner (ändert sich mit Seitenzahl und Papier)
-- {ruecken-softcover}:
+{ruecken-softcover}:
 > default: leer = 3 mm (Platzhalter) · optional: mm laut Coverrechner
-- {beschnitt-hardcover}: 17
+{beschnitt-hardcover}: 17
 > default: 11 · optional: Einschlag rundum in mm laut Coverrechner
-- {beschnitt-softcover}:
+{beschnitt-softcover}:
 > default: 3 · optional: mm rundum
-- {deckel-hardcover}: 153x216
+{deckel-hardcover}: 153x216
 > default: leer = laut format (A5: 157 x 228) · optional: Breite x Höhe in mm
-- {papier}:
+{papier}:
 > default: leer · optional: Papier wie bestellt (nur zur Info)
 
 ## ISBN
-- {isbn-buch}:
+{isbn-buch}:
 > default: leer = «ISBN folgt» im Impressum · optional: ISBN der Plattform
 
 ## Impressum
 > Die Zeilen des Impressums stehen in der Variablen-Datei unter «Impressum» ({impressum-herstellung-druck}, {impressum-kontakt-druck}, {impressum-logo-druck} …). Hier nur Technik.
-> Ausnahme Privatdruck: hier «- {impressum-herstellung}: Privatdruck · nicht im Handel erhältlich» eintragen – ein Wert hier ersetzt den der Variablen-Datei im gedruckten Buch.
+> Ausnahme Privatdruck: hier «{impressum-herstellung}: Privatdruck · nicht im Handel erhältlich» eintragen – ein Wert hier ersetzt den der Variablen-Datei im gedruckten Buch.
 
 ## Strichcode
-- {barcode-position}: rechts
+{barcode-position}: rechts
 > default: leer = epubli links frei, bod rechts · optional: links | mitte | rechts
-- {barcode-groesse}: 40x20
+{barcode-groesse}: 40x20
 > default: leer = 60 x 35 mm frei ab Ecke · optional: Breite x Höhe in mm, z. B. 40x20
-- {barcode-bild}:
+{barcode-bild}:
 > default: leer = nichts zeichnen (bod: Strichcode aus der ISBN) · optional: PNG aus bilder/

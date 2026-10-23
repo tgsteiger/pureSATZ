@@ -103,7 +103,7 @@ def _geschichten_einsetzen(pfad, zeilen_mit_nr):
 _CACHE = {}
 
 
-VARIABLE = re.compile(r"^\s*(?:[-*]\s+)?\{?([a-z][a-z0-9-]*)\}?\s*:(?:\s+(.*?))?\s*$")   # «- name:» oder «- {name}:» (2.26)
+VARIABLE = re.compile(r"^\s*(?:[-*]\s+)?\{?([a-z][a-z0-9-]*)\}?\s*:(?:\s+(.*?))?\s*$")   # «{name}: wert» (2.27), auch «- name:» / «- {name}:»
 BUCHSTART = re.compile(r"^#{1,6}\s*=*\s*BUCHSTART\b", re.I)
 BEFEHL_ALS_TITEL = re.compile(r"^#{1,6}\s+(@[A-Z].*)$")     # «## @TITEL» = «@TITEL»
 FOTO_KOPF = re.compile(r"^#{1,6}\s+@FOTO(-[A-Za-z]+)?(?:\s+(.*))?$")   # «#### @FOTO Titel» (2.24)

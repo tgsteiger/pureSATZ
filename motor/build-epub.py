@@ -63,7 +63,7 @@ def _umschlag_medium():
         text = open(os.path.join(BASE, bk.UMSCHLAG), encoding="utf-8").read()
     except OSError:
         return "druck"
-    return "ebook" if re.search(r"^\s*(:::\s*nur-ebook\b|[-*]\s+[a-z-]+-ebook\s*:)", text, re.M | re.I) else "druck"
+    return "ebook" if re.search(r"^\s*(:::\s*nur-ebook\b|(?:[-*]\s+)?[a-z-]+-ebook\s*:)", text, re.M | re.I) else "druck"
 
 
 from reportlab.pdfgen import canvas as _canvas

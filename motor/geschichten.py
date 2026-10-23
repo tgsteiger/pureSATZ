@@ -5,9 +5,9 @@ geschichten.py – einzelne Geschichten sammeln und ins Buch einbinden (pureSATZ
 Jede Geschichte ist eine eigene Datei im Ordner geschichten/ des Buchs, z. B. geschichten/schutzschild-hoch.md:
 
     ## Schutzschild hoch!
-    - stand: entwurf
-    - stichworte: Emotionscode, Schutz
-    - quelle: Praxis 2018
+    stand: entwurf
+    stichworte: Emotionscode, Schutz
+    quelle: Praxis 2018
 
     Der Text der Geschichte …
 
@@ -36,7 +36,7 @@ except ImportError:
 ORDNER = "geschichten"
 STAENDE = ("idee", "entwurf", "ueberarbeiten", "fertig")
 STAND_TEXT = {"idee": "Idee", "entwurf": "Entwurf", "ueberarbeiten": "überarbeiten", "fertig": "fertig"}
-KOPF = re.compile(r"^\s*-\s*(stand|stichworte|quelle)\s*:\s*(.*?)\s*$", re.I)
+KOPF = re.compile(r"^\s*(?:-\s*)?(stand|stichworte|quelle)\s*:\s*(.*?)\s*$", re.I)   # «- » freiwillig (2.27)
 VERWEIS = re.compile(r"^\s*@@([A-Za-z0-9][A-Za-z0-9._-]*)\s*$")
 NICHT = {"liesmich", "readme", "uebersicht"}            # Hilfedateien im Ordner sind keine Geschichten
 
@@ -151,7 +151,7 @@ def neu(basis, titel):
         name = f"{basis_name}-{n}"; n += 1
     pfad = os.path.join(o, name + ".md")
     with open(pfad, "w", encoding="utf-8") as f:
-        f.write(f"## {titel}\n- stand: idee\n- stichworte:\n- quelle:\n\nHier beginnt die Geschichte …\n")
+        f.write(f"## {titel}\nstand: idee\nstichworte:\nquelle:\n\nHier beginnt die Geschichte …\n")
     return name, pfad
 
 

@@ -3,6 +3,16 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.27.0 (Oktober 2026)
+- **Eine Schreibweise für alle Einstellungs-Dateien** (Variablen, Druckdateien, Umschlag, Kopf der Geschichten, Fotos):
+  `# / ##` Gliederung · `> …` Erklärung · `{name}: wert` setzt eine Variable · `feld: text` Feld des Umschlags,
+  eines Fotos oder einer Geschichte. Kein `- ` mehr davor (nur echte Listen behalten es). Ältere Dateien mit
+  `- name: wert` und erklärenden Sätzen ohne `>` gehen weiterhin.
+- Vorlage, Word-Import (Fotos), neue Geschichten (`sh neu.sh`), Hilfe und readme4ki.txt auf die neue Schreibweise.
+  hilfe.html liest Variablen mit und ohne `- `; Erklärungen mit `>` erscheinen dort als Text.
+- Geprüft: Leben123 umgestellt (Variablen, Umschlag, Druckdateien, 12 Fotos) – alle PDFs, Umschläge und E-Books
+  Seite für Seite und Pixel für Pixel gleich wie mit 2.26.0.
+
 ## 2.26.0 (Oktober 2026)
 - **`{name}` auch dort, wo der Wert steht**: in Variablen- und Druckdateien darf (und soll) der Name in Klammern stehen:
   `- {impressum-kontakt}: …`. Die Suche nach `{impressum-kontakt}` findet so den Wert und die Stelle im Buch.

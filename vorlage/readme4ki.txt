@@ -18,7 +18,7 @@ NIE ändern: ausgabe-*/ (auch 00-UEBERSICHT.txt, wird bei jedem Bau neu erstellt
 
 GESCHICHTEN (nur wenn es den Ordner geschichten/ gibt)
 - Eine Geschichte = eine Datei geschichten/name.md. Erste Zeile «## Titel», darunter freiwillig
-  «- stand: idee|entwurf|ueberarbeiten|fertig», «- stichworte: …», «- quelle: …», dann Leerzeile und Text.
+  «stand: idee|entwurf|ueberarbeiten|fertig», «stichworte: …», «quelle: …», dann Leerzeile und Text.
 - Im Buch bindet eine eigene Zeile «@@name» die Geschichte ein. @@-Zeilen nie umbenennen, verschieben
   oder löschen ohne Auftrag. In einer Geschichte selbst gibt es kein @@.
 - Überarbeitest du eine Geschichte, ändere nur ihre Datei. Den Stand nur ändern, wenn der Mensch es sagt.
@@ -31,7 +31,7 @@ TABELLEN (nur wenn es den Ordner tabellen/ gibt)
 - Jede Zeile braucht gleich viele Werte wie Spaltenüberschriften.
 
 DRUCK (nur wenn es den Ordner druck/ gibt)
-- Eine Datei pro Druckvariante, z. B. druck/epubli-a5-normal.md, druck/bod-a5-hardcover.md. Werte als «- {name}: wert». Nur Technik (Plattform, Format, Rücken, Beschnitt, Strichcode) – Texte und Impressum stehen in der Variablen-Datei.
+- Eine Datei pro Druckvariante, z. B. druck/epubli-a5-normal.md, druck/bod-a5-hardcover.md. Werte als «{name}: wert». Nur Technik (Plattform, Format, Rücken, Beschnitt, Strichcode) – Texte und Impressum stehen in der Variablen-Datei.
 - Erlaubte Namen: plattform, format, seite, bindung, projekt, ruecken-hardcover, ruecken-softcover,
   beschnitt-buchblock, beschnitt-hardcover, beschnitt-softcover, deckel-hardcover, papier, extra-seiten,
   isbn-buch, barcode-position, barcode-groesse, barcode-bild. Masse in mm, z. B. «seite: 148 x 210».
@@ -43,14 +43,14 @@ LESEPROBE (Variablen-Datei)
 - Sonst leseprobe: Anzahl Kapitel oder Titel. Beides leer = 4 Seiten nach dem Inhaltsverzeichnis.
 
 GRUNDREGELN FÜR ALLE MD-DATEIEN
-- Gliederung mit # / ## / ###. Werte als Listenzeile:  - {name}: wert   (im Buch erscheint derselbe Name als {name})
+- Gliederung mit # / ## / ###. Werte als Zeile:  {name}: wert   (im Buch erscheint derselbe Name als {name})
 - Endung -druck / -ebook / -bildschirm / -normal / -uz am Namen = nur dort; der genauere Name gewinnt.
 - Alle Texte (auch das ganze Impressum: impressum-herstellung-druck/-ebook, impressum-rechte, impressum-kontakt) stehen hier.
 - Namen von Werten (vor dem Doppelpunkt) nie ändern, nie erfinden. Nur den Wert danach.
 - {name} im Text = Wert aus der Variablen-Datei, z. B. {titel}, {autor}. So stehen lassen.
 - Eine Zeile mit leerer Variable fällt im Buch weg.
 - name-normal / name-uz: Wert je Ausgabe (normale und zweite Ausgabe).
-- Erklärende Sätze ohne «- » davor sind erlaubt.
+- Erklärungen als «> …». Kein «- » vor Werten.
 
 BUCHTEXT (@@NAME@@-buch.md)
   # Teil 1|Titel|Untertitel     neuer Teil mit eigener Seite (genau diese Form mit |)
@@ -67,8 +67,8 @@ Blöcke: beginnen mit «::: art Titel», enden mit «:::» (eigene Zeile)
   Arten: nur, mitte, foto (alt), zusammen, offen, offen-notiz, widmung, zeitstrahl, uz
   Endung = nur in einer Ausgabe/Medium: -normal, -uz, -bildschirm, -druck, -ebook, -buch, -privatdruck
   Beispiel:  ::: nur-uz        (dieser Text nur in der zweiten Ausgabe)
-Foto (ohne «:::»):  «#### @FOTO Titel», darunter Zeilen «- datei: bild.jpg» / «- text: Bildunterschrift» /
-  «- alt: Bildbeschreibung» / «- breite: 60» / «- fluss: rechts» / «- quelle: Foto: Name».
+Foto (ohne «:::»):  «#### @FOTO Titel», darunter Zeilen «datei: bild.jpg» / «text: Bildunterschrift» /
+  «alt: Bildbeschreibung» / «breite: 60» / «fluss: rechts» / «quelle: Foto: Name». Ende = erste Leerzeile.
   Der Foto-Block endet an der ersten Leerzeile.  «#### @FOTO-UZ Titel» = nur zweite Ausgabe.
 
 Befehle (eine eigene Zeile, GROSS, genau so geschrieben):
@@ -81,7 +81,7 @@ Befehle (eine eigene Zeile, GROSS, genau so geschrieben):
 Keine anderen @-Befehle erfinden. Befehle nicht übersetzen, nicht verschieben ohne Auftrag.
 
 UMSCHLAG (@@NAME@@-umschlag.md)
-  Abschnitte ## Vorderseite, ## Buchrücken, ## Rückseite. Werte als - schluessel: wert
+  Abschnitte ## Vorderseite, ## Buchrücken, ## Rückseite. Felder als  schluessel: wert  (ohne «- »)
   (titel, untertitel, autor, stempel, stempel-farbe, fuss, bild, slogan, foto, text, auszug).
   Endung am Schlüssel = nur dort: fuss-druck, fuss-bildschirm, text-ebook, auszug-uz. «> …» = Erklärung. Text der Rückseite kurz halten.
 
