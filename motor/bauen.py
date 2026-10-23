@@ -207,7 +207,7 @@ def druck_pruefen():
     for a in ausgaben():                                # Plattform-Datei des E-Books (2.28)
         d = bk.ebook_datei(a)
         if d and not os.path.exists(os.path.join(BASE, d)):
-            fehler.append(f"E-Book-Angaben {name(a)}: {d} fehlt (Variable «ebook»)")
+            fehler.append(f"E-Book-Angaben {name(a)}: {d} fehlt ({{druck-datei}} unter «## Ausgabe: E-Book»)")
     for h in sorted(set(hinweise)):
         print("Hinweis: " + h)
     if fehler:
@@ -310,15 +310,17 @@ def shop_angaben():
     for a in ausgaben():
         g = bk.AUSGABEN["B" if a == "uz" else "A"]
         V = lambda n, s="": bk.druck_V(n, s, a)        # mit Druckangaben (druck/…md)
+        E = lambda n: M.Ausgabe(bk.alle_variablen(a), a, "ebook")(n) if bk.ebook_erstellen(a) else ""
         block = os.path.join(BASE, g["ordner"], g["kuerzel"] + "_Buchblock.pdf")
         seiten = len(PdfReader(block).pages) if PdfReader and os.path.exists(block) else "?"
         zeilen = [f"Titel:          {V('titel')}", f"Untertitel:     {V('untertitel')}", f"Autor:          {V('autor')}",
                   f"Format:         {bk.format_angaben(V('format'), V('seite'))[1]['name']}, {V('bindung', 'hardcover')}, {seiten} Seiten",
                   f"Papier:         {V('papier')}",
-                  f"ISBN Buch:      {V('isbn-buch') or '(noch keine)'}", f"ISBN E-Book:    {V('isbn-ebook') or '(noch keine)'}",
+                  f"ISBN Buch:      {V('isbn') if V('isbn') not in ('folgt', '') else '(noch keine)'}",
+                  f"ISBN E-Book:    {E('isbn') or ('(noch keine)' if bk.ebook_erstellen(a) else '(kein E-Book)')}",
                   f"Sprache:        {V('sprache', 'de')}", f"Kategorie:      {V('shop-kategorie')}",
                   f"Schlagwörter:   {V('shop-schlagwoerter')}",
-                  f"Preis Buch:     {V('preis-buch')}", f"Preis E-Book:   {V('preis-ebook')}",
+                  f"Preis Buch:     {V('preis') or V('preis-buch')}", f"Preis E-Book:   {E('preis') or E('preis-ebook')}",
                   f"Shop-Link:      {V('shop-link')}", "",
                   "Beschreibung:", V("shop-beschreibung") or "(in der Variablen-Datei unter «## Shop» eintragen)"]
         ziel = os.path.join(BASE, g["ordner"], "shop-angaben.txt")
@@ -400,6 +402,9 @@ def _uebersicht(art, final, test):
             ]
             if test:
                 gruppen = gruppen[:1]
+            if not bk.ebook_erstellen(a):
+                gruppen = [(("E-BOOK: keines («{erstellen}: nein»)", [], None) if t.startswith("E-BOOK") else (t, n, b))
+                           for t, n, b in gruppen]
             for titel, namen, befehl in gruppen:
                 da = [n for n in namen if n in vorhanden]
                 gebraucht.update(da)
@@ -409,7 +414,7 @@ def _uebersicht(art, final, test):
                     info = _datei_info(p)
                     zeit = datetime.fromtimestamp(os.path.getmtime(p))
                     z.append(f"  {n:<52} {zeit:%d.%m. %H:%M}" + (f"   {info}" if info else ""))
-                if not da:
+                if not da and namen:
                     z.append("  (noch keine)" + (f" – {befehl}" if befehl else ""))
                 elif titel.startswith("ZUM LESEN"):
                     fehlt = [("Leseprobe", "leseprobe", f"{D}_Leseprobe.pdf"), ("Korrektur", "korrektur", f"{D}_Korrektur.pdf")]
@@ -434,6 +439,16 @@ def _uebersicht(art, final, test):
 COVER_GROESSEN = (2000, 1600, 900)          # lange Seite in Pixel: …_Cover-vorne_2000px.jpg usw.
 
 
+def ebook_weg(a):
+    """E-Book-Dateien eines früheren Baus entfernen, wenn diese Fassung kein E-Book hat."""
+    g = bk.AUSGABEN["B" if a == "uz" else "A"]
+    stamm = os.path.join(BASE, g["ordner"], g["datei"])
+    for n in [".epub", "_EPUB2.epub", "_Inhalt.pdf", "_Cover-vorne.jpg", "_Cover-hinten.jpg"] + \
+             [f"_Cover-vorne_{px}px.jpg" for px in COVER_GROESSEN]:
+        if os.path.exists(stamm + n):
+            os.remove(stamm + n)
+
+
 def zusatz_dateien(art):
     """<datei>_Inhalt.pdf (Inhaltsverzeichnis-Seiten aus dem Lese-PDF, z. B. für XinXii) und das Titelbild
     …_Cover-vorne.jpg in kleineren Grössen. Nie den Bau verhindern."""
@@ -441,6 +456,8 @@ def zusatz_dateien(art):
         g = bk.AUSGABEN["B" if a == "uz" else "A"]
         stamm = os.path.join(BASE, g["ordner"], g["datei"])
         try:
+            if not bk.ebook_erstellen(a):
+                continue
             if art in ("alles", "nur-pdf") and os.path.exists(stamm + ".pdf"):
                 n = inhalt_pdf(stamm + ".pdf", stamm + "_Inhalt.pdf")
                 if n:
@@ -637,8 +654,11 @@ def main():
             schritte.append((f"Bildschirm-PDF · {name(a)}", "build.py", a))
         if art in ("alles", "nur-druck"):
             schritte.append((f"Druckdateien · {name(a)}", "build-broschuere.py", a))
-        if art in ("alles", "nur-ebook"):
+        if art in ("alles", "nur-ebook") and bk.ebook_erstellen(a):
             schritte.append((f"E-Book · {name(a)}", "build-epub.py", a))
+        elif art in ("alles", "nur-ebook"):
+            print(f"E-Book {name(a)}: keines («{{erstellen}}: nein»)")
+            ebook_weg(a)
     parallel(schritte, env)
     bk.ENTWURF = not final
     zusatz_dateien(art)

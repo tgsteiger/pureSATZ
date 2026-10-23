@@ -25,11 +25,11 @@ Zum Abhaken: «- [ ]» wird zu «- [x]». Reihenfolge von oben nach unten.
 ## 4. epubli
 - [ ] Testexemplar als Privatdruck bestellt und geprüft (`projekt-normal: privatdruck`)
 - [ ] «Buch veröffentlichen»: Buchblock und Umschlag hochgeladen
-- [ ] ISBN von epubli bei `isbn-buch:` eingetragen, neu gebaut, Buchblock ersetzt (gleiche Seitenzahl!)
+- [ ] ISBN von epubli unter `## Ausgabe: Druck normal` bei `{isbn}:` eingetragen, neu gebaut, Buchblock ersetzt (gleiche Seitenzahl!)
 - [ ] Vorschau bei epubli kontrolliert (Umschlag, Rücken, Strichcode)
 
 ## 5. E-Book
-- [ ] Eigene ISBN fürs E-Book bei `isbn-ebook:` (oder bewusst ohne)
+- [ ] Eigene ISBN fürs E-Book unter `## Ausgabe: E-Book` bei `{isbn}:` (oder bewusst ohne)
 - [ ] E-Book auf einem Lesegerät oder in einer App angeschaut
 - [ ] Hochgeladen: eigener Shop / tolino media / KDP
 

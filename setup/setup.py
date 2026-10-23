@@ -151,7 +151,6 @@ def platzhalter(w):
     return dict(TITEL=w["TITEL"], UNTERTITEL=w.get("UNTERTITEL", ""), AUTOR=w["AUTOR"], NAME=w["NAME"],
                 ORT=w.get("ORT", ""), JAHR=w.get("JAHR", str(date.today().year)), WEBSITE=w.get("WEBSITE", ""),
                 ADRESSE=w.get("ADRESSE", ""), FORMAT=fmt, BINDUNG=bindung,
-                RUECKEN="3" if bindung == "softcover" else "6",
                 ZWEITE="ja" if ja(w.get("ZWEITE_AUSGABE", "nein")) else "nein",
                 ZWEITNAME=zweitname, ZWEITLABEL=zweitname.upper(), ZWEITDATEI=slug(zweitname),
                 ZWEITORDNER=slug(zweitname).lower(), ZWEITKURZ=zweitkurz, KUERZEL=kuerzel)
@@ -182,8 +181,15 @@ def buch(ordner, w):
         kopiere(os.path.join(VORLAGE, f), os.path.join(ordner, f), f)
     for f in ("LIESMICH.txt", "muster.csv"):
         kopiere(os.path.join(VORLAGE, "tabellen", f), os.path.join(ordner, "tabellen", f), f"tabellen/{f}")
-    for f in sorted(os.listdir(os.path.join(VORLAGE, "druck"))):       # Druckangaben-Muster (pureSATZ 2.19)
+    wahl = os.path.join(ordner, "druck", f"epubli-{d['FORMAT']}.md")      # Plattform-Datei aus der Variablen-Datei
+    neu_wahl = not os.path.exists(wahl)
+    for f in sorted(os.listdir(os.path.join(VORLAGE, "druck"))):       # Plattform-Dateien (Muster)
         kopiere(os.path.join(VORLAGE, "druck", f), os.path.join(ordner, "druck", f), f"druck/{f}")
+    if neu_wahl and os.path.exists(wahl) and d["BINDUNG"] != "hardcover":
+        with open(wahl, encoding="utf-8") as f:
+            t = f.read()
+        with open(wahl, "w", encoding="utf-8") as f:
+            f.write(t.replace("{bindung}: hardcover\n", "{bindung}: " + d["BINDUNG"] + "\n", 1))
     kopiere(os.path.join(VORLAGE, "geschichten", "LIESMICH.txt"), os.path.join(ordner, "geschichten", "LIESMICH.txt"),
             "geschichten/LIESMICH.txt (einzelne Geschichten sammeln)")
     kopiere(os.path.join(VORLAGE, "buch.gitignore"), os.path.join(ordner, ".gitignore"),

@@ -28,7 +28,7 @@ import build as bk
 E, L = bk.E, bk.L
 
 bk.waehle(sys.argv[1] if len(sys.argv) > 1 else None)
-ISBN_EBOOK = bk.V("isbn-ebook")   # eigene ISBN, nicht die des gedruckten Buchs
+ISBN_EBOOK = bk.M.Ausgabe(bk.alle_variablen(), bk.FASSUNG, "ebook")("isbn")   # «## Ausgabe: E-Book» → {isbn}
 TITEL = E.TITEL
 AUTOR = E.AUTOR
 SPRACHE = E.SPRACHE

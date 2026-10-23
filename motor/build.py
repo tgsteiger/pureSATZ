@@ -95,14 +95,15 @@ def _grundvariablen():
     return M.lies(os.path.join(BASE, TEXT))[0]
 
 
-# --- Druckangaben (pureSATZ 2.19) ----------------------------------------------
-#   Pro Fassung eine Datei in druck/ (Variable «druck-normal: epubli-a5-normal», «druck-uz: …»).
-#   Ihre Werte gelten nur für die Druckdateien (build-broschuere.py) und haben dort Vorrang vor der
-#   Variablen-Datei. Ohne «druck»-Zeile bleibt alles wie bisher. Test: sh build.sh final druck=<datei>
+# --- Plattform-Dateien ------------------------------------------------------------
+#   Pro gedruckter Fassung eine Datei in druck/ ({druck-datei} unter «## Ausgabe: Druck normal» usw.).
+#   Sie enthält nur Technik (Plattform, Rücken, Beschnitt, Strichcode); ihre Werte gelten für die
+#   Druckdateien (build-broschuere.py) und haben dort Vorrang. Test: sh build.sh final druck=<datei>
 DRUCK_NAMEN = ("plattform", "format", "seite", "bindung", "projekt", "ruecken", "ruecken-hardcover",
                "ruecken-softcover", "beschnitt-hardcover", "beschnitt-softcover", "beschnitt-buchblock",
                "deckel-hardcover", "papier", "extra-seiten", "isbn-buch", "barcode-position",
-               "barcode-groesse", "barcode-bild", "versatz-vertikal", "versatz-horizontal")
+               "barcode-groesse", "barcode-bild", "versatz-vertikal", "versatz-horizontal",
+               "neu-berechnen", "berechnet-fuer-seiten")
 
 
 def druckmodus():
@@ -113,8 +114,10 @@ def druckmodus():
 def druck_datei(fassung=None):
     """Druckdatei der Fassung als Pfad relativ zum Buchordner (z. B. druck/epubli-a5-normal.md), sonst None.
     Vorrang hat «druck=<datei>» beim Aufruf (Umgebungsvariable BUCH_DRUCK_DATEI)."""
+    f = fassung or FASSUNG
     w = os.environ.get("BUCH_DRUCK_DATEI", "").strip() or \
-        M.Ausgabe(_grundvariablen(), fassung or FASSUNG)("druck").strip()
+        M.Ausgabe(_grundvariablen(), f, "druck")("druck-datei").strip() or \
+        M.Ausgabe(_grundvariablen(), f)("druck").strip()
     if not w:
         return None
     w = w.replace("\\", "/")
@@ -124,15 +127,23 @@ def druck_datei(fassung=None):
 
 
 def ebook_datei(fassung=None):
-    """Plattform-Datei des E-Books (Variable «ebook», z. B. tredition-ebook → druck/tredition-ebook.md), sonst None.
-    Sie enthält, was nur fürs E-Book dieser Plattform gilt, z. B. die Impressum-Zeilen (pureSATZ 2.28)."""
-    w = M.Ausgabe(_grundvariablen(), fassung or FASSUNG)("ebook").strip()
+    """Plattform-Datei des E-Books ({druck-datei} unter «## Ausgabe: E-Book»), sonst None.
+    Meist braucht das E-Book keine: Impressum, ISBN und Preis stehen in der Variablen-Datei."""
+    f = fassung or FASSUNG
+    w = M.Ausgabe(_grundvariablen(), f, "ebook")("druck-datei").strip() or \
+        M.Ausgabe(_grundvariablen(), f)("ebook").strip()
     if not w:
         return None
     w = w.replace("\\", "/")
     if not w.lower().endswith(".md"):
         w += ".md"
     return w if w.startswith("druck/") else "druck/" + w
+
+
+def ebook_erstellen(fassung=None):
+    """False, wenn unter «## Ausgabe: E-Book …» der Fassung «{erstellen}: nein» steht."""
+    f = fassung or FASSUNG
+    return M.Ausgabe(_grundvariablen(), f, "ebook")("erstellen", "ja").strip().lower() not in ("nein", "no", "0", "false")
 
 
 def _plattform_variablen(d, was):
@@ -181,7 +192,8 @@ def _ueberlagern(v, dv, fassung, medium):
         basis, tag = zerlege(k)
         if tag and (tag == "normal") != (f == "normal"):
             continue                                                  # gilt für die andere Fassung
-        for x in (basis, basis + "-normal", basis + "-uz", basis + "-dc", basis + "-" + medium):
+        for x in (basis, basis + "-normal", basis + "-uz", basis + "-dc", basis + "-" + medium,
+                  f"{basis}-{medium}-normal", f"{basis}-{medium}-uz"):
             v.pop(x, None)                                            # Plattform-Datei schlägt auch «name-druck» (2.26)
         v[basis] = dv[k]
     return v
@@ -552,9 +564,9 @@ def masse_mm(wert, name="seite"):
 
 
 def format_angaben(wert_format, wert_seite=""):
-    """(Formatname, Angaben) aus «format» und «seite». Mit «seite: 148 x 210» ein freies Format: Ränder und
-    Schrift vom nächstliegenden Format, Deckel = Seite + 9 x 18 mm (wie bei epubli)."""
-    seite = masse_mm(wert_seite)
+    """(Formatname, Angaben) aus «format». Ein Name (a5, taschenbuch …) oder Masse in mm («150 x 215») für ein
+    freies Format: Ränder und Schrift vom nächstliegenden Format, Deckel = Seite + 9 x 18 mm (wie bei epubli)."""
+    seite = (masse_mm(wert_format, "format") if re.search(r"\d\s*[x×]", (wert_format or "").lower()) else None) or masse_mm(wert_seite)
     if not seite:
         f = _format(wert_format)
         return f, FORMATE[f]
@@ -2004,8 +2016,9 @@ def seitenausgleich(doc, story):
     auf die Abstände verteilen, vor allem um Zitate, Bilder und Überschriften herum."""
     info = doc.lr_info
     ziele = [i for i, f in enumerate(story) if isinstance(f, (PartMarker, MottoSeite, Umbruch, MitteBlock))]
+    nur_mitte = {i for i, f in enumerate(story) if type(f) is PageBreak}   # z. B. vor den Stichworten: nur @SEITENMITTE
     ausgleich = {}
-    for z in ziele:
+    for z in sorted(set(ziele) | nur_mitte):
         inhalt = [i for i in range(z) if i in info and not isinstance(story[i], (PageBreak, CondPageBreak, Spacer))]
         if not inhalt: continue
         letzte = max(inhalt)
@@ -2014,6 +2027,8 @@ def seitenausgleich(doc, story):
         if isinstance(story[z], MitteBlock) and z in info and info[z][0] <= seite:
             continue          # zentrierter Block steht noch auf derselben Seite
         sm = [i for i in inhalt if isinstance(story[i], SeiteMitte) and info[i][0] == seite]
+        if z in nur_mitte and not sm:
+            continue
         if sm:                # @SEITENMITTE: ganzen Inhalt der Seite nur senkrecht zentrieren
             if frei > 6 * mm:
                 ausgleich[sm[0]] = (frei - 4) / 2

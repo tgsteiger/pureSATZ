@@ -4,16 +4,6 @@
 {titel-zusatz}
 
 ## @IMPRESSUM
-© {jahr} {autor}
-{website}
-
-{impressum-herstellung}
-
-{impressum-rechte}
-
-{impressum-kontakt}
-
-ISBN {isbn}
 
 ## @HINWEIS
 Hier steht ein Hinweis unten im Impressum, z. B. «Dieses Buch ersetzt keine Beratung». Keiner gewünscht? Diese zwei Zeilen löschen.

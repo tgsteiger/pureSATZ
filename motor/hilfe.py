@@ -225,8 +225,8 @@ def variablen_html(pfad):
             erkl.append(s[1:].strip() if s.startswith(">") else s)
     fertig()
     out = [f"<p>Aus <code>{html.escape(os.path.basename(pfad))}</code> – mit den Werten dieses Buchs. "
-           "Namen vor dem Doppelpunkt nie ändern, nur den Wert. <code>{name-uz}</code> = Wert für die zweite Ausgabe, "
-           "<code>{name-druck}</code> / <code>{name-ebook}</code> = nur im Druck / im E-Book. Im Buch steht derselbe Name als <code>{name}</code>.</p>"]
+           "Namen vor dem Doppelpunkt nie ändern, nur den Wert. Unter «Ausgabe: …» gilt ein Wert nur für diese Ausgabe; "
+           "<code>{name-uz}</code> = Wert für die zweite Ausgabe. Im Buch steht derselbe Name als <code>{name}</code>.</p>"]
     for g, e, r in teile:
         if not r and not e:
             continue
@@ -256,10 +256,9 @@ def formate_html(variablen=None):
         zeilen.append(f"<tr{' class=dies' if dies else ''}><td><code>{k}</code>{' ← dieses Buch' if dies else ''}</td>"
                       f"<td>{html.escape(name)}</td><td>{b} × {h} mm</td><td>{tb} mm</td><td>{pt} pt</td>"
                       f"<td>{tb * 12} px</td></tr>")
-    return ("<p>In der Variablen-Datei: <code>- format: a5</code> (auch <code>format-uz</code> für die zweite Ausgabe) und "
-            "<code>- bindung: hardcover</code>, <code>softcover</code> oder <code>beide</code>. Ränder, Schrift, Rücken und "
-            "Umschlag rechnet der Motor selbst (Masse laut epubli). Für den Druck kann eine Datei in <code>druck/</code> "
-            "ein anderes Format oder ein eigenes Mass (<code>seite: 148 x 210</code>) setzen.</p>"
+    return ("<p>In der Variablen-Datei: <code>{format}: a5</code> oder ein eigenes Mass <code>{format}: 150 x 215</code> (mm). "
+            "Ränder und Schrift rechnet der Motor selbst (Masse laut epubli). Bindung, Rücken und Beschnitt stehen in der "
+            "Plattform-Datei in <code>druck/</code>; dort auch ein abweichendes Druckformat.</p>"
             "<table><thead><tr><th>format</th><th>Name</th><th>Seite</th><th>Textbreite</th><th>Schrift</th>"
             "<th>Foto ganze Breite</th></tr></thead><tbody>" + "".join(zeilen) + "</tbody></table>"
             "<p class='leise'>Foto ganze Breite = nötige Pixel für 300 dpi (Breite in mm × 12).</p>")

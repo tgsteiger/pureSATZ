@@ -3,6 +3,30 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.29.0 (Oktober 2026)
+- **Ein Abschnitt pro Ausgabe in der Variablen-Datei**: `## Ausgabe: PDF`, `## Ausgabe: Druck normal`,
+  `## Ausgabe: Druck unzensiert` (auch «Druck zweite Ausgabe»), `## Ausgabe: E-Book`, `## Ausgabe: E-Book unzensiert`.
+  Darin kurze Namen: `{druck-datei}`, `{isbn}`, `{preis}`, `{impressum-herstellung}`, `{impressum-kontakt}`,
+  `{impressum-logo}`. Ein Wert dort gilt nur für diese Ausgabe und ersetzt den gemeinsamen.
+- **Impressum automatisch**: Bleibt `## @IMPRESSUM` leer, setzt der Motor je Ausgabe © {jahr} {autor} · {website} ·
+  {impressum-herstellung} · {impressum-rechte} · {impressum-kontakt} · ISBN {isbn} ein; leere Zeilen fallen weg.
+- **E-Book je Fassung abschaltbar**: `{erstellen}: nein` unter `## Ausgabe: E-Book unzensiert`; alte E-Book-Dateien
+  dieser Fassung werden entfernt, die Übersicht sagt «E-Book: keines».
+- **Plattform-Dateien nur noch Technik**: oben `{neu-berechnen}` und `{berechnet-fuer-seiten}`, zuunterst
+  `## Coverrechner (Rohdaten)` (wird nicht gelesen). `final` warnt, wenn der Buchblock eine andere Seitenzahl hat,
+  und erinnert bei `{neu-berechnen}: ja`. `{format}` nur noch, wenn das Druckformat abweicht.
+- `{format}` nimmt auch ein eigenes Mass in mm (`150 x 215`).
+- `@SEITENMITTE` zentriert auch eine Seite, nach der ein Verzeichnis (z. B. Stichworte) beginnt.
+- Leseprobe: auf der Schlussseite steht die ISBN der Druckausgabe (bisher «ISBN folgt», wenn sie in der
+  Plattform-Datei stand); ohne ISBN fällt die Zeile weg.
+- shop-angaben.txt: ISBN und Preis aus den Ausgaben.
+- In allen Einstellungs-Dateien: zuerst die Werte, darunter die Erklärungen `> {name}: …`.
+- Vorlage: Variablen mit Ausgabe-Abschnitten, Muster in vorlage/druck/ nur Technik (Impressum-Hinweise unter
+  `## Notizen`), `tredition-ebook.md` entfällt. setup.sh trägt die gewählte Bindung in die Plattform-Datei ein.
+- Hilfe, README und readme4ki.txt neu geschrieben; neuer Abschnitt «Ein neues Buch anlegen».
+- Geprüft: Leben123 umgestellt – alle Dateien der normalen Fassung Seite für Seite und Pixel für Pixel gleich wie mit
+  2.28.0; Unzensiert gleich bis auf die neue Seite «Was kommt danach?» und ohne E-Book. Alte Schreibweise baut gleich.
+
 ## 2.28.0 (Oktober 2026)
 - **Eine Plattform-Datei pro Ausgabe, auch fürs E-Book**: neue Variable `{ebook}` (z. B. `tredition-ebook` →
   `druck/tredition-ebook.md`). Ihre Werte gelten nur im E-Book und ersetzen die gleichnamigen der Variablen-Datei –

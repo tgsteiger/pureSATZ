@@ -65,7 +65,9 @@ def main():
     with open(bd, encoding="utf-8") as f_:
         bd_text = f_.read()
     with open(bd, "w", encoding="utf-8") as f_:
-        f_.write(bd_text.replace("- versatz-vertikal:\n", "- versatz-vertikal: -1.5\n", 1))
+        if "{versatz-vertikal}:\n" not in bd_text:
+            sys.exit("FEHLER: Selbsttest findet «{versatz-vertikal}:» in druck/bod-a5-hardcover.md nicht")
+        f_.write(bd_text.replace("{versatz-vertikal}:\n", "{versatz-vertikal}: -1.5\n", 1))
     lauf([py, os.path.join("motor", "bauen.py"), "nur-druck", "final", "druck=bod-a5-hardcover", "normal"], buch)
 
     # Geschichten (2.11): zwei anlegen, eine einbinden, Sammel-PDF, Tippfehler muss als Fehler kommen

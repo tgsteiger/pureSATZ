@@ -6,14 +6,15 @@
 
 | Datei | Inhalt |
 |---|---|
-| `<buch>-variablen.md` | `# VARIABLEN` (Titel, Autor, ISBN …), `# TECHNIK` (Format, Bindung, Rücken, Dateien), `# LAYOUT` (Farben, Schriften) |
+| `<buch>-variablen.md` | `# VARIABLEN` (Buch, Impressum, Ausgaben mit ISBN und Preis, Shop), `# TECHNIK` (Dateien, Sicherung), `# LAYOUT` (Farben, Schriften) |
 | `<buch>-buch.md` | das Buch: `## @TITEL`, `## @IMPRESSUM`, `## @HINWEIS`, `## @WIDMUNG`, `## @KERNSATZ`, `## @INHALTSVERZEICHNIS`, Kapitel und Teile |
 | `<buch>-umschlag.md` | `## Vorderseite`, `## Buchrücken`, `## Rückseite`, darunter `feld: text` (`-druck`, `-bildschirm`, `-ebook`, `-uz` am Namen = nur dort), `> Erklärung` |
 | `stichworte-<buch>.txt` | Stichwortverzeichnis: eine Zeile pro Stichwort, Varianten mit `\|`, `#` = Kommentar |
+| `druck/<datei>.md` | Plattform-Datei: Technik einer Druckerei (Rücken, Beschnitt, Strichcode) |
 | `fotos/`, `bilder/` | Fotos und Bilder (Porträt, eigene Verzierung) |
 | `readme4ki.txt` | kurze Anleitung für eine andere KI (siehe unten) |
 
-**Schreibweise der Einstellungs-Dateien** (Variablen, Druckdateien, Umschlag, Kopf der Geschichten) – überall gleich:
+**Schreibweise der Einstellungs-Dateien** (Variablen, Plattform-Dateien, Umschlag, Kopf der Geschichten) – überall gleich:
 
 | Zeile | Bedeutung |
 |---|---|
@@ -22,21 +23,21 @@
 | `{name}: wert` | setzt eine Variable; im Buch erscheint sie als `{name}` |
 | `feld: text` | Feld des Umschlags, eines Fotos oder einer Geschichte (keine Variable, darum ohne Klammern) |
 
-Kein `- ` davor – das ist nur für echte Listen (Aufzählung im Buch, Stichwort-Liste). Ältere Dateien mit `- name: wert`
-gehen weiterhin.
+In jedem Abschnitt zuerst die Werte, darunter die Erklärungen: `> {name}: …`. Kein `- ` davor – das ist nur für
+echte Listen (Aufzählung im Buch, Stichwort-Liste).
 
 **Wo steht was?**
 
 | Was | Wo | Im Buch / Umschlag |
 |---|---|---|
-| alles, was fürs ganze Buch gilt (Titel, ISBN E-Book, Shop, gemeinsames Impressum) | `<buch>-variablen.md`, z. B. `{impressum-rechte}: …` | `{impressum-rechte}` |
-| **welche Ausgabe** bei welcher Plattform | `<buch>-variablen.md`: `{druck-normal}`, `{druck-uz}`, `{ebook}` | – |
-| alles, was nur für **eine Plattform** gilt: Technik (Format, Rücken, Beschnitt, Strichcode) und ihre Impressum-Zeilen (`{impressum-herstellung}`, `{impressum-logo}` …) | Plattform-Datei `druck/<datei>.md` | `{impressum-herstellung}` |
+| alles, was fürs ganze Buch gilt (Titel, Format, Shop, gemeinsames Impressum) | `<buch>-variablen.md`, z. B. `{impressum-rechte}: …` | `{impressum-rechte}` |
+| alles, was nur für **eine Ausgabe** gilt: Plattform-Datei, ISBN, Preis, Herstellung, Logo | `<buch>-variablen.md` unter `## Ausgabe: Druck normal`, `Druck unzensiert`, `E-Book`, `E-Book unzensiert`, `PDF` | `{isbn}`, `{impressum-herstellung}` |
+| die **Technik einer Druckerei** (Rücken, Beschnitt, Strichcode) | Plattform-Datei `druck/<datei>.md` | – |
 
 Suchst du nach `{name}`, findest du beide Stellen: wo der Wert steht und wo er erscheint.
-Ein Wert in der Plattform-Datei ersetzt den gleichnamigen der Variablen-Datei – so bekommt jede Ausgabe das Impressum
-ihrer Plattform, mit kurzen Namen. Endungen gibt es weiterhin (`{name-uz}`, `{name-druck}` …, der genauere Name
-gewinnt), fürs Impressum braucht es sie aber nicht mehr.
+Unter `## Ausgabe: …` gilt ein Wert nur für diese Ausgabe und ersetzt dort den gleichnamigen von oben – so hat jede
+Ausgabe ihr Impressum und ihre ISBN, mit kurzen Namen. Für einzelne Werte gibt es auch Endungen: `{name-uz}`,
+`{name-druck}` … (der genauere Name gewinnt).
 
 Das **Demo-Kapitel** in der Buch-Datei zeigt alle Möglichkeiten. Einmal `sh build.sh` laufen lassen,
 das PDF ansehen und mit der MD vergleichen – danach das Demo löschen und schreiben.
@@ -63,7 +64,7 @@ das PDF ansehen und mit der MD vergleichen – danach das Demo löschen und schr
 | `  - Unterpunkt` | Unterpunkt, 2–4 Leerzeichen eingerückt (unter `-` und unter `1.`) |
 | `3\. Mai war …` | Zahl mit Punkt am Zeilenanfang, aber keine Aufzählung |
 | Leerzeile | neuer Absatz |
-| `\` am Zeilenende | Zeilenumbruch im Absatz: die nächste Zeile gehört zum selben Absatz (alt: `<br/>`, geht weiterhin, z. B. in Variablen) |
+| `\` am Zeilenende | Zeilenumbruch im Absatz: die nächste Zeile gehört zum selben Absatz (in Variablen: `<br/>`) |
 | `---` (eigene Zeile, davor eine Leerzeile) | neue Seite, wie `@UMBRUCH` (im Editor eine waagrechte Linie) |
 
 **Blöcke** `::: art-ausgabe Titel` … `:::` – Art: `nur`, `mitte`, `zusammen`, `offen`,
@@ -86,7 +87,6 @@ ausschnitt: oben           (optional, nur mit foto-format) was beim Zuschneiden 
 Hier geht der Text weiter.
 ```
 Eine Zeile ohne bekanntes Feld (z. B. `Vorschlag: …`) erscheint im Entwurf im Kasten, solange das Foto fehlt.
-Die alte Form `::: foto Sommer` … `:::` und Zeilen mit `- ` gehen weiterhin.
 
 **Titelei:** Titelseite, Impressum, Hinweis und Widmung stehen ohne `:::` als eigene Abschnitte:
 ```text
@@ -96,11 +96,7 @@ Die alte Form `::: foto Sommer` … `:::` und Zeilen mit `- ` gehen weiterhin.
 {titel-zusatz}               weitere Zeilen werden mit « · » an den Untertitel gehängt
 
 ## @IMPRESSUM
-© {jahr} {autor}
-{impressum-herstellung}      leere Variable = Zeile fällt weg
-{impressum-rechte}
-{impressum-kontakt}
-ISBN {isbn}
+                             leer lassen: der Motor setzt die Zeilen je Ausgabe selbst ein (siehe unten)
 
 ## @HINWEIS
 Unten im Impressum, mit Abstand (z. B. «ersetzt keine Beratung»).
@@ -108,9 +104,12 @@ Unten im Impressum, mit Abstand (z. B. «ersetzt keine Beratung»).
 ## @WIDMUNG
 Im Druck allein auf der rechten Seite gegenüber dem Impressum, im unteren Drittel; im Lese-PDF auf eigener Seite.
 ```
-Was nur für eine Plattform gilt (Herstellung, Kontakt der Druckerei, Logo), steht in deren Plattform-Datei
-(`{druck-normal}`, `{druck-uz}`, `{ebook}` in der Variablen-Datei). Im Druck: Seite 2 links Impressum (oben das Logo
-aus `impressum-logo`), Seite 3 rechts Widmung.
+**Impressum:** Bleibt `## @IMPRESSUM` leer, setzt der Motor für jede Ausgabe ein:
+`© {jahr} {autor}` · `{website}` · `{impressum-herstellung}` · `{impressum-rechte}` · `{impressum-kontakt}` · `ISBN {isbn}`.
+Leere Zeilen fallen weg (im Lese-PDF also Herstellung, Logo und ISBN). Die Werte stehen in der Variablen-Datei:
+gemeinsame unter `## Impressum`, die einer Ausgabe unter `## Ausgabe: …`. Eigene Zeilen unter `## @IMPRESSUM`
+gehen auch; dann gelten nur diese. Im Druck: Seite 2 links Impressum (oben das Logo aus `{impressum-logo}`),
+Seite 3 rechts Widmung.
 
 **Seiten:** `---` oder `@UMBRUCH` neue Seite · `@UMBRUCH-RECHTS` im Druck rechts · `@PLATZ 60` neue Seite, wenn
 weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen · `@SEITENMITTE`.
@@ -123,10 +122,9 @@ weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen �
 
 - In der Variablen-Datei `{titel}: …`, im Buch und im Umschlag `{titel}` – derselbe Name an beiden Stellen.
 - `name-normal` / `name-uz`: Wert je Ausgabe. `{name}` nimmt automatisch den richtigen.
-- Eine Zeile, in der eine Variable leer ist, fällt weg. `{isbn}`: Buch bzw. E-Book, leer = «folgt».
-- `format`: `a5` · `taschenbuch` · `sachbuch` · `a4` · `quadrat` (Masse laut epubli)
-- `bindung`: `hardcover` · `softcover` · `beide`; `ruecken`: Rückenbreite in mm **laut epubli-Coverrechner**
-- `druck-normal` / `druck-uz`: Datei aus `druck/` mit allen Angaben für den Druck (siehe «Druckangaben»)
+- Eine Zeile, in der eine Variable leer ist, fällt weg.
+- `format`: `a5` · `taschenbuch` · `sachbuch` · `a4` · `quadrat` (Masse laut epubli) oder eigenes Mass `150 x 215` (mm)
+- `## Ausgabe: …`: Werte nur für diese Ausgabe (siehe «Ausgaben»)
 - `zier`: eigenes Bild für die Verzierung (sonst die Standard-Verzierung)
 - `# LAYOUT`: `farbe-haupt`, `farbe-akzent` …, `schrift-text`, `schrift-titel`, `schriftgroesse`, `blocksatz`
 
@@ -134,22 +132,19 @@ weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen �
 
 | Bereich | Variablen |
 |---|---|
-| Buch | `titel`, `untertitel`, `autor`, `website`, `ort`, `jahr`, `auflage`, `stand` |
+| Buch | `titel`, `untertitel`, `autor`, `website`, `ort`, `jahr`, `auflage`, `stand`, `format` |
 | Zwei Ausgaben | `zweite-ausgabe` (ja/nein), `ausgabe-name-normal` / `-uz`, `stempel-uz` (z. B. UNZENSIERT), `kasten-hinweis` |
-| ISBN | `isbn-buch`, `isbn-ebook` |
+| Impressum | `impressum-rechte`, `impressum-kontakt` |
+| Ausgabe: … | `druck-datei`, `isbn`, `preis`, `impressum-herstellung`, `impressum-kontakt`, `impressum-logo`, `erstellen` (nur E-Book) |
 | E-Book | `ebook-epub2` (ja = zusätzlich EPUB 2), `ebook-rueckseite` (bild / text / nein), `ebook-barrierefreiheit`, `farbe-akzent-ebook` |
-| Shop | `shop-beschreibung`, `shop-schlagwoerter`, `shop-kategorie`, `preis-buch`, `preis-ebook`, `shop-link` |
+| Shop | `shop-beschreibung`, `shop-schlagwoerter`, `shop-kategorie`, `shop-link` |
 | Leseprobe | `leseprobe`, `leseprobe-seiten`, `leseprobe-seiten-uz`, `leseprobe-text` |
-| Technik | `impressum-herstellung`, `impressum-kontakt`, `impressum-rechte`, `impressum-logo`, `format`, `bindung`, `projekt`, `ruecken-…`, `beschnitt-…`, `deckel-hardcover`, `papier`, `druck-normal` / `-uz`, `kurz-…`, `datei-…`, `ordner-…` |
+| Technik | `kurz-…`, `datei-…`, `ordner-…` |
 | Weiteres | `stichworte`, `trennstellen` (Welt\|anschauung), `zier`, `zier-hell`, `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund` |
 | Sicherung | `sicherung-lokal`, `sicherung-cloud`, `sicherung-behalten` |
 | Layout | `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `blocksatz` |
 
-**Rückenbreite:** `sh build.sh final` zeigt die Seitenzahl des Buchblocks. Diese im epubli-Coverrechner
-eingeben (mit dem Papier, das du bestellst), `ruecken:` anpassen, nochmals bauen. Danach zeigt `final` die
-Masse des Hardcover-Umschlags (z. B. 344 × 250 mm) – sie müssen mit Gesamtbreite und Gesamthöhe im
-Coverrechner übereinstimmen. Beschnitt und Deckel: `beschnitt-hardcover` (11 mm), `beschnitt-softcover`,
-`beschnitt-buchblock` (je 3 mm), `deckel-hardcover` (leer = laut Format), `papier`.
+**Rückenbreite:** steht in der Plattform-Datei (siehe «Plattform-Dateien», Coverrechner).
 
 ## Bilder und Fotos
 
@@ -170,9 +165,9 @@ breit, ein Hochformat schmaler. Steht es am Seitenende, wird es etwas kleiner (b
 **Alle Fotos gleich gross** (Variablen-Datei, Abschnitt «Fotos», alles freiwillig):
 
 ```text
-- foto-format: 3:2        alle auf dasselbe Seitenverhältnis zuschneiden (4:3, 16:9, quadrat …)
-- foto-breite: 100        einheitliche Breite in mm (ein «breite:» im Foto geht vor)
-- foto-anpassen: nein     am Seitenende nie verkleinern
+{foto-format}: 3:2        alle auf dasselbe Seitenverhältnis zuschneiden (4:3, 16:9, quadrat …)
+{foto-breite}: 100        einheitliche Breite in mm (ein «breite:» im Foto geht vor)
+{foto-anpassen}: nein     am Seitenende nie verkleinern
 ```
 
 Beim Zuschneiden bleibt die Mitte; pro Foto `ausschnitt: oben` (Köpfe!), `unten`, `links` oder `rechts`.
@@ -209,7 +204,7 @@ Quelle: eigene Praxisstatistik         ← optional: letzte Zeile, klein darunte
 
 Statt alles in die eine Buchdatei zu schreiben, kann jede Geschichte eine **eigene Datei** im Ordner
 `geschichten/` sein. Das Buch bindet sie mit einer Zeile `@@name` ein. Ohne `geschichten/` und ohne
-`@@` läuft alles wie bisher – ein Buch aus einer einzigen Buchdatei bleibt genau gleich.
+`@@` ist das Buch eine einzige Buchdatei.
 
 ```sh
 sh neu.sh "Schutzschild hoch!"     # legt geschichten/schutzschild-hoch.md an (Windows: neu.bat "…")
@@ -228,7 +223,7 @@ quelle: Praxis 2018
 Text, wie im Buch: Absätze, **fett**, > Zitat, ::: Blöcke, Fotos, {variablen}.
 ```
 
-- Die drei Zeilen mit «-» sind freiwillig und werden nicht gedruckt.
+- Die drei Zeilen unter dem Titel sind freiwillig und werden nicht gedruckt.
   `stand`: **idee · entwurf · ueberarbeiten · fertig** – nur für die Übersicht, wirkt nicht auf den Druck.
   `stichworte` kommen automatisch ins Stichwortverzeichnis. `quelle` ist eine Notiz für dich.
 - **Einbinden:** in der Buchdatei eine eigene Zeile `@@schutzschild-hoch` (Name = Dateiname ohne .md).
@@ -334,7 +329,8 @@ Druckdatei) und eine eigene Zeile **Druckdateien: FINAL** bzw. **ENTWURF – nic
 | Weitere Dateien | z. B. Vorder- und Rückseite einzeln als PDF und JPG – zur Auswahl |
 
 Fehlt etwas, nennt die Übersicht den Befehl dazu (z. B. `sh build.sh leseprobe`). Testläufe
-(`druck=…`) haben in `ausgabe-test/<datei>/` ihre eigene Übersicht. Alle Dateien entstehen wie bisher.
+(`druck=…`) haben in `ausgabe-test/<datei>/` ihre eigene Übersicht. Hat eine Ausgabe kein E-Book
+(`{erstellen}: nein`), steht das in der Gruppe E-Book.
 
 ## Schwarz-weiss drucken (freiwillig)
 
@@ -361,74 +357,80 @@ zum Anklicken). Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.
 ## Bei epubli
 
 Ausgabeordner (z. B. `ausgabe-normal/`): `<kurz>_Buchblock.pdf` und `<kurz>_Umschlag_Hardcover.jpg`
-bzw. `_Softcover.jpg` hochladen. Erst ein Testexemplar (`projekt-normal: privatdruck`), dann
-«Buch veröffentlichen»; die ISBN von epubli bei `isbn-buch:` eintragen und neu bauen.
-E-Book (`.epub`): eigene ISBN bei `isbn-ebook:`, dann bei tolino media oder KDP hochladen.
+bzw. `_Softcover.jpg` hochladen. Erst ein Testexemplar (`{projekt}: privatdruck` in der Plattform-Datei), dann
+«Buch veröffentlichen»; die ISBN von epubli unter `## Ausgabe: Druck normal` bei `{isbn}:` eintragen und neu bauen.
+E-Book (`.epub`): eigene ISBN unter `## Ausgabe: E-Book` bei `{isbn}:`, dann bei tolino media oder KDP hochladen.
 Das E-Book enthält Angaben zur **Barrierefreiheit** (Gliederung, Inhaltsverzeichnis, Bildbeschreibungen);
 `sh build.sh` warnt bei Fotos ohne `alt:` und ohne `text:`. Eigene Zusammenfassung: `ebook-barrierefreiheit:`. Die Akzentfarbe für Text wird im E-Book automatisch
 lesbar dunkel gesetzt (Kontrast 4,5:1); eigene Farbe mit `farbe-akzent-ebook:`.
 
-## Druckangaben (druck/)
+## Ausgaben
 
-Alles, was nur den **Druck** betrifft, kann pro Fassung in einer eigenen Datei im Ordner `druck/` stehen –
-so lassen sich epubli, BoD (und später andere) nebeneinander vorbereiten, ohne die Variablen-Datei umzubauen.
-In der Variablen-Datei: `{druck-normal}: epubli-a5-normal` und `{druck-uz}: epubli-a5-uz` (Name ohne `.md`).
-Die Werte der Druckdatei gelten **nur für Buchblock und Umschlag** und haben Vorrang. Lese-PDF, E-Book,
-Leseprobe, Korrektur und Mockup bleiben beim `format:` der Variablen-Datei (Grundformat).
-Ohne `druck`-Zeile gilt alles wie bisher.
+In der Variablen-Datei hat jede Ausgabe einen Abschnitt. Was dort steht, gilt nur für diese Ausgabe:
 
-| In der Druckdatei | Bedeutung |
+```text
+## Ausgabe: PDF                  Lese-PDF, Leseprobe, Korrektur, Booklet – meist leer
+## Ausgabe: Druck normal         {druck-datei}, {isbn}, {preis}, {impressum-herstellung}, {impressum-logo} …
+## Ausgabe: Druck unzensiert     (zweite Ausgabe; auch «Druck zweite Ausgabe»)
+## Ausgabe: E-Book               {isbn}, {preis}, {impressum-herstellung} …
+## Ausgabe: E-Book unzensiert    {erstellen}: nein = kein E-Book dieser Ausgabe
+```
+
+Ein Wert hier ersetzt den gleichnamigen aus `## Impressum` (z. B. eine eigene `{impressum-kontakt}`-Zeile der
+Druckerei). Fehlt er, gilt der gemeinsame. Leer (`{isbn}:`) = die Zeile fällt weg. `{druck-datei}` nennt die
+Plattform-Datei in `druck/` (Name ohne `.md`; auch `reserve/bod-a5`). `shop-angaben.txt` zeigt ISBN und Preis.
+
+Beispiel Leben123: Normal gedruckt bei tredition (mit Logo und ISBN), Unzensiert als Privatdruck bei epubli
+(ohne ISBN, mit der Kontaktzeile von epubli), E-Book bei tredition, kein E-Book der unzensierten Fassung.
+Wechselst du die Druckerei, änderst du `{druck-datei}` und die Impressum-Zeilen dieser Ausgabe.
+
+## Plattform-Dateien (druck/)
+
+Die Plattform-Datei enthält nur die **Technik** einer Druckerei. Ihre Werte gelten nur für Buchblock und Umschlag.
+Lese-PDF, E-Book, Leseprobe, Korrektur und Mockup bleiben beim `{format}` der Variablen-Datei (Grundformat).
+
+| In der Plattform-Datei | Bedeutung |
 |---|---|
+| `neu-berechnen` | `ja` = Seitenzahl hat sich geändert, im Coverrechner neu berechnen (der Bau erinnert daran) · `nein` = Werte passen |
+| `berechnet-fuer-seiten` | Seiten des Buchblocks, für die Rücken und Umschlag berechnet sind; weicht der Buchblock ab, warnt `final` |
 | `plattform` | `epubli`, `bod`, `tredition` oder `kdp` (bestimmt Strichcode-Platz und Füllseite; tredition und kdp wie bod) |
-| `format` / `seite` | Format wie oben; `seite: 148 x 210` = eigenes Mass in mm (Ränder und Schrift vom nächstliegenden Format) |
-| `bindung`, `projekt`, `papier`, `extra-seiten`, `isbn-buch` | wie in der Variablen-Datei |
+| `format` | nur, wenn das Druckformat vom Grundformat abweicht; auch eigenes Mass `148 x 210` (Ränder und Schrift vom nächstliegenden Format) |
+| `bindung`, `projekt`, `papier`, `extra-seiten` | `hardcover`/`softcover`/`beide` · `veroeffentlichen`/`privatdruck` · Papier zur Info · leere Notizseiten am Schluss |
 | `ruecken-hardcover`, `ruecken-softcover` | Rücken in mm laut Coverrechner der Plattform |
 | `beschnitt-buchblock`, `beschnitt-hardcover`, `beschnitt-softcover`, `deckel-hardcover` | Masse in mm (BoD: Buchblock 0, Deckel 153x216, Einschlag 17) |
-| `barcode-position` | `links` · `mitte` · `rechts` (leer = wie bisher: epubli links frei, BoD rechts) |
+| `barcode-position` | `links` · `mitte` · `rechts` (leer: epubli links frei, BoD rechts) |
 | `barcode-groesse` | z. B. `40x20` (mm, 16 mm vom Rand seitlich, 8 mm von unten); leer = 60 × 35 mm ab der Ecke frei |
 | `barcode-bild` | PNG aus `bilder/` auf weissem Feld; leer = nichts zeichnen (BoD: Strichcode aus der ISBN) |
 | `versatz-vertikal`, `versatz-horizontal` | ganzen Seiteninhalt verschieben, in mm: vertikal + = nach oben, horizontal + = nach aussen (nach Messung am Probeexemplar) |
-| `impressum-herstellung`, `impressum-kontakt` | Impressum-Zeilen dieser Plattform (wer druckt, Kontakt nach EU-Produktsicherheitsverordnung; Privatdruck-Hinweis); ersetzen die gleichnamigen der Variablen-Datei |
-| `impressum-logo` | Logo der Druckerei links über dem Impressumstext (PNG aus `bilder/`, 1,5 × so hoch wie die Schrift, zwei Zeilen Abstand, z. B. tredition); leer = kein Logo |
 
-`name-normal` / `name-uz` gehen auch in der Druckdatei. Weicht das Druckformat vom Grundformat ab, meldet der
+Zuunterst steht `## Coverrechner (Rohdaten)`: Dort fügst du ein, was der Coverrechner der Plattform ausgibt
+(Text, wie er kommt). Der Motor liest diesen Abschnitt nicht. Mit Claude: «Coverwerte übernehmen» – dann stehen die
+Werte oben, `{neu-berechnen}: nein` und `{berechnet-fuer-seiten}` passen.
+
+**Rückenbreite:** `sh build.sh final` zeigt die Seitenzahl des Buchblocks. Diese im Coverrechner eingeben (mit dem
+Papier, das du bestellst), Werte übernehmen, nochmals bauen. `final` zeigt die Masse des Umschlags (z. B. 344 × 250 mm)
+– sie müssen mit Gesamtbreite und Gesamthöhe im Coverrechner übereinstimmen.
+
+`name-normal` / `name-uz` gehen auch in der Plattform-Datei. Weicht das Druckformat vom Grundformat ab, meldet der
 Bau «Seitenzahlen im Druck anders als im Lese-PDF». Beim Bau steht `Druckangaben: druck/…md`, und eine Kopie der
-Datei liegt im Ausgabeordner. `sh build.sh pruefen` meldet fehlende Druckdateien und unbekannte Namen.
+Datei liegt im Ausgabeordner. `sh build.sh pruefen` meldet fehlende Plattform-Dateien und unbekannte Namen.
 
 **Versatz nach dem Probeexemplar:** Am gedruckten Buch messen: oben vom Papierrand bis zur Kopfzeile (Soll bei A5
 8 mm) und unten bis zur Seitenzahl (Soll 10,5 mm). Misst du z. B. oben 6,5 und unten 12 mm, sitzt alles 1,5 mm zu hoch:
-in der Druckdatei `versatz-vertikal: -1.5`. Seitlich genauso mit `versatz-horizontal` (+ = nach aussen). Text, Kopfzeile,
+in der Plattform-Datei `{versatz-vertikal}: -1.5`. Seitlich genauso mit `versatz-horizontal` (+ = nach aussen). Text, Kopfzeile,
 Seitenzahl und Bilder verschieben sich gemeinsam, das Layout bleibt gleich; nur der Buchblock dieser Druckerei ist
 betroffen. Der Beschnitt reicht als Reserve (bei 5 mm bis etwa 3 mm Versatz); mehr meldet der Bau als Warnung.
 
-**Impressum je Plattform:** Gemeinsame Zeilen (`{impressum-rechte}`, `{impressum-kontakt}`) stehen in der
-Variablen-Datei. Was zur Plattform gehört, steht in deren Plattform-Datei: `{impressum-herstellung}`, `{impressum-logo}`,
-evtl. ein eigener `{impressum-kontakt}`. Beispiel Leben123: Normal gedruckt bei tredition (mit Logo), Unzensiert als
-Privatdruck bei epubli (ohne Logo), E-Book bei tredition:
-
-```text
-{druck-normal}: tredition-a5-normal     druck/tredition-a5-normal.md  – Technik + «Druck und Distribution … tredition», Logo
-{druck-uz}: epubli-a5-uz                druck/epubli-a5-uz.md         – Technik + «Privatdruck · Herstellung: epubli …»
-{ebook}: tredition-ebook                druck/tredition-ebook.md      – nur «Distribution … tredition»
-```
-
-Wechselst du die Plattform, änderst du nur die Zeile in der Variablen-Datei – das passende Impressum kommt mit.
-Nicht gebrauchte Plattform-Dateien kannst du in `druck/reserve/` aufbewahren (`{druck-normal}: reserve/bod-a5`).
-Das Lese-PDF hat keine Plattform-Datei und zeigt nur die gemeinsamen Zeilen.
-
 **Ausgabeordner:** Ein normaler Bau legt die Druckdateien immer in `ausgabe-normal/` bzw. `ausgabe-unzensiert/` –
-egal welche Plattform die aktive Druckdatei nennt. **Testlauf:** `sh build.sh final druck=<datei>` baut nur
-Buchblock und Umschlag mit dieser Datei nach `ausgabe-test/<datei>/` (mit `normal` oder `uz`: nur diese Fassung);
-ein neuer Test überschreibt den alten. `ausgabe-test/` kommt nicht zu GitHub und nicht in die Sicherung,
-`sh cleanup.sh ausgaben` löscht ihn mit. Gefällt der Test, in der Variablen-Datei `druck-normal:` / `druck-uz:` umstellen.
+egal welche Plattform. **Testlauf:** `sh build.sh final druck=<datei>` baut nur Buchblock und Umschlag mit dieser
+Datei nach `ausgabe-test/<datei>/` (mit `normal` oder `uz`: nur diese Fassung); ein neuer Test überschreibt den alten.
+`ausgabe-test/` kommt nicht zu GitHub und nicht in die Sicherung, `sh cleanup.sh ausgaben` löscht ihn mit. Gefällt der
+Test, `{druck-datei}` der Ausgabe umstellen. Nicht gebrauchte Plattform-Dateien liegen in `druck/reserve/`.
 **Andere Plattform** (z. B. KDP): eine Musterdatei kopieren, z. B. als `druck/kdp-dein-format.md`, die Werte aus
-dem Coverrechner der Plattform eintragen (Seite, Rücken, Beschnitt, Deckel, Barcode) und mit `druck=kdp-dein-format`
-testen. Als `plattform` passt meist `bod` (Strichcode-Feld selbst bestimmen, keine epubli-Füllseite).
+dem Coverrechner der Plattform eintragen und mit `druck=kdp-dein-format` testen. Als `plattform` passt meist `bod`.
 **Muster** (beim neuen Buch schon in `druck/`, sonst in `pureSATZ/vorlage/druck/`): `epubli-a5`,
 `epubli-taschenbuch`, `epubli-sachbuch`, `epubli-a4`, `epubli-quadrat`, `bod-a5-hardcover`, `tredition-a5-hardcover`.
-Aufbau jeder Druckdatei: `##` Abschnitte (Plattform, Innenteil, Umschlag, ISBN, Strichcode), darunter die Werte
-`{name}: wert`; unter jedem Wert eine Zeile `> default: … · optional: …` als Erklärung (der Motor übergeht sie; ältere Dateien mit `####` gehen auch).
-Ausprobieren ohne Umstellen: `sh build.sh final druck=bod-a5-hardcover` → `ausgabe-test/bod-a5-hardcover/`.
+Unter `## Notizen` steht bei jedem Muster, welche Impressum-Zeilen diese Plattform verlangt.
 
 # Andere Plattformen
 
@@ -437,14 +439,14 @@ Ausprobieren ohne Umstellen: `sh build.sh final druck=bod-a5-hardcover` → `aus
 Für technisch Interessierte – der Motor kennt epubli und BoD, andere Druckereien gehen über eine eigene Druckdatei:
 
 1. Eine Musterdatei kopieren, z. B. `druck/bod-a5-hardcover.md` als `druck/kdp-dein-format.md`.
-2. Werte aus dem **Coverrechner** bzw. der Formatliste der Plattform eintragen: `seite: 152,4 x 228,6`
-   (eigenes Mass in mm) oder `format:`, `ruecken-…`, `beschnitt-…`, `deckel-hardcover`, `papier`.
+2. Werte aus dem **Coverrechner** bzw. der Formatliste der Plattform eintragen: `{format}: 152,4 x 228,6`
+   (eigenes Mass in mm), `ruecken-…`, `beschnitt-…`, `deckel-hardcover`, `papier`.
    Ohne Coverrechner: ein PDF hochladen – die Plattform nennt die Masse, die sie erwartet.
 3. `plattform: bod` stehen lassen (Strichcode-Feld selbst bestimmen, keine epubli-Füllseite).
    Setzt die Plattform den Strichcode selbst (z. B. KDP), das Feld mit `barcode-position` / `barcode-groesse`
    frei lassen und `barcode-bild` leer.
 4. Testen: `sh build.sh final druck=kdp-dein-format` → `ausgabe-test/kdp-dein-format/`, Masse in `00-UEBERSICHT.txt`
-   mit dem Rechner der Plattform vergleichen. Passt alles: `druck-normal:` bzw. `druck-uz:` umstellen.
+   mit dem Rechner der Plattform vergleichen. Passt alles: `{druck-datei}` unter `## Ausgabe: Druck …` umstellen.
 
 **Grenzen:** Beschnitt gilt rundum. KDP will beim Buchblock keinen Beschnitt im Bund (nur oben, unten, aussen) –
 das kann der Motor noch nicht. Masse nur in mm.
@@ -459,7 +461,7 @@ Das E-Book ist für alle Shops dasselbe – nur der Druck ist plattformabhängig
   (Zahl = lange Seite).
 - Inhaltsverzeichnis als PDF: `<datei>_Inhalt.pdf` – die Inhaltsseiten aus dem Lese-PDF (verlangt z. B. XinXii).
 - Texte: Beschreibung, Schlagwörter, Kategorie aus `shop-angaben.txt` kopieren.
-- ISBN: eigene E-Book-ISBN bei `isbn-ebook:` eintragen und neu bauen (manche Shops vergeben selbst eine).
+- ISBN: eigene E-Book-ISBN unter `## Ausgabe: E-Book` bei `{isbn}:` eintragen und neu bauen (manche Shops vergeben selbst eine).
 - Leseprobe als E-Book: `<datei>_Leseprobe.epub` (`sh build.sh leseprobe`).
 - **EPUB 2:** pureSATZ baut EPUB 3, das tolino, KDP, Apple, BoD und XinXii annehmen. Verlangt ein Shop oder
   Prüfprogramm EPUB 2 (z. B. epubli: «EPUB-Version zu hoch»), in der Variablen-Datei `ebook-epub2: ja` setzen –
@@ -523,6 +525,20 @@ Der alte Motor bleibt als `motor-alt-…` liegen. Braucht git und Internet, aber
 pureSATZ ist öffentlich. Danach `sh build.sh schnell` und, wenn das Buch auf mehreren Computern liegt, `sh sync.sh`.
 Ohne Internet, aus dem Ordner `pureSATZ` neben dem Buch: `sh update.sh lokal`
 (oder im Ordner pureSATZ: `sh setup/setup.sh motor ../<buch>`).
+
+## Ein neues Buch anlegen
+
+Im Ordner pureSATZ: zuerst den neuesten Stand holen, dann das Buch anlegen. Es entsteht neben pureSATZ;
+ein leerer Ordner mit demselben Namen wird einfach gefüllt, bestehende Dateien bleiben unberührt.
+
+```sh
+cd ../pureSATZ
+git pull                    # neuester Motor und neueste Vorlage von GitHub
+sh setup/setup.sh           # fragt Titel, Autor, technischen Namen (= Ordnername), Format, Bindung
+```
+
+Danach im neuen Buchordner `sh build.sh`. Mit GitHub: dort `git init -b main` und
+`gh repo create <buchname> --private --source . --push` (siehe «Auf mehreren Computern»).
 
 ## Windows
 

@@ -3,9 +3,9 @@ Druckdateien für epubli oder BoD erstellen: Buchblock (Innenteil) und Umschlag.
 Aufruf (im Buchordner):  python3 motor/build-broschuere.py      (normale Ausgabe)
                          python3 motor/build-broschuere.py uz   (zweite Ausgabe)
 Ergebnis: im Ordner der Ausgabe: <kurz>_Buchblock.pdf, Umschlag und Cover (PDF und JPG).
-Alle Angaben stehen in der Variablen-Datei (format, bindung, ruecken, projekt, isbn-buch …) oder –
-ab pureSATZ 2.19 – in einer Druckdatei pro Fassung (druck/…md, Variable «druck-normal» / «druck-uz»).
-Die Werte der Druckdatei haben Vorrang. Test mit einer anderen Datei: sh build.sh final druck=<datei>
+Technik (Plattform, Rücken, Beschnitt, Strichcode) aus der Plattform-Datei der Fassung ({druck-datei} unter
+«## Ausgabe: Druck …» der Variablen-Datei), ISBN und Impressum aus der Variablen-Datei.
+Test mit einer anderen Plattform-Datei: sh build.sh final druck=<datei>
 Benötigt: reportlab, Pillow, pypdfium2 für die JPG-Dateien (sonst poppler)
 """
 import os
@@ -33,7 +33,7 @@ PLATTFORM_NAME = bk.V("plattform", "epubli").strip().lower()   # epubli, bod, tr
 PLATTFORM = {"tredition": "bod", "kdp": "bod"}.get(PLATTFORM_NAME, PLATTFORM_NAME)   # tredition/KDP wie BoD (2.26)
 # "veroeffentlichen" = Buch veröffentlichen (mit ISBN) / "privatdruck" = ohne ISBN
 PROJEKT = bk.ausgabe()["epubli"]
-ISBN = bk.V("isbn-buch")
+ISBN = bk.V("isbn").replace("folgt", "")           # «## Ausgabe: Druck …» → {isbn}
 EXTRA_SEITEN = bk.ausgabe()["extra_seiten"]       # zusätzliche Notizseiten
 BINDUNG = bk.V("bindung", "hardcover").lower()     # hardcover, softcover oder beide
 if BINDUNG not in ("hardcover", "softcover", "beide"):
@@ -69,7 +69,6 @@ HARDCOVER = dict(deckel=deckel(), ruecken=RUECKEN_HART, einschlag=mm_wert("besch
 PAPIER = bk.V("papier")
 
 PROFILE = {
-    # Der Impressumstext (Verlag, Herstellung) steht in der Buch-MD unter @IMPRESSUM ({impressum-…} aus Druckdatei/Variablen)
     "epubli": dict(beschnitt_mm=3, min_seiten=36, eigener_barcode=False),
     "bod":    dict(beschnitt_mm=5, min_seiten=0, eigener_barcode=True),
 }
@@ -236,8 +235,11 @@ print()
 print(f"*** {KUERZEL}: {bk.FMT['name']}, {BINDUNG}" + (f", {PAPIER}" if PAPIER else "") + f", Buchblock {n} Seiten. Rücken "
       + ", ".join(x for x in (f"Softcover {RUECKEN_SOFT:g} mm" if ganz else "",
                               f"Hardcover {RUECKEN_HART:g} mm" if hc else "") if x) + ".")
-print(f"*** Stimmt das mit dem {dict(bod='BoD', kdp='KDP').get(PLATTFORM_NAME, PLATTFORM_NAME)}-Coverrechner überein (Seitenzahl, Papier, Gesamtbreite, Gesamthöhe)? "
-      f"Sonst in {DRUCKDATEI or 'der Variablen-Datei'} anpassen (ruecken-…, beschnitt-…, deckel-hardcover).")
+if bk.V("neu-berechnen").strip().lower() == "nein" and bk.V("berechnet-fuer-seiten").strip() == str(n):
+    print(f"*** Coverwerte passen: in {DRUCKDATEI} für {n} Seiten berechnet.")
+elif not bk.V("berechnet-fuer-seiten").strip() and bk.V("neu-berechnen").strip().lower() != "ja":
+    print(f"*** Stimmt das mit dem {dict(bod='BoD', kdp='KDP').get(PLATTFORM_NAME, PLATTFORM_NAME)}-Coverrechner überein (Seitenzahl, Papier, Gesamtbreite, Gesamthöhe)? "
+          f"Sonst in {DRUCKDATEI or 'der Variablen-Datei'} anpassen (ruecken-…, beschnitt-…, deckel-hardcover).")
 print()
 
 # epubli möchte das Cover als JPG (mind. 300 dpi)
@@ -282,6 +284,13 @@ if fuell:
     print("    Füllseiten wegen: " + ", ".join(teile))
 if innen:
     print(f"    Leere Seiten im Inhalt: {', '.join(map(str, innen))} (z. B. vor einer rechten Seite)")
+BERECHNET = bk.V("berechnet-fuer-seiten").strip()
+if bk.V("neu-berechnen").strip().lower() == "ja":
+    print(f"*** ERINNERUNG {KUERZEL}: In {DRUCKDATEI} steht «{{neu-berechnen}}: ja» – Rücken und Umschlag im Coverrechner "
+          f"der Plattform für {n} Seiten neu berechnen, Werte unter «## Coverrechner (Rohdaten)» einfügen.")
+elif BERECHNET and BERECHNET != str(n):
+    print(f"*** WARNUNG {KUERZEL}: Rücken und Umschlag in {DRUCKDATEI} sind für {BERECHNET} Seiten berechnet, "
+          f"der Buchblock hat jetzt {n}. Bitte im Coverrechner neu berechnen.")
 ohne = INHALT + (0 if P["eigener_barcode"] else 1)
 if ohne % 2 and ohne >= P["min_seiten"]:
     print(f"    Tipp: Mit einer Seite weniger Inhalt ({INHALT - 1}) fiele eine leere Füllseite weg.")
@@ -303,7 +312,8 @@ if os.environ.get("BUCH_BOOKLET") == "druck":
         print(f"Hinweis: kein Probedruck-Booklet – {e}")
 
 if not ISBN and not bk.PRIVATDRUCK:
-    print("Hinweis: Noch keine ISBN eingetragen – im Impressum steht ein Platzhalter.")
+    print("Hinweis: Noch keine ISBN eingetragen ({isbn} unter «## Ausgabe: Druck …») – "
+          + ("im Impressum steht «ISBN folgt»." if bk.V("isbn") == "folgt" else "das Impressum hat keine ISBN-Zeile."))
 
 if bk.ENTWURF:
     offen = sum(1 for z in bk.text_zeilen() if isinstance(z, tuple) and z[0] in ("PH", "OFFEN"))

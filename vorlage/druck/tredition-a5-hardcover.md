@@ -1,64 +1,65 @@
 # tredition – A5 Hardcover
 
+{neu-berechnen}: ja
+{berechnet-fuer-seiten}: 
+> {neu-berechnen}: ja = Seitenzahl hat sich geändert, Rücken und Umschlag im Coverrechner neu berechnen · nein = Werte passen
+> {berechnet-fuer-seiten}: Seiten des Buchblocks, für die die Werte unten berechnet sind. Weicht der Buchblock ab, warnt «sh build.sh final».
+> Nur Technik dieser Plattform. ISBN, Preis und Impressum stehen in der Variablen-Datei unter «## Ausgabe: …».
+> Neue Werte vom Coverrechner: unten unter «## Coverrechner (Rohdaten)» einfügen und Claude sagen: «Coverwerte übernehmen».
 > UNGETESTET beim Umschlag – Buchblock 15,8 x 22 cm (A5 + 5 mm Beschnitt) laut tredition
 > Test: sh build.sh final druck=tredition-a5-hardcover
-> Rücken, Deckel und Einschlag laut tredition eintragen; Strichcode von tredition als PNG nach bilder/
 
 ## Plattform
 {plattform}: tredition
-> default: epubli · optional: epubli | bod | tredition | kdp (tredition und kdp verhalten sich wie bod)
-{format}: a5
-> default: a5 · optional: a5 | taschenbuch | sachbuch | a4 | quadrat
-{seite}:
-> default: leer = Mass laut format · optional: eigenes Mass in mm, z. B. 148 x 210
 {bindung}: hardcover
-> default: hardcover · optional: hardcover | softcover | beide
 {projekt}:
-> default: veroeffentlichen (zweite Fassung: privatdruck) · optional: veroeffentlichen | privatdruck
+> {plattform}: default: epubli · optional: epubli | bod | tredition | kdp (tredition und kdp verhalten sich wie bod)
+> {bindung}: default: hardcover · optional: hardcover | softcover | beide
+> {projekt}: default: veroeffentlichen (zweite Fassung: privatdruck) · optional: veroeffentlichen | privatdruck
+> {format}: nur, wenn das Druckformat vom Grundformat in der Variablen-Datei abweicht: a5 | taschenbuch | sachbuch | a4 | quadrat oder Masse in mm, z. B. 150 x 215
 
 ## Innenteil
 {beschnitt-buchblock}: 5
-> default: epubli 3, bod 5 · optional: mm rundum, 0 = ohne Beschnitt
 {extra-seiten}:
-> default: 0 · optional: Anzahl leere Notizseiten am Schluss
 {versatz-vertikal}:
-> default: 0 · optional: mm, + = ganzer Inhalt nach oben, − = nach unten (nach Messung am Probeexemplar, z. B. -1.5)
 {versatz-horizontal}:
-> default: 0 · optional: mm, + = nach aussen, − = zum Bund hin
+> {beschnitt-buchblock}: default: epubli 3, bod 5 · optional: mm rundum, 0 = ohne Beschnitt
+> {extra-seiten}: default: 0 · optional: Anzahl leere Notizseiten am Schluss
+> {versatz-vertikal}: default: 0 · optional: mm, + = ganzer Inhalt nach oben, − = nach unten (nach Messung am Probeexemplar, z. B. -1.5)
+> {versatz-horizontal}: default: 0 · optional: mm, + = nach aussen, − = zum Bund hin
 
 ## Umschlag
 {ruecken-hardcover}:
-> default: leer = 6 mm (Platzhalter) · optional: mm laut Coverrechner (ändert sich mit Seitenzahl und Papier)
 {ruecken-softcover}:
-> default: leer = 3 mm (Platzhalter) · optional: mm laut Coverrechner
 {beschnitt-hardcover}:
-> default: 11 · optional: Einschlag rundum in mm laut Coverrechner
 {beschnitt-softcover}: 5
-> default: 3 · optional: mm rundum
 {deckel-hardcover}:
-> default: leer = laut format (A5: 157 x 228) · optional: Breite x Höhe in mm
 {papier}:
-> default: leer · optional: Papier wie bestellt (nur zur Info)
-
-## ISBN
-{isbn-buch}:
-> default: leer = «ISBN folgt» im Impressum · optional: ISBN der Plattform
-
-## Impressum
-> Impressum-Zeilen dieser Plattform. Sie ersetzen die gleichnamigen der Variablen-Datei. Leer = Zeile fällt weg.
-> Text von tredition («Dein Impressum» im Autorenbereich)
-{impressum-herstellung}: Druck und Distribution im Auftrag des Autors: tredition GmbH, Heinz-Beusen-Stieg 5, 22926 Ahrensburg, Deutschland
-{impressum-kontakt}: Kontaktadresse nach EU-Produktsicherheitsverordnung: (eigene E-Mail eintragen)
-{impressum-logo}:
-> Logo: Bild aus «Dein Impressum» als bilder/tredition-logo.png speichern und hier eintragen (1,5 × Schrifthöhe)
+> {ruecken-hardcover}: default: leer = 6 mm (Platzhalter) · optional: mm laut Coverrechner (ändert sich mit Seitenzahl und Papier)
+> {ruecken-softcover}: default: leer = 3 mm (Platzhalter) · optional: mm laut Coverrechner
+> {beschnitt-hardcover}: default: 11 · optional: Einschlag rundum in mm laut Coverrechner
+> {beschnitt-softcover}: default: 3 · optional: mm rundum
+> {deckel-hardcover}: default: leer = laut format (A5: 157 x 228) · optional: Breite x Höhe in mm
+> {papier}: default: leer · optional: Papier wie bestellt (nur zur Info)
 
 ## Strichcode
 {barcode-position}: rechts
-> default: leer = epubli links frei, bod rechts · optional: links | mitte | rechts
 {barcode-groesse}: 40x19
-> default: leer = 60 x 35 mm frei ab Ecke · optional: Breite x Höhe in mm, z. B. 40x20
 {barcode-bild}:
-> default: leer = nichts zeichnen (bod: Strichcode aus der ISBN) · optional: PNG aus bilder/
+> {barcode-position}: default: leer = epubli links frei, bod rechts · optional: links | mitte | rechts
+> {barcode-groesse}: default: leer = 60 x 35 mm frei ab Ecke · optional: Breite x Höhe in mm, z. B. 40x20
+> {barcode-bild}: default: leer = nichts zeichnen (bod: Strichcode aus der ISBN) · optional: PNG aus bilder/
 
 ## Offen
 > Umschlag: Rücken, Deckelmass und Einschlag von tredition
+
+## Coverrechner (Rohdaten)
+> Hier die Angaben aus dem Coverrechner der Plattform einfügen (Text, wie er kommt). Der Motor liest diesen Abschnitt nicht.
+> Rücken, Deckel und Einschlag laut tredition eintragen; Strichcode von tredition als PNG nach bilder/
+
+## Notizen
+> Impressum und ISBN gehören in die Variablen-Datei unter «## Ausgabe: …». Beim Wechsel auf diese Plattform dort eintragen:
+> {impressum-herstellung}: Druck und Distribution im Auftrag des Autors: tredition GmbH, Heinz-Beusen-Stieg 5, 22926 Ahrensburg, Deutschland
+> {impressum-kontakt}: Kontaktadresse nach EU-Produktsicherheitsverordnung: (eigene E-Mail eintragen)
+> E-Book über tredition («## Ausgabe: E-Book»): {impressum-herstellung}: Distribution im Auftrag des Autors: tredition GmbH, Heinz-Beusen-Stieg 5, 22926 Ahrensburg, Deutschland
+> Logo: {impressum-logo}: PNG von tredition in bilder/

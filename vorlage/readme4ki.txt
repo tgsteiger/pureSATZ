@@ -8,12 +8,12 @@ und hältst dich genau an die Regeln unten. Sonst kann der Motor das Buch nicht 
 
 DATEIEN (nur diese darfst du ändern)
   @@NAME@@-buch.md        der Buchtext
-  @@NAME@@-variablen.md   Werte: Titel, Autor, ISBN, Format, Shop-Texte, Farben …
+  @@NAME@@-variablen.md   Werte: Titel, Autor, Format, Impressum, Ausgaben (ISBN, Preis), Shop-Texte, Farben …
   @@NAME@@-umschlag.md    Vorderseite, Buchrücken, Rückseite
   stichworte-@@NAME@@.txt Stichwortverzeichnis: ein Stichwort pro Zeile, Varianten mit |, # = Kommentar
   geschichten/*.md        einzelne Geschichten (falls es den Ordner gibt), siehe GESCHICHTEN unten
   tabellen/*.csv          Tabellen (falls es den Ordner gibt), siehe TABELLEN unten
-  druck/*.md              Druckangaben pro Fassung (Plattform, Rücken, Beschnitt, Papier, Barcode), siehe DRUCK unten
+  druck/*.md              Plattform-Dateien: Technik einer Druckerei (Rücken, Beschnitt, Papier, Strichcode), siehe DRUCK unten
 NIE ändern: ausgabe-*/ (auch 00-UEBERSICHT.txt, wird bei jedem Bau neu erstellt), Ordner motor/, *.sh, *.bat, *.py, md-history/, geschichten/UEBERSICHT.md, geschichten-uebersicht.html.
 
 GESCHICHTEN (nur wenn es den Ordner geschichten/ gibt)
@@ -30,12 +30,23 @@ TABELLEN (nur wenn es den Ordner tabellen/ gibt)
   @#-Zeilen nie ändern ohne Auftrag. Werte nur in der CSV ändern, nie als Text ins Buch kopieren.
 - Jede Zeile braucht gleich viele Werte wie Spaltenüberschriften.
 
+AUSGABEN (Variablen-Datei)
+- Abschnitte «## Ausgabe: PDF», «## Ausgabe: Druck normal», «## Ausgabe: Druck unzensiert» (oder «Druck zweite Ausgabe»),
+  «## Ausgabe: E-Book», «## Ausgabe: E-Book unzensiert». Ein Wert dort gilt nur für diese Ausgabe.
+- Erlaubte Namen dort: druck-datei (Plattform-Datei ohne .md), isbn, preis, impressum-herstellung, impressum-kontakt,
+  impressum-logo, erstellen (E-Book: ja/nein). Leer = Zeile fällt weg.
+- Gemeinsames Impressum unter «## Impressum»: {impressum-rechte}, {impressum-kontakt}.
+- «## @IMPRESSUM» in der Buch-MD bleibt leer: der Motor setzt © {jahr} {autor}, {website}, {impressum-herstellung},
+  {impressum-rechte}, {impressum-kontakt}, ISBN {isbn} selbst ein.
+
 DRUCK (nur wenn es den Ordner druck/ gibt)
-- Eine Datei pro Druckvariante, z. B. druck/epubli-a5-normal.md, druck/bod-a5-hardcover.md. Werte als «{name}: wert». Plattform-Datei: Technik (Plattform, Format, Rücken, Beschnitt, Strichcode) und Impressum-Zeilen dieser Plattform ({impressum-herstellung}, {impressum-logo}). Auch fürs E-Book: {ebook}: tredition-ebook.
-- Erlaubte Namen: plattform, format, seite, bindung, projekt, ruecken-hardcover, ruecken-softcover,
-  beschnitt-buchblock, beschnitt-hardcover, beschnitt-softcover, deckel-hardcover, papier, extra-seiten,
-  isbn-buch, barcode-position, barcode-groesse, barcode-bild. Masse in mm, z. B. «seite: 148 x 210».
-- Welche Datei gilt, steht in der Variablen-Datei: druck-normal / druck-uz (Name ohne .md).
+- Eine Plattform-Datei pro Druckerei und Format, z. B. druck/epubli-a5.md, druck/bod-a5-hardcover.md. Nur Technik, keine Texte.
+- Erlaubte Namen: neu-berechnen, berechnet-fuer-seiten, plattform, format (nur wenn anders als das Grundformat), bindung,
+  projekt, ruecken-hardcover, ruecken-softcover, beschnitt-buchblock, beschnitt-hardcover, beschnitt-softcover,
+  deckel-hardcover, papier, extra-seiten, barcode-position, barcode-groesse, barcode-bild, versatz-vertikal,
+  versatz-horizontal. Masse in mm, z. B. «{deckel-hardcover}: 153x216».
+- «## Coverrechner (Rohdaten)» zuunterst: Text aus dem Coverrechner, vom Motor nicht gelesen. Auftrag «Coverwerte übernehmen»:
+  Werte daraus oben eintragen, {neu-berechnen}: nein, {berechnet-fuer-seiten}: Seitenzahl, für die gerechnet wurde.
 - Werte nur aus dem Coverrechner der Plattform übernehmen, nie schätzen. Danach «sh build.sh pruefen».
 
 LESEPROBE (Variablen-Datei)
@@ -45,26 +56,25 @@ LESEPROBE (Variablen-Datei)
 GRUNDREGELN FÜR ALLE MD-DATEIEN
 - Gliederung mit # / ## / ###. Werte als Zeile:  {name}: wert   (im Buch erscheint derselbe Name als {name})
 - Endung -druck / -ebook / -bildschirm / -normal / -uz am Namen = nur dort; der genauere Name gewinnt.
-- Gemeinsame Texte (Titel, ISBN E-Book, Shop, {impressum-rechte}, {impressum-kontakt}) stehen hier. Welche Ausgabe bei welcher Plattform: {druck-normal}, {druck-uz}, {ebook}.
 - Namen von Werten (vor dem Doppelpunkt) nie ändern, nie erfinden. Nur den Wert danach.
 - {name} im Text = Wert aus der Variablen-Datei, z. B. {titel}, {autor}. So stehen lassen.
 - Eine Zeile mit leerer Variable fällt im Buch weg.
 - name-normal / name-uz: Wert je Ausgabe (normale und zweite Ausgabe).
-- Erklärungen als «> …». Kein «- » vor Werten.
+- Pro Abschnitt zuerst die Werte, darunter die Erklärungen als «> {name}: …». Kein «- » vor Werten.
 
 BUCHTEXT (@@NAME@@-buch.md)
   # Teil 1|Titel|Untertitel     neuer Teil mit eigener Seite (genau diese Form mit |)
   # Titel                       Kapitel oberster Ebene, z. B. Anhang, Über den Autor
   ## Kapitel                    Kapitel (erscheint im Inhaltsverzeichnis)
   ### Zwischentitel             kleiner Titel
-  Leerzeile                     neuer Absatz.   \ am Zeilenende = Zeilenumbruch im Absatz (alt: <br/>)
+  Leerzeile                     neuer Absatz.   \ am Zeilenende = Zeilenumbruch im Absatz
   ---                           neue Seite (eigene Zeile, davor Leerzeile), wie @UMBRUCH
   > Zitat   ~ Notiz an mich   - Listenpunkt   **fett**   [Text](https://…)
   1. Aufzählung (zählt selbst)   «  - Unterpunkt» (eingerückt)   «3\. Mai» = Zahl ohne Aufzählung
   ## @BEFEHL                    Befehl als Überschrift, wirkt wie @BEFEHL
 
 Blöcke: beginnen mit «::: art Titel», enden mit «:::» (eigene Zeile)
-  Arten: nur, mitte, foto (alt), zusammen, offen, offen-notiz, widmung, zeitstrahl, uz
+  Arten: nur, mitte, zusammen, offen, offen-notiz, widmung, zeitstrahl, uz
   Endung = nur in einer Ausgabe/Medium: -normal, -uz, -bildschirm, -druck, -ebook, -buch, -privatdruck
   Beispiel:  ::: nur-uz        (dieser Text nur in der zweiten Ausgabe)
 Foto (ohne «:::»):  «#### @FOTO Titel», darunter Zeilen «datei: bild.jpg» / «text: Bildunterschrift» /
@@ -83,7 +93,7 @@ Keine anderen @-Befehle erfinden. Befehle nicht übersetzen, nicht verschieben o
 UMSCHLAG (@@NAME@@-umschlag.md)
   Abschnitte ## Vorderseite, ## Buchrücken, ## Rückseite. Felder als  schluessel: wert  (ohne «- »)
   (titel, untertitel, autor, stempel, stempel-farbe, fuss, bild, slogan, foto, text, auszug).
-  Endung am Schlüssel = nur dort: fuss-druck, fuss-bildschirm, text-ebook, auszug-uz. «> …» = Erklärung. Text der Rückseite kurz halten.
+  Endung am Schlüssel = nur dort: fuss-druck, fuss-bildschirm, text-ebook, auszug-uz. «> feld: …» = Erklärung. Text der Rückseite kurz halten.
 
 WAS DER MOTOR MACHT (zur Info)
   sh build.sh            Entwurf: Bildschirm-PDF, Druckdateien, E-Book (offene Stellen sichtbar)

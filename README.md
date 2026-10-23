@@ -17,6 +17,7 @@ Installation auf Linux, Mac oder Windows, auch für andere Personen mit eigenem 
 ## Ein neues Buch beginnen
 
 ```sh
+git pull                       # neuesten Stand von GitHub holen (wenn pureSATZ mit git geholt wurde)
 sh setup/setup.sh              # fragt alles ab
 sh setup/setup.sh start.txt    # nimmt die Werte aus setup/start.txt, fragt nur, was fehlt
 ```
@@ -25,11 +26,12 @@ Gefragt wird: Titel, Untertitel, Autor, **technischer Buchname** (Ordner und Dat
 **Format** (a5, taschenbuch, sachbuch, a4, quadrat), **Bindung** (hardcover, softcover),
 zweite Ausgabe, Ort, Jahr, Website, Verlagsadresse.
 
-Das legt **neben** `pureSATZ` einen Buchordner an (z. B. `../Mein-Buch/`):
+Das legt **neben** `pureSATZ` einen Buchordner an (z. B. `../Mein-Buch/`; ein leerer Ordner mit diesem Namen wird gefüllt):
 
 | Datei | Inhalt |
 |---|---|
-| `Mein-Buch-variablen.md` | `# VARIABLEN`, `# TECHNIK`, `# LAYOUT` |
+| `Mein-Buch-variablen.md` | `# VARIABLEN` (Buch, Impressum, ein Abschnitt pro Ausgabe mit ISBN und Preis), `# TECHNIK`, `# LAYOUT` |
+| `druck/` | Plattform-Dateien: Technik pro Druckerei (Rücken, Beschnitt, Strichcode) |
 | `Mein-Buch-buch.md` | das Buch: Titelei und ein Demo-Kapitel mit allen Möglichkeiten |
 | `Mein-Buch-umschlag.md` | Vorderseite, Buchrücken, Rückseite |
 | `stichworte-Mein-Buch.txt` | Stichwortverzeichnis, eine Zeile pro Stichwort |
@@ -38,8 +40,8 @@ Das legt **neben** `pureSATZ` einen Buchordner an (z. B. `../Mein-Buch/`):
 | `sync.sh`, `update.sh`, `.gitignore` | Buch zwischen Computern abgleichen, Motor-Update von GitHub (siehe `GITHUB.md`) |
 | `fotos/`, `bilder/`, `build.sh`, `cleanup.sh`, `sicherung.sh`, `README.md`, `motor/` | Bilder, Bauen, Aufräumen, Sicherung, Hilfe, Satzsystem |
 
-Alle drei MD-Dateien haben dieselben Regeln: Überschriften `#`, `##`, `###`, Werte als `{name}: wert` (derselbe Name erscheint im Buch als `{name}`), Erklärungen als `> …`,
-erklärende Sätze sind erlaubt. Danach im Buchordner:
+Alle MD-Dateien haben dieselben Regeln: Überschriften `#`, `##`, `###`, Werte als `{name}: wert` (derselbe Name erscheint im Buch als `{name}`),
+darunter die Erklärungen als `> {name}: …`. Danach im Buchordner:
 
 ```sh
 sh build.sh             # Entwurf
@@ -51,26 +53,26 @@ sh sicherung.sh         # ZIP-Sicherung (lokal und/oder cloud)
 
 Die Hilfe zum Buch steht im Buchordner in `README.md`.
 
-## Geschichten sammeln (ab 2.11)
+## Geschichten sammeln
 
 Wer lieber einzelne Geschichten schreibt: jede Geschichte eine eigene Datei in `geschichten/`, im Buch eingebunden
 mit einer Zeile `@@name`. `sh neu.sh "Titel"` legt eine an (Windows `neu.bat`), `sh neu.sh` zeigt die Übersicht,
 `sh build.sh geschichten` macht ein Sammel-PDF; `geschichten-uebersicht.html` zeigt Stand, Wörter und Kanban.
-Freiwillig – ein Buch aus einer einzigen Buchdatei läuft wie bisher. Details: `hilfe.html`, Abschnitt «Geschichten sammeln».
+Freiwillig. Details: `hilfe.html`, Abschnitt «Geschichten sammeln».
 
-## Tabellen und Leseprobe (ab 2.12)
+## Tabellen und Leseprobe
 
 Tabellen als CSV in `tabellen/`, im Buch mit einer Zeile `@#name`; zu breite Tabellen werden verkleinert oder quer
 gestellt (`@#name quer` / `@#name hoch`). Neue Tabelle: `sh neu.sh tabelle "Titel"`. Leseprobe nach Seiten:
-`leseprobe-seiten: 14,16,17-20,22` (auch `-uz`), ohne Angabe die 4 Seiten nach dem Inhaltsverzeichnis.
+`{leseprobe-seiten}: 14,16,17-20,22` (auch `-uz`), ohne Angabe die 4 Seiten nach dem Inhaltsverzeichnis.
 Details: `hilfe.html`, Abschnitte «Tabellen» und «Bauen».
 
-## Hilfe mit Suche (ab 2.13)
+## Hilfe mit Suche
 
 Jedes Buch hat eine `hilfe.html` (Doppelklick): alle Anleitungen, Befehle, Blöcke und die Variablen des Buchs auf
 einer Seite, mit Suche und Schalter Linux/Mac ↔ Windows. `sh build.sh hilfe` erzeugt und öffnet sie. Eigene
 Notizen in `meine-hilfe.md` stehen ganz oben. Diese Hilfe für den Ordner pureSATZ: `python3 motor/hilfe.py`.
-Ab 2.19.2: «Start» mit fünf Punkten (erstes PDF, Computer einrichten, Hallo-PDF, Buch bauen, wenn etwas klemmt),
+«Start» zeigt fünf Punkte (erstes PDF, Computer einrichten, Hallo-PDF, Buch bauen, wenn etwas klemmt),
 darunter die Hilfe in Gruppen – auch «Andere Plattformen» (KDP, XinXii, Lulu, Copyshop).
 
 **Welche Datei wofür?** Nach jedem Bau steht im Ausgabeordner zuoberst `00-UEBERSICHT.txt`: was zur Druckerei geht,
@@ -108,9 +110,9 @@ ein fertiges Buch auch in Jahren noch genau gleich erstellen.
 | `a4` | 210 × 297 mm | 219 × 315 mm |
 | `quadrat` | 205 × 205 mm | 214 × 223 mm |
 
-Einschlag Hardcover 11 mm, Beschnitt Softcover und Innenseiten 3 mm – alles in der Variablen-Datei änderbar (`beschnitt-…`, `deckel-hardcover`). Weitere Formate: in `motor/build.py` bei `FORMATE`.
+Einschlag Hardcover 11 mm, Beschnitt Softcover und Innenseiten 3 mm – in der Plattform-Datei änderbar (`beschnitt-…`, `deckel-hardcover`). Eigenes Mass: `{format}: 150 x 215`. Weitere Formate: in `motor/build.py` bei `FORMATE`.
 
-**Druckangaben pro Plattform (ab 2.19):** Alles für den Druck (Plattform, Format oder eigenes Mass `seite: 148 x 210`, Rücken, Beschnitt, Deckel, Papier, Barcode-Feld) kann pro Fassung in einer Datei im Ordner `druck/` stehen – Muster in `vorlage/druck/` (epubli in allen Formaten, BoD A5 Hardcover, tredition A5 Hardcover). Druckdateien enthalten nur Technik; alle Texte, auch das Impressum, stehen in der Variablen-Datei. In der Variablen-Datei: `druck-normal: epubli-a5`, `druck-uz: …`. Testen ohne Umstellen: `sh build.sh final druck=bod-a5-hardcover` – baut nur die Druckdateien nach `ausgabe-test/bod-a5-hardcover/`. Der normale Bau schreibt immer nach `ausgabe-normal/` bzw. in den Ordner der zweiten Ausgabe. Andere Plattform (z. B. KDP): Musterdatei kopieren und die Werte aus deren Coverrechner eintragen.
+**Ausgaben und Plattformen:** In der Variablen-Datei hat jede Ausgabe einen Abschnitt (`## Ausgabe: Druck normal`, `Druck unzensiert`, `E-Book`, `E-Book unzensiert`, `PDF`) mit Plattform-Datei, ISBN, Preis und den Impressum-Zeilen dieser Ausgabe; das Impressum setzt der Motor daraus selbst zusammen. Die Plattform-Datei in `druck/` enthält nur Technik (Rücken, Beschnitt, Deckel, Papier, Strichcode) und zuunterst die Rohdaten aus dem Coverrechner; ändert sich die Seitenzahl, warnt der Bau. Muster in `vorlage/druck/` (epubli in allen Formaten, BoD A5 Hardcover, tredition A5 Hardcover). Testen ohne Umstellen: `sh build.sh final druck=bod-a5-hardcover` – baut nur die Druckdateien nach `ausgabe-test/bod-a5-hardcover/`. Andere Plattform (z. B. KDP): Musterdatei kopieren und die Werte aus deren Coverrechner eintragen.
 
 ## setup/start.txt
 

@@ -1,24 +1,16 @@
 """
-Gemeinsamer Leser für das Manuskript (Buch-MD) und den Umschlag (Umschlag-MD).
+Gemeinsamer Leser für das Manuskript (Buch-MD), die Variablen-Datei und den Umschlag (Umschlag-MD).
 Wird von build.py, build-broschuere.py und build-epub.py verwendet.
 
-Aufbau der Buch-MD
-------------------
-1. Einstellungen oben, bis zur Überschrift «# BUCHSTART»:
-       # VARIABLEN
-       ## Buch
-       - titel: Leben 1.0, 2.0, 3.0
-       - untertitel-normal: Meine Reise …
-       - untertitel-uz: Meine ganze Lebensreise …
-       # BUCHSTART
-   Überschriften und Sätze dazwischen sind Erklärungen. (Alte Form: Block zwischen «---».)
-   Im Text: {titel}, {untertitel} … Gibt es «name-normal» und «name-uz», nimmt {name}
-   automatisch den Wert der gebauten Fassung. Fehlt eine der beiden Varianten, ist sie leer.
-   {isbn} ist besonders: im Druck isbn-buch (leer = «folgt»), im E-Book isbn-ebook.
-   Gibt es «name-druck», «name-ebook» oder «name-bildschirm», nimmt {name} den Wert des Mediums (2.24);
-   er hat Vorrang vor «name» ohne Endung (2.26). In Variablen- und Druckdateien darf der Name in Klammern
-   stehen: «- {isbn-buch}: …» (2.26), damit die Suche nach {name} beide Stellen findet.
+Variablen
+---------
+1. In der Variablen-Datei «{name}: wert», im Text {name}. «> …» = Erklärung.
+   Gibt es «name-normal» und «name-uz», nimmt {name} automatisch den Wert der gebauten Fassung.
+   «name-druck», «name-ebook», «name-bildschirm» = nur in diesem Medium; der genauere Name gewinnt.
+   Unter «## Ausgabe: Druck normal» (… unzensiert, E-Book, E-Book unzensiert, PDF) gilt ein Wert nur für diese
+   Ausgabe (intern «name-druck-normal»). {isbn}: die ISBN der Ausgabe.
    Eine Zeile, in der eine Variable leer bleibt, fällt ganz weg.
+   Ein leeres «## @IMPRESSUM» füllt der Motor selbst (IMPRESSUM_VORLAGE).
 
 2. Blöcke  ::: art[-ausgabe] [Titel]  …  :::
    art:     nur, mitte, foto, offen, offen-notiz, zusammen, widmung, zeitstrahl,
@@ -144,32 +136,68 @@ def lies(pfad):
     return _CACHE[pfad]
 
 
+AUSGABE_KOPF = re.compile(r"^ausgabe\s*:\s*(.+)$", re.I)       # «## Ausgabe: Druck normal»
+ROHDATEN_KOPF = re.compile(r"coverrechner|rohdaten", re.I)       # «## Coverrechner (Rohdaten)»: wird nicht gelesen
+
+
+def ausgabe_abschnitt(titel):
+    """«Druck unzensiert» -> ('druck', 'uz'); «E-Book» -> ('ebook', None); «PDF» -> ('bildschirm', None)."""
+    t = titel.lower()
+    if "pdf" in t or "bildschirm" in t:
+        medium = "bildschirm"
+    elif "e-book" in t or "ebook" in t:
+        medium = "ebook"
+    elif "druck" in t or "buch" in t:
+        medium = "druck"
+    else:
+        return None
+    w = set(re.findall(r"[a-zäöü']+", t))
+    fassung = "uz" if w & {"unzensiert", "uz", "zweite", "dc", "director's", "directors"} else \
+        "normal" if "normal" in w else None
+    return medium, fassung
+
+
 def lies_variablen(pfad):
-    """Variablen-Datei (<buch>-variablen.md): (variablen, stichworte).
-    Jede Zeile «- name: wert» ist eine Variable. Unter einer Überschrift «STICHWORTE» ist jede
-    Listenzeile ein Stichwort («- Seele | Seelen»). Überschriften und Sätze sind Erklärungen."""
+    """Variablen-Datei (<buch>-variablen.md) oder Plattform-Datei (druck/…md): (variablen, stichworte).
+    Jede Zeile «{name}: wert» ist eine Variable, «> …» eine Erklärung.
+    Unter «## Ausgabe: Druck normal» (… unzensiert, E-Book, PDF) gilt ein Wert nur für diese Ausgabe:
+    er wird intern «name-druck-normal» genannt. Ein Abschnitt «Coverrechner (Rohdaten)» wird nicht gelesen.
+    Unter «STICHWORTE» ist jede Listenzeile ein Stichwort («- Seele | Seelen»)."""
     key = ("V", pfad)
     if key in _CACHE:
         return _CACHE[key]
-    var, stw, in_stw = {}, [], False
+    var, stw = {}, []
+    bereich = None          # (art, stufe, medium, fassung): art = stw | roh | ausgabe
     for z in open(pfad, encoding="utf-8").read().split("\n"):
         t = z.strip()
         if not t or t.startswith(("<!--", ">")):
             continue
         if t.startswith("#"):
             stufe = len(t) - len(t.lstrip("#"))
-            if "STICHWORTE" in t.upper().lstrip("# "):
-                in_stw, stw_stufe = True, stufe
-            elif in_stw and stufe <= stw_stufe:
-                in_stw = False
+            titel = t.lstrip("# ").strip()
+            if bereich and stufe <= bereich[1]:
+                bereich = None
+            if bereich is None:
+                aus = AUSGABE_KOPF.match(titel)
+                if "STICHWORTE" in titel.upper():
+                    bereich = ("stw", stufe, None, None)
+                elif ROHDATEN_KOPF.search(titel):
+                    bereich = ("roh", stufe, None, None)
+                elif aus and ausgabe_abschnitt(aus.group(1)):
+                    bereich = ("ausgabe", stufe) + ausgabe_abschnitt(aus.group(1))
             continue
-        if in_stw:
+        if bereich and bereich[0] == "roh":
+            continue
+        if bereich and bereich[0] == "stw":
             if t.startswith(("- ", "* ")):
                 stw.append(t[2:].strip())
             continue
         m = VARIABLE.match(t)
         if m:
-            var[m.group(1)] = (m.group(2) or "").strip()
+            name = m.group(1)
+            if bereich and bereich[0] == "ausgabe":
+                name = f"{name}-{bereich[2]}" + (f"-{bereich[3]}" if bereich[3] else "")
+            var[name] = (m.group(2) or "").strip()
     _CACHE[key] = (var, stw)
     return _CACHE[key]
 
@@ -186,17 +214,22 @@ class Ausgabe:
         return t
 
     def wert(self, name, standard=None):
-        """Wert einer Variablen für diese Ausgabe. None = unbekannt."""
+        """Wert einer Variablen für diese Ausgabe. None = unbekannt.
+        Reihenfolge: name-medium-fassung (Abschnitt «## Ausgabe: …»), name-medium, name,
+        dann name-normal / name-uz."""
         name = name.lower()
+        if name == "isbn" and self.medium == "druck" and self.privatdruck:
+            return ""
+        eigen = (f"{name}-{self.medium}-{self.fassung}", f"{name}-{self.medium}")
+        for k in eigen:
+            if k in self.var:
+                return self.var[k]
         if name == "isbn":
-            if self.medium == "druck":
-                return "" if self.privatdruck else (self.var.get("isbn-buch") or "folgt")
-            return self.var.get("isbn-ebook", "") if self.medium == "ebook" else ""
-        if f"{name}-{self.medium}" in self.var:          # 2.26: der genauere Name gewinnt («name-ebook» vor «name»)
-            return self.var[f"{name}-{self.medium}"]
+            return (self.var.get("isbn-buch") or "folgt") if self.medium == "druck" else ""
         if name in self.var:
             return self.var[name]
-        if any(f"{name}-{t}" in self.var for t in ("druck", "ebook", "bildschirm")):    # 2.24: je Medium
+        if any(f"{name}-{m}" in self.var or f"{name}-{m}-{f}" in self.var
+               for m in ("druck", "ebook", "bildschirm") for f in ("normal", "uz")):
             return ""
         if any(f"{name}-{t}" in self.var for t in ("normal", "uz", "dc")):
             if self.fassung == "uz":
@@ -262,11 +295,34 @@ def markdown_zeilen(roh):
     return out
 
 
+IMPRESSUM_KOPF = re.compile(r"^\s*(?:#{1,6}\s+)?@IMPRESSUM\s*$")
+IMPRESSUM_VORLAGE = ["© {jahr} {autor}", "{website}", "", "{impressum-herstellung}", "", "{impressum-rechte}", "",
+                     "{impressum-kontakt}", "", "ISBN {isbn}"]
+
+
+def impressum_einsetzen(roh, a):
+    """Leeres «## @IMPRESSUM»: der Motor setzt die Zeilen selbst ein (IMPRESSUM_VORLAGE).
+    Zeilen mit einer Variablen, die das Buch nicht kennt, fallen weg."""
+    out = []
+    for i, (nr, s) in enumerate(roh):
+        out.append((nr, s))
+        if not IMPRESSUM_KOPF.match(s):
+            continue
+        naechste = next((z for _, z in roh[i + 1:] if z.strip()), "")
+        if naechste and not naechste.lstrip().startswith(("#", "@", ":::")):
+            continue                                    # eigene Zeilen unter @IMPRESSUM
+        for v in IMPRESSUM_VORLAGE:
+            if any(a.wert(n) is None for n in re.findall(r"\{([a-z][a-z0-9-]*)\}", v)):
+                continue
+            out.append((nr, v))
+    return out
+
+
 def zeilen(pfad, a, entwurf=False):
     """Text der Ausgabe a: Zeilen (str) und Blöcke als Tupel (ART, titel, [zeilen])."""
     name = os.path.basename(pfad)
     _, roh = lies(pfad)
-    roh = markdown_zeilen(roh)
+    roh = impressum_einsetzen(markdown_zeilen(roh), a)
     out, i = [], 0
     while i < len(roh):
         nr, s = roh[i]
