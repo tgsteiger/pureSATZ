@@ -37,7 +37,7 @@ AUSGABEN (Variablen-Datei)
   impressum-logo, erstellen (E-Book: ja/nein). Leer = Zeile fällt weg.
 - Gemeinsames Impressum unter «## Impressum»: {impressum-rechte}, {impressum-kontakt}.
 - «## @IMPRESSUM» in der Buch-MD bleibt leer: der Motor setzt © {jahr} {autor}, {website}, {impressum-herstellung},
-  {impressum-rechte}, {impressum-kontakt}, ISBN {isbn} selbst ein.
+  {impressum-rechte}, {impressum-kontakt}, {auflage}, ISBN {isbn} selbst ein.
 
 DRUCK (nur wenn es den Ordner druck/ gibt)
 - Eine Plattform-Datei pro Druckerei und Format, z. B. druck/epubli-a5.md, druck/bod-a5-hardcover.md. Nur Technik, keine Texte.
