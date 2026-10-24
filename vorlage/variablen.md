@@ -26,8 +26,11 @@
 ## Impressum
 {impressum-rechte}: Das Werk, einschliesslich seiner Teile, ist urheberrechtlich geschützt. Jede Verwertung ist ohne Zustimmung des Autors unzulässig. Zu erreichen unter: @@AUTOR@@, @@ADRESSE@@.
 {impressum-kontakt}:
-> Gilt für alle Ausgaben. Steht in der Buch-MD unter «## @IMPRESSUM» nichts, setzt der Motor das Impressum selbst zusammen: © {jahr} {autor} · {website} · {impressum-herstellung} · {impressum-rechte} · {impressum-kontakt} · {auflage} · ISBN {isbn}. Leere Zeilen fallen weg.
+{impressum-satz1}: Gesetzt mit pureSATZ · github.com/tgsteiger/pureSATZ
+{impressum-satz2}:
+> Gilt für alle Ausgaben. Steht in der Buch-MD unter «## @IMPRESSUM» nichts, setzt der Motor das Impressum selbst zusammen: © {jahr} {autor} · {website} · {impressum-herstellung} · {impressum-satz1} · {impressum-satz2} · {impressum-rechte} · {impressum-kontakt} · {auflage} · ISBN {isbn}. Leere Zeilen fallen weg.
 > Was nur für eine Ausgabe gilt (Herstellung, Logo, eigene Kontaktzeile, ISBN, Preis), steht unten bei der Ausgabe und ersetzt dort die Zeile von hier.
+> {impressum-satz1}, {impressum-satz2}: zwei freie Zeilen direkt unter der Herstellung, z. B. womit gesetzt wurde oder wer begleitet hat (leer = Zeile fällt weg).
 
 ## Ausgabe: PDF
 > Lese-PDF, Leseprobe, Korrektur und Booklet zum Selberdrucken – ohne Herstellung, Logo und ISBN.

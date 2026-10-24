@@ -321,7 +321,8 @@ def markdown_zeilen(roh):
 
 
 IMPRESSUM_KOPF = re.compile(r"^\s*(?:#{1,6}\s+)?@IMPRESSUM\s*$")
-IMPRESSUM_VORLAGE = ["© {jahr} {autor}", "{website}", "", "{impressum-herstellung}", "", "{impressum-rechte}", "",
+IMPRESSUM_VORLAGE = ["© {jahr} {autor}", "{website}", "", "{impressum-herstellung}", "{impressum-satz1}",
+                     "{impressum-satz2}", "", "{impressum-rechte}", "",
                      "{impressum-kontakt}", "", "{auflage}", "ISBN {isbn}"]
 
 
