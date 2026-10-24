@@ -51,7 +51,7 @@ DRUCK (nur wenn es den Ordner druck/ gibt)
 
 LESEPROBE (Variablen-Datei)
 - leseprobe-seiten: 14,16,17-20,22  = gedruckte Seitenzahlen; leseprobe-seiten-uz: eigene für die zweite Ausgabe.
-- Sonst leseprobe: Anzahl Kapitel oder Titel. Beides leer = 4 Seiten nach dem Inhaltsverzeichnis.
+- Sonst leseprobe: Anzahl Kapitel, Titel oder Seiten (17,18-22). Beides leer = 4 Seiten nach dem Inhaltsverzeichnis.
 
 GRUNDREGELN FÜR ALLE MD-DATEIEN
 - Gliederung mit # / ## / ###. Werte als Zeile:  {name}: wert   (im Buch erscheint derselbe Name als {name})
@@ -109,6 +109,7 @@ WAS DER MOTOR MACHT (zur Info)
   sh sicherung.sh        ZIP-Sicherung
   sh update.sh           Motor-Update von GitHub (ersetzt nur motor/; «pruefen» = nur nachsehen)
                          Bei Fragen zu Fehlern im Motor: nicht motor/ ändern, sondern sh update.sh empfehlen.
+  sh build.sh personen   Personen mit Seiten → personen-seiten.txt · sh build.sh personen Name   Check-PDF zum Gegenlesen
   sh build.sh stand "Name"   Stand festhalten · sh build.sh aenderungen   was seit dem letzten Stand geändert ist
   sh build.sh hilfe      hilfe.html erzeugen und öffnen (ganze Anleitung mit Suche; Quelle motor/HILFE.md)
 

@@ -290,9 +290,12 @@ sh build.sh final druck=bod-a5-normal       # Test: nur Druckdateien mit einer a
 sh build.sh final druck=bod-a5-normal uz    # … nur für eine Fassung (normal oder uz)
 sh build.sh pruefen         # nur die MD prüfen
 sh build.sh leseprobe       # Leseprobe: Umschlag, Titelei, gewählte Seiten, Schlussseite, Rückseite
+sh build.sh leseprobe uz 18,20,23   # einmalig diese Seiten, nur diese Fassung (normal oder uz; ohne = beide)
 sh build.sh korrektur       # Korrekturfassung: A4, Zeilennummern pro Seite, Rand für Notizen
 sh build.sh geschichten     # Sammel-PDF aller Geschichten aus geschichten/ (mit «uz»: auch unzensiert)
 sh build.sh stand "Probedruck 1"   # jetzigen Stand festhalten · sh build.sh stand = alle Stände
+sh build.sh personen        # Personen im Buch mit Seiten und Zeilen → personen-seiten.txt
+sh build.sh personen Andrea # check_Andrea_Gegenlesen.pdf: ihre Seiten zum Gegenlesen
 sh build.sh aenderungen     # was seit dem letzten Stand geändert ist → …_Aenderungen.pdf
 sh neu.sh "Titel"           # neue Geschichte anlegen · sh neu.sh = Übersicht (Windows: neu.bat)
 sh sicherung.sh             # ganzes Buch als ZIP sichern (lokal und/oder cloud)
@@ -328,7 +331,9 @@ Beschnitt rundum, der beim Schneiden wegfällt) – fürs E-Book also das `…_C
 
 **Leseprobe** (`…_Leseprobe.pdf` und `…_Leseprobe.epub`, Schlussseite mit QR-Code zu `shop-link:`, sonst zur Website):
 Umschlag und Titelei bis zum Inhaltsverzeichnis, dann die Seiten aus `leseprobe-seiten:` (gedruckte Seitenzahlen,
-z. B. `14,16,17-20,22`; für die zweite Ausgabe eigene mit `leseprobe-seiten-uz:`). Ohne Seiten gilt `leseprobe:`
+z. B. `14,16,17-20,22`; für die zweite Ausgabe eigene mit `leseprobe-seiten-uz:`). Seiten gehen auch direkt in `leseprobe:` (mit Komma oder Strich, z. B.
+`leseprobe: 17,18-22, 74, 88-92`; eine Zahl allein = Anzahl Kapitel). Einmalig andere Seiten ohne die Variablen zu
+ändern: `sh build.sh leseprobe 18,20,23` (mit `normal` oder `uz` nur diese Fassung). Ohne Seiten gilt `leseprobe:`
 (Anzahl Kapitel oder Titel des letzten Kapitels), ist auch das leer: **die 4 Seiten nach dem Inhaltsverzeichnis**.
 Die E-Book-Leseprobe nimmt die Kapitel, in denen die gewählten Seiten liegen. Text der Schlussseite: `leseprobe-text:`. **Korrekturfassung** (`…_Korrektur.pdf`): jede
 Seite in Originalgrösse auf A4, links Zeilennummern, rechts Linien für Notizen – zum Ausdrucken und
@@ -566,6 +571,51 @@ sh build.sh aenderungen "Probedruck 1" "Probedruck 2"   # zwei Stände miteinand
 - Der Name muss nicht vollständig sein: `sh build.sh aenderungen probe` findet «Probedruck 1», wenn es eindeutig ist.
 - **Tipp:** Stand festhalten, *bevor* du den Probedruck bestellst. Dann zeigt `aenderungen` nach den Korrekturen
   genau, was du seit dem gedruckten Exemplar verbessert hast – und Testleser lesen nur das Neue.
+
+## Personen im Buch: Gegenlesen
+
+Wer im Buch vorkommt, soll seine Stellen vorher lesen dürfen. pureSATZ findet die Personen, zeigt Seite und Zeile
+(zum Anstreichen im Probedruck) und stellt pro Person ein PDF **zum Gegenlesen** zusammen. Neu gebaut wird dabei
+nichts: gesucht wird in den fertigen Lese-PDFs, das dauert Sekunden.
+
+```sh
+sh build.sh personen          # 1. Personen finden → personen-seiten.txt
+                              # 2. personen-seiten.txt korrigieren und speichern
+sh build.sh personen Andrea   # 3. check_Andrea_Gegenlesen.pdf (und …_Gegenlesen-uz.pdf)
+```
+
+**personen-seiten.txt** (im Buchordner) ist Ergebnis und Eingabe zugleich:
+
+```
+# PERSONEN UND SEITEN – Mein Buch · 24.10.2026 22:40
+> Begriffe derselben Person in eine Zeile, mit | getrennt. Der erste ist der Name (für die Datei).
+> Falsches löschen. «--- Wort» = nie mehr vorschlagen.
+$ Danach: sh build.sh personen (Seiten neu) · sh build.sh personen Andrea
+
+Andrea | Medizinfrau | Grosi                    5 Stellen
+  normal       S. 112 Z. 8 · S. 113 Z. 2, 17
+               Kapitel: Schwitzhütte
+  unzensiert   S. 118 Z. 4
+  {leseprobe-seiten}: 112-113
+  {leseprobe-seiten-uz}: 118
+
+--- Ecuador
+```
+
+- `#` Titel · `>` Erklärung · `$` Befehl. Wichtig sind nur die Zeilen mit den Namen (ganz links): Begriffe
+  **derselben Person** mit `|` in eine Zeile nehmen, der **erste** gibt den Dateinamen. Falsches löschen;
+  `--- Wort` schliesst ein Wort für immer aus (Gelöschtes würde sonst wieder vorgeschlagen). Eine eigene Zeile
+  mit einem Namen, den der Motor nicht kennt, geht auch.
+- Die eingerückten Zeilen schreibt der Motor bei jedem `sh build.sh personen` neu. Deine Namenszeilen bleiben,
+  neu Gefundenes kommt unten dazu. Vorgeschlagen werden Vornamen, Rollen (Vater, Tochter, Nachbarin …) und
+  Stichwörter mit Vornamen – der eigene Vorname (`{autor}`) nicht. Das Stichwortverzeichnis zählt nicht mit.
+- **S.** = gedruckte Seite – gleich im Lese-PDF, im Probedruck und in der Leseprobe. **Z.** = Zeile auf der Seite,
+  gezählt wie im Korrektur-PDF (die Kopfzeile ist Zeile 1); bei Fotos und Titeln ±1.
+- **Gegenlesen:** `sh build.sh personen Andrea` sucht alle Begriffe der Zeile «Andrea» frisch und macht wie die
+  Leseprobe Umschlag, Titelei, die Seiten und eine Schlussseite «Danke fürs Gegenlesen». Kommt die Person nur in
+  einer Fassung vor, entsteht nur dieses PDF. Die Zeilen `{leseprobe-seiten…}` lassen sich auch in die
+  Variablen kopieren (dann `sh build.sh leseprobe`).
+- Sind die Texte neuer als das Lese-PDF, kommt ein Hinweis: zuerst `sh build.sh final`.
 
 ## Auf mehreren Computern (Linux, Mac, Windows)
 

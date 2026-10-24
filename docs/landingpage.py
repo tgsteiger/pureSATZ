@@ -127,6 +127,8 @@ KACHELN = [
     ("Tabellen, Fotos, Farben", "Tabellen aus CSV, Fotos in einheitlicher Grösse, Aufzählungen, Zeitstrahl – und Farbschemas, die du mit einer Zahl umschaltest."),
     ("Was hat sich geändert?", "Stand festhalten, z. B. beim Probedruck – später zeigt ein PDF Absatz für Absatz, "
      "was neu, umformuliert oder gestrichen ist. Ideal für Korrekturrunden und Testleser."),
+    ("Personen gegenlesen", "Wer im Buch vorkommt, mit Seite und Zeile – und pro Person ein PDF mit genau ihren "
+     "Seiten zum Gegenlesen, in Sekunden aus dem fertigen Buch."),
     ("Hilfe und Sicherheit", "Hilfe mit Suche, automatischer Verlauf jeder Fassung, ZIP-Sicherung, auf Wunsch GitHub."),
 ]
 

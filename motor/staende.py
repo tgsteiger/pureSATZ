@@ -176,6 +176,7 @@ def zeigen(base):
 
 # --- Text in Absätze zerlegen ----------------------------------------------------
 BLOCK = re.compile(r"^\s*:::\s*(\S*)")
+LISTE = re.compile(r"^\s*(?:[-*]|\d{1,3}\.)\s+\S")
 
 
 def _fassung(art):
@@ -238,6 +239,8 @@ def absaetze(buchtext, geschichten_text):
             ort = " · ".join(x for x in (teil, kap) if x)
             out.append((s, ort, next((f for f in reversed(offen) if f), "")))
             continue
+        if LISTE.match(z):                                 # jeder Listenpunkt ist ein eigener Absatz
+            fertig()
         if not s or s in ("---",) or s.startswith(("#### @FOTO",)):
             fertig()
             if s.startswith("#### @FOTO"):
@@ -322,6 +325,8 @@ def vergleiche(alt, neu):
 
 
 def werte_vergleich(alt, neu, datei):
+    if not alt.strip() or not neu.strip():        # Datei fehlt in einem Stand: nicht vergleichen
+        return []
     a, b = _werte(alt), _werte(neu)
     out = []
     for k in list(a) + [k for k in b if k not in a]:
@@ -331,13 +336,17 @@ def werte_vergleich(alt, neu, datei):
 
 
 # --- PDF ------------------------------------------------------------------------
-def _zeige(s):
-    """Für die Anzeige: Überschrift ohne #, Teil «Teil 1|Titel|Untertitel» lesbar, ohne **."""
-    s = s.replace("**", "")
-    m = re.match(r"^(#{1,6})\s+(.*)$", s.strip())
+def _zeige(s, fett=False):
+    """Für die Anzeige: Überschrift ohne #, Teil «Teil 1|Titel|Untertitel» lesbar, Listenpunkt mit •.
+    fett=False: ohne ** (Text) · fett=True: Markup mit <b> (schon maskiert)."""
+    s = s.strip()
+    m = re.match(r"^(#{1,6})\s+(.*)$", s)
     if m:
         s = " · ".join(x.strip() for x in m.group(2).split("|") if x.strip()) if len(m.group(1)) == 1 else m.group(2)
-    return s
+    s = re.sub(r"^[-*]\s+", "• ", s)
+    if not fett:
+        return s.replace("**", "")
+    return re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", html.escape(s)).replace("**", "")
 
 
 def pdf(ziel, kopf, aenderungen, werte, schrift, schrift_fett, akzent="#1F3A68"):
@@ -349,6 +358,7 @@ def pdf(ziel, kopf, aenderungen, werte, schrift, schrift_fett, akzent="#1F3A68")
     GRUEN, ROT, GRAU = "#1A7F37", "#B42318", "#6B6B6B"
     st = lambda n, **k: ParagraphStyle(n, fontName=k.pop("fn", schrift), **k)
     text = st("t", fontSize=10, leading=14.5)
+    punkt = st("p", fontSize=10, leading=14.5, leftIndent=5 * mm, firstLineIndent=-3.5 * mm)
     klein = st("k", fontSize=8, leading=11, textColor=colors.HexColor(GRAU))
     h1 = st("h1", fn=schrift_fett, fontSize=16, leading=20, textColor=colors.HexColor(akzent), spaceAfter=4)
     h2 = st("h2", fn=schrift_fett, fontSize=11.5, leading=15, textColor=colors.HexColor(akzent), spaceBefore=12, spaceAfter=4)
@@ -369,7 +379,7 @@ def pdf(ziel, kopf, aenderungen, werte, schrift, schrift_fett, akzent="#1F3A68")
     if len(orte) > 1:
         fl.append(Paragraph("Betroffen: " + " · ".join(
             e(o or "Anfang") + f" ({sum(1 for x in aenderungen if x[1] == o)})" for o in orte), klein))
-    letzter = None
+    letzter, vorher = None, None
     for art, ort, fassung, alt, neu in aenderungen:
         if ort != letzter:
             fl.append(Paragraph(e(ort or "Anfang (Titelei)"), h2))
@@ -381,10 +391,17 @@ def pdf(ziel, kopf, aenderungen, werte, schrift, schrift_fett, akzent="#1F3A68")
         if art == "geaendert":
             inhalt = _markiert(_zeige(alt), _zeige(neu), GRUEN, ROT)
         elif art == "neu":
-            inhalt = f'<font color="{GRUEN}"><u>{e(_zeige(neu))}</u></font>'
+            inhalt = f'<font color="{GRUEN}"><u>{_zeige(neu, True)}</u></font>'
         else:
-            inhalt = f'<font color="{ROT}"><strike>{e(_zeige(alt))}</strike></font>'
-        fl.append(KeepTogether([Paragraph(e(info), klein), Paragraph(inhalt, text), Spacer(1, 2.5 * mm)]))
+            inhalt = f'<font color="{ROT}"><strike>{_zeige(alt, True)}</strike></font>'
+        ist_punkt = _zeige(neu or alt).startswith("• ")
+        if ist_punkt and vorher == (info, ort):
+            fl.append(Paragraph(inhalt, punkt))          # weitere Listenpunkte derselben Art: ohne neue Marke
+            fl.append(Spacer(1, 1.2 * mm))
+        else:
+            fl.append(KeepTogether([Paragraph(e(info), klein), Paragraph(inhalt, punkt if ist_punkt else text),
+                                    Spacer(1, 1.2 * mm if ist_punkt else 2.5 * mm)]))
+        vorher = (info, ort) if ist_punkt else None
     if werte:
         fl.append(Paragraph("Werte", h2))
         for datei, abschnitt, name, a, b in werte:
@@ -474,8 +491,9 @@ def befehl(base, bk, argumente):
              + werte_vergleich(alt["umschlag"], neu["umschlag"], "Umschlag"))
     sa = {z.strip() for z in alt["stichworte"].split("\n") if z.strip() and not z.startswith("#")}
     sn = {z.strip() for z in neu["stichworte"].split("\n") if z.strip() and not z.startswith("#")}
-    werte += [("Stichwörter", "", "Stichwort", None, s) for s in sorted(sn - sa)]
-    werte += [("Stichwörter", "", "Stichwort", s, None) for s in sorted(sa - sn)]
+    if sa and sn:                                 # Stichwort-Datei fehlt in einem Stand: nicht vergleichen
+        werte += [("Stichwörter", "", "Stichwort", None, s) for s in sorted(sn - sa)]
+        werte += [("Stichwörter", "", "Stichwort", s, None) for s in sorted(sa - sn)]
     vergleich = f"Seit Stand «{i1['name']}» ({i1['datum']}) bis {jetzt}"
     if not aend and not werte:
         print(f"Keine Änderungen. {vergleich}.")

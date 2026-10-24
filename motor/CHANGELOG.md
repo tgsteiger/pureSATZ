@@ -3,6 +3,18 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.35.0 (Oktober 2026)
+- **Personen gegenlesen:** `sh build.sh personen` sucht in den fertigen Lese-PDFs nach Personen (Vornamen, Rollen,
+  Stichwörter) und schreibt `personen-seiten.txt` mit Seite, Zeile und Kapitel. Die Datei ist zugleich Eingabe:
+  `Andrea | Medizinfrau` = eine Person, `--- Wort` = nie mehr vorschlagen. `sh build.sh personen Andrea` macht
+  `check_Andrea_Gegenlesen.pdf` (und `-uz`) mit genau diesen Seiten – ohne neu zu bauen. Neues Modul `motor/personen.py`.
+
+## 2.34.0 (Oktober 2026)
+- Leseprobe: Seiten gehen auch in `{leseprobe}` (`17,18-22, 74, 88-92`; eine Zahl allein = Anzahl Kapitel).
+  Neu `sh build.sh leseprobe [normal|uz] 18,20,23`: einmalig diese Seiten, ohne die Variablen zu ändern.
+- Änderungs-PDF: Listenpunkte einzeln mit •, eingerückt und unter einer gemeinsamen Marke; **fett** bleibt fett
+  bei neuen und gestrichenen Absätzen. Fehlt eine Datei in einem Stand (z. B. Umschlag), wird sie nicht verglichen.
+
 ## 2.33.1 (Oktober 2026)
 - Stand nachträglich: `sh build.sh stand "Probedruck 1" 23.10.2026 15:00` nimmt die neueste Fassung bis zu diesem
   Zeitpunkt aus `md-history/` (Buch, Variablen, Umschlag, Stichwörter, Geschichten). Auch nur Datum oder nur Uhrzeit.

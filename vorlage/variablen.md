@@ -78,11 +78,12 @@
 ### Leseprobe
 {leseprobe-seiten}:
 {leseprobe-seiten-uz}:
-{leseprobe}:
+{leseprobe}: 3
+> oder einzelne Seiten angeben: 17,18-22, 74, 88-92, 95
 {leseprobe-text}: Das ganze Buch «{titel}» von {autor}<br/>ISBN {isbn}<br/>{website}
 > «sh build.sh leseprobe» macht eine Leseprobe: Umschlag, Titelei bis zum Inhaltsverzeichnis, dann die gewählten Seiten, Schlussseite, Rückseite. Auch als E-Book (…_Leseprobe.epub).
 > {leseprobe-seiten}: gedruckte Seitenzahlen, z. B. 14,16,17-20,22 ({leseprobe-seiten-uz}: eigene für die zweite Ausgabe)
-> {leseprobe}: sonst Anzahl Kapitel oder Titel des letzten Kapitels. Beides leer = die 4 Seiten nach dem Inhaltsverzeichnis.
+> {leseprobe}: Anzahl Kapitel (eine Zahl), Titel des letzten Kapitels oder Seiten (mit Komma oder Strich, z. B. 17,18-22). Beides leer = die 4 Seiten nach dem Inhaltsverzeichnis. Einmalig andere Seiten: sh build.sh leseprobe uz 18,20,23
 > {leseprobe-text}: Text der Schlussseite. Variablen erlaubt, <br/> = neue Zeile, eine Zeile mit leerer Variable fällt weg. Der QR-Code führt zu {shop-link} (sonst zur Website).
 
 # TECHNIK

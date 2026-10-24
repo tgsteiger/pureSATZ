@@ -14,9 +14,12 @@ Booklets zum Selberdrucken entstehen automatisch: im «final» der Probedruck au
     python motor/bauen.py nur-ebook [final]   nur E-Books
     python motor/bauen.py schnell         nur Lese-PDFs, so schnell wie möglich (beim Schreiben)
     python motor/bauen.py leseprobe       Leseprobe: Umschlag, Titelei, erste Kapitel (Variable «leseprobe»)
+    python motor/bauen.py leseprobe uz 18,20-22   einmalig diese Seiten, nur diese Fassung (normal | uz)
     python motor/bauen.py korrektur [final]   Korrekturfassung: A4, Zeilennummern, Rand für Notizen
     python motor/bauen.py sicherung       nur die MD-Dateien nach md-history/ sichern
     python motor/bauen.py pruefen         nur die MD prüfen
+    python motor/bauen.py personen        Personen in den Lese-PDFs finden → personen-seiten.txt (Seiten, Zeilen)
+    python motor/bauen.py personen Andrea   check_Andrea_Gegenlesen.pdf aus den fertigen Lese-PDFs
     python motor/bauen.py stand "Name"    jetzigen Stand festhalten (staende/) · ohne Name: alle Stände zeigen
     python motor/bauen.py aenderungen ["Name" ["Name2"]]   was sich seit dem (letzten) Stand geändert hat → …_Aenderungen.pdf
     python motor/bauen.py geschichten [uz]   Sammel-PDF aller Geschichten aus geschichten/ (normal; mit uz auch unzensiert)
@@ -169,7 +172,9 @@ def pruefen():
         print(f"Hinweis: Fotos nicht geprüft ({e})")
 
 
-NUR_FASSUNG = None          # «normal» oder «uz» zusammen mit druck=… : nur diese Fassung bauen
+NUR_FASSUNG = None          # «normal» oder «uz» zusammen mit druck=… oder leseprobe: nur diese Fassung bauen
+LESEPROBE_SEITEN = None     # «sh build.sh leseprobe 18,20,23»: Seiten von der Kommandozeile (vor den Variablen)
+SEITEN_MUSTER = r"\d[\d\s,\-–]*"
 
 
 def ausgaben():
@@ -551,6 +556,11 @@ def fassung(art, final):
             alle_v = bk.alle_variablen()      # «-uz» gilt vor dem allgemeinen Wert
             seiten = (alle_v.get(f"leseprobe-seiten-{a}") or v("leseprobe-seiten")).strip()
             kap = (alle_v.get(f"leseprobe-{a}") or v("leseprobe")).strip()
+            import re
+            if kap and re.fullmatch(SEITEN_MUSTER, kap) and re.search(r"[,\-–]", kap):
+                seiten, kap = seiten or kap, ""     # «leseprobe: 17,18-22» = Seiten (eine Zahl allein = Kapitel)
+            if LESEPROBE_SEITEN:
+                seiten = LESEPROBE_SEITEN
             lp[a] = ("seiten", fassungen.seiten_lesen(seiten)) if seiten else (("kapitel", kap) if kap else ("seiten", None))
         schritte += [(f"Leseprobe E-Book · {name(a)}", "build-epub.py", a, {"BUCH_LESEPROBE": lp[a][1]})
                      for a in ausgaben() if lp[a][0] == "kapitel"]          # Kapitel: E-Book gleich mitbauen
@@ -638,6 +648,12 @@ def main():
         sicherung(); return
     if art == "pruefen":
         pruefen(); return
+    if art == "personen":                   # Personen und Seiten, Check-PDFs zum Gegenlesen (personen.py)
+        import personen
+        roh = sys.argv[1:]
+        i = next(k for k, x in enumerate(roh) if x.lower() == art)
+        personen.befehl(BASE, bk, roh[i + 1:])
+        return
     if art in ("stand", "aenderungen", "änderungen"):    # Stände festhalten und vergleichen (staende.py)
         import staende
         roh = sys.argv[1:]
@@ -664,6 +680,13 @@ def main():
         print(f"\nFertig in {time.time() - start:.0f} Sekunden (schnell: ohne Seitenausgleich – für den Druck: final).")
         return
     if art in ("leseprobe", "korrektur"):
+        import re
+        if art == "leseprobe":              # «sh build.sh leseprobe uz 18,20,23»
+            global LESEPROBE_SEITEN
+            LESEPROBE_SEITEN = next((a for a in sys.argv[1:] if re.fullmatch(SEITEN_MUSTER, a.strip())), None)
+            NUR_FASSUNG = next((a for a in args if a in ("normal", "uz")), None)
+            if LESEPROBE_SEITEN:
+                print(f"Leseprobe mit den Seiten {LESEPROBE_SEITEN}" + (f" · nur {NUR_FASSUNG}" if NUR_FASSUNG else ""))
         start = time.time()
         sicherung(); pruefen()
         fassung(art, final or art == "leseprobe")       # Leseprobe immer ohne offene Stellen und Notizen

@@ -36,7 +36,7 @@ SPICKZETTEL = [
     ("sh build.sh final", "Druckfassung (mit Seitenbilanz und Shop-Angaben)"),
     ("sh build.sh komplett", "Vor Bestellung/Veröffentlichung: final + Leseprobe + Korrektur in einem Durchgang"),
     ("sh build.sh pruefen", "Nur prüfen: Variablen, Befehle, Fotos, Geschichten, Tabellen"),
-    ("sh build.sh leseprobe", "Leseprobe als PDF und E-Book"),
+    ("sh build.sh leseprobe", "Leseprobe als PDF und E-Book (einmalig andere Seiten: sh build.sh leseprobe uz 18,20,23)"),
     ("sh build.sh korrektur", "Korrekturfassung: A4, Zeilennummern, Rand für Notizen"),
     ('sh neu.sh "Titel"', "Neue Geschichte in geschichten/"),
     ("sh neu.sh", "Übersicht aller Geschichten (auch geschichten-uebersicht.html)"),
@@ -44,6 +44,8 @@ SPICKZETTEL = [
     ("sh build.sh geschichten", "Sammel-PDF aller Geschichten (mit «uz» auch unzensiert)"),
     ('sh build.sh stand "Name"', "Jetzigen Stand festhalten, z. B. bei einer Bestellung (ohne Name: alle Stände)"),
     ("sh build.sh aenderungen", "Was hat sich seit dem letzten Stand geändert? → …_Aenderungen.pdf"),
+    ("sh build.sh personen", "Personen im Buch mit Seiten und Zeilen → personen-seiten.txt (zum Korrigieren)"),
+    ("sh build.sh personen Andrea", "check_Andrea_Gegenlesen.pdf: ihre Seiten zum Gegenlesen (aus den fertigen Lese-PDFs)"),
     ("sh update.sh", "Neuen Motor von GitHub holen (lokal: sh update.sh lokal)"),
     ("sh sicherung.sh", "Ganzes Buch als ZIP sichern (alte Fassungen einzelner Dateien: Ordner md-history/)"),
     ("sh cleanup.sh", "Aufräumen: alte Motoren und Zwischenspeicher löschen, entfernen (delete) – fragt zuerst, "
