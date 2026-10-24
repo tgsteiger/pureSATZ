@@ -97,7 +97,8 @@ fi
 # --- 3. PDF-Betrachter (freiwillig) -----------------------------------
 # «xreader datei.pdf» startet im Hintergrund, das Terminal bleibt frei.
 if command -v xreader >/dev/null 2>&1; then
-    if grep -q '^xreader()' "$HOME/.bashrc" 2>/dev/null; then
+    # schon vorhanden (Funktion oder alias, auch von Hand eingetragen)? Dann nichts tun.
+    if grep -Eq '^[[:space:]]*(xreader[[:space:]]*\(\)|function[[:space:]]+xreader|alias[[:space:]]+xreader=)' "$HOME/.bashrc" 2>/dev/null; then
         echo "OK  xreader startet bereits im Hintergrund"
     else
         echo

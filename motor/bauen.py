@@ -595,6 +595,24 @@ def farbschema_zeigen():
         print(f"Farben: {name}")
 
 
+def pdf_liste(seit):
+    """Am Schluss: alle PDFs, die dieser Bau erstellt hat – zum Kopieren hinter «xreader »."""
+    neu = []
+    for d in sorted(os.listdir(BASE)):
+        o = os.path.join(BASE, d)
+        if not (d.startswith("ausgabe") and os.path.isdir(o)):
+            continue
+        for wurzel, _, dateien in os.walk(o):
+            for f in sorted(dateien):
+                p = os.path.join(wurzel, f)
+                if f.lower().endswith(".pdf") and not f.startswith("_tmp") and os.path.getmtime(p) >= seit - 1:
+                    neu.append(os.path.relpath(p, BASE).replace(os.sep, "/"))
+    if neu:
+        print("\nNeue PDFs (öffnen z. B. mit: xreader <Datei>):")
+        for p in neu:
+            print("  " + (f'"{p}"' if " " in p else p))
+
+
 def main():
     import geschichten
     geschichten.hilfsdateien(BASE)          # neu.sh / neu.bat, .gitignore
@@ -693,5 +711,7 @@ def main():
 
 
 if __name__ == "__main__":
+    _start = time.time()
     main()
+    pdf_liste(_start)
     farbschema_zeigen()
