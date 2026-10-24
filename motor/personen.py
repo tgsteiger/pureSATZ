@@ -275,6 +275,8 @@ def gegenlesen(base, bk, gruppe, pdfs, seiten, kap):
                                          bk.schrift("titel"), bk.schrift("text"), bk.DEEP, bk.INK, "")
         ziel = os.path.join(os.path.dirname(p), f"check_{_dateiname(name)}_Gegenlesen{'-uz' if f == 'uz' else ''}.pdf")
         n, was = fassungen.leseprobe(p, ziel, None, schluss, mit_rueckseite=False, seiten=nummern)
+        # wie das Korrektur-PDF: A4, Zeilennummern links, Notizlinien rechts (Rückmeldung «S. 41, Z. 7»)
+        fassungen.korrektur(ziel, ziel, f"Gegenlesen · {name} · Seitenzahl unten auf der Buchseite verwenden")
         from pypdf import PdfReader, PdfWriter
         w = PdfWriter(clone_from=PdfReader(ziel))
         w.add_metadata({"/Title": f"{bk.V('titel', fassung=f)} – zum Gegenlesen: {name}"})

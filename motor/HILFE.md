@@ -620,7 +620,9 @@ Andrea | Medizinfrau | Grosi                    5 Stellen
 - **S.** = gedruckte Seite – gleich im Lese-PDF, im Probedruck und in der Leseprobe. **Z.** = Zeile auf der Seite,
   gezählt wie im Korrektur-PDF (die Kopfzeile ist Zeile 1); bei Fotos und Titeln ±1.
 - **Gegenlesen:** `sh build.sh personen Andrea` sucht alle Begriffe der Zeile «Andrea» frisch und macht wie die
-  Leseprobe Umschlag, Titelei, die Seiten und eine Schlussseite «Danke fürs Gegenlesen». Kommt die Person nur in
+  Leseprobe Umschlag, Titelei, die Seiten und eine Schlussseite «Danke fürs Gegenlesen» – alles im Format des
+  Korrektur-PDFs: A4, Zeilennummern links, Notizlinien rechts. So kommt die Rückmeldung als «S. 41, Z. 7: …».
+  Massgebend ist die Seitenzahl **unten auf der Buchseite** (oben rechts zählt die Datei: «Seite 3 / 9»). Kommt die Person nur in
   einer Fassung vor, entsteht nur dieses PDF. Die Zeilen `{leseprobe-seiten…}` lassen sich auch in die
   Variablen kopieren (dann `sh build.sh leseprobe`).
 - Sind die Texte neuer als das Lese-PDF, kommt ein Hinweis: zuerst `sh build.sh final`.
