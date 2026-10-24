@@ -347,7 +347,7 @@ Zwischenspeicher und keine anderen Ausgaben (die macht `sh build.sh final` jeder
 **Aufräumen, alte Dateien löschen, entfernen, delete:** `sh cleanup.sh` (Windows: `cleanup.bat`) zeigt zuerst
 eine Liste und fragt, bevor etwas gelöscht wird. Weg kommen nur entbehrliche Dinge: Zwischenspeicher (`_bildcache`,
 `_druckbilder`, `__pycache__`, `_epub_tmp`), alte Motoren (`motor-alt-…`), Sicherungen in `_backup/` und
-`stichworte-vorschlag.txt`. Mit `sh cleanup.sh ausgaben` auch die Ausgabeordner. **Nie gelöscht:** `md-history/`,
+`stichworte-vorschlag.txt`. Mit `sh cleanup.sh ausgaben` auch die Ausgabeordner. **Nie gelöscht:** `md-history/`, `staende/`,
 die MD-Dateien, Stichworte, `fotos/`, `bilder/`, `motor/`, `.venv/` und alles, was das Skript nicht kennt.
 Alte ZIP-Sicherungen räumt `sicherung-behalten:` auf, alte Stände in md-history `md-history-behalten:`.
 
@@ -360,12 +360,15 @@ Nach jedem Bau steht zuoberst im Ausgabeordner (`ausgabe-normal/`, `ausgabe-unze
 `00-UEBERSICHT.txt`. Sie zeigt, **welche Datei wofür** ist. Oben: der letzte Bau (Art, Datum, pureSATZ-Version,
 Druckdatei) und eine eigene Zeile **Druckdateien: FINAL** bzw. **ENTWURF – nicht hochladen!** – sie bleibt auch nach
 `schnell` oder `leseprobe` stehen. Bei jeder Datei stehen Datum und Uhrzeit: so sieht man, ob sie vom letzten Bau stammt.
+Aufbau wie in `personen-seiten.txt` und den Meldungen im Terminal: `#` Titel · `>` Erklärung · `$` Befehl
+(fehlt etwas, steht der Befehl dazu in einer eigenen Zeile – ab `sh` kopieren).
 
 | Gruppe | Dateien |
 |---|---|
 | Bei der Druckerei hochladen | `<kurz>_Buchblock.pdf`, `<kurz>_Umschlag_Hardcover` bzw. `_Softcover` (PDF und JPG) |
 | E-Book | `<datei>.epub` (und `_EPUB2.epub`), `<datei>_Inhalt.pdf` (Inhaltsverzeichnis), `<datei>_Cover-vorne.jpg` (Titelbild, auch als `_2000px`, `_1600px`, `_900px`) |
-| Zum Lesen und Verschicken | `<datei>.pdf`, `_Leseprobe.pdf`, `_Korrektur.pdf` (fürs Lektorat) |
+| Zum Lesen und Verschicken | `<datei>.pdf`, `_Leseprobe.pdf`, `_Korrektur.pdf` (fürs Lektorat), `_Aenderungen.pdf` |
+| Gegenlesen | `check_<Name>_Gegenlesen.pdf` (nur wenn vorhanden, `sh build.sh personen Name`) |
 | Werbung | `<datei>_Mockup.jpg`, `<datei>_Vorderseite.jpg` |
 | Selber drucken | `<kurz>_Probedruck_booklet.pdf` bzw. `<datei>_booklet.pdf` |
 | Texte für den Shop | `shop-angaben.txt` |
@@ -589,8 +592,10 @@ sh build.sh personen Andrea   # 3. check_Andrea_Gegenlesen.pdf (und …_Gegenles
 ```
 # PERSONEN UND SEITEN – Mein Buch · 24.10.2026 22:40
 > Begriffe derselben Person in eine Zeile, mit | getrennt. Der erste ist der Name (für die Datei).
-> Falsches löschen. «--- Wort» = nie mehr vorschlagen.
-$ Danach: sh build.sh personen (Seiten neu) · sh build.sh personen Andrea
+> «--- Wort» = keine Person, nicht mehr vorschlagen (solange diese Datei besteht; ich sammle sie unten).
+> Ganze Zeile gelöscht = wird beim nächsten Mal wieder vorgeschlagen. Datei löschen = alles neu.
+$ sh build.sh personen   (Seiten neu, nach dem Korrigieren)
+$ sh build.sh personen Andrea   (check_Andrea_Gegenlesen.pdf)
 
 Andrea | Medizinfrau | Grosi                    5 Stellen
   normal       S. 112 Z. 8 · S. 113 Z. 2, 17
@@ -599,13 +604,16 @@ Andrea | Medizinfrau | Grosi                    5 Stellen
   {leseprobe-seiten}: 112-113
   {leseprobe-seiten-uz}: 118
 
+# KEINE PERSONEN
+> nicht mehr vorschlagen – Zeile löschen = wieder vorschlagen
 --- Ecuador
 ```
 
 - `#` Titel · `>` Erklärung · `$` Befehl. Wichtig sind nur die Zeilen mit den Namen (ganz links): Begriffe
-  **derselben Person** mit `|` in eine Zeile nehmen, der **erste** gibt den Dateinamen. Falsches löschen;
-  `--- Wort` schliesst ein Wort für immer aus (Gelöschtes würde sonst wieder vorgeschlagen). Eine eigene Zeile
-  mit einem Namen, den der Motor nicht kennt, geht auch.
+  **derselben Person** mit `|` in eine Zeile nehmen, der **erste** gibt den Dateinamen. `--- Wort` (irgendwo in
+  der Datei) = keine Person: wird unten unter «KEINE PERSONEN» gesammelt und nicht mehr vorgeschlagen, solange die
+  Datei besteht. Eine ganz gelöschte Zeile kommt beim nächsten Mal wieder als Vorschlag. Eine eigene Zeile mit
+  einem Namen, den der Motor nicht kennt, geht auch. Datei löschen = alles beginnt neu.
 - Die eingerückten Zeilen schreibt der Motor bei jedem `sh build.sh personen` neu. Deine Namenszeilen bleiben,
   neu Gefundenes kommt unten dazu. Vorgeschlagen werden Vornamen, Rollen (Vater, Tochter, Nachbarin …) und
   Stichwörter mit Vornamen – der eigene Vorname (`{autor}`) nicht. Das Stichwortverzeichnis zählt nicht mit.

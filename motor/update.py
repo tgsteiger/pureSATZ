@@ -152,7 +152,7 @@ def main():
             if len(liste) > 40:
                 print(f"  … (mehr in motor/CHANGELOG.md nach dem Update)")
         if nur_pruefen:
-            print(f"\nUpdate verfügbar: {alt} -> {neu}. Einspielen mit:  sh update.sh   (Windows: update.bat)")
+            print(f"\n> Update verfügbar: {alt} -> {neu}\n$ sh update.sh   (einspielen)")
             return
         if not ohne_frage and not (sys.stdin.isatty() and frage(f"\nMotor jetzt auf {neu} aktualisieren? [ja]/nein: ")):
             print("Nichts geändert.")
@@ -191,9 +191,9 @@ def main():
 
         # Python-Umgebung prüfen (neue Pakete?)
         subprocess.run([sys.executable, os.path.join(MOTOR, "einrichten.py")], cwd=BASE)
-        print("\nFertig. Jetzt testen:  sh build.sh schnell")
+        print("\n> Fertig.\n$ sh build.sh schnell   (jetzt testen)")
         if os.path.isdir(os.path.join(BASE, ".git")):
-            print("Danach für die anderen Computer:  sh sync.sh")
+            print("$ sh sync.sh   (danach: für die anderen Computer)")
     finally:
         if os.path.exists(tmp):
             weg(tmp)

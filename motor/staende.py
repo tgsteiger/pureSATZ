@@ -61,7 +61,7 @@ def finde(base, name):
     """Stand nach Name (Gross/klein egal), Ordnername oder eindeutigem Teil davon."""
     staende = alle(base)
     if not staende:
-        raise SystemExit('Noch kein Stand festgehalten. Zuerst:  sh build.sh stand "Probedruck 1"')
+        raise SystemExit('> Noch kein Stand festgehalten.\n$ sh build.sh stand "Probedruck 1"')
     if name is None:
         return staende[-1]
     n = name.strip().lower()
@@ -166,12 +166,12 @@ def aus_history(base, dateien, bis):
 def zeigen(base):
     staende = alle(base)
     if not staende:
-        print('Noch kein Stand. Festhalten mit:  sh build.sh stand "Probedruck 1"')
+        print('> Noch kein Stand.\n$ sh build.sh stand "Probedruck 1"   (festhalten)')
         return
     print("Stände (älteste zuerst):")
     for p, i in staende:
         print(f"  {i['name']:<30} {i['datum']:<17} {os.path.relpath(p, base)}/")
-    print('\nVergleichen:  sh build.sh aenderungen   (seit dem letzten)  ·  sh build.sh aenderungen "Name"')
+    print('\n$ sh build.sh aenderungen   (seit dem letzten Stand)\n$ sh build.sh aenderungen "Name"   (seit diesem Stand)')
 
 
 # --- Text in Absätze zerlegen ----------------------------------------------------
@@ -474,7 +474,7 @@ def befehl(base, bk, argumente):
         else:
             ziel = speichern(base, name, dateien, G.alle(base), bk.MOTOR_VERSION)
             print(f"Stand «{name}» festgehalten: {os.path.relpath(ziel, base)}/")
-        print("Später vergleichen:  sh build.sh aenderungen   (mit dem letzten Stand)")
+        print("$ sh build.sh aenderungen   (später: was sich seither geändert hat)")
         return
     # aenderungen
     p1, i1 = finde(base, namen[0] if namen else None)

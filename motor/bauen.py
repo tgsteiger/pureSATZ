@@ -378,65 +378,64 @@ def _uebersicht(art, final, test):
         z = []
         alt = ""                                            # Stand der Druckdateien aus der letzten Übersicht
         if os.path.exists(os.path.join(o, "00-UEBERSICHT.txt")):
-            alt = next((x for x in open(os.path.join(o, "00-UEBERSICHT.txt"), encoding="utf-8").read().split("\n")
-                        if x.startswith("Druckdateien: ")), "")
+            alt = next((x.lstrip("> ") for x in open(os.path.join(o, "00-UEBERSICHT.txt"), encoding="utf-8").read().split("\n")
+                        if x.lstrip("> ").startswith("Druckdateien: ")), "")
+        zeile = lambda n: (f"  {n:<52} {datetime.fromtimestamp(os.path.getmtime(os.path.join(o, n))):%d.%m. %H:%M}"
+                           + (f"   {_datei_info(os.path.join(o, n))}" if _datei_info(os.path.join(o, n)) else ""))
         for a, g in liste:
             K, D = g["kuerzel"], g["datei"]
             v = lambda n, s="": bk.druck_V(n, s, a)
             plattform = v("plattform", "epubli").strip().lower()
             druck = bk.druck_datei(a)
-            z += [f"{bk.V('titel', fassung=a)} – {g['name']}" + (f" · TEST {test}" if test else ""),
-                  f"Letzter Bau: {'FINAL (Druckfassung)' if final else 'ENTWURF (offene Stellen sichtbar)'} · "
-                  f"«{art}» · {jetzt:%d.%m.%Y %H:%M} · pureSATZ {open(os.path.join(MOTOR, 'VERSION')).read().strip()}"
-                  + (f" · Druck: {druck}" if druck else ""),
-                  (f"Druckdateien: {'FINAL (Druckfassung)' if final else 'ENTWURF – nicht hochladen!'} · {jetzt:%d.%m.%Y %H:%M}"
-                   if art in ("alles", "nur-druck", "komplett") else (alt or "Druckdateien: (noch nicht gebaut – sh build.sh final)")),
-                  "Bei jeder Datei: Datum/Uhrzeit – so siehst du, ob sie vom letzten Bau stammt.", ""]
+            z += [f"# {bk.V('titel', fassung=a)} – {g['name']}".upper() + (f" · TEST {test}" if test else ""),
+                  f"> Letzter Bau: {'FINAL (Druckfassung)' if final else 'ENTWURF (offene Stellen sichtbar)'} · "
+                  f"«{art}» · {jetzt:%d.%m.%Y %H:%M} · pureSATZ {open(os.path.join(MOTOR, 'VERSION')).read().strip()}",
+                  "> " + ((f"Druck: {druck} · " if druck else "")
+                          + (f"Druckdateien: {'FINAL (Druckfassung)' if final else 'ENTWURF – nicht hochladen!'} · {jetzt:%d.%m.%Y %H:%M}"
+                             if art in ("alles", "nur-druck", "komplett") else (alt or "Druckdateien: noch nicht gebaut"))),
+                  "> Bei jeder Datei Datum und Uhrzeit – so siehst du, ob sie vom letzten Bau stammt.", ""]
             hc = f"{K}_Umschlag_Hardcover"; sc = f"{K}_Umschlag_Softcover"
-            gruppen = [
-                ("BEI DER DRUCKEREI HOCHLADEN (" + ("epubli: Buchblock als PDF, Umschlag als JPG"
-                                                    if plattform == "epubli" else plattform) + ")",
+            gruppen = [      # (Titel, Erklärung, Dateien, Befehl wenn etwas fehlt)
+                ("BEI DER DRUCKEREI HOCHLADEN", "epubli: Buchblock als PDF, Umschlag als JPG" if plattform == "epubli" else plattform,
                  [f"{K}_Buchblock.pdf", hc + ".jpg", hc + ".pdf", sc + ".jpg", sc + ".pdf"], "sh build.sh final"),
-                ("E-BOOK (Wix-Shop, tolino, XinXii, KDP …; …_EPUB2.epub nur, wo EPUB 2 verlangt wird)",
+                ("E-BOOK", "Wix-Shop, tolino, XinXii, KDP … · …_EPUB2.epub nur, wo EPUB 2 verlangt wird",
                  [f"{D}.epub", f"{D}_EPUB2.epub", f"{D}_Inhalt.pdf", f"{D}_Cover-vorne.jpg"]
                  + [f"{D}_Cover-vorne_{px}px.jpg" for px in COVER_GROESSEN] + [f"{D}_Cover-hinten.jpg"],
                  "sh build.sh nur-ebook final"),
-                ("ZUM LESEN, VERSCHICKEN UND KORRIGIEREN", [f"{D}.pdf", f"{D}_Leseprobe.pdf", f"{D}_Leseprobe.epub",
+                ("ZUM LESEN, VERSCHICKEN UND KORRIGIEREN", "", [f"{D}.pdf", f"{D}_Leseprobe.pdf", f"{D}_Leseprobe.epub",
                  f"{D}_Korrektur.pdf", f"{D}_Geschichten.pdf", f"{D}_Aenderungen.pdf"], None),
-                ("WERBUNG (Webseite, Newsletter)", [f"{D}_Mockup.jpg", f"{D}_Vorderseite.jpg"], "sh build.sh mockup"),
-                ("SELBER DRUCKEN (A4 quer, kurze Kante wenden)", [f"{K}_Probedruck_booklet.pdf", f"{D}_booklet.pdf"], None),
-                ("TEXTE FÜR DEN SHOP", ["shop-angaben.txt"], "sh build.sh final"),
+                ("GEGENLESEN", "", sorted(n for n in vorhanden if n.startswith("check_")), "sh build.sh personen Name"),
+                ("WERBUNG", "Webseite, Newsletter", [f"{D}_Mockup.jpg", f"{D}_Vorderseite.jpg"], "sh build.sh mockup"),
+                ("SELBER DRUCKEN", "A4 quer, kurze Kante wenden", [f"{K}_Probedruck_booklet.pdf", f"{D}_booklet.pdf"], None),
+                ("TEXTE FÜR DEN SHOP", "", ["shop-angaben.txt"], "sh build.sh final"),
             ]
             if test:
                 gruppen = gruppen[:1]
             if not bk.ebook_erstellen(a):
-                gruppen = [(("E-BOOK: keines («{erstellen}: nein»)", [], None) if t.startswith("E-BOOK") else (t, n, b))
-                           for t, n, b in gruppen]
-            for titel, namen, befehl in gruppen:
+                gruppen = [(("E-BOOK", "keines («{erstellen}: nein»)", [], None) if ti == "E-BOOK" else (ti, er, n, b))
+                           for ti, er, n, b in gruppen]
+            for titel, erklaerung, namen, befehl in gruppen:
+                if titel == "GEGENLESEN" and not namen:
+                    continue                                # erscheint erst, wenn es Check-PDFs gibt
                 da = [n for n in namen if n in vorhanden]
                 gebraucht.update(da)
-                z.append(titel)
-                for n in da:
-                    p = os.path.join(o, n)
-                    info = _datei_info(p)
-                    zeit = datetime.fromtimestamp(os.path.getmtime(p))
-                    z.append(f"  {n:<52} {zeit:%d.%m. %H:%M}" + (f"   {info}" if info else ""))
+                z.append(f"# {titel}")
+                if erklaerung:
+                    z.append(f"> {erklaerung}")
+                z += [zeile(n) for n in da]
                 if not da and namen:
-                    z.append("  (noch keine)" + (f" – {befehl}" if befehl else ""))
+                    z += ["> noch keine"] + ([f"$ {befehl}"] if befehl else [])
                 elif titel.startswith("ZUM LESEN"):
-                    fehlt = [("Leseprobe", "leseprobe", f"{D}_Leseprobe.pdf"), ("Korrektur", "korrektur", f"{D}_Korrektur.pdf")]
-                    for was, b, n in fehlt:
+                    for was, b, n in (("Leseprobe", "leseprobe", f"{D}_Leseprobe.pdf"),
+                                      ("Korrektur-PDF", "korrektur", f"{D}_Korrektur.pdf")):
                         if n not in vorhanden:
-                            z.append(f"  ({was}: sh build.sh {b})")
+                            z.append(f"$ sh build.sh {b:<34}  (fehlt: {was})")
                 z.append("")
         rest = [n for n in vorhanden if n not in gebraucht]
         if rest:
-            z.append("WEITERE DATEIEN (zur Auswahl, z. B. Vorder-/Rückseite einzeln; Kopie der Druckdatei)")
-            for n in rest:
-                p = os.path.join(o, n); info = _datei_info(p)
-                z.append(f"  {n:<52} {datetime.fromtimestamp(os.path.getmtime(p)):%d.%m. %H:%M}" + (f"   {info}" if info else ""))
-            z.append("")
-        z.append("Mehr: hilfe.html → «Was im Ausgabeordner liegt».")
+            z += ["# WEITERE DATEIEN", "> zur Auswahl, z. B. Vorder-/Rückseite einzeln, Kopie der Druckdatei"]
+            z += [zeile(n) for n in rest] + [""]
+        z.append("> Mehr: hilfe.html → «Was im Ausgabeordner liegt»")
         with open(os.path.join(o, "00-UEBERSICHT.txt"), "w", encoding="utf-8") as f:
             f.write("\n".join(z) + "\n")
         print(f"Übersicht: {os.path.relpath(os.path.join(o, '00-UEBERSICHT.txt'), BASE)}")
@@ -620,9 +619,10 @@ def pdf_liste(seit):
                 if f.lower().endswith(".pdf") and not f.startswith("_tmp") and os.path.getmtime(p) >= seit - 1:
                     neu.append(os.path.relpath(p, BASE).replace(os.sep, "/"))
     if neu:
-        print("\nNeue PDFs (öffnen z. B. mit: xreader <Datei>):")
+        print("\n> Neue PDFs:")
         for p in neu:
             print("  " + (f'"{p}"' if " " in p else p))
+        print("$ xreader <Datei>   (öffnen)")
 
 
 def main():

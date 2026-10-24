@@ -161,7 +161,7 @@ def quellen(base, bk):
         if os.path.exists(p):
             out.append((f, k, p))
     if not out:
-        raise SystemExit("Kein Lese-PDF gefunden. Zuerst:  sh build.sh final   (oder sh build.sh nur-pdf final)")
+        raise SystemExit("> Kein Lese-PDF gefunden.\n$ sh build.sh final   (oder: sh build.sh nur-pdf final)")
     return out
 
 
@@ -170,8 +170,8 @@ def veraltet_hinweis(base, bk, pdfs):
     texte = [os.path.join(base, d) for d in (bk.TEXT, bk.VARIABLEN) if d] + list(G.alle(base).values())
     neu = max((os.path.getmtime(t) for t in texte if os.path.exists(t)), default=0)
     if any(os.path.getmtime(p) < neu for _, _, p in pdfs):
-        print("Hinweis: Die Texte sind neuer als das Lese-PDF – Seiten können verschoben sein. "
-              "Zuerst  sh build.sh final  (oder nur-pdf final).")
+        print("> Hinweis: Die Texte sind neuer als das Lese-PDF – Seiten können verschoben sein.\n"
+              "$ sh build.sh final   (zuerst)")
 
 
 def schreiben(base, bk, gruppen, weg, daten, neu_ab, pdfs):
@@ -179,15 +179,17 @@ def schreiben(base, bk, gruppen, weg, daten, neu_ab, pdfs):
     beispiel = gruppen[0][0] if gruppen else "Name"
     z = [f"# PERSONEN UND SEITEN – {titel} · {datetime.now():%d.%m.%Y %H:%M}",
          "> Begriffe derselben Person in eine Zeile, mit | getrennt. Der erste ist der Name (für die Datei).",
-         f"> Falsches löschen. «{WEG} Wort» = nie mehr vorschlagen (Gelöschtes schlägt der Motor sonst wieder vor).",
+         f"> «{WEG} Wort» = keine Person, nicht mehr vorschlagen (solange diese Datei besteht; ich sammle sie unten).",
+         "> Ganze Zeile gelöscht = wird beim nächsten Mal wieder vorgeschlagen. Datei löschen = alles neu.",
          "> S. = gedruckte Seite · Z. = Zeile auf der Seite, gezählt wie im Korrektur-PDF (Kopfzeile = Zeile 1).",
          "> Gesucht in: " + " · ".join(f"{os.path.relpath(p, base)} ({datetime.fromtimestamp(os.path.getmtime(p)):%d.%m.%Y %H:%M})"
                                       for _, _, p in pdfs),
-         f"$ Danach: sh build.sh personen (Seiten neu) · sh build.sh personen {beispiel} (Check-PDF zum Gegenlesen)", ""]
+         "$ sh build.sh personen   (Seiten neu, nach dem Korrigieren)",
+         f"$ sh build.sh personen {beispiel}   (check_{_dateiname(beispiel)}_Gegenlesen.pdf)", ""]
     name_f = {"normal": "normal", "uz": "unzensiert"}
     for i, g in enumerate(gruppen):
         if i == neu_ab:
-            z += [f"> neu gefunden {datetime.now():%d.%m.%Y} – prüfen, zusammennehmen oder mit «{WEG}» ausschliessen", ""]
+            z += [f"# NEU GEFUNDEN {datetime.now():%d.%m.%Y}", f"> prüfen, zusammennehmen oder mit «{WEG}» ausschliessen", ""]
         d = daten[i]
         n = sum(len(zs) for f in d for zs in d[f]["treffer"].values())
         kopf = " | ".join(g)
@@ -207,7 +209,8 @@ def schreiben(base, bk, gruppen, weg, daten, neu_ab, pdfs):
                 z.append(f"  {{leseprobe-seiten{'' if f == 'normal' else '-uz'}}}: {seiten_text(sorted(d[f]['treffer']))}")
         z.append("")
     if weg:
-        z += ["> nie mehr vorschlagen:"] + [f"{WEG} {w}" for w in sorted(weg, key=str.lower)] + [""]
+        z += ["# KEINE PERSONEN", "> nicht mehr vorschlagen – Zeile löschen = wieder vorschlagen"] \
+            + [f"{WEG} {w}" for w in sorted(weg, key=str.lower)] + [""]
     with open(os.path.join(base, DATEI), "w", encoding="utf-8") as f:
         f.write("\n".join(z))
 
@@ -248,7 +251,8 @@ def befehl(base, bk, argumente):
         n = sum(len(zs) for f in d for zs in d[f]["treffer"].values())
         teile = [f"{'uz' if f == 'uz' else 'normal'} {seiten_text(sorted(d[f]['treffer']))}" for f in d if d[f]["treffer"]]
         print(f"  {g[0]:<24} {n:>3} Stelle{'n' if n != 1 else ' '}  " + (" · ".join(teile) if teile else "– kommt nicht vor"))
-    print(f"\nPrüfen und korrigieren: {DATEI}  ·  danach z. B.  sh build.sh personen {gruppen[0][0] if gruppen else 'Name'}")
+    b = gruppen[0][0] if gruppen else "Name"
+    print(f"\n> Prüfen und korrigieren: {DATEI}\n$ sh build.sh personen   (Seiten neu)\n$ sh build.sh personen {b}   (Check-PDF zum Gegenlesen)")
 
 
 def gegenlesen(base, bk, gruppe, pdfs, seiten, kap):
