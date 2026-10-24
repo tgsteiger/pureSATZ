@@ -199,8 +199,9 @@ def _zeilen_aller_seiten(quelle):
     return pdfwerkzeug.zeilen_aller_seiten(quelle)
 
 
-def korrektur(quelle, ziel, titel, schrift="Helvetica"):
-    """Korrekturfassung: Seite in Originalgrösse auf A4 hoch, Zeilennummern links, Notizrand rechts."""
+def korrektur(quelle, ziel, titel, schrift="Helvetica", markiert=None):
+    """Korrekturfassung: Seite in Originalgrösse auf A4 hoch, Zeilennummern links, Notizrand rechts.
+    markiert: {seite: [zeile, …]} – diese Zeilen mit rotem ▶ und roter Nummer (Gegenlesen)."""
     r = PdfReader(io.BytesIO(open(quelle, "rb").read()))   # Datei nicht offen halten (Windows)
     w = PdfWriter()
     aw, ah = A4
@@ -221,7 +222,14 @@ def korrektur(quelle, ziel, titel, schrift="Helvetica"):
         c.rect(x0, y0, sw * massstab, sh * massstab)                 # Seitenrand des Buchs
         c.setFont(schrift, 6.5); c.setFillColorRGB(0.45, 0.45, 0.45)
         for i, y in enumerate(zeilen, 1):
+            rot = i in (markiert or {}).get(nr, ())
+            c.setFillColorRGB(*((0.8, 0.1, 0.1) if rot else (0.45, 0.45, 0.45)))
             c.drawRightString(x0 - 2.5 * mm, y0 + y * massstab + 1, str(i))
+            if rot:                                     # Dreieck ▶ vor der Nummer
+                ym = y0 + y * massstab + 3; p = c.beginPath()
+                p.moveTo(x0 - 9 * mm, ym + 1.8); p.lineTo(x0 - 9 * mm, ym - 1.8); p.lineTo(x0 - 6.5 * mm, ym); p.close()
+                c.drawPath(p, stroke=0, fill=1)
+        c.setFillColorRGB(0.45, 0.45, 0.45)
         rechts = x0 + sw * massstab + 6 * mm                          # Notizrand mit feinen Linien
         c.setStrokeColorRGB(0.85, 0.85, 0.85)
         y = ah - 20 * mm

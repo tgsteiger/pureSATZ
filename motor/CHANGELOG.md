@@ -3,6 +3,10 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.35.3 (Oktober 2026)
+- Gegenlesen: Die Stellen der Person sind links mit rotem ▶ und roter Zeilennummer markiert
+  (`fassungen.korrektur(…, markiert=…)`; das normale Korrektur-PDF bleibt unverändert).
+
 ## 2.35.2 (Oktober 2026)
 - Gegenlesen: `check_Name_Gegenlesen.pdf` im Format des Korrektur-PDFs (A4, Zeilennummern, Notizlinien) – für
   Rückmeldungen wie «S. 41, Z. 7». Kopfzeile: «Seitenzahl unten auf der Buchseite verwenden».
