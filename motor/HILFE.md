@@ -544,6 +544,7 @@ ein PDF, was sich seither geändert hat – praktisch für Korrekturrunden, für
 
 ```sh
 sh build.sh stand "Probedruck 1"     # jetzigen Stand festhalten (Name frei wählbar)
+sh build.sh stand "Probedruck 1" 23.10.2026 15:00   # nachträglich: Fassung aus md-history/ bis zu diesem Zeitpunkt
 sh build.sh stand                    # alle Stände mit Datum
 sh build.sh aenderungen              # was sich seit dem letzten Stand geändert hat
 sh build.sh aenderungen "Probedruck 1"                  # … seit diesem Stand
@@ -559,6 +560,9 @@ sh build.sh aenderungen "Probedruck 1" "Probedruck 2"   # zwei Stände miteinand
 - **Wo:** Jeder Stand ist eine Kopie der Texte in `staende/<datum>_<name>/` (Buch-, Variablen-, Umschlag-MD,
   Stichwörter, Geschichten). Der Ordner kommt mit `sh sync.sh` auf die anderen Computer und ins ZIP;
   `sh cleanup.sh` löscht ihn nie. Einen Stand nicht mehr gebraucht: seinen Ordner löschen.
+- **Vergessen, den Stand festzuhalten?** Mit Datum und Uhrzeit dahinter holt der Motor die letzte Fassung vor
+  diesem Zeitpunkt aus `md-history/` (der Bau für die Bestellung hat sie dort automatisch gesichert). Nur Datum =
+  bis Ende Tag, nur Uhrzeit = heute. Der Stand bekommt das Datum dieser Fassung.
 - Der Name muss nicht vollständig sein: `sh build.sh aenderungen probe` findet «Probedruck 1», wenn es eindeutig ist.
 - **Tipp:** Stand festhalten, *bevor* du den Probedruck bestellst. Dann zeigt `aenderungen` nach den Korrekturen
   genau, was du seit dem gedruckten Exemplar verbessert hast – und Testleser lesen nur das Neue.

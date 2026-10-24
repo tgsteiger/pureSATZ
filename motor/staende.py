@@ -4,6 +4,7 @@ staende.py – Stände markieren und vergleichen: «Was hat sich geändert?» (p
 
 Im Buchordner (über build.sh / build.bat):
     sh build.sh stand "Probedruck 1"          jetzigen Stand unter diesem Namen festhalten
+    sh build.sh stand "Probedruck 1" 23.10.2026 15:00   nachträglich: Fassung aus md-history/ bis zu diesem Zeitpunkt
     sh build.sh stand                         alle Stände zeigen
     sh build.sh aenderungen                   was sich seit dem letzten Stand geändert hat
     sh build.sh aenderungen "Probedruck 1"    … seit diesem Stand
@@ -74,27 +75,92 @@ def finde(base, name):
     raise SystemExit(f"Stand «{name}» {'ist nicht eindeutig' if treffer else 'nicht gefunden'}. Vorhanden:\n  {namen}")
 
 
-def speichern(base, name, dateien, geschichten, motor_version=""):
-    """dateien: Namen im Buchordner; geschichten: {name: pfad}."""
+def speichern(base, name, dateien, geschichten, motor_version="", zeit=None, notiz=""):
+    """dateien: Namen im Buchordner oder {Name im Stand: Quellpfad}; geschichten: {name: pfad}."""
     for _, i in alle(base):
         if i["name"].lower() == name.strip().lower():
-            raise SystemExit(f"Den Stand «{name}» gibt es schon ({i['datum']}). Bitte einen anderen Namen wählen.")
-    jetzt = datetime.now()
+            raise SystemExit(f"Den Stand «{name}» gibt es schon ({i['datum']}). Anderen Namen wählen oder den Ordner "
+                             f"staende/…_{_slug(name)}/ löschen.")
+    jetzt = zeit or datetime.now()
     ziel = os.path.join(base, ORDNER, f"{jetzt:%Y-%m-%d}_{_slug(name)}")
     n = 2
     while os.path.exists(ziel):
         ziel = os.path.join(base, ORDNER, f"{jetzt:%Y-%m-%d}_{_slug(name)}-{n}"); n += 1
     os.makedirs(ziel)
-    for d in dateien:
-        if d and os.path.exists(os.path.join(base, d)):
-            shutil.copy2(os.path.join(base, d), os.path.join(ziel, d))
+    quellen = dateien if isinstance(dateien, dict) else {d: os.path.join(base, d) for d in dateien if d}
+    for d, q in quellen.items():
+        if os.path.exists(q):
+            shutil.copy2(q, os.path.join(ziel, d))
     for g, p in geschichten.items():
         z = os.path.join(ziel, "geschichten", g + ".md")
         os.makedirs(os.path.dirname(z), exist_ok=True)
         shutil.copy2(p, z)
     with open(os.path.join(ziel, INFO), "w", encoding="utf-8") as f:
-        f.write(f"name: {name.strip()}\ndatum: {jetzt:%d.%m.%Y %H:%M}\nmotor: {motor_version}\n")
+        f.write(f"name: {name.strip()}\ndatum: {jetzt:%d.%m.%Y %H:%M}\nmotor: {motor_version}\n"
+                + (f"notiz: {notiz}\n" if notiz else ""))
     return ziel
+
+
+# --- Stand nachträglich aus md-history/ -------------------------------------------
+ZEIT = re.compile(r"_(\d{8}-\d{2}-\d{2}-\d{2})$")
+
+
+def zeit_aus(argumente):
+    """Datum/Uhrzeit am Ende der Argumente: «23.10.2026 15:00», «23.10.2026», «2026-10-23», «15:00» (heute).
+    Gibt (übrige Argumente, datetime | None)."""
+    rest, datum, uhr = list(argumente), None, None
+    while rest:
+        a = rest[-1].strip()
+        if uhr is None and re.fullmatch(r"\d{1,2}[:.]\d{2}", a) and datum is None:
+            uhr = a.replace(".", ":"); rest.pop(); continue
+        m = re.fullmatch(r"(\d{1,2})\.(\d{1,2})\.(\d{4})", a) or re.fullmatch(r"(\d{4})-(\d{2})-(\d{2})", a)
+        if m and datum is None:
+            g = m.groups()
+            datum = (int(g[2]), int(g[1]), int(g[0])) if len(g[0]) <= 2 else (int(g[0]), int(g[1]), int(g[2]))
+            rest.pop(); continue
+        break
+    if datum is None and uhr is None:
+        return argumente, None
+    j, mo, t = datum or (datetime.now().year, datetime.now().month, datetime.now().day)
+    h, mi = (int(x) for x in (uhr or "23:59").split(":"))
+    return rest, datetime(j, mo, t, h, mi, 59)
+
+
+def aus_history(base, dateien, bis):
+    """Neueste Kopie jeder Datei in md-history/ bis zum Zeitpunkt «bis». ({Name: Pfad}, {Geschichte: Pfad}, Zeit)"""
+    o = os.path.join(base, "md-history")
+    if not os.path.isdir(o):
+        raise SystemExit("Kein Ordner md-history/ – ein Stand in der Vergangenheit geht nur mit md-history.")
+
+    def neueste(ordner, stamm, endung):
+        best = None
+        for f in os.listdir(ordner):
+            s, e = os.path.splitext(f)
+            m = ZEIT.search(s)
+            if e != endung or not m or s[:m.start()] != stamm:
+                continue
+            z = datetime.strptime(m.group(1), "%Y%m%d-%H-%M-%S")
+            if z <= bis and (best is None or z > best[0]):
+                best = (z, os.path.join(ordner, f))
+        return best
+    quellen, zeiten = {}, []
+    for d in dateien:
+        if not d:
+            continue
+        b = neueste(o, *os.path.splitext(d))
+        if b:
+            quellen[d] = b[1]; zeiten.append(b[0])
+    if not quellen or dateien[0] not in quellen:
+        raise SystemExit(f"In md-history/ gibt es keine Fassung von {dateien[0]} vor dem {bis:%d.%m.%Y %H:%M}.")
+    geschichten = {}
+    og = os.path.join(o, "geschichten")
+    if os.path.isdir(og):
+        namen = {ZEIT.sub("", os.path.splitext(f)[0]) for f in os.listdir(og) if f.endswith(".md")}
+        for n in sorted(namen):
+            b = neueste(og, n, ".md")
+            if b:
+                geschichten[n] = b[1]
+    return quellen, geschichten, max(zeiten)
 
 
 def zeigen(base):
@@ -374,10 +440,23 @@ def befehl(base, bk, argumente):
     if art == "stand":
         if not namen:
             zeigen(base); return
+        namen, bis = zeit_aus(namen)
+        if not namen:
+            raise SystemExit('Bitte einen Namen angeben, z. B.:  sh build.sh stand "Probedruck 1" 23.10.2026 15:00')
         name = " ".join(namen)
-        ziel = speichern(base, name, [bk.TEXT, bk.VARIABLEN, bk.UMSCHLAG, bk.stichwort_datei()], G.alle(base),
-                         bk.MOTOR_VERSION)
-        print(f"Stand «{name}» festgehalten: {os.path.relpath(ziel, base)}/")
+        dateien = [bk.TEXT, bk.VARIABLEN, bk.UMSCHLAG, bk.stichwort_datei()]
+        if bis:                                   # nachträglich: Fassung aus md-history/
+            quellen, gesch, zeit = aus_history(base, dateien, bis)
+            ziel = speichern(base, name, quellen, gesch, bk.MOTOR_VERSION, zeit,
+                             f"nachträglich aus md-history/ (neueste Fassung bis {bis:%d.%m.%Y %H:%M})")
+            print(f"Stand «{name}» aus md-history/ festgehalten: Fassung vom {zeit:%d.%m.%Y %H:%M}")
+            for d, q in quellen.items():
+                print(f"  {d}  ←  md-history/{os.path.basename(q)}")
+            if gesch:
+                print(f"  dazu {len(gesch)} Geschichten")
+        else:
+            ziel = speichern(base, name, dateien, G.alle(base), bk.MOTOR_VERSION)
+            print(f"Stand «{name}» festgehalten: {os.path.relpath(ziel, base)}/")
         print("Später vergleichen:  sh build.sh aenderungen   (mit dem letzten Stand)")
         return
     # aenderungen
