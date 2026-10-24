@@ -3,6 +3,13 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.33.0 (Oktober 2026)
+- **Was hat sich geändert?** Neu `sh build.sh stand "Name"` (Stand festhalten in `staende/`, ohne Name: Liste) und
+  `sh build.sh aenderungen ["Name" ["Name2"]]`: `…_Aenderungen.pdf` mit allen geänderten, neuen und gestrichenen
+  Absätzen nach Teil und Kapitel (Wörter grün/rot), Geschichten an ihrer Stelle, dazu geänderte Variablen,
+  Umschlag-Werte und Stichwörter. Neues Modul `motor/staende.py`.
+- `staende/` ist vor `sh cleanup.sh` geschützt; Hilfe, Spickzettel, readme4ki und Webseite ergänzt.
+
 ## 2.32.1 (Oktober 2026)
 - Am Ende jedes Baus: Liste der neu erstellten PDFs (relativ zum Buchordner), zum Kopieren hinter `xreader `.
 - `linux-einrichten.sh`: erkennt eine schon vorhandene xreader-Funktion oder einen alias in `~/.bashrc`

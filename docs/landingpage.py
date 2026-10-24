@@ -125,6 +125,8 @@ KACHELN = [
     ("E-Book", "EPUB mit Inhaltsverzeichnis, Bildbeschreibungen und Leseprobe – aus denselben Dateien."),
     ("Geschichten sammeln", "Jede Geschichte eine Datei, mit Stand von der Idee bis fertig und einer Übersicht."),
     ("Tabellen, Fotos, Farben", "Tabellen aus CSV, Fotos in einheitlicher Grösse, Aufzählungen, Zeitstrahl – und Farbschemas, die du mit einer Zahl umschaltest."),
+    ("Was hat sich geändert?", "Stand festhalten, z. B. beim Probedruck – später zeigt ein PDF Absatz für Absatz, "
+     "was neu, umformuliert oder gestrichen ist. Ideal für Korrekturrunden und Testleser."),
     ("Hilfe und Sicherheit", "Hilfe mit Suche, automatischer Verlauf jeder Fassung, ZIP-Sicherung, auf Wunsch GitHub."),
 ]
 
@@ -145,7 +147,7 @@ def seite(version):
     return f"""<!doctype html>
 <html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>pureSATZ – in fünf Minuten zu deinem ersten Buch</title>
-<meta name="description" content="pureSATZ macht aus Markdown ein druckfertiges Buch mit Umschlag und E-Book für epubli, BoD, KDP und andere – dazu Leseprobe, Korrektur-PDF und Probedruck-Booklet. Linux, Mac und Windows, kostenlos für eigene Bücher.">
+<meta name="description" content="pureSATZ macht aus Markdown ein druckfertiges Buch mit Umschlag und E-Book für epubli, BoD, KDP und andere – dazu Leseprobe, Korrektur-PDF, Probedruck-Booklet und Änderungs-PDF. Linux, Mac und Windows, kostenlos für eigene Bücher.">
 <style>
 @font-face{{font-family:Poppins;src:url(fonts/Poppins-Regular.ttf)}}
 @font-face{{font-family:Poppins;font-weight:500;src:url(fonts/Poppins-Medium.ttf)}}
@@ -197,7 +199,7 @@ summary{{font:500 16px Poppins,system-ui,sans-serif;color:var(--haupt);cursor:po
 <div class="held"><div>
 <h1>In fünf Minuten zu deinem ersten Buch.</h1>
 <p class="unter">Du schreibst in einfachen Textdateien (Markdown), für Besonderes gibt es kurze Befehle wie <code>@ZITAT-ZIER</code> oder <code>@PLATZ</code>. pureSATZ macht daraus ein druckfertiges Buch im gewünschten Format, mit Umschlag und E-Book – für epubli, BoD, KDP und andere Plattformen oder zum Selberdrucken.</p>
-<p class="unter">Dazu Leseprobe, Korrekturfassung fürs Lektorat, Booklet für den Probedruck und Werbebilder – alles aus denselben Dateien.</p> 
+<p class="unter">Dazu Leseprobe, Korrekturfassung fürs Lektorat, Booklet für den Probedruck, Änderungen seit dem letzten Stand und Werbebilder – alles aus denselben Dateien.</p> 
 <p class="unter">Auf Linux, Mac und Windows.</p>
 <a class="knopf voll" href="{ZIP}">⬇ pureSATZ herunterladen (ZIP)</a><a class="knopf rand" href="{REPO}">Auf GitHub ansehen</a>
 <p class="klein">Version {html.escape(version)} · kostenlos für eigene Bücher · ohne Konto, ohne Cloud</p>

@@ -115,13 +115,14 @@ Im Druck allein auf der rechten Seite gegenüber dem Impressum, im unteren Dritt
 ```
 **Impressum:** Bleibt `## @IMPRESSUM` leer, setzt der Motor für jede Ausgabe ein:
 `© {jahr} {autor}` · `{website}` · `{impressum-herstellung}` · `{impressum-rechte}` · `{impressum-kontakt}` · `{auflage}` · `ISBN {isbn}`.
-Leere Zeilen fallen weg (im Lese-PDF also Herstellung, Logo und ISBN).
-**Auflage:** `{auflage}: 1. Auflage 2026` steht über der ISBN. Bei Print-on-Demand bleibt sie bei kleinen
-Korrekturen gleich; erst bei spürbar geändertem Inhalt z. B. `2., überarbeitete Auflage 2028` (dann meist neue ISBN).
-Nur in einer Fassung: `{auflage-uz}:` leer = dort keine Auflage-Zeile. Die Werte stehen in der Variablen-Datei:
+Leere Zeilen fallen weg (im Lese-PDF also Herstellung, Logo und ISBN). Die Werte stehen in der Variablen-Datei:
 gemeinsame unter `## Impressum`, die einer Ausgabe unter `## Ausgabe: …`. Eigene Zeilen unter `## @IMPRESSUM`
 gehen auch; dann gelten nur diese. Im Druck: Seite 2 links Impressum (oben das Logo aus `{impressum-logo}`),
 Seite 3 rechts Widmung.
+
+**Auflage:** `{auflage}: 1. Auflage 2026` steht über der ISBN. Bei Print-on-Demand bleibt sie bei kleinen
+Korrekturen gleich; erst bei spürbar geändertem Inhalt z. B. `2., überarbeitete Auflage 2028` (dann meist neue ISBN).
+Nur in einer Fassung: `{auflage-uz}:` leer = dort keine Auflage-Zeile.
 
 **Seiten:** `---` oder `@UMBRUCH` neue Seite · `@UMBRUCH-RECHTS` im Druck rechts · `@PLATZ 60` neue Seite, wenn
 weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen · `@SEITENMITTE`.
@@ -291,6 +292,8 @@ sh build.sh pruefen         # nur die MD prüfen
 sh build.sh leseprobe       # Leseprobe: Umschlag, Titelei, gewählte Seiten, Schlussseite, Rückseite
 sh build.sh korrektur       # Korrekturfassung: A4, Zeilennummern pro Seite, Rand für Notizen
 sh build.sh geschichten     # Sammel-PDF aller Geschichten aus geschichten/ (mit «uz»: auch unzensiert)
+sh build.sh stand "Probedruck 1"   # jetzigen Stand festhalten · sh build.sh stand = alle Stände
+sh build.sh aenderungen     # was seit dem letzten Stand geändert ist → …_Aenderungen.pdf
 sh neu.sh "Titel"           # neue Geschichte anlegen · sh neu.sh = Übersicht (Windows: neu.bat)
 sh sicherung.sh             # ganzes Buch als ZIP sichern (lokal und/oder cloud)
 sh cleanup.sh               # aufräumen: Altes löschen / entfernen (delete), fragt zuerst; md-history/ bleibt
@@ -532,6 +535,33 @@ zurückkopieren, ohne zu vergleichen. Ganzes Buch: ZIP aus `../Sicherungen` ausp
 
 `md-history-behalten: 200` = pro Datei nur die 200 neuesten Stände (leer = alle). `sicherung-behalten: 10` = nur
 die 10 neuesten ZIPs. `sh cleanup.sh` löscht md-history nie.
+
+## Was hat sich geändert? (Stände)
+
+Einen wichtigen Moment hältst du als **Stand** fest, z. B. bei jeder Bestellung eines Probedrucks. Später zeigt
+ein PDF, was sich seither geändert hat – praktisch für Korrekturrunden, für Testleser und für die Frage
+«Korrektur oder neue Auflage?».
+
+```sh
+sh build.sh stand "Probedruck 1"     # jetzigen Stand festhalten (Name frei wählbar)
+sh build.sh stand                    # alle Stände mit Datum
+sh build.sh aenderungen              # was sich seit dem letzten Stand geändert hat
+sh build.sh aenderungen "Probedruck 1"                  # … seit diesem Stand
+sh build.sh aenderungen "Probedruck 1" "Probedruck 2"   # zwei Stände miteinander vergleichen
+```
+
+- **Ergebnis:** `…_Aenderungen.pdf` im Ausgabeordner der normalen Fassung (wird jedes Mal ersetzt). Oben eine
+  Zusammenfassung («3 Absätze geändert · 1 neu · 1 gestrichen») und die betroffenen Kapitel, darunter nur die
+  geänderten Absätze, nach Teil und Kapitel: neue Wörter **grün und unterstrichen**, gestrichene **rot und
+  durchgestrichen**. Absätze in `::: nur-uz` / `nur-normal` sind markiert («nur Unzensiert»). Am Schluss
+  geänderte Werte aus Variablen und Umschlag sowie neue oder entfernte Stichwörter.
+- **Geschichten** aus `geschichten/` stehen an ihrer Stelle im Buch und werden mitverglichen.
+- **Wo:** Jeder Stand ist eine Kopie der Texte in `staende/<datum>_<name>/` (Buch-, Variablen-, Umschlag-MD,
+  Stichwörter, Geschichten). Der Ordner kommt mit `sh sync.sh` auf die anderen Computer und ins ZIP;
+  `sh cleanup.sh` löscht ihn nie. Einen Stand nicht mehr gebraucht: seinen Ordner löschen.
+- Der Name muss nicht vollständig sein: `sh build.sh aenderungen probe` findet «Probedruck 1», wenn es eindeutig ist.
+- **Tipp:** Stand festhalten, *bevor* du den Probedruck bestellst. Dann zeigt `aenderungen` nach den Korrekturen
+  genau, was du seit dem gedruckten Exemplar verbessert hast – und Testleser lesen nur das Neue.
 
 ## Auf mehreren Computern (Linux, Mac, Windows)
 

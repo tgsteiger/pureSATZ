@@ -17,6 +17,8 @@ Booklets zum Selberdrucken entstehen automatisch: im «final» der Probedruck au
     python motor/bauen.py korrektur [final]   Korrekturfassung: A4, Zeilennummern, Rand für Notizen
     python motor/bauen.py sicherung       nur die MD-Dateien nach md-history/ sichern
     python motor/bauen.py pruefen         nur die MD prüfen
+    python motor/bauen.py stand "Name"    jetzigen Stand festhalten (staende/) · ohne Name: alle Stände zeigen
+    python motor/bauen.py aenderungen ["Name" ["Name2"]]   was sich seit dem (letzten) Stand geändert hat → …_Aenderungen.pdf
     python motor/bauen.py geschichten [uz]   Sammel-PDF aller Geschichten aus geschichten/ (normal; mit uz auch unzensiert)
     python motor/bauen.py hilfe           hilfe.html erzeugen und im Browser öffnen
     python motor/bauen.py mockup          Werbebilder (…_Mockup.jpg, …_Vorderseite.jpg) aus dem Bildschirm-PDF
@@ -395,7 +397,7 @@ def _uebersicht(art, final, test):
                  + [f"{D}_Cover-vorne_{px}px.jpg" for px in COVER_GROESSEN] + [f"{D}_Cover-hinten.jpg"],
                  "sh build.sh nur-ebook final"),
                 ("ZUM LESEN, VERSCHICKEN UND KORRIGIEREN", [f"{D}.pdf", f"{D}_Leseprobe.pdf", f"{D}_Leseprobe.epub",
-                 f"{D}_Korrektur.pdf", f"{D}_Geschichten.pdf"], None),
+                 f"{D}_Korrektur.pdf", f"{D}_Geschichten.pdf", f"{D}_Aenderungen.pdf"], None),
                 ("WERBUNG (Webseite, Newsletter)", [f"{D}_Mockup.jpg", f"{D}_Vorderseite.jpg"], "sh build.sh mockup"),
                 ("SELBER DRUCKEN (A4 quer, kurze Kante wenden)", [f"{K}_Probedruck_booklet.pdf", f"{D}_booklet.pdf"], None),
                 ("TEXTE FÜR DEN SHOP", ["shop-angaben.txt"], "sh build.sh final"),
@@ -636,6 +638,12 @@ def main():
         sicherung(); return
     if art == "pruefen":
         pruefen(); return
+    if art in ("stand", "aenderungen", "änderungen"):    # Stände festhalten und vergleichen (staende.py)
+        import staende
+        roh = sys.argv[1:]
+        i = next(k for k, x in enumerate(roh) if x.lower() == art)
+        staende.befehl(BASE, bk, ["aenderungen" if art == "änderungen" else art] + roh[i + 1:])
+        return
     if art == "mockup":
         mockups(); ausgabe_uebersicht(art, final); return
     if art == "hilfe":

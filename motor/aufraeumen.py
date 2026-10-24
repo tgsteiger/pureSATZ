@@ -9,7 +9,7 @@ Gelöscht werden nur bekannte, entbehrliche Dinge:
   Zwischenspeicher (_bildcache, _druckbilder, __pycache__, _epub_tmp, _tmp.pdf),
   Sicherungen (_backup/, *.backup), alte Motoren (motor-alt-*), stichworte-vorschlag.txt;
   mit «ausgaben»: auch alte Ausgabeordner «ausgabe-…», die zu keiner Fassung mehr gehören.
-NIE gelöscht: md-history/, die MD-Dateien, stichworte-*.txt, fotos/, bilder/, motor/, .venv/,
+NIE gelöscht: md-history/, staende/, die MD-Dateien, stichworte-*.txt, fotos/, bilder/, motor/, .venv/,
 und alles, was das Skript nicht kennt.
 """
 import os
@@ -25,7 +25,7 @@ except ImportError:
 MOTOR = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.dirname(MOTOR)
 sys.path.insert(0, MOTOR)
-SCHUETZEN = {"md-history", "fotos", "bilder", "motor", ".venv", "fonts"}
+SCHUETZEN = {"md-history", "staende", "fotos", "bilder", "motor", ".venv", "fonts"}
 
 
 def groesse(p):
@@ -96,7 +96,7 @@ def main():
         g = groesse(os.path.join(BASE, p)); total += g
         print(f"  {lesbar(g):>10}  {p}{'/' if os.path.isdir(os.path.join(BASE, p)) else ''}")
     print(f"  {lesbar(total):>10}  gesamt\n")
-    print("Bleibt immer: md-history/, MD-Dateien, stichworte-*.txt, fotos/, bilder/, motor/, .venv/"
+    print("Bleibt immer: md-history/, staende/, MD-Dateien, stichworte-*.txt, fotos/, bilder/, motor/, .venv/"
           + ("" if mit_ausgaben else ", Ausgabeordner"))
     try:
         antwort = input("\nDiese Dateien und Ordner löschen? ja/nein [nein]: ").strip().lower()

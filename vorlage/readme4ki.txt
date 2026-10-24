@@ -14,7 +14,7 @@ DATEIEN (nur diese darfst du ändern)
   geschichten/*.md        einzelne Geschichten (falls es den Ordner gibt), siehe GESCHICHTEN unten
   tabellen/*.csv          Tabellen (falls es den Ordner gibt), siehe TABELLEN unten
   druck/*.md              Plattform-Dateien: Technik einer Druckerei (Rücken, Beschnitt, Papier, Strichcode), siehe DRUCK unten
-NIE ändern: ausgabe-*/ (auch 00-UEBERSICHT.txt, wird bei jedem Bau neu erstellt), Ordner motor/, *.sh, *.bat, *.py, md-history/, geschichten/UEBERSICHT.md, geschichten-uebersicht.html.
+NIE ändern: staende/ (festgehaltene Stände), ausgabe-*/ (auch 00-UEBERSICHT.txt, wird bei jedem Bau neu erstellt), Ordner motor/, *.sh, *.bat, *.py, md-history/, geschichten/UEBERSICHT.md, geschichten-uebersicht.html.
 
 GESCHICHTEN (nur wenn es den Ordner geschichten/ gibt)
 - Eine Geschichte = eine Datei geschichten/name.md. Erste Zeile «## Titel», darunter freiwillig
@@ -109,6 +109,7 @@ WAS DER MOTOR MACHT (zur Info)
   sh sicherung.sh        ZIP-Sicherung
   sh update.sh           Motor-Update von GitHub (ersetzt nur motor/; «pruefen» = nur nachsehen)
                          Bei Fragen zu Fehlern im Motor: nicht motor/ ändern, sondern sh update.sh empfehlen.
+  sh build.sh stand "Name"   Stand festhalten · sh build.sh aenderungen   was seit dem letzten Stand geändert ist
   sh build.sh hilfe      hilfe.html erzeugen und öffnen (ganze Anleitung mit Suche; Quelle motor/HILFE.md)
 
 SO ARBEITEST DU

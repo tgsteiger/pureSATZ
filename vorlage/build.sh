@@ -7,6 +7,7 @@
 #   sh build.sh nur-pdf         nur Bildschirm-PDFs mit Booklet und Statistik
 #   sh build.sh nur-pdf final   nur Bildschirm-PDFs als Druckfassung + Booklets zum Selberdrucken
 #   sh build.sh leseprobe       Leseprobe: Umschlag, Titelei, erste Kapitel (Variable «leseprobe»)
+#   sh build.sh stand "Name"  Stand festhalten · sh build.sh aenderungen  was seither geändert ist (PDF)
 #   sh build.sh korrektur       Korrekturfassung: A4, Zeilennummern, Rand für Notizen
 #   sh build.sh nur-druck [final] / nur-ebook [final] / pruefen / sicherung (nur MD nach md-history/)
 # Ganzes Buch als ZIP sichern: sh sicherung.sh
