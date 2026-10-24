@@ -94,7 +94,26 @@ else
     echo "OK  ohne GitHub. Gesichert wird mit  sh sicherung.sh  (ZIP)."
 fi
 
-# --- 3. Neues Buch? ----------------------------------------------------
+# --- 3. PDF-Betrachter (freiwillig) -----------------------------------
+# «xreader datei.pdf» startet im Hintergrund, das Terminal bleibt frei.
+if command -v xreader >/dev/null 2>&1; then
+    if grep -q '^xreader()' "$HOME/.bashrc" 2>/dev/null; then
+        echo "OK  xreader startet bereits im Hintergrund"
+    else
+        echo
+        read -r -p "Soll «xreader datei.pdf» das Terminal frei lassen? [j/n] (j): " XR
+        if [ -z "$XR" ] || [ "$XR" = "j" ] || [ "$XR" = "ja" ]; then
+            cat >> "$HOME/.bashrc" <<'XEOF'
+
+# pureSATZ: xreader im Hintergrund starten, Terminal bleibt frei
+xreader() { command xreader "$@" >/dev/null 2>&1 & disown; }
+XEOF
+            echo "OK  eingetragen in ~/.bashrc (gilt in neuen Terminal-Fenstern)"
+        fi
+    fi
+fi
+
+# --- 4. Neues Buch? ----------------------------------------------------
 echo
 read -r -p "Jetzt ein neues Buch anlegen (sh setup/setup.sh)? [j/n] (n): " NB
 if [ "$NB" = "j" ] || [ "$NB" = "ja" ]; then

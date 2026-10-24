@@ -3,6 +3,12 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.32.0 (Oktober 2026)
+- Impressum: `{auflage}` (z. B. «1. Auflage 2026») steht jetzt über der ISBN. Leer oder nicht vorhanden = Zeile fällt weg.
+  Eigener Wert je Fassung mit `{auflage-normal}` / `{auflage-uz}`.
+- `pc-einrichten/linux-einrichten.sh`: fragt, ob `xreader datei.pdf` im Hintergrund starten soll (Terminal bleibt frei).
+  Trägt dafür einmalig eine kleine Funktion in `~/.bashrc` ein; mehrfaches Ausführen schadet nicht.
+
 ## 2.31.2 (Oktober 2026)
 - Teil ohne Nummer (`# |Anhang|Zeitstrahl, Glossar, Klangportrait`): Inhaltsverzeichnis, PDF-Lesezeichen und E-Book
   zeigen jetzt «Anhang: …» statt «· Anhang: …»; im E-Book keine leere Nummernzeile mehr. Hilfe ergänzt.

@@ -26,7 +26,7 @@
 ## Impressum
 {impressum-rechte}: Das Werk, einschliesslich seiner Teile, ist urheberrechtlich geschützt. Jede Verwertung ist ohne Zustimmung des Autors unzulässig. Zu erreichen unter: @@AUTOR@@, @@ADRESSE@@.
 {impressum-kontakt}:
-> Gilt für alle Ausgaben. Steht in der Buch-MD unter «## @IMPRESSUM» nichts, setzt der Motor das Impressum selbst zusammen: © {jahr} {autor} · {website} · {impressum-herstellung} · {impressum-rechte} · {impressum-kontakt} · ISBN {isbn}. Leere Zeilen fallen weg.
+> Gilt für alle Ausgaben. Steht in der Buch-MD unter «## @IMPRESSUM» nichts, setzt der Motor das Impressum selbst zusammen: © {jahr} {autor} · {website} · {impressum-herstellung} · {impressum-rechte} · {impressum-kontakt} · {auflage} · ISBN {isbn}. Leere Zeilen fallen weg.
 > Was nur für eine Ausgabe gilt (Herstellung, Logo, eigene Kontaktzeile, ISBN, Preis), steht unten bei der Ausgabe und ersetzt dort die Zeile von hier.
 
 ## Ausgabe: PDF
