@@ -97,6 +97,8 @@ def treffer(seiten, begriffe, kap=None):
         if kap and any(v in (kap.get(n) or "").lower() for v in VERZEICHNIS):
             continue
         for i, z in enumerate(zs, 1):
+            if i == 1 and " · " in z:                   # Kopfzeile «Teil · Kapitel» zählt nicht
+                continue
             naechste = zs[i] if i < len(zs) else ""
             verbunden = z[:-1] + naechste.split(" ")[0] if z.endswith("-") else z    # Trennung am Zeilenende
             if any(m.search(z) or m.search(verbunden) for m in ms):
@@ -109,21 +111,32 @@ STELLEN = re.compile(r"\s{2,}\d+\s+Stellen?\b.*$", re.I)
 
 
 def lies(pfad):
-    """([[begriff, …], …], {weg}) – Gruppen in der Reihenfolge der Datei."""
-    gruppen, weg = [], set()
+    """([[begriff, …], …], {weg}, {gruppe-nr: {fassung: "59-60, 63"}}) – Gruppen in der Reihenfolge der Datei."""
+    gruppen, weg, zusatz = [], set(), {}
     if not os.path.exists(pfad):
-        return gruppen, weg
+        return gruppen, weg, zusatz
     for z in open(pfad, encoding="utf-8").read().split("\n"):
         if not z.strip() or z[0] in " \t" or z.lstrip()[0] in "#>$":
             continue
         s = STELLEN.sub("", z.strip())
+        if s.startswith("+") and gruppen:               # «+ uz: 59» = Seite von Hand dazu (zur Gruppe darüber)
+            f, _, nr = s[1:].partition(":")
+            zusatz.setdefault(len(gruppen) - 1, {})["uz" if f.strip().lower() in ("uz", "unzensiert") else "normal"] = nr.strip()
+            continue
         if s.startswith(WEG):
             weg.update(b.strip() for b in s[len(WEG):].split("|") if b.strip())
             continue
         begriffe = [b.strip() for b in STELLEN.sub("", s).split("|") if b.strip()]
         if begriffe:
             gruppen.append(begriffe)
-    return gruppen, weg
+    return gruppen, weg, zusatz
+
+
+def alle_seiten(t, kap, gruppe, extra=""):
+    """Seiten für Leseprobe und Gegenlesen: Fundstellen + ganze Kapitel mit einem Begriff im Titel + «+»-Seiten."""
+    import fassungen
+    titel = {kap.get(s) for s in t if kap.get(s) and any(b.lower() in kap[s].lower() for b in gruppe)}
+    return sorted(set(t) | {s for s, k in kap.items() if k in titel} | set(fassungen.seiten_lesen(extra)))
 
 
 def vorschlaege(base, bk, seiten_alle):
@@ -174,7 +187,7 @@ def veraltet_hinweis(base, bk, pdfs):
               "$ sh build.sh final   (zuerst)")
 
 
-def schreiben(base, bk, gruppen, weg, daten, neu_ab, pdfs):
+def schreiben(base, bk, gruppen, weg, daten, neu_ab, pdfs, zusatz):
     titel = bk.V("titel")
     beispiel = gruppen[0][0] if gruppen else "Name"
     z = [f"# PERSONEN UND SEITEN – {titel} · {datetime.now():%d.%m.%Y %H:%M}",
@@ -182,6 +195,8 @@ def schreiben(base, bk, gruppen, weg, daten, neu_ab, pdfs):
          f"> «{WEG} Wort» = keine Person, nicht mehr vorschlagen (solange diese Datei besteht; ich sammle sie unten).",
          "> Ganze Zeile gelöscht = wird beim nächsten Mal wieder vorgeschlagen. Datei löschen = alles neu.",
          "> S. = gedruckte Seite · Z. = Zeile auf der Seite, gezählt wie im Korrektur-PDF (Kopfzeile = Zeile 1).",
+         "> Steht ein Begriff im Kapiteltitel, kommt das ganze Kapitel dazu (Leseprobe-Seiten, Gegenlesen).",
+         "> «+ uz: 59» bzw. «+ normal: 41» unter einer Person = Seiten von Hand dazu (bleibt stehen; nach Umbau prüfen).",
          "> Gesucht in: " + " · ".join(f"{os.path.relpath(p, base)} ({datetime.fromtimestamp(os.path.getmtime(p)):%d.%m.%Y %H:%M})"
                                       for _, _, p in pdfs),
          "$ sh build.sh personen   (Seiten neu, nach dem Korrigieren)",
@@ -204,9 +219,15 @@ def schreiben(base, bk, gruppen, weg, daten, neu_ab, pdfs):
             kap = list(dict.fromkeys(k for s in sorted(t) for k in [d[f]["kapitel"].get(s, "")] if k))
             if kap:
                 z.append(f"  {'':<12} Kapitel: {' · '.join(kap)}")
+            for k in kap:
+                if any(b.lower() in k.lower() for b in g):
+                    z.append(f"  {'':<12} ganzes Kapitel: {k} (S. {seiten_text([s for s, x in d[f]['kapitel'].items() if x == k])})")
+        for f, nr in zusatz.get(i, {}).items():
+            z.append(f"+ {f}: {nr}")
         for f in d:
-            if d[f]["treffer"]:
-                z.append(f"  {{leseprobe-seiten{'' if f == 'normal' else '-uz'}}}: {seiten_text(sorted(d[f]['treffer']))}")
+            alle = alle_seiten(d[f]["treffer"], d[f]["kapitel"], g, zusatz.get(i, {}).get(f, ""))
+            if alle:
+                z.append(f"  {{leseprobe-seiten{'' if f == 'normal' else '-uz'}}}: {seiten_text(alle)}")
         z.append("")
     if weg:
         z += ["# KEINE PERSONEN", "> nicht mehr vorschlagen – Zeile löschen = wieder vorschlagen"] \
@@ -227,7 +248,7 @@ def befehl(base, bk, argumente):
     seiten = {f: zeilen(p) for f, _, p in pdfs}
     kap = {f: kapitel(p) for f, _, p in pdfs}
     pfad = os.path.join(base, DATEI)
-    gruppen, weg = lies(pfad)
+    gruppen, weg, zusatz = lies(pfad)
 
     if argumente:                                   # sh build.sh personen Andrea
         name = " ".join(argumente).strip()
@@ -236,7 +257,7 @@ def befehl(base, bk, argumente):
         if not g:
             g = [name]
             print(f"«{name}» steht nicht in {DATEI} – suche nur dieses Wort.")
-        gegenlesen(base, bk, g, pdfs, seiten, kap)
+        gegenlesen(base, bk, g, pdfs, seiten, kap, zusatz.get(gruppen.index(g), {}) if g in gruppen else {})
         return
 
     autor = (bk.V("autor") or "").split()
@@ -245,23 +266,24 @@ def befehl(base, bk, argumente):
     neu_ab = len(gruppen) if (gruppen and neu) else None
     gruppen += [[k] for k in neu]
     daten = [{f: {"treffer": treffer(seiten[f], g, kap[f]), "kapitel": kap[f]} for f in seiten} for g in gruppen]
-    schreiben(base, bk, gruppen, weg, daten, neu_ab, pdfs)
+    schreiben(base, bk, gruppen, weg, daten, neu_ab, pdfs, zusatz)
     print(f"{DATEI}: {len(gruppen)} Personen" + (f", davon {len(neu)} neu gefunden" if neu else ""))
-    for g, d in zip(gruppen, daten):
+    for i, (g, d) in enumerate(zip(gruppen, daten)):
         n = sum(len(zs) for f in d for zs in d[f]["treffer"].values())
-        teile = [f"{'uz' if f == 'uz' else 'normal'} {seiten_text(sorted(d[f]['treffer']))}" for f in d if d[f]["treffer"]]
+        teile = [f"{f} {seiten_text(s)}" for f in d
+                 for s in [alle_seiten(d[f]["treffer"], d[f]["kapitel"], g, zusatz.get(i, {}).get(f, ""))] if s]
         print(f"  {g[0]:<24} {n:>3} Stelle{'n' if n != 1 else ' '}  " + (" · ".join(teile) if teile else "– kommt nicht vor"))
     b = gruppen[0][0] if gruppen else "Name"
     print(f"\n> Prüfen und korrigieren: {DATEI}\n$ sh build.sh personen   (Seiten neu)\n$ sh build.sh personen {b}   (Check-PDF zum Gegenlesen)")
 
 
-def gegenlesen(base, bk, gruppe, pdfs, seiten, kap):
+def gegenlesen(base, bk, gruppe, pdfs, seiten, kap, extra=None):
     import fassungen
     name = gruppe[0]
     erstellt = []
     for f, k, p in pdfs:
         t = treffer(seiten[f], gruppe, kap[f])
-        nummern = sorted(s for s in t if s > 1)
+        nummern = [s for s in alle_seiten(t, kap[f], gruppe, (extra or {}).get(f, "")) if s > 1]
         if not nummern:
             continue
         r = fassungen.PdfReader(fassungen.io.BytesIO(open(p, "rb").read()))

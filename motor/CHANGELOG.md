@@ -3,6 +3,11 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.37.0 (Oktober 2026)
+- Personen: Steht ein Begriff im Kapiteltitel, kommt das ganze Kapitel dazu (Leseprobe-Seiten und Gegenlesen).
+  Neu `+ uz: 59` / `+ normal: 41` unter einer Person in `personen-seiten.txt` = Seiten von Hand dazu (bleibt stehen).
+  Die Kopfzeile «Teil · Kapitel» zählt nicht mehr als Fundstelle.
+
 ## 2.36.0 (Oktober 2026)
 - Impressum: zwei freie Zeilen `{impressum-satz1}` und `{impressum-satz2}` direkt unter der Herstellung, in allen
   Ausgaben. Vorlage: `{impressum-satz1}: Gesetzt mit pureSATZ · github.com/tgsteiger/pureSATZ`.

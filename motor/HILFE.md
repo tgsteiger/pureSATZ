@@ -619,6 +619,12 @@ Andrea | Medizinfrau | Grosi                    5 Stellen
   der Datei) = keine Person: wird unten unter «KEINE PERSONEN» gesammelt und nicht mehr vorgeschlagen, solange die
   Datei besteht. Eine ganz gelöschte Zeile kommt beim nächsten Mal wieder als Vorschlag. Eine eigene Zeile mit
   einem Namen, den der Motor nicht kennt, geht auch. Datei löschen = alles beginnt neu.
+- **Ganzes Kapitel:** Steht ein Begriff im **Kapiteltitel** (z. B. «Ecuador» in «Ecuador und das runde Rad»), kommen
+  alle Seiten dieses Kapitels dazu – in `{leseprobe-seiten…}` und im Gegenlesen-PDF (Zeile «ganzes Kapitel: …»).
+- **Seiten von Hand:** Eine Zeile `+ uz: 59-60, 63` oder `+ normal: 41` direkt unter einer Person (ganz links) nimmt
+  diese Seiten dazu, z. B. die Folgeseite eines Kastens. Der Motor lässt sie stehen, passt sie aber nicht an:
+  nach einem Umbau selbst prüfen.
+- Die Kopfzeile jeder Seite («Teil · Kapitel») zählt nicht als Fundstelle.
 - Die eingerückten Zeilen schreibt der Motor bei jedem `sh build.sh personen` neu. Deine Namenszeilen bleiben,
   neu Gefundenes kommt unten dazu. Vorgeschlagen werden Vornamen, Rollen (Vater, Tochter, Nachbarin …) und
   Stichwörter mit Vornamen – der eigene Vorname (`{autor}`) nicht. Das Stichwortverzeichnis zählt nicht mit.
