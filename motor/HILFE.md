@@ -160,7 +160,7 @@ weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen �
 | Technik | `kurz-…`, `datei-…`, `ordner-…` |
 | Weiteres | `stichworte`, `trennstellen` (Welt\|anschauung), `zier`, `zier-hell`, `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund` |
 | Sicherung | `sicherung-lokal`, `sicherung-cloud`, `sicherung-behalten` |
-| Layout | `farbschema`, `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `blocksatz` |
+| Layout | `farbschema`, `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `inhalt-dichte`, `blocksatz` |
 
 **Rückenbreite:** steht in der Plattform-Datei (siehe «Plattform-Dateien», Coverrechner).
 

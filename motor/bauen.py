@@ -595,7 +595,7 @@ def fassung(art, final):
             print(f"Leseprobe · {name(a)}: {os.path.relpath(ziel, BASE)} ({n} Seiten, {was})")
         else:
             ziel = stamm + "_Korrektur.pdf"
-            n = fassungen.korrektur(tmp, ziel, f"{bk.V('titel', fassung=a)} · {name(a)}")
+            n = fassungen.korrektur(tmp, ziel, f"{bk.V('titel', fassung=a)} · {name(a)}", schrift=bk.schrift("titel_normal"))
             print(f"Korrektur · {name(a)}: {os.path.relpath(ziel, BASE)} ({n} Seiten auf A4)")
         os.remove(tmp)
 

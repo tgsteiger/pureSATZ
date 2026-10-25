@@ -889,9 +889,10 @@ class Liste:
 
 small = ParagraphStyle("small", parent=body, fontSize=8.8, leading=12.5, textColor=SOFT,
                        alignment=TA_LEFT)
-toc1 = ParagraphStyle("toc1", fontName=schrift("titel"), fontSize=10, leading=14, textColor=DEEP,
-                      spaceBefore=8)
-toc2 = ParagraphStyle("toc2", fontName=schrift("text"), fontSize=9.3, leading=12.6, textColor=INK,
+_D = float(V("inhalt-dichte", "1") or 1)          # {inhalt-dichte}: 0.92 = Inhaltsverzeichnis etwas enger
+toc1 = ParagraphStyle("toc1", fontName=schrift("titel"), fontSize=10, leading=14 * _D, textColor=DEEP,
+                      spaceBefore=8 * _D)
+toc2 = ParagraphStyle("toc2", fontName=schrift("text"), fontSize=9.3, leading=12.6 * _D, textColor=INK,
                       leftIndent=5 * mm)
 
 

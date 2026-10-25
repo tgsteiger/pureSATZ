@@ -299,6 +299,7 @@ def gegenlesen(base, bk, gruppe, pdfs, seiten, kap, extra=None):
         n, was = fassungen.leseprobe(p, ziel, None, schluss, mit_rueckseite=False, seiten=nummern)
         # wie das Korrektur-PDF: A4, Zeilennummern links, Notizlinien rechts (Rückmeldung «S. 41, Z. 7»)
         fassungen.korrektur(ziel, ziel, f"Gegenlesen · {name} · Seitenzahl unten auf der Buchseite verwenden",
+                            schrift=bk.schrift("titel_normal"),        # Poppins: eingebettet, keine Warnung
                             markiert=treffer(zeilen(ziel), gruppe))    # Stellen der Person: rotes ▶
         from pypdf import PdfReader, PdfWriter
         w = PdfWriter(clone_from=PdfReader(ziel))
