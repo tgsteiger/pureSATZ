@@ -100,13 +100,27 @@ def _code(text):
     return f'<div class="code"><button class="kopie" title="kopieren">kopieren</button><pre>{teil}</pre></div>'
 
 
+def _plan(x):
+    """«{⏱ 3–6 Wochen · fertig −8}» am Ende eines Listenpunkts: Dauer anzeigen und (mit Zieldatum) das Datum
+    «bis spätestens» = Zieldatum ± Wochen. Ohne Angabe bleibt der Punkt unverändert."""
+    m = re.search(r"\s*\{⏱\s*([^·}]*?)\s*(?:·\s*fertig\s*([+\-−]?\s*\d+))?\s*\}\s*$", x)
+    if not m:
+        return x, ""
+    zusatz = f'<span class="dauer">⏱ {html.escape(m.group(1))}</span>' if m.group(1) else ""
+    if m.group(2):
+        w = int(m.group(2).replace("−", "-").replace(" ", ""))
+        zusatz += f'<span class="bis" data-w="{w}"></span>'
+    return x[:m.start()], zusatz
+
+
 def _li(x):
     """Listenpunkt; «[ ] Text» wird ein Häkchen zum Anklicken (merkt sich der Browser)."""
+    x, plan = _plan(x)
     m = re.match(r"^\[( |x|X)\]\s+(.*)$", x)
     if not m:
-        return f"<li>{_inline(x)}</li>"
+        return f"<li>{_inline(x)}{plan}</li>"
     return (f'<li class="haken"><label><input type="checkbox"{" checked" if m.group(1) != " " else ""}> '
-            f'<span>{_inline(m.group(2))}</span></label></li>')
+            f'<span>{_inline(m.group(2))}</span></label>{plan}</li>')
 
 
 def md_html(text):
@@ -404,6 +418,11 @@ background:var(--papier);counter-increment:k}}
 .kacheln li.haken label{{display:block}} .kacheln li.haken label::before{{content:counter(k);float:right;
 font:500 13px Poppins,system-ui,sans-serif;color:var(--akzent)}}
 .kacheln li.haken:has(input:checked){{opacity:.6}}
+.kacheln .dauer,.kacheln .bis{{display:block;font:13px Poppins,system-ui,sans-serif;color:var(--leise);margin-top:6px}}
+.kacheln .bis{{color:var(--haupt);font-weight:500}} .kacheln .bis:empty{{display:none}}
+.kacheln .ziel{{display:inline-block;font:14px Poppins,system-ui,sans-serif;margin:4px 0 2px}}
+.kacheln .ziel input{{font:14px Poppins,system-ui,sans-serif;padding:3px 6px;border:1px solid var(--linie);border-radius:8px;
+background:var(--karte);color:var(--text);margin-left:6px}}
 @media print{{header,nav,footer,#leer,button{{display:none!important}} body{{background:#fff;color:#000}}
 body.nur main section:not(.drucke){{display:none}} section{{border:0;margin:0}}
 .kacheln ol,.kacheln ul{{grid-template-columns:1fr 1fr}} .kacheln li.haken{{break-inside:avoid;background:#fff}}}}
@@ -454,6 +473,13 @@ function haken(){{let h={{}};try{{h=JSON.parse(localStorage.getItem('ps-haken')|
 document.querySelectorAll('li.haken input').forEach(c=>{{const k=c.parentNode.textContent.trim().slice(0,60);
 if(k in h)c.checked=h[k];c.onchange=()=>{{h[k]=c.checked;try{{localStorage.setItem('ps-haken',JSON.stringify(h))}}catch(e){{}}}}}})}}
 haken();such.addEventListener('input',haken);
+document.querySelectorAll('.kacheln').forEach(k=>{{if(!k.querySelector('.bis'))return;
+const l=document.createElement('label');l.className='ziel';l.innerHTML='📅 Mein Zieldatum (Erscheinen oder Vernissage), freiwillig: <input type="date">';
+k.insertBefore(l,k.querySelector('ol,ul'));const d=l.querySelector('input');
+const rechne=()=>{{let z=d.value;try{{localStorage.setItem('ps-ziel',z)}}catch(e){{}}
+k.querySelectorAll('.bis').forEach(b=>{{if(!z){{b.textContent='';return}}const t=new Date(z+'T12:00');t.setDate(t.getDate()+7*(+b.dataset.w));
+b.textContent='📅 bis spätestens '+t.toLocaleDateString('de-CH',{{weekday:'short',day:'numeric',month:'short',year:'numeric'}})}})}};
+try{{d.value=localStorage.getItem('ps-ziel')||''}}catch(e){{}}d.addEventListener('input',rechne);rechne()}});
 document.addEventListener('click',e=>{{const b=e.target.closest('button.druck');if(!b)return;const s=b.closest('section');
 s.classList.add('drucke');document.body.classList.add('nur');window.print();
 s.classList.remove('drucke');document.body.classList.remove('nur')}});
