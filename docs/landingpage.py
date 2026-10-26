@@ -130,6 +130,8 @@ KACHELN = [
     ("Personen gegenlesen", "Wer im Buch vorkommt, mit Seite und Zeile – und pro Person ein PDF mit genau ihren "
      "Seiten zum Gegenlesen – mit Zeilennummern und Notizrand für die Rückmeldung, in Sekunden aus dem fertigen Buch."),
     ("Hilfe und Sicherheit", "Hilfe mit Suche, automatischer Verlauf jeder Fassung, ZIP-Sicherung, auf Wunsch GitHub."),
+    ("Fahrplan bis zum Buch", "Vom Manuskript über Lektorat und zwei Probedrucke bis zur Freigabe: Schritte zum Abhaken, "
+     "mit Daten passend zu deinem Wunschtermin."),
 ]
 
 
@@ -227,6 +229,7 @@ summary{{font:500 16px Poppins,system-ui,sans-serif;color:var(--haupt);cursor:po
 
 <section><div class="wrap">
 <h2>Was pureSATZ kann</h2>
+<p class="leise">Andere Programme können technisch mehr oder sind bequemer. pureSATZ begleitet dich den ganzen Weg – vom Manuskript bis zum fertigen Buch bei der Druckplattform.</p>
 <div class="kacheln">{kacheln}</div>
 </div></section>
 
