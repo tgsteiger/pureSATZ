@@ -429,33 +429,6 @@ Fehlt etwas, nennt die Übersicht den Befehl dazu (z. B. `sh build.sh leseprobe`
 - Seitenzahl geändert: im Coverrechner der Druckerei prüfen, ob Rücken und Umschlag gleich bleiben. Dann
   `{berechnet-fuer-seiten}` anpassen und `{neu-berechnen}: nein` setzen.
 
-## Fahrplan: vom Manuskript zum fertigen Buch
-
-Zum Abhaken – der Browser merkt sich die Häkchen. «drucken» oben rechts druckt nur diesen Fahrplan.
-Mit einem Zieldatum (freiwillig, z. B. Erscheinen oder Vernissage) zeigt jede Kachel, bis wann der Schritt spätestens
-fertig sein sollte. Dauer und Wochen stehen hier in der HILFE.md, z. B. `{⏱ 3–6 Wochen · fertig −8}` = 8 Wochen vor
-dem Ziel; die Zahlen sind grobe Erfahrungswerte und lassen sich anpassen.
-**Puffer:** Für einen zweiten Probedruck 2–3 Wochen Reserve einplanen.
-
-::: kacheln
-1. [ ] **Lektorat durch einen Menschen:** Jemand liest Sprache, Stil und Logik – nicht nur Rechtschreibung. Nicht vergessen! Dafür das Korrektur-PDF: `sh build.sh korrektur`. {⏱ 3–6 Wochen · fertig −8}
-2. [ ] **Gegenlesen:** Personen im Buch fragen und ihre Stellen schicken: `sh build.sh personen Name`. Einwilligungen einholen. {⏱ 2–3 Wochen · fertig −8}
-3. [ ] **Ort reservieren:** Raum für Vernissage oder Lesung – früh, beliebte Orte sind schnell weg. {⏱ 2–3 Monate vorher · fertig −12}
-4. [ ] **Gäste und Moderation:** Wer führt durch den Anlass? Gäste oder Referenten anfragen und bestätigen lassen. {⏱ 1–2 Wochen · fertig −10}
-5. [ ] **Newsletter 1:** Ankündigung, Leseprobe (`sh build.sh leseprobe`), Einladung mit Anmeldung. {⏱ 1–2 Tage · fertig −8}
-6. [ ] **Probedruck bestellen:** `sh build.sh final`, hochladen, bestellen. Stand festhalten: `sh build.sh stand "Probedruck bestellt"`. {⏱ Lieferung 1–2 Wochen · fertig −7}
-7. [ ] **Sichtbar werden:** Buchseite auf der Webseite, Mockup und Shop-Texte (`shop-angaben.txt`), soziale Medien. {⏱ laufend · fertig −6}
-8. [ ] **Probedruck prüfen:** Farben auf dem Papier, Umschlag und Rücken, Ränder, Bilder, Trennungen. Korrekturen eintragen, mit `sh build.sh aenderungen` kontrollieren. {⏱ 1–2 Wochen · fertig −5}
-9. [ ] **Druckfreigabe und Bücher bestellen:** Seitenzahl im Coverrechner prüfen, ISBN und Preis kontrollieren, `final` hochladen, freigeben. Menge für Geschenke, Anlass und Reserve. {⏱ bis die Bücher da sind 2–3 Wochen · fertig −4}
-10. [ ] **E-Book:** hochladen; die Leseprobe (PDF/EPUB) auf die eigene Webseite stellen. {⏱ bis sichtbar in den Shops 1–3 Wochen · fertig −4}
-11. [ ] **Newsletter 2 «Es ist da»:** Buchseite sichtbar, wie man das Buch bekommt, Erinnerung an den Anlass. {⏱ 1 Tag · fertig −2}
-12. [ ] **Geschenke verteilen:** Exemplare an Familie, Personen im Buch, Helfende; Beitrag im Google-Unternehmensprofil. {⏱ 1–2 Wochen · fertig −2}
-13. [ ] **Erinnerung an die Angemeldeten:** kurzes Mail mit Zeit, Ort, Anfahrt. {⏱ 1 Stunde · fertig −1}
-14. [ ] **Vernissage oder Lesung:** Ablauf und Rollen (Moderation, Büchertisch und Kasse, Fotos, Apéro), Lesestellen laut üben, genug Bücher, Bezahlung (bar/TWINT), Stift zum Signieren. {⏱ der grosse Tag · fertig 0}
-15. [ ] **Pflichtexemplare:** Schweiz: zwei Exemplare an die Nationalbibliothek; Deutschland: an die DNB. Prüfen, ob die Druckerei das übernimmt. {⏱ 1 Woche · fertig +1}
-16. [ ] **Danach:** Dank-Mail an die Gäste, Rückmeldungen und Rezensionen sammeln, nachbestellen, Fehler für eine zweite Auflage notieren (`stand`). {⏱ laufend · fertig +4}
-:::
-
 ## Schwarz-weiss drucken (freiwillig)
 
 Die feinen Farben (Kopfzeile, Bildunterschriften, Gold) wirken im eigenen Schwarz-weiss-Ausdruck sehr hell.

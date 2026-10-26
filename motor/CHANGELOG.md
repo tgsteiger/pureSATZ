@@ -3,6 +3,10 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.43.1 (Oktober 2026)
+- Hilfe: Der Fahrplan steht neu unter «Start» als Punkt 6 «Fahrplan: vom Manuskript zum fertigen Buch»
+  (in START.md statt HILFE.md) – vom ersten PDF bis zum fertigen Buch an einem Ort.
+
 ## 2.43.0 (Oktober 2026)
 - Hilfe, Fahrplan: 16 Kacheln (neu: Ort reservieren, Gäste und Moderation, Newsletter 1 und 2, Geschenke,
   Erinnerung an die Angemeldeten, Danach mit Dank-Mail) und ein Hinweis auf Puffer für einen zweiten Probedruck.
