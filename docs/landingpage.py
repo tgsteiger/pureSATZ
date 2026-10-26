@@ -202,8 +202,9 @@ summary{{font:500 16px Poppins,system-ui,sans-serif;color:var(--haupt);cursor:po
 
 <div class="held"><div>
 <h1>In fünf Minuten zu deinem ersten Buch.</h1>
-<p class="unter">Du schreibst in einfachen Textdateien (Markdown), für Besonderes gibt es kurze Befehle wie <code>@ZITAT-ZIER</code> oder <code>@PLATZ</code>. pureSATZ macht daraus ein druckfertiges Buch im gewünschten Format, mit Umschlag und E-Book – für epubli, BoD, KDP und andere Plattformen oder zum Selberdrucken.</p>
+<p class="unter">Du schreibst dein Buch in einfachen Textdateien (Markdown). pureSATZ kümmert sich um den Rest: ein druckfertiges Buch im gewünschten Format, mit Umschlag und E-Book – für epubli, BoD, KDP und andere Plattformen oder zum Selberdrucken.</p>
 <p class="unter">Dazu Leseprobe, Korrekturfassung fürs Lektorat, Booklet für den Probedruck, Änderungen seit dem letzten Stand und Werbebilder – alles aus denselben Dateien.</p> 
+<p class="unter">Pandoc, Typst, LaTeX, Vellum oder Atticus setzen dein Buch. pureSATZ begleitet dich dazu den ganzen Weg – vom Manuskript bis zum fertigen Buch bei der Druckplattform.</p>
 <p class="unter">Auf Linux, Mac und Windows.</p>
 <a class="knopf voll" href="{ZIP}">⬇ pureSATZ herunterladen (ZIP)</a><a class="knopf rand" href="{REPO}">Auf GitHub ansehen</a>
 <p class="klein">Version {html.escape(version)} · kostenlos für eigene Bücher · ohne Konto, ohne Cloud</p>
@@ -229,7 +230,6 @@ summary{{font:500 16px Poppins,system-ui,sans-serif;color:var(--haupt);cursor:po
 
 <section><div class="wrap">
 <h2>Was pureSATZ kann</h2>
-<p class="leise">Andere Programme können technisch mehr oder sind bequemer. pureSATZ begleitet dich den ganzen Weg – vom Manuskript bis zum fertigen Buch bei der Druckplattform.</p>
 <div class="kacheln">{kacheln}</div>
 </div></section>
 
