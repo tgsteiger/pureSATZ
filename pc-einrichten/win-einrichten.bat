@@ -36,7 +36,21 @@ goto ende
 :python_ok
 for /f "delims=" %%v in ('%PY% --version') do echo OK  %%v
 
-rem --- 2. GitHub (freiwillig) -------------------------------------------
+rem --- 2. Ghostscript (freiwillig, fuer CMYK-Druckdateien) ---------------
+rem Braucht es nur mit {farbmodus}: cmyk in einer Druckdatei (z. B. tredition), umgewandelt wird bei final.
+set "GSDA="
+where gswin64c >nul 2>nul && set "GSDA=1"
+if exist "%ProgramFiles%\gs\" set "GSDA=1"
+if defined GSDA (echo OK  Ghostscript vorhanden ^(fuer {farbmodus}: cmyk^) & goto gs_ok)
+where winget >nul 2>nul || (echo Hinweis: Ghostscript fehlt - nur noetig fuer {farbmodus}: cmyk. Download: ghostscript.com & goto gs_ok)
+echo.
+set "GS=j"
+set /p "GS=Ghostscript fuer CMYK-Druckdateien (z. B. tredition) installieren? [j/n] (j): "
+if /i "%GS%"=="ja" set "GS=j"
+if /i "%GS%"=="j" winget install -e --source winget --id ArtifexSoftware.GhostScript --accept-package-agreements --accept-source-agreements
+:gs_ok
+
+rem --- 3. GitHub (freiwillig) -------------------------------------------
 echo.
 echo GitHub brauchst du nur fuer: Buch auf mehreren Computern (sync.bat)
 echo und Motor-Updates direkt aus dem Buch (update.bat).
@@ -105,7 +119,7 @@ goto buch_holen
 :ohne_github
 echo OK  ohne GitHub. Gesichert wird mit  sicherung.bat  (ZIP).
 
-rem --- 3. Neues Buch? ----------------------------------------------------
+rem --- 4. Neues Buch? ----------------------------------------------------
 :neues_buch
 echo.
 set "NB=n"

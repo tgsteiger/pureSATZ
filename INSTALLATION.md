@@ -37,6 +37,11 @@ Es darf beliebig oft laufen.
 
 Die Schritte unten sind dasselbe von Hand.
 
+**Ghostscript (freiwillig):** nur nötig, wenn eine Druckerei CMYK verlangt (z. B. tredition, `{farbmodus}: cmyk`
+in der Druckdatei). Die Einrichte-Skripte fragen danach. Von Hand: Linux `sudo apt install ghostscript` ·
+Mac `brew install ghostscript` (oder MacPorts: `sudo port install ghostscript`) ·
+Windows `winget install ArtifexSoftware.GhostScript`. Ohne Ghostscript bleiben die Druckdateien RGB.
+
 ---
 
 ## Linux (Terminal)

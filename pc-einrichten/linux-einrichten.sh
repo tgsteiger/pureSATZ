@@ -94,7 +94,21 @@ else
     echo "OK  ohne GitHub. Gesichert wird mit  sh sicherung.sh  (ZIP)."
 fi
 
-# --- 3. PDF-Betrachter (freiwillig) -----------------------------------
+# --- 3. Ghostscript (freiwillig, für CMYK-Druckdateien) ---------------
+# Braucht es nur mit «{farbmodus}: cmyk» in einer Druckdatei (z. B. tredition), umgewandelt wird bei final.
+if command -v gs >/dev/null 2>&1; then
+    echo "OK  Ghostscript $(gs --version) (für {farbmodus}: cmyk)"
+elif command -v apt >/dev/null 2>&1; then
+    echo
+    read -r -p "Ghostscript für CMYK-Druckdateien (z. B. tredition) installieren? [j/n] (j): " GS
+    if [ -z "$GS" ] || [ "$GS" = "j" ] || [ "$GS" = "ja" ]; then
+        sudo apt install -y ghostscript && echo "OK  Ghostscript $(gs --version)"
+    fi
+else
+    echo "Hinweis: Für {farbmodus}: cmyk Ghostscript installieren (Paket «ghostscript»)."
+fi
+
+# --- 4. PDF-Betrachter (freiwillig) -----------------------------------
 # «xreader datei.pdf» startet im Hintergrund, das Terminal bleibt frei.
 if command -v xreader >/dev/null 2>&1; then
     # schon vorhanden (Funktion oder alias, auch von Hand eingetragen)? Dann nichts tun.
@@ -114,7 +128,7 @@ XEOF
     fi
 fi
 
-# --- 4. Neues Buch? ----------------------------------------------------
+# --- 5. Neues Buch? ----------------------------------------------------
 echo
 read -r -p "Jetzt ein neues Buch anlegen (sh setup/setup.sh)? [j/n] (n): " NB
 if [ "$NB" = "j" ] || [ "$NB" = "ja" ]; then

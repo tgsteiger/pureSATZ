@@ -78,7 +78,27 @@ TXT
     fi
 fi
 
-# --- 5. Bücher von GitHub holen (neben diesen Ordner) ------------------
+# --- 5. Ghostscript (freiwillig, für CMYK-Druckdateien) ---------------
+# Braucht es nur mit «{farbmodus}: cmyk» in einer Druckdatei (z. B. tredition), umgewandelt wird bei final.
+if command -v gs >/dev/null 2>&1; then
+    echo "OK  Ghostscript $(gs --version) (für {farbmodus}: cmyk)"
+elif command -v brew >/dev/null 2>&1; then
+    read -r -p "Ghostscript für CMYK-Druckdateien (z. B. tredition) installieren? [j/n] (j): " GS
+    if [ -z "$GS" ] || [ "$GS" = "j" ] || [ "$GS" = "ja" ]; then
+        brew install ghostscript && echo "OK  Ghostscript $(gs --version)"
+    fi
+elif command -v port >/dev/null 2>&1; then
+    read -r -p "Ghostscript für CMYK-Druckdateien (z. B. tredition) installieren? [j/n] (j): " GS
+    if [ -z "$GS" ] || [ "$GS" = "j" ] || [ "$GS" = "ja" ]; then
+        sudo port install ghostscript && echo "OK  Ghostscript $(gs --version)"
+    fi
+else
+    echo "Hinweis: Ghostscript fehlt – nur nötig für {farbmodus}: cmyk (z. B. tredition)."
+    echo "         Installieren mit Homebrew (brew install ghostscript) oder MacPorts (sudo port install ghostscript)."
+    echo "         Ohne Ghostscript bleiben die Druckdateien RGB, alles andere läuft normal."
+fi
+
+# --- 6. Bücher von GitHub holen (neben diesen Ordner) ------------------
 BESITZER="$(printf '%s' "$URL" | sed -E 's#.*github.com[:/]([^/]+)/.*#\1#')"
 while true; do
     echo

@@ -460,7 +460,7 @@ Lese-PDF, E-Book, Leseprobe, Korrektur und Mockup bleiben beim `{format}` der Va
 | `neu-berechnen` | `ja` = Seitenzahl hat sich geändert, im Coverrechner neu berechnen (der Bau erinnert daran) · `nein` = Werte passen |
 | `berechnet-fuer-seiten` | Seiten des Buchblocks, für die Rücken und Umschlag berechnet sind; weicht der Buchblock ab, warnt `final` |
 | `plattform` | `epubli`, `bod`, `tredition` oder `kdp` (bestimmt Strichcode-Platz und Füllseite; tredition und kdp wie bod) |
-| `farbmodus` | `rgb` (Standard) oder `cmyk`: Buchblock und Umschlag werden nach dem Bau mit Ghostscript nach CMYK umgewandelt (z. B. für tredition). Braucht `gs` (`sudo apt install ghostscript`). Lese-PDF, E-Book und Leseprobe bleiben RGB. |
+| `farbmodus` | `rgb` (Standard) oder `cmyk`: Buchblock und Umschlag werden bei `final` und `komplett` mit Ghostscript nach CMYK umgewandelt (z. B. für tredition); im Entwurf bleiben sie RGB (schneller). Jeder Bau rechnet neu aus den Originalbildern, es wird nie mehrfach umgewandelt. Braucht Ghostscript (Linux `sudo apt install ghostscript` · Mac `brew install ghostscript` · Windows `winget install ArtifexSoftware.GhostScript`). Lese-PDF, E-Book und Leseprobe bleiben RGB. |
 | `format` | nur, wenn das Druckformat vom Grundformat abweicht; auch eigenes Mass `148 x 210` (Ränder und Schrift vom nächstliegenden Format) |
 | `bindung`, `projekt`, `papier`, `extra-seiten` | `hardcover`/`softcover`/`beide` · `veroeffentlichen`/`privatdruck` · Papier zur Info · leere Notizseiten am Schluss |
 | `ruecken-hardcover`, `ruecken-softcover` | Rücken in mm laut Coverrechner der Plattform |

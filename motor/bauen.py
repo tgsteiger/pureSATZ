@@ -455,16 +455,31 @@ def ebook_weg(a):
             os.remove(stamm + n)
 
 
+def ghostscript():
+    """Ghostscript suchen: gs (Linux, Mac) bzw. gswin64c (Windows, auch wenn nicht im PATH)."""
+    gs = shutil.which("gs") or shutil.which("gswin64c") or shutil.which("gswin32c")
+    if not gs and sys.platform == "win32":
+        import glob
+        for basis in (os.environ.get("ProgramFiles", r"C:\Program Files"), os.environ.get("ProgramFiles(x86)", "")):
+            treffer = sorted(glob.glob(os.path.join(basis, "gs", "gs*", "bin", "gswin*c.exe"))) if basis else []
+            if treffer:
+                return treffer[-1]
+    return gs
+
+
 def farbmodus_druck(test=None):
     """{farbmodus}: cmyk in der Druckdatei: Buchblock und Umschlag (PDF) mit Ghostscript nach CMYK umwandeln.
-    Lese-PDF, E-Book, Leseprobe und JPGs bleiben RGB."""
+    Nur bei final/komplett. Lese-PDF, E-Book, Leseprobe und JPGs bleiben RGB. Jeder Bau setzt die Druck-PDFs neu
+    aus den Originalbildern – umgewandelt wird also immer nur einmal, nichts wird mehrfach umgerechnet."""
     for a in ausgaben():
         if bk.druck_V("farbmodus", "rgb", a).strip().lower() != "cmyk":
             continue
-        gs = shutil.which("gs") or shutil.which("gswin64c") or shutil.which("gswin32c")
+        gs = ghostscript()
         if not gs:
+            befehl = {"darwin": "brew install ghostscript   (ohne Homebrew: sudo port install ghostscript)",
+                      "win32": "winget install ArtifexSoftware.GhostScript"}.get(sys.platform, "sudo apt install ghostscript")
             print("> Hinweis: {farbmodus}: cmyk braucht Ghostscript – nicht gefunden, Druckdateien bleiben RGB.\n"
-                  "$ sudo apt install ghostscript")
+                  f"$ {befehl}")
             return
         g = bk.AUSGABEN["B" if a == "uz" else "A"]
         o = os.path.join(BASE, "ausgabe-test", test) if test else os.path.join(BASE, g["ordner"])
@@ -753,8 +768,11 @@ def main():
             ebook_weg(a)
     parallel(schritte, env)
     bk.ENTWURF = not final
-    if art in ("alles", "nur-druck"):       # {farbmodus}: cmyk in der Druckdatei (Plattform)
-        farbmodus_druck(os.path.splitext(os.path.basename(bk.druck_datei()))[0] if druck else None)
+    if art in ("alles", "nur-druck"):       # {farbmodus}: cmyk in der Druckdatei (Plattform), nur bei final
+        if final:
+            farbmodus_druck(os.path.splitext(os.path.basename(bk.druck_datei()))[0] if druck else None)
+        elif any(bk.druck_V("farbmodus", "rgb", a).strip().lower() == "cmyk" for a in ausgaben()):
+            print("> Hinweis: Entwurf – Druckdateien bleiben RGB. CMYK (Ghostscript) nur mit final oder komplett.")
     zusatz_dateien(art)
     statistik()
     if final and art in ("alles", "nur-pdf"):
