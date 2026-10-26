@@ -3,6 +3,18 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.42.0 (Oktober 2026)
+- Hilfe: neuer Abschnitt «Fahrplan: vom Manuskript zum fertigen Buch» – zehn Kacheln zum Abhaken (vom menschlichen
+  Lektorat bis nach der Vernissage), mit Knopf «drucken» (druckt nur den Fahrplan).
+- hilfe.py: In HILFE.md macht `::: kacheln` … `:::` aus einer Liste Kacheln; `[ ]` wird ein Häkchen (merkt sich der Browser).
+
+## 2.41.2 (Oktober 2026)
+- Hilfe: neuer Abschnitt «Tipps aus der Praxis» (Alltag, Editor, Gestalten, Probedruck und Farben).
+
+## 2.41.1 (Oktober 2026)
+- `00-UEBERSICHT.txt`: Nach `schnell`, `nur-pdf` usw. bleibt der Stand der Druckdateien («FINAL» bzw. «ENTWURF»)
+  wieder stehen. Mit eingetragener Druckdatei stand fälschlich «Druckdateien: noch nicht gebaut».
+
 ## 2.41.0 (Oktober 2026)
 - Am Ende jedes Baus: Liste der neuen PDFs **und E-Books**, darunter der Öffnen-Befehl des Systems:
   Linux `xdg-open`, Mac `open`, Windows `start ""` (öffnet mit dem Standardprogramm, E-Books z. B. mit Calibre).

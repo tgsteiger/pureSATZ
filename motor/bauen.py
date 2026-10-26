@@ -378,8 +378,8 @@ def _uebersicht(art, final, test):
         z = []
         alt = ""                                            # Stand der Druckdateien aus der letzten Übersicht
         if os.path.exists(os.path.join(o, "00-UEBERSICHT.txt")):
-            alt = next((x.lstrip("> ") for x in open(os.path.join(o, "00-UEBERSICHT.txt"), encoding="utf-8").read().split("\n")
-                        if x.lstrip("> ").startswith("Druckdateien: ")), "")
+            alt = next((x[x.index("Druckdateien: "):] for x in open(os.path.join(o, "00-UEBERSICHT.txt"), encoding="utf-8").read().split("\n")
+                        if "Druckdateien: " in x), "")
         zeile = lambda n: (f"  {n:<52} {datetime.fromtimestamp(os.path.getmtime(os.path.join(o, n))):%d.%m. %H:%M}"
                            + (f"   {_datei_info(os.path.join(o, n))}" if _datei_info(os.path.join(o, n)) else ""))
         for a, g in liste:

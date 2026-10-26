@@ -177,6 +177,12 @@ def md_html(text):
                     not re.match(r"^\s*([-*]|\d+\.)\s+", zeilen[i]):
                 liste[1][-1] += " " + zeilen[i].strip(); i += 1
             continue
+        if s == "::: kacheln":                  # Liste als Kacheln, mit Knopf «drucken»
+            absatz_ende(); liste_ende()
+            out.append('<div class="kacheln"><button class="kopie druck" title="nur diesen Abschnitt drucken">drucken</button>')
+            i += 1; continue
+        if s == ":::":
+            absatz_ende(); liste_ende(); out.append("</div>"); i += 1; continue
         if s.startswith(">"):
             absatz_ende(); liste_ende()
             out.append(f"<blockquote>{_inline(s.lstrip('> '))}</blockquote>"); i += 1; continue
@@ -390,6 +396,17 @@ li.haken{{list-style:none;margin:14px 0 4px -22px}} li.haken label{{cursor:point
 li.haken input{{width:17px;height:17px;vertical-align:-3px;margin-right:6px;accent-color:var(--akzent)}}
 li.haken input:checked+span{{color:var(--leise)}}
 tr.dies td{{background:var(--code);font-weight:bold}}
+.kacheln{{position:relative;padding-top:6px}} .kacheln>button.druck{{position:absolute;right:0;top:-38px}}
+.kacheln ol,.kacheln ul{{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;padding:0;margin:8px 0;
+counter-reset:k}}
+.kacheln li.haken{{list-style:none;margin:0;border:1px solid var(--linie);border-radius:10px;padding:10px 12px;
+background:var(--papier);counter-increment:k}}
+.kacheln li.haken label{{display:block}} .kacheln li.haken label::before{{content:counter(k);float:right;
+font:500 13px Poppins,system-ui,sans-serif;color:var(--akzent)}}
+.kacheln li.haken:has(input:checked){{opacity:.6}}
+@media print{{header,nav,footer,#leer,button{{display:none!important}} body{{background:#fff;color:#000}}
+body.nur main section:not(.drucke){{display:none}} section{{border:0;margin:0}}
+.kacheln ol,.kacheln ul{{grid-template-columns:1fr 1fr}} .kacheln li.haken{{break-inside:avoid;background:#fff}}}}
 .spick{{margin:8px 0 0}} .spicktext{{margin:2px 0 10px 4px;color:var(--leise);font-size:14px}}
 #leer{{display:none;color:var(--leise);padding:20px}} footer{{color:var(--leise);font-size:13px;padding:10px 0}}
 @media (max-width:760px){{nav{{display:none}} main{{padding:8px 10px 60px}}}}
@@ -437,6 +454,9 @@ function haken(){{let h={{}};try{{h=JSON.parse(localStorage.getItem('ps-haken')|
 document.querySelectorAll('li.haken input').forEach(c=>{{const k=c.parentNode.textContent.trim().slice(0,60);
 if(k in h)c.checked=h[k];c.onchange=()=>{{h[k]=c.checked;try{{localStorage.setItem('ps-haken',JSON.stringify(h))}}catch(e){{}}}}}})}}
 haken();such.addEventListener('input',haken);
+document.addEventListener('click',e=>{{const b=e.target.closest('button.druck');if(!b)return;const s=b.closest('section');
+s.classList.add('drucke');document.body.classList.add('nur');window.print();
+s.classList.remove('drucke');document.body.classList.remove('nur')}});
 </script></body></html>
 """
 

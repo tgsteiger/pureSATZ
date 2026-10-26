@@ -403,6 +403,49 @@ Fehlt etwas, nennt die Übersicht den Befehl dazu (z. B. `sh build.sh leseprobe`
 (`druck=…`) haben in `ausgabe-test/<datei>/` ihre eigene Übersicht. Hat eine Ausgabe kein E-Book
 (`{erstellen}: nein`), steht das in der Gruppe E-Book.
 
+## Tipps aus der Praxis
+
+**Arbeiten im Alltag**
+- Beim Schreiben `sh build.sh schnell`, vor dem Hochladen oder Bestellen `sh build.sh final`. `nur-druck` braucht man kaum.
+- An wichtigen Punkten einen Stand festhalten, z. B. `sh build.sh stand "Probedruck bestellt"`; später zeigt
+  `sh build.sh aenderungen`, was sich seither geändert hat.
+- Am Anfang und am Ende der Arbeit `sh sync.sh` (mit GitHub).
+
+**Editor (z. B. ghostwriter)**
+- «Auto save» ausschalten, nur mit Ctrl+S speichern.
+- Meldet der Editor «Datei wurde geändert – neu laden?»: mit Ja neu laden und erst danach weiterschreiben.
+- Ändert jemand anders an der Datei (ein Skript, eine KI): sie vorher im Editor schliessen.
+- Ging etwas verloren: Die letzten Fassungen liegen in `md-history/` (siehe «Sichern und zurückholen»).
+
+**Gestalten**
+- Mehrere Leerzeilen geben nicht mehr Abstand. Für Luft: `@ABSTAND 8` (nicht innerhalb eines `:::`-Blocks).
+- `::: mitte` passt für kurze Abschlüsse am Ende eines Teils.
+- Eine Dankesseite oder ein Nachwort wirkt als normales Kapitel ruhiger und steht im Inhaltsverzeichnis:
+  `## Danke`, Text im Blocksatz, zum Schluss `@ZITAT Gruss<br/>Name` und `@ZIER 10`.
+- Nur eine Verzierung pro Seite – sonst wird es unruhig.
+
+**Probedruck und Farben**
+- Farben am Bildschirm nur grob beurteilen. Was zählt, ist der Probedruck auf dem echten Papier (matt/glänzend, weiss/creme).
+- Seitenzahl geändert: im Coverrechner der Druckerei prüfen, ob Rücken und Umschlag gleich bleiben. Dann
+  `{berechnet-fuer-seiten}` anpassen und `{neu-berechnen}: nein` setzen.
+
+## Fahrplan: vom Manuskript zum fertigen Buch
+
+Zum Abhaken – der Browser merkt sich die Häkchen. «drucken» oben rechts druckt nur diesen Fahrplan.
+
+::: kacheln
+1. [ ] **Lektorat durch einen Menschen:** Jemand liest Sprache, Stil und Logik – nicht nur Rechtschreibung. Nicht vergessen! Dafür das Korrektur-PDF: `sh build.sh korrektur`.
+2. [ ] **Gegenlesen:** Personen im Buch fragen und ihre Stellen schicken: `sh build.sh personen Name`.
+3. [ ] **Probedruck bestellen:** `sh build.sh final`, hochladen, bestellen. Stand festhalten: `sh build.sh stand "Probedruck bestellt"`.
+4. [ ] **Probedruck prüfen:** Farben auf dem Papier, Umschlag und Rücken, Ränder, Bilder, Trennungen. Korrekturen eintragen, mit `sh build.sh aenderungen` kontrollieren.
+5. [ ] **Druckfreigabe:** Seitenzahl im Coverrechner prüfen, ISBN und Preis kontrollieren, `final` hochladen und freigeben.
+6. [ ] **Pflichtexemplare:** Schweiz: zwei Exemplare an die Nationalbibliothek; Deutschland: an die DNB. Prüfen, ob die Druckerei das übernimmt.
+7. [ ] **E-Book:** hochladen; die Leseprobe (PDF/EPUB) auf die eigene Webseite stellen.
+8. [ ] **Sichtbar werden:** Buchseite auf der Webseite, Mockup und Shop-Texte (`shop-angaben.txt`), Newsletter, soziale Medien.
+9. [ ] **Vernissage oder Lesung:** Ort und Datum, Flyer, Einladungen, Lesestellen auswählen, genug Bücher vor Ort, Bezahlung (bar/TWINT), Stift zum Signieren.
+10. [ ] **Danach:** Rückmeldungen und Rezensionen sammeln, Fehler für eine zweite Auflage notieren (`stand`), Exemplare an die Personen im Buch.
+:::
+
 ## Schwarz-weiss drucken (freiwillig)
 
 Die feinen Farben (Kopfzeile, Bildunterschriften, Gold) wirken im eigenen Schwarz-weiss-Ausdruck sehr hell.
