@@ -103,7 +103,7 @@ DRUCK_NAMEN = ("plattform", "format", "seite", "bindung", "projekt", "ruecken", 
                "ruecken-softcover", "beschnitt-hardcover", "beschnitt-softcover", "beschnitt-buchblock",
                "deckel-hardcover", "papier", "extra-seiten", "isbn-buch", "barcode-position",
                "barcode-groesse", "barcode-bild", "versatz-vertikal", "versatz-horizontal",
-               "neu-berechnen", "berechnet-fuer-seiten")
+               "neu-berechnen", "berechnet-fuer-seiten", "farbmodus")
 
 
 def druckmodus():

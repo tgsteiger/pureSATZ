@@ -310,6 +310,21 @@ python3 motor/manuskript.py # Liste aller @-Befehle
 python3 motor/stichworte-vorschlag.py   # Vorschläge fürs Stichwortverzeichnis
 ```
 
+**final oder komplett?**
+
+| | `sh build.sh final` | `sh build.sh komplett` |
+|---|---|---|
+| Lese-PDF (normal, unzensiert) | ✔ | ✔ |
+| Druckdateien: Buchblock, Umschlag | ✔ | ✔ |
+| E-Book (EPUB) | ✔ | ✔ |
+| Probedruck-Booklet, Mockup, Shop-Angaben, Seitenbilanz, Kontrast | ✔ | ✔ |
+| Leseprobe (PDF und EPUB) | – | ✔ |
+| Korrektur-PDF (A4, Zeilennummern) | – | ✔ |
+| Dauer | normal | etwas länger |
+
+**final** für jede Druckfassung und jedes Hochladen. **komplett** vor einer Bestellung, Veröffentlichung oder
+Korrekturrunde. Leseprobe und Korrektur gehen auch einzeln: `sh build.sh leseprobe`, `sh build.sh korrektur`.
+
 **Booklets zum Selberdrucken** (A4 quer, doppelseitig, an der kurzen Kante wenden, falten) entstehen
 automatisch im Ausgabeordner: im Entwurf und bei `nur-pdf` aus dem Bildschirm-PDF (`…_booklet.pdf`),
 bei `sh build.sh final` als **Probedruck** genau wie das bestellte Buch: Vorderseite, Buchblock mit
@@ -445,6 +460,7 @@ Lese-PDF, E-Book, Leseprobe, Korrektur und Mockup bleiben beim `{format}` der Va
 | `neu-berechnen` | `ja` = Seitenzahl hat sich geändert, im Coverrechner neu berechnen (der Bau erinnert daran) · `nein` = Werte passen |
 | `berechnet-fuer-seiten` | Seiten des Buchblocks, für die Rücken und Umschlag berechnet sind; weicht der Buchblock ab, warnt `final` |
 | `plattform` | `epubli`, `bod`, `tredition` oder `kdp` (bestimmt Strichcode-Platz und Füllseite; tredition und kdp wie bod) |
+| `farbmodus` | `rgb` (Standard) oder `cmyk`: Buchblock und Umschlag werden nach dem Bau mit Ghostscript nach CMYK umgewandelt (z. B. für tredition). Braucht `gs` (`sudo apt install ghostscript`). Lese-PDF, E-Book und Leseprobe bleiben RGB. |
 | `format` | nur, wenn das Druckformat vom Grundformat abweicht; auch eigenes Mass `148 x 210` (Ränder und Schrift vom nächstliegenden Format) |
 | `bindung`, `projekt`, `papier`, `extra-seiten` | `hardcover`/`softcover`/`beide` · `veroeffentlichen`/`privatdruck` · Papier zur Info · leere Notizseiten am Schluss |
 | `ruecken-hardcover`, `ruecken-softcover` | Rücken in mm laut Coverrechner der Plattform |

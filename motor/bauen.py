@@ -455,6 +455,40 @@ def ebook_weg(a):
             os.remove(stamm + n)
 
 
+def farbmodus_druck(test=None):
+    """{farbmodus}: cmyk in der Druckdatei: Buchblock und Umschlag (PDF) mit Ghostscript nach CMYK umwandeln.
+    Lese-PDF, E-Book, Leseprobe und JPGs bleiben RGB."""
+    for a in ausgaben():
+        if bk.druck_V("farbmodus", "rgb", a).strip().lower() != "cmyk":
+            continue
+        gs = shutil.which("gs") or shutil.which("gswin64c") or shutil.which("gswin32c")
+        if not gs:
+            print("> Hinweis: {farbmodus}: cmyk braucht Ghostscript – nicht gefunden, Druckdateien bleiben RGB.\n"
+                  "$ sudo apt install ghostscript")
+            return
+        g = bk.AUSGABEN["B" if a == "uz" else "A"]
+        o = os.path.join(BASE, "ausgabe-test", test) if test else os.path.join(BASE, g["ordner"])
+        K = g["kuerzel"]
+        for n in (f"{K}_Buchblock.pdf", f"{K}_Umschlag_Hardcover.pdf", f"{K}_Umschlag_Softcover.pdf"):
+            p = os.path.join(o, n)
+            if not os.path.exists(p):
+                continue
+            tmp = os.path.join(o, "_tmp_cmyk.pdf")
+            r = subprocess.run([gs, "-q", "-dNOPAUSE", "-dBATCH", "-dSAFER", "-sDEVICE=pdfwrite",
+                                "-dPDFSETTINGS=/prepress", "-dAutoRotatePages=/None",
+                                "-sColorConversionStrategy=CMYK", "-dProcessColorModel=/DeviceCMYK",
+                                "-dDownsampleColorImages=false", "-dDownsampleGrayImages=false",
+                                "-dDownsampleMonoImages=false", f"-sOutputFile={tmp}", p],
+                               capture_output=True, text=True)
+            if r.returncode == 0 and os.path.exists(tmp):
+                os.replace(tmp, p)
+                print(f"CMYK · {name(a)}: {os.path.relpath(p, BASE)}")
+            else:
+                if os.path.exists(tmp):
+                    os.remove(tmp)
+                print(f"> Hinweis: CMYK-Umwandlung ging nicht ({n}), Datei bleibt RGB: {(r.stderr or '').strip()[:200]}")
+
+
 def zusatz_dateien(art):
     """<datei>_Inhalt.pdf (Inhaltsverzeichnis-Seiten aus dem Lese-PDF, z. B. für XinXii) und das Titelbild
     …_Cover-vorne.jpg in kleineren Grössen. Nie den Bau verhindern."""
@@ -719,6 +753,8 @@ def main():
             ebook_weg(a)
     parallel(schritte, env)
     bk.ENTWURF = not final
+    if art in ("alles", "nur-druck"):       # {farbmodus}: cmyk in der Druckdatei (Plattform)
+        farbmodus_druck(os.path.splitext(os.path.basename(bk.druck_datei()))[0] if druck else None)
     zusatz_dateien(art)
     statistik()
     if final and art in ("alles", "nur-pdf"):

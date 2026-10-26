@@ -13,9 +13,11 @@
 {plattform}: bod
 {bindung}: hardcover
 {projekt}:
+{farbmodus}:
 > {plattform}: default: epubli · optional: epubli | bod | tredition | kdp (tredition und kdp verhalten sich wie bod)
 > {bindung}: default: hardcover · optional: hardcover | softcover | beide
 > {projekt}: default: veroeffentlichen (zweite Fassung: privatdruck) · optional: veroeffentlichen | privatdruck
+> {farbmodus}: default: rgb · optional: rgb | cmyk (cmyk: Buchblock und Umschlag werden nach dem Bau mit Ghostscript umgewandelt; braucht gs)
 > {format}: nur, wenn das Druckformat vom Grundformat in der Variablen-Datei abweicht: a5 | taschenbuch | sachbuch | a4 | quadrat oder Masse in mm, z. B. 150 x 215
 
 ## Innenteil
