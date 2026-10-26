@@ -395,6 +395,8 @@ for zeile in bk.text_zeilen():
         aktuell["html"].append(f'{ORN}<p class="zitat">{esc(s[2:])}</p>{ORN}')
     elif s.startswith("~ "):
         flush_absatz(); aktuell["html"].append(f'<p class="notiz">{esc(s[2:])}</p>')
+    elif s.strip() in ("@UMBRUCH", "@UMBRUCH-RECHTS"):     # «---»: im E-Book neue Seite
+        flush_absatz(); aktuell["html"].append('<div class="umbruch"></div>')
     elif s.startswith("@MOTTO "):
         flush_absatz()
         aktuell["html"].append(f'<div class="motto">{ORN}<p class="zitat">{esc(s[7:])}</p>{ORN}</div>')
@@ -506,7 +508,8 @@ h2 { font-size: 1.25em; margin: 1.6em 0 0.6em 0; page-break-after: avoid; }
 .teillotus { width: 30%; max-width: 160px; opacity: 0.35; }
 .teilnr { font-family: "Titel", sans-serif; color: @@akzenttext@@; letter-spacing: 0.15em;
           text-transform: uppercase; font-size: 0.8em; margin-top: 1em; text-align: center; }
-.teil h1 { font-size: 2em; margin: 0.2em 0; }
+.teil h1 { font-size: 2em; margin: 0.2em 0; text-align: center; }
+.umbruch { page-break-after: always; break-after: page; height: 0; margin: 0; }
 .teilsub { font-style: italic; color: @@leise@@; text-align: center; }
 .orn { text-align: center; margin: 0.6em 0; }
 .orn img { width: 1.6em; }
