@@ -3,6 +3,11 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.41.0 (Oktober 2026)
+- Am Ende jedes Baus: Liste der neuen PDFs **und E-Books**, darunter der Öffnen-Befehl des Systems:
+  Linux `xdg-open`, Mac `open`, Windows `start ""` (öffnet mit dem Standardprogramm, E-Books z. B. mit Calibre).
+- `linux-einrichten.sh`: Frage zu xreader entfernt (eine schon eingetragene Funktion in `~/.bashrc` bleibt).
+
 ## 2.40.0 (Oktober 2026)
 - `{farbmodus}: cmyk`: Ghostscript läuft nur noch bei `final` und `komplett`. Im Entwurf (`sh build.sh`,
   `nur-druck` ohne final) bleiben die Druckdateien RGB – der Bau ist wieder so schnell wie vorher (Hinweis im Ablauf).

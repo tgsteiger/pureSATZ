@@ -383,6 +383,11 @@ Druckdatei) und eine eigene Zeile **Druckdateien: FINAL** bzw. **ENTWURF – nic
 Aufbau wie in `personen-seiten.txt` und den Meldungen im Terminal: `#` Titel · `>` Erklärung · `$` Befehl
 (fehlt etwas, steht der Befehl dazu in einer eigenen Zeile – ab `sh` kopieren).
 
+Am Ende jedes Baus listet das Terminal die **neuen PDFs und E-Books** auf, darunter den Befehl zum Öffnen mit dem
+Standardprogramm: Linux `xdg-open <Datei>` · Mac `open <Datei>` · Windows `start "" <Datei>`. Welches Programm
+E-Books öffnet, stellt man im System ein (Linux z. B. Calibre:
+`xdg-mime default calibre-ebook-viewer.desktop application/epub+zip`).
+
 | Gruppe | Dateien |
 |---|---|
 | Bei der Druckerei hochladen | `<kurz>_Buchblock.pdf`, `<kurz>_Umschlag_Hardcover` bzw. `_Softcover` (PDF und JPG) |

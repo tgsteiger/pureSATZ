@@ -656,7 +656,7 @@ def farbschema_zeigen():
 
 
 def pdf_liste(seit):
-    """Am Schluss: alle PDFs, die dieser Bau erstellt hat – zum Kopieren hinter «xreader »."""
+    """Am Schluss: alle PDFs und E-Books, die dieser Bau erstellt hat, mit dem Öffnen-Befehl des Systems."""
     neu = []
     for d in sorted(os.listdir(BASE)):
         o = os.path.join(BASE, d)
@@ -665,13 +665,14 @@ def pdf_liste(seit):
         for wurzel, _, dateien in os.walk(o):
             for f in sorted(dateien):
                 p = os.path.join(wurzel, f)
-                if f.lower().endswith(".pdf") and not f.startswith("_tmp") and os.path.getmtime(p) >= seit - 1:
+                if f.lower().endswith((".pdf", ".epub")) and not f.startswith("_tmp") and os.path.getmtime(p) >= seit - 1:
                     neu.append(os.path.relpath(p, BASE).replace(os.sep, "/"))
     if neu:
-        print("\n> Neue PDFs:")
+        print("\n> Neue PDFs und E-Books:")
         for p in neu:
             print("  " + (f'"{p}"' if " " in p else p))
-        print("$ xreader <Datei>   (öffnen)")
+        oeffnen = {"darwin": "open", "win32": 'start ""'}.get(sys.platform, "xdg-open")
+        print(f"$ {oeffnen} <Datei>   (öffnen mit dem Standardprogramm)")
 
 
 def main():

@@ -108,27 +108,7 @@ else
     echo "Hinweis: Für {farbmodus}: cmyk Ghostscript installieren (Paket «ghostscript»)."
 fi
 
-# --- 4. PDF-Betrachter (freiwillig) -----------------------------------
-# «xreader datei.pdf» startet im Hintergrund, das Terminal bleibt frei.
-if command -v xreader >/dev/null 2>&1; then
-    # schon vorhanden (Funktion oder alias, auch von Hand eingetragen)? Dann nichts tun.
-    if grep -Eq '^[[:space:]]*(xreader[[:space:]]*\(\)|function[[:space:]]+xreader|alias[[:space:]]+xreader=)' "$HOME/.bashrc" 2>/dev/null; then
-        echo "OK  xreader startet bereits im Hintergrund"
-    else
-        echo
-        read -r -p "Soll «xreader datei.pdf» das Terminal frei lassen? [j/n] (j): " XR
-        if [ -z "$XR" ] || [ "$XR" = "j" ] || [ "$XR" = "ja" ]; then
-            cat >> "$HOME/.bashrc" <<'XEOF'
-
-# pureSATZ: xreader im Hintergrund starten, Terminal bleibt frei
-xreader() { command xreader "$@" >/dev/null 2>&1 & disown; }
-XEOF
-            echo "OK  eingetragen in ~/.bashrc (gilt in neuen Terminal-Fenstern)"
-        fi
-    fi
-fi
-
-# --- 5. Neues Buch? ----------------------------------------------------
+# --- 4. Neues Buch? ----------------------------------------------------
 echo
 read -r -p "Jetzt ein neues Buch anlegen (sh setup/setup.sh)? [j/n] (n): " NB
 if [ "$NB" = "j" ] || [ "$NB" = "ja" ]; then
