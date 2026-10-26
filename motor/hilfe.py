@@ -72,7 +72,7 @@ BLOECKE = [
 # --- Markdown → HTML (klein, ohne Zusatzpaket) -------------------------------------------
 def _inline(t):
     t = html.escape(t, quote=False)
-    t = re.sub(r"`([^`]+)`", lambda m: "<code>" + m.group(1) + "</code>", t)
+    t = re.sub(r"`([^`]+)`", lambda m: "<code>" + m.group(1).replace("&lt;br/&gt;", "&lt;br&#47;&gt;") + "</code>", t)
     t = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", t)
     t = re.sub(r"(?<![\w*])\*([^*\s][^*]*?)\*(?![\w*])", r"<i>\1</i>", t)
     t = re.sub(r"\[([^\]]+)\]\(([^)\s]+)\)", r'<a href="\2">\1</a>', t)

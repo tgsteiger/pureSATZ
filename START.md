@@ -71,18 +71,7 @@ bash pc-einrichten/mac-einrichten.sh       # Mac
 Windows: im Ordner `pc-einrichten` die Datei `win-einrichten.bat` doppelklicken.
 Details: Punkt 1, «Computer einrichten».
 
-## 3. Hallo-PDF
-
-Ein Befehl im Ordner pureSATZ legt das Beispielbuch «Hallo-Buch» an, baut es und öffnet das PDF.
-**Erfolg:** Das erste Buch-PDF ist offen. Beim ersten Mal etwa eine Minute (Internet nötig).
-
-```sh
-sh hallo.sh
-```
-
-Windows: `hallo.bat` doppelklicken. Das PDF liegt in `Hallo-Buch/ausgabe-normal/`.
-
-## 4. Dein Buch bauen
+## 3. Dein Buch bauen
 
 1. **Anlegen** (im Ordner pureSATZ): fragt Titel, Autor, Format. `sh setup/setup.sh`
 2. **Schreiben** in `<buch>-buch.md`, Angaben in `<buch>-variablen.md`, Umschlag in `<buch>-umschlag.md`.
@@ -91,12 +80,38 @@ Windows: `hallo.bat` doppelklicken. Das PDF liegt in `Hallo-Buch/ausgabe-normal/
    Vor Bestellung oder Veröffentlichung: `sh build.sh komplett` (dazu Leseprobe und Korrektur-PDF).
 5. **Welche Datei wofür?** Im Ausgabeordner zuoberst `00-UEBERSICHT.txt` öffnen: was zur Druckerei geht,
    was ins E-Book, was für Werbung und Probedruck.
+6. **Stand festhalten** an wichtigen Punkten, z. B. bei einer Bestellung: `sh build.sh stand "Probedruck 1"`.
+   Später zeigt `sh build.sh aenderungen` als PDF, was sich seither geändert hat.
 
 **Erfolg:** Druckdateien, E-Book und Lese-PDF deines Buchs. Weiter: Hilfe «Bauen» und «Drucken und veröffentlichen».
 
 ```sh
 sh build.sh final
 ```
+
+## 4. Gestalten: Ich will …
+
+Die häufigsten Fälle beim Gestalten – nachsehen, wenn etwas nicht so aussieht wie gewünscht.
+Danach mit `sh build.sh schnell` ansehen.
+
+| Ich will … | So geht es |
+|---|---|
+| eine **neue Seite** | `---` auf einer eigenen Zeile, davor eine Leerzeile. **Nicht innerhalb eines `:::`-Blocks**, sondern nach dem `:::`. Steht `---` schon oben auf einer Seite, entsteht keine leere Seite. |
+| **mehr Abstand** | `@ABSTAND 8` (in mm). Mehrere Leerzeilen geben *nicht* mehr Abstand. Nicht innerhalb eines `:::`-Blocks. |
+| einen Satz **ganz unten** auf der Seite | `@UNTEN Satz` – zentriert und kursiv, z. B. für einen Hinweis |
+| einen **schönen Schluss** (Gruss, Zitat) | `@ZITAT Schön, dass du da bist.<br/>Herzlich, Name`, darunter `@ZIER 10` |
+| ein Zitat **mit Verzierung** | `@ZITAT-ZIER Satz` (kurz `> Satz`). Nur eine Verzierung pro Seite – sonst wird es unruhig. |
+| einen kurzen **Abschluss am Teil-Ende** | `::: mitte` … `:::` |
+| eine **Dankesseite oder ein Nachwort** im Inhaltsverzeichnis | als Kapitel `## Danke`, Text im Blocksatz, zum Schluss `@ZITAT` und `@ZIER 10` |
+| einen **Zwischentitel** ohne Eintrag im Inhaltsverzeichnis | `### Titel` (`## Titel` erscheint im Inhalt) |
+| eine **Randbemerkung** | `~ Satz` (klein, kursiv) |
+| eine **Zeile umbrechen**, ohne neuen Absatz | `\` am Zeilenende (in Variablen: `<br/>`) |
+| Text **nur in einer Fassung** | `::: nur-uz` … `:::` oder `::: nur-normal` … `:::` |
+| ein **Foto** | `#### @FOTO Titel`, darunter `datei: bild.jpg` – eine Leerzeile beendet das Foto |
+| einen **QR-Code** | `@QR https://… \| Text`, zwei nebeneinander mit `@QR-PAAR` |
+| sehen, **ob es passt** | `sh build.sh schnell`, dann das PDF öffnen (der Befehl steht am Ende des Baus) |
+
+Alle Befehle: Hilfe «Befehle (@)» und «Blöcke (:::)».
 
 ## 5. Wenn etwas klemmt
 
@@ -112,6 +127,9 @@ sh build.sh final
 | `sh build.sh pruefen` meldet einen Fehler | Die Meldung nennt Datei und Zeile. Meist ein Tippfehler bei `{variable}` oder `@BEFEHL`. |
 | Plattform-Datei fehlt («Druckangaben: … fehlt») | Name bei `{druck-datei}` unter `## Ausgabe: Druck …` prüfen (ohne `.md`), Muster in `pureSATZ/vorlage/druck/`. |
 | Druckerei meldet «nicht eingebettete Schriften» | Motor aktualisieren und neu bauen (`sh update.sh`, dann `sh build.sh final`). Der Bau warnt selbst, falls noch eine Schrift fehlt. |
+| Meine Änderung ist wieder weg | Editor: «Auto save» aus. Beim Hinweis «Datei geändert» neu laden. Ändert eine KI oder ein Skript die Datei, sie vorher im Editor schliessen. Ältere Fassungen liegen in `md-history/`. |
+| Abstand oder neue Seite wirkt nicht | Steht der Befehl innerhalb eines `:::`-Blocks? Dann nach das `:::` setzen. |
+| Farben am Bildschirm unsicher | Am Probedruck auf Papier beurteilen, nicht am Bildschirm. |
 | Etwas anderes | Die Meldung kopieren und in die Suche oben eingeben, oder einer KI zeigen (mit `readme4ki.txt`). |
 
 ## 6. Fahrplan: vom Manuskript zum fertigen Buch
