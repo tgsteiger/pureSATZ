@@ -102,14 +102,14 @@ def _code(text):
 
 def _plan(x):
     """«{⏱ 3–6 Wochen · fertig −8}» am Ende eines Listenpunkts: Dauer anzeigen und (mit Zieldatum) das Datum
-    «bis spätestens» = Zieldatum ± Wochen. Ohne Angabe bleibt der Punkt unverändert."""
-    m = re.search(r"\s*\{⏱\s*([^·}]*?)\s*(?:·\s*fertig\s*([+\-−]?\s*\d+))?\s*\}\s*$", x)
+    «bis spätestens» = Zieldatum ± Wochen («fertig −45 Tage» = in Tagen). Ohne Angabe bleibt der Punkt unverändert."""
+    m = re.search(r"\s*\{⏱\s*([^·}]*?)\s*(?:·\s*fertig\s*([+\-−]?\s*\d+)\s*(Tage?)?)?\s*\}\s*$", x)
     if not m:
         return x, ""
     zusatz = f'<span class="dauer">⏱ {html.escape(m.group(1))}</span>' if m.group(1) else ""
     if m.group(2):
-        w = int(m.group(2).replace("−", "-").replace(" ", ""))
-        zusatz += f'<span class="bis" data-w="{w}"></span>'
+        n = int(m.group(2).replace("−", "-").replace(" ", ""))
+        zusatz += f'<span class="bis" data-t="{n if m.group(3) else 7 * n}"></span>'
     return x[:m.start()], zusatz
 
 
@@ -415,7 +415,8 @@ tr.dies td{{background:var(--code);font-weight:bold}}
 counter-reset:k}}
 .kacheln li.haken{{list-style:none;margin:0;border:1px solid var(--linie);border-radius:10px;padding:10px 12px;
 background:var(--papier);counter-increment:k}}
-.kacheln li.haken label{{display:block}} .kacheln li.haken label::before{{content:counter(k);float:right;
+.kacheln li.haken{{position:relative;padding-right:30px}}
+.kacheln li.haken label{{display:block}} .kacheln li.haken label::before{{content:counter(k);position:absolute;right:10px;top:9px;
 font:500 13px Poppins,system-ui,sans-serif;color:var(--akzent)}}
 .kacheln li.haken:has(input:checked){{opacity:.6}}
 .kacheln .dauer,.kacheln .bis{{display:block;font:13px Poppins,system-ui,sans-serif;color:var(--leise);margin-top:6px}}
@@ -477,7 +478,7 @@ document.querySelectorAll('.kacheln').forEach(k=>{{if(!k.querySelector('.bis'))r
 const l=document.createElement('label');l.className='ziel';l.innerHTML='📅 Mein Zieldatum (Erscheinen oder Vernissage), freiwillig: <input type="date">';
 k.insertBefore(l,k.querySelector('ol,ul'));const d=l.querySelector('input');
 const rechne=()=>{{let z=d.value;try{{localStorage.setItem('ps-ziel',z)}}catch(e){{}}
-k.querySelectorAll('.bis').forEach(b=>{{if(!z){{b.textContent='';return}}const t=new Date(z+'T12:00');t.setDate(t.getDate()+7*(+b.dataset.w));
+k.querySelectorAll('.bis').forEach(b=>{{if(!z){{b.textContent='';return}}const t=new Date(z+'T12:00');t.setDate(t.getDate()+(+b.dataset.t));
 b.textContent='📅 bis spätestens '+t.toLocaleDateString('de-CH',{{weekday:'short',day:'numeric',month:'short',year:'numeric'}})}})}};
 try{{d.value=localStorage.getItem('ps-ziel')||''}}catch(e){{}}d.addEventListener('input',rechne);rechne()}});
 document.addEventListener('click',e=>{{const b=e.target.closest('button.druck');if(!b)return;const s=b.closest('section');
