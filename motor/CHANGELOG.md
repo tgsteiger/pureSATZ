@@ -3,6 +3,11 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.45.8 (Oktober 2026)
+- **Neue Variable `{impressum-hinweis}`:** eigener Absatz im Impressum vor `{impressum-kontakt}`,
+  z. B. «Meine Erfahrungen ersetzen keine medizinische Behandlung.» Leer oder nicht gesetzt = fällt weg.
+- E-Book: Widmung steht nicht mehr unter dem Impressum, sondern allein auf eigener Seite, im unteren Teil.
+
 ## 2.45.7 (Oktober 2026)
 - Änderungs-PDF: bei jeder Änderung das Datum, z. B. «geändert · 26.10.2026 20:08» = erster Bau mit dieser Änderung
   (aus md-history/); «heute» = seither noch nicht gebaut.

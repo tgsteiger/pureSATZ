@@ -114,7 +114,7 @@ Unten im Impressum, mit Abstand (z. B. «ersetzt keine Beratung»).
 Im Druck allein auf der rechten Seite gegenüber dem Impressum, im unteren Drittel; im Lese-PDF auf eigener Seite.
 ```
 **Impressum:** Bleibt `## @IMPRESSUM` leer, setzt der Motor für jede Ausgabe ein:
-`© {jahr} {autor}` · `{website}` · `{impressum-herstellung}` · `{impressum-satz1}` · `{impressum-satz2}` · `{impressum-rechte}` · `{impressum-kontakt}` · `{auflage}` · `ISBN {isbn}`.
+`© {jahr} {autor}` · `{website}` · `{impressum-herstellung}` · `{impressum-satz1}` · `{impressum-satz2}` · `{impressum-rechte}` · `{impressum-hinweis}` · `{impressum-kontakt}` · `{auflage}` · `ISBN {isbn}`.
 Leere Zeilen fallen weg (im Lese-PDF also Herstellung, Logo und ISBN). Die Werte stehen in der Variablen-Datei:
 gemeinsame unter `## Impressum`, die einer Ausgabe unter `## Ausgabe: …`. Eigene Zeilen unter `## @IMPRESSUM`
 gehen auch; dann gelten nur diese. Im Druck: Seite 2 links Impressum (oben das Logo aus `{impressum-logo}`),

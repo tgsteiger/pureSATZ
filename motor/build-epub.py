@@ -465,7 +465,7 @@ def absaetze_html(zeilen):
 
 
 vorspann["widmung"] = vorspann["widmung"] or " ".join(z.strip() for z in vorspann.get("widmung_z", []) if z.strip())
-widmung_html = ('<p style="margin-top: 2em;"><i>' + esc(vorspann["widmung"]) + '</i></p>') if vorspann["widmung"] else ""
+widmung_html = ('<div class="widmung"><p><i>' + esc(vorspann["widmung"]) + '</i></p></div>') if vorspann["widmung"] else ""
 kernsatz_html = ('<div class="motto">' + ORN + '<p class="zitat">' + esc(vorspann["kernsatz"]) + '</p>' + ORN + '</div>') if vorspann["kernsatz"] else ""
 titel_html = f"""
 <section class="titel">
@@ -476,8 +476,8 @@ titel_html = f"""
 </section>
 <div class="impressum">
 {absaetze_html(vorspann["impressum"])}
-{widmung_html}
-</div>""" + kernsatz_html
+</div>
+{widmung_html}""" + kernsatz_html
 dateien.insert(0, ("titel.xhtml", TITEL, titel_html))
 
 # --- CSS ----------------------------------------------------------------------
@@ -527,6 +527,8 @@ td.jahr { font-family: "Titel", sans-serif; color: @@akzenttext@@; white-space: 
 .untertitel { font-style: italic; color: @@leise@@; text-align: center; }
 .autor { font-family: "Titel", sans-serif; text-align: center; margin-top: 1.5em; }
 .impressum { page-break-before: always; font-size: 0.8em; color: @@leise@@; margin-top: 40%; }
+.widmung { page-break-before: always; margin-top: 90%; }
+.widmung p { text-align: center; text-indent: 0; color: @@leise@@; }
 a { color: @@akzenttext@@; }
 """
 
