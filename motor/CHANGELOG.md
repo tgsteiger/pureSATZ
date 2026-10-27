@@ -3,6 +3,10 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.45.7 (Oktober 2026)
+- Änderungs-PDF: bei jeder Änderung das Datum, z. B. «geändert · 26.10.2026 20:08» = erster Bau mit dieser Änderung
+  (aus md-history/); «heute» = seither noch nicht gebaut.
+
 ## 2.45.6 (Oktober 2026)
 - **Änderungen einfacher:** `sh build.sh aenderungen` = letzte Änderungen (ist seit dem letzten Stand nichts
   geändert: die letzte Runde) · `aenderungen 3` = seit Stand 3 (1 = letzter) · `aenderungen 22.10.` = seit Datum

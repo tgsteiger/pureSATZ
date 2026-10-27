@@ -336,6 +336,22 @@ def vergleiche(alt, neu):
     return out
 
 
+def _wann(base, bk, aend, ab, bis):
+    """Datum je Änderung: erster Build (Kopie in md-history/) mit dem neuen bzw. ohne den gestrichenen Absatz."""
+    o, stamm = os.path.join(base, "md-history"), os.path.splitext(bk.TEXT)[0]
+    kopien = []
+    for f in sorted(os.listdir(o)) if os.path.isdir(o) else []:
+        s, m = os.path.splitext(f)[0], ZEIT.search(os.path.splitext(f)[0])
+        z = datetime.strptime(m.group(1), "%Y%m%d-%H-%M-%S") if m and s[:m.start()] == stamm else None
+        if z and (ab is None or z >= ab) and (bis is None or z <= bis):
+            kopien.append((z, {a[0] for a in absaetze(_lies(os.path.join(o, f)), {})}))
+    out = []
+    for art, _, _, alt, neu in aend:
+        out.append(next((f"{z:%d.%m.%Y %H:%M}" for z, menge in kopien
+                         if (alt not in menge if art == "gestrichen" else neu in menge)), "" if bis else "heute"))
+    return out
+
+
 def werte_vergleich(alt, neu, datei):
     if not alt.strip() or not neu.strip():        # Datei fehlt in einem Stand: nicht vergleichen
         return []
@@ -392,12 +408,13 @@ def pdf(ziel, kopf, aenderungen, werte, schrift, schrift_fett, akzent="#1F3A68")
         fl.append(Paragraph("Betroffen: " + " · ".join(
             e(o or "Anfang") + f" ({sum(1 for x in aenderungen if x[1] == o)})" for o in orte), klein))
     letzter, vorher = None, None
-    for art, ort, fassung, alt, neu in aenderungen:
+    wann = kopf.get("wann") or [""] * len(aenderungen)
+    for (art, ort, fassung, alt, neu), datum in zip(aenderungen, wann):
         if ort != letzter:
             fl.append(Paragraph(e(ort or "Anfang (Titelei)"), h2))
             letzter = ort
         marke = {"geaendert": "geändert", "neu": "neu", "gestrichen": "gestrichen"}[art]
-        info = marke + (f" · {fassung}" if fassung else "")
+        info = marke + (f" · {fassung}" if fassung else "") + (f" · {datum}" if datum else "")
         if (neu or alt).lstrip().startswith("#"):
             info = "Überschrift " + info
         if art == "geaendert":
@@ -528,7 +545,9 @@ def befehl(base, bk, argumente):
         return
     g = bk.AUSGABEN["A"]
     ziel = os.path.join(base, g["ordner"], f"{g['datei']}_Aenderungen.pdf")
-    z = pdf(ziel, {"titel": f"Änderungen – {bk.V('titel')}", "vergleich": vergleich,
+    zeit = lambda d: datetime.strptime(d, "%d.%m.%Y %H:%M") if re.fullmatch(r"\d\d\.\d\d\.\d{4} \d\d:\d\d", d or "") else None
+    wann = _wann(base, bk, aend, zeit(i1["datum"]), (zeit(i2["datum"]) or datetime.now()) + timedelta(seconds=59) if len(namen) > 1 else None)
+    z = pdf(ziel, {"titel": f"Änderungen – {bk.V('titel')}", "vergleich": vergleich, "wann": wann,
                    "fuss": f"{bk.V('titel')} · Änderungen seit «{i1['name']}» · pureSATZ {bk.MOTOR_VERSION}"},
             aend, werte, bk.schrift("text"), bk.schrift("text_fett"), bk.hexfarbe("haupt"))
     print(vergleich)

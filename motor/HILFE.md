@@ -606,7 +606,8 @@ die 10 neuesten ZIPs. `sh cleanup.sh` löscht md-history nie.
 | alle Stände (nummeriert, 1 = letzter) | `sh build.sh stand` |
 
 Am Schluss steht der Befehl zum Öffnen: `PDF: xdg-open "…"`. Ist seit dem letzten Stand nichts geändert,
-zeigt `aenderungen` die letzte Runde.
+zeigt `aenderungen` die letzte Runde. Bei jeder Änderung steht das Datum: der erste Bau mit dieser Änderung
+(aus md-history/), «heute» = seither noch nicht gebaut.
 
 Mehr: `sh build.sh aenderungen "Probedruck 1" "Probedruck 2"` vergleicht zwei Stände;
 `sh build.sh stand "Probedruck 1" 23.10.2026 15:00` hält einen Stand nachträglich fest (aus md-history/).
