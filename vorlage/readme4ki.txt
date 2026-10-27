@@ -42,7 +42,7 @@ AUSGABEN (Variablen-Datei)
 DRUCK (nur wenn es den Ordner druck/ gibt)
 - Eine Plattform-Datei pro Druckerei und Format, z. B. druck/epubli-a5.md, druck/bod-a5-hardcover.md. Nur Technik, keine Texte.
 - Erlaubte Namen: neu-berechnen, berechnet-fuer-seiten, plattform, format (nur wenn anders als das Grundformat), bindung,
-  projekt, farbmodus (rgb|cmyk), ruecken-hardcover, ruecken-softcover, beschnitt-buchblock, beschnitt-hardcover, beschnitt-softcover,
+  projekt, farbmodus (rgb|cmyk; cmyk braucht Ghostscript), ruecken-hardcover, ruecken-softcover, beschnitt-buchblock, beschnitt-hardcover, beschnitt-softcover,
   deckel-hardcover, papier, extra-seiten, barcode-position, barcode-groesse, barcode-bild, versatz-vertikal,
   versatz-horizontal. Masse in mm, z. B. «{deckel-hardcover}: 153x216».
 - «## Coverrechner (Rohdaten)» zuunterst: Text aus dem Coverrechner, vom Motor nicht gelesen. Auftrag «Coverwerte übernehmen»:
@@ -100,7 +100,7 @@ UMSCHLAG (@@NAME@@-umschlag.md)
 WAS DER MOTOR MACHT (zur Info)
   sh build.sh            Entwurf: Bildschirm-PDF, Druckdateien, E-Book (offene Stellen sichtbar)
   sh build.sh schnell    nur Lese-PDFs (beim Schreiben)
-  sh build.sh final      Druckfassung für epubli, mit Seitenbilanz, Shop-Angaben, Kontrast-Prüfung
+  sh build.sh final      Druckfassung für die Druckerei, mit Seitenbilanz, Shop-Angaben, Kontrast-Prüfung
   sh build.sh komplett   final + Leseprobe + Korrektur in einem Durchgang
   sh build.sh final druck=bod-a5-normal   Test: nur Druckdateien mit dieser Datei aus druck/ -> ausgabe-test/
   sh build.sh pruefen    prüft die MD: unbekannte Variablen, Befehle, fehlende Fotos (mit Zeilennummer)
