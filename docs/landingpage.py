@@ -116,8 +116,8 @@ KACHELN = [
     ("E-Book", "EPUB mit Inhaltsverzeichnis, Bildbeschreibungen und Leseprobe – aus denselben Dateien."),
     ("Geschichten sammeln", "Jede Geschichte eine Datei, mit Stand von der Idee bis fertig und einer Übersicht."),
     ("Tabellen, Fotos, Farben", "Tabellen aus CSV, Fotos in einheitlicher Grösse, Aufzählungen, Zeitstrahl – und Farbschemas, die du mit einer Zahl umschaltest."),
-    ("Was hat sich geändert?", "Stand festhalten, z. B. beim Probedruck – später zeigt ein PDF Absatz für Absatz, "
-     "was neu, umformuliert oder gestrichen ist. Ideal für Korrekturrunden und Testleser."),
+    ("Was hat sich geändert?", "Jede Korrekturrunde mit einem Befehl festhalten – ein PDF zeigt Absatz für Absatz, "
+     "was neu, umformuliert oder gestrichen ist: seit der letzten Runde, seit Stand 3 oder seit einem Datum."),
     ("Personen gegenlesen", "Wer im Buch vorkommt, mit Seite und Zeile – und pro Person ein PDF mit genau ihren "
      "Seiten zum Gegenlesen – mit Zeilennummern und Notizrand für die Rückmeldung, in Sekunden aus dem fertigen Buch."),
     ("Hilfe und Sicherheit", "Hilfe mit Suche, automatischer Verlauf jeder Fassung, ZIP-Sicherung, auf Wunsch GitHub."),

@@ -6,7 +6,9 @@ Im Buchordner (über build.sh / build.bat):
     sh build.sh stand "Probedruck 1"          jetzigen Stand unter diesem Namen festhalten
     sh build.sh stand "Probedruck 1" 23.10.2026 15:00   nachträglich: Fassung aus md-history/ bis zu diesem Zeitpunkt
     sh build.sh stand                         alle Stände zeigen
-    sh build.sh aenderungen                   was sich seit dem letzten Stand geändert hat
+    sh build.sh aenderungen                   was sich seit dem letzten Stand geändert hat (sonst: letzte Runde)
+    sh build.sh aenderungen 3                 … seit Stand Nr. 3 (1 = letzter, Liste: sh build.sh stand)
+    sh build.sh aenderungen 22.10.            … seit diesem Datum (aus md-history/)
     sh build.sh aenderungen "Probedruck 1"    … seit diesem Stand
     sh build.sh aenderungen "Probedruck 1" "Probedruck 2"   zwei Stände miteinander vergleichen
 
@@ -21,7 +23,8 @@ import os
 import re
 import shutil
 import sys
-from datetime import datetime
+import tempfile
+from datetime import datetime, timedelta
 
 ORDNER = "staende"
 INFO = "stand.txt"
@@ -66,6 +69,8 @@ def finde(base, name):
     if name is None:
         return staende[-1]
     n = name.strip().lower()
+    if n.isdigit() and int(n) > 0:                # Nummer: 1 = letzter Stand, zu gross = ältester
+        return staende[-min(int(n), len(staende))]
     for p, i in staende:
         if i["name"].lower() == n or os.path.basename(p).lower() == n:
             return p, i
@@ -114,10 +119,11 @@ def zeit_aus(argumente):
         a = rest[-1].strip()
         if uhr is None and re.fullmatch(r"\d{1,2}[:.]\d{2}", a) and datum is None:
             uhr = a.replace(".", ":"); rest.pop(); continue
-        m = re.fullmatch(r"(\d{1,2})\.(\d{1,2})\.(\d{4})", a) or re.fullmatch(r"(\d{4})-(\d{2})-(\d{2})", a)
+        m = re.fullmatch(r"(\d{1,2})\.(\d{1,2})\.(\d{4})?", a) or re.fullmatch(r"(\d{4})-(\d{2})-(\d{2})", a)
         if m and datum is None:
             g = m.groups()
-            datum = (int(g[2]), int(g[1]), int(g[0])) if len(g[0]) <= 2 else (int(g[0]), int(g[1]), int(g[2]))
+            datum = ((int(g[2] or datetime.now().year), int(g[1]), int(g[0])) if len(g[0]) <= 2
+                     else (int(g[0]), int(g[1]), int(g[2])))
             rest.pop(); continue
         break
     if datum is None and uhr is None:
@@ -169,10 +175,15 @@ def zeigen(base):
     if not staende:
         print('> Noch kein Stand.\n$ sh build.sh stand "Probedruck 1"   (festhalten)')
         return
-    print("Stände (älteste zuerst):")
-    for p, i in staende:
-        print(f"  {i['name']:<30} {i['datum']:<17} {os.path.relpath(p, base)}/")
-    print('\n$ sh build.sh aenderungen   (seit dem letzten Stand)\n$ sh build.sh aenderungen "Name"   (seit diesem Stand)')
+    print("Stände (1 = letzter):")
+    for k, (p, i) in enumerate(staende):
+        print(f"  {len(staende) - k:>2}  {i['datum']:<17} {i['name']}")
+    print(HINWEIS)
+
+
+HINWEIS = ("\n$ sh build.sh aenderungen          letzte Änderungen"
+           "\n$ sh build.sh aenderungen 3        seit Stand 3"
+           "\n$ sh build.sh aenderungen 22.10.   seit Datum")
 
 
 # --- Text in Absätze zerlegen ----------------------------------------------------
@@ -478,8 +489,20 @@ def befehl(base, bk, argumente):
         print("$ sh build.sh aenderungen   (später: was sich seither geändert hat)")
         return
     # aenderungen
-    p1, i1 = finde(base, namen[0] if namen else None)
-    alt = _texte(p1, bk, _stand_geschichten(p1))
+    namen, bis = zeit_aus(namen)
+    if bis:                                       # seit Datum: Fassung davor aus md-history/
+        if (bis.hour, bis.minute) == (23, 59):    # nur Datum = seit Tagesbeginn
+            bis -= timedelta(days=1)
+        quellen, gesch, zeit = aus_history(base, [bk.TEXT, bk.VARIABLEN, bk.UMSCHLAG, bk.stichwort_datei()], bis)
+        p1 = tempfile.mkdtemp()
+        for d, q in quellen.items():
+            shutil.copy(q, os.path.join(p1, d))
+        alt = _texte(p1, bk, gesch)
+        shutil.rmtree(p1, ignore_errors=True)
+        i1 = {"name": f"{bis + timedelta(minutes=1):%d.%m.%Y}", "datum": f"{zeit:%d.%m.%Y %H:%M}"}
+    else:
+        p1, i1 = finde(base, namen[0] if namen else None)
+        alt = _texte(p1, bk, _stand_geschichten(p1))
     if len(namen) > 1:
         p2, i2 = finde(base, namen[1])
         neu = _texte(p2, bk, _stand_geschichten(p2))
@@ -495,9 +518,13 @@ def befehl(base, bk, argumente):
     if sa and sn:                                 # Stichwort-Datei fehlt in einem Stand: nicht vergleichen
         werte += [("Stichwörter", "", "Stichwort", None, s) for s in sorted(sn - sa)]
         werte += [("Stichwörter", "", "Stichwort", s, None) for s in sorted(sa - sn)]
-    vergleich = f"Seit Stand «{i1['name']}» ({i1['datum']}) bis {jetzt}"
+    vergleich = (f"Seit {i1['name']} (Fassung vom {i1['datum']})" if bis
+                 else f"Seit Stand «{i1['name']}» ({i1['datum']})") + f" bis {jetzt}"
     if not aend and not werte:
-        print(f"Keine Änderungen. {vergleich}.")
+        if not namen and not bis and len(alle(base)) > 1:       # nichts Neues: die letzte Runde zeigen
+            print(f"Seit «{i1['name']}» ({i1['datum']}) nichts geändert – das war die letzte Runde:")
+            return befehl(base, bk, ["aenderungen", "2", "1"])
+        print(f"Keine Änderungen. {vergleich}.{HINWEIS}")
         return
     g = bk.AUSGABEN["A"]
     ziel = os.path.join(base, g["ordner"], f"{g['datei']}_Aenderungen.pdf")

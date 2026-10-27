@@ -301,7 +301,7 @@ sh build.sh geschichten     # Sammel-PDF aller Geschichten aus geschichten/ (mit
 sh build.sh stand "Probedruck 1"   # jetzigen Stand festhalten · sh build.sh stand = alle Stände
 sh build.sh personen        # Personen im Buch mit Seiten und Zeilen → personen-seiten.txt
 sh build.sh personen Thomas # check_Thomas_Gegenlesen.pdf: seine Seiten zum Gegenlesen
-sh build.sh aenderungen     # was seit dem letzten Stand geändert ist → …_Aenderungen.pdf
+sh build.sh aenderungen     # letzte Änderungen als PDF · aenderungen 3 = seit Stand 3 · aenderungen 22.10. = seit Datum
 sh neu.sh "Titel"           # neue Geschichte anlegen · sh neu.sh = Übersicht (Windows: neu.bat)
 sh sicherung.sh             # ganzes Buch als ZIP sichern (lokal und/oder cloud)
 sh cleanup.sh               # aufräumen: Altes löschen / entfernen (delete), fragt zuerst; md-history/ bleibt
@@ -407,8 +407,7 @@ Fehlt etwas, nennt die Übersicht den Befehl dazu (z. B. `sh build.sh leseprobe`
 
 **Arbeiten im Alltag**
 - Beim Schreiben `sh build.sh schnell`, vor dem Hochladen oder Bestellen `sh build.sh final`. `nur-druck` braucht man kaum.
-- An wichtigen Punkten einen Stand festhalten, z. B. `sh build.sh stand "Probedruck bestellt"`; später zeigt
-  `sh build.sh aenderungen`, was sich seither geändert hat.
+- Nach jeder Korrekturrunde `sh build.sh stand "Name"`. `sh build.sh aenderungen` zeigt dann, was du geändert hast.
 - Am Anfang und am Ende der Arbeit `sh sync.sh` (mit GitHub).
 
 **Editor (z. B. ghostwriter)**
@@ -598,18 +597,19 @@ die 10 neuesten ZIPs. `sh cleanup.sh` löscht md-history nie.
 
 ## Was hat sich geändert? (Stände)
 
-Einen wichtigen Moment hältst du als **Stand** fest, z. B. bei jeder Bestellung eines Probedrucks. Später zeigt
-ein PDF, was sich seither geändert hat – praktisch für Korrekturrunden, für Testleser und für die Frage
-«Korrektur oder neue Auflage?».
+| Ich will … | Befehl |
+|---|---|
+| eine Runde abschliessen | `sh build.sh stand "Korrektur Eltern"` |
+| die letzten Änderungen sehen | `sh build.sh aenderungen` |
+| Änderungen seit Stand 3 | `sh build.sh aenderungen 3` |
+| Änderungen seit einem Datum | `sh build.sh aenderungen 22.10.` |
+| alle Stände (nummeriert, 1 = letzter) | `sh build.sh stand` |
 
-```sh
-sh build.sh stand "Probedruck 1"     # jetzigen Stand festhalten (Name frei wählbar)
-sh build.sh stand "Probedruck 1" 23.10.2026 15:00   # nachträglich: Fassung aus md-history/ bis zu diesem Zeitpunkt
-sh build.sh stand                    # alle Stände mit Datum
-sh build.sh aenderungen              # was sich seit dem letzten Stand geändert hat
-sh build.sh aenderungen "Probedruck 1"                  # … seit diesem Stand
-sh build.sh aenderungen "Probedruck 1" "Probedruck 2"   # zwei Stände miteinander vergleichen
-```
+Am Schluss steht der Befehl zum Öffnen: `PDF: xdg-open "…"`. Ist seit dem letzten Stand nichts geändert,
+zeigt `aenderungen` die letzte Runde.
+
+Mehr: `sh build.sh aenderungen "Probedruck 1" "Probedruck 2"` vergleicht zwei Stände;
+`sh build.sh stand "Probedruck 1" 23.10.2026 15:00` hält einen Stand nachträglich fest (aus md-history/).
 
 - **Ergebnis:** `…_Aenderungen.pdf` im Ausgabeordner der normalen Fassung (wird jedes Mal ersetzt). Oben eine
   Zusammenfassung («3 Absätze geändert · 1 neu · 1 gestrichen») und die betroffenen Kapitel, darunter nur die

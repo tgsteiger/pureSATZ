@@ -110,7 +110,7 @@ WAS DER MOTOR MACHT (zur Info)
   sh update.sh           Motor-Update von GitHub (ersetzt nur motor/; «pruefen» = nur nachsehen)
                          Bei Fragen zu Fehlern im Motor: nicht motor/ ändern, sondern sh update.sh empfehlen.
   sh build.sh personen   Personen mit Seiten → personen-seiten.txt · sh build.sh personen Name   Check-PDF zum Gegenlesen
-  sh build.sh stand "Name"   Stand festhalten · sh build.sh aenderungen   was seit dem letzten Stand geändert ist
+  sh build.sh stand "Name"   Stand festhalten · sh build.sh aenderungen [3 | 22.10.]   letzte Änderungen / seit Stand 3 / seit Datum
   sh build.sh hilfe      hilfe.html erzeugen und öffnen (ganze Anleitung mit Suche; Quelle motor/HILFE.md)
 
 SO ARBEITEST DU
