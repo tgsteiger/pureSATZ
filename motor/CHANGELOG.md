@@ -3,6 +3,21 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.45.0 (Oktober 2026)
+- **Ein Starter je System:** `START-Windows.bat`, `START-Mac.command`, `START-Linux.sh` (ersetzen `start.bat`,
+  `start.command`, `start.sh`). Der gemeinsame Ablauf für Linux und Mac steht in `pc-einrichten/start.sh`.
+- **Fünf Schritte mit eigener Seite:** Willkommen mit Überblick, dann 1. Technik (Python) · 2. Ort für die Bücher ·
+  3. Hallo-Buch · 4. Dein eigenes Buch · 5. Fertig und Extras. Jeder Schritt beginnt mit leerem Bildschirm, Titel
+  «Schritt x von 5» und kurzer Erklärung, was jetzt entsteht und wozu. Nach Hallo-Buch und eigenem Buch öffnet sich
+  der passende Ordner. Python kommt jetzt vor dem Ort.
+- Ort: «Enter oder j = Vorschlag übernehmen · anderer Pfad = eintippen · n = hier lassen».
+- **Eigenes Buch:** gefragt werden nur Titel, Untertitel, Autor und Format; Website, Adresse, Jahr, zweite Ausgabe
+  später in `<Buch>-variablen.md` (Hinweis dazu). Alle Fragen wie bisher: `sh setup/setup.sh --alle`.
+- Hallo-Buch und eigenes Buch bauen im Ablauf ruhig (Meldungen nur bei einem Fehler); keine Befehlslisten mehr
+  zwischendurch, sondern eine Schlussseite mit Ordnerbild und den wichtigsten Befehlen.
+- Ghostscript ist ein Extra in Schritt 5 (Vorgabe nein), wie GitHub. Einrichte-Skripte: `--technik`, `--extras`,
+  ohne Angabe der ganze Ablauf.
+
 ## 2.44.0 (Oktober 2026)
 - **Startknopf** `start.bat` (Windows), `start.command` (Mac, Doppelklick) und `sh start.sh` (Linux, Mac): schlägt einen
   festen Ort vor (`Buchprojekte` im Benutzerordner, nicht Downloads, nicht in einer Cloud) und kopiert pureSATZ dorthin

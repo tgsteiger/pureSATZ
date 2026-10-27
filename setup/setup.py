@@ -3,10 +3,12 @@
 setup.py – ein neues Buch anlegen oder ein bestehendes auf den neuesten Motor bringen.
 
 Im Ordner pureSATZ (Windows: setup\\setup.bat statt sh setup/setup.sh):
-    sh setup/setup.sh                  fragt alles nacheinander ab
+    sh setup/setup.sh                  fragt Titel, Untertitel, Autor und Format (der Rest später in der Variablen-Datei)
+    sh setup/setup.sh --alle           fragt alles nacheinander ab (auch Website, Adresse, Jahr, zweite Ausgabe)
     sh setup/setup.sh start.txt        nimmt die Werte aus setup/start.txt und fragt nur, was fehlt
     sh setup/setup.sh motor ../Buch    bringt nur den neuesten Motor ins Buch (alter bleibt als motor-alt-…)
     sh setup/setup.sh ../Buch          ergänzt in einem bestehenden Buchordner, was fehlt
+    --kette                            Schritt 4 von START-…: kurze Erklärung, ruhige Ausgabe, Ordner öffnet sich
 
 Das neue Buch liegt danach neben «pureSATZ» (z. B. ../Mein-Buch/) mit:
   Mein-Buch-variablen.md  Angaben, Technik, Layout
@@ -16,6 +18,8 @@ Das neue Buch liegt danach neben «pureSATZ» (z. B. ../Mein-Buch/) mit:
   Terminal hier (Windows .bat, Mac .command): Doppelklick öffnet das Befehlsfenster im Buchordner
 Bestehende Dateien werden NIE überschrieben.
 """
+import contextlib
+import io
 import os
 import re
 import shutil
@@ -33,6 +37,7 @@ HIER = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))     # Ordner 
 VORLAGE = os.path.join(HIER, "vorlage")
 MOTOR = os.path.join(HIER, "motor")
 FORMATE = ("a5", "taschenbuch", "sachbuch", "a4", "quadrat")
+KURZ = ("TITEL", "UNTERTITEL", "AUTOR", "FORMAT")             # ohne --alle nur diese Fragen
 
 FRAGEN = [
     ("TITEL", "Titel des Buchs", None),
@@ -232,6 +237,7 @@ def buchpfad(p):
 def main():
     a = sys.argv[1:]
     venv = "--ohne-venv" not in a
+    kette, alle = "--kette" in a, "--alle" in a
     a = [x for x in a if not x.startswith("--")]
     if a[:1] == ["motor"]:
         if len(a) < 2:
@@ -256,13 +262,28 @@ def main():
                 datei = os.path.join(o, datei)
                 break
     w = lese_werte(datei)
-    print("=== Neues Buch ===" + (f"  (Werte aus {datei})" if datei else ""))
+    if kette:
+        print("""Jetzt entsteht DEIN Buch: ein eigener Ordner neben pureSATZ, mit deinem Titel und Namen und
+einem Demo-Kapitel, das du überschreibst. Hier schreibst und baust du ab jetzt – nicht in pureSATZ.
+Gefragt werden nur Titel, Untertitel, Autor und Format. Alles Weitere (Website, Adresse, Jahr,
+zweite Ausgabe, ISBN …) trägst du später in der Datei <Buch>-variablen.md ein.
+""")
+        if not ja(frage("Dein Buch jetzt anlegen? [Enter = ja, n = später]", "")  or "ja"):
+            print("Später im Ordner pureSATZ: sh setup/setup.sh")
+            return
+        print()
+    else:
+        print("=== Neues Buch ===" + (f"  (Werte aus {datei})" if datei else ""))
+    kurz = not alle and not datei
     for k, text, vorgabe in FRAGEN:
         if k == "ZWEITE_NAME" and not ja(w.get("ZWEITE_AUSGABE", "nein")):
             continue
         if k == "NAME":
             vorgabe = slug(w.get("TITEL", ""))
         if k in w and w[k]:
+            continue
+        if kurz and k not in KURZ:                   # Rest: Vorgabe, später in der Variablen-Datei
+            w[k] = vorgabe or ""
             continue
         w[k] = frage(text, vorgabe)
         if not w[k] and vorgabe is None:
@@ -272,20 +293,34 @@ def main():
 
     print("\nZusammenfassung:")
     for k, _, _ in FRAGEN:
-        if k in w:
+        if k in w and (not kurz or k in KURZ):
             print(f"  {k:15} {w[k]}")
     print(f"  {'Buchordner':15} {ordner}")
-    if sys.stdin.isatty() and not ja(frage("\nSo anlegen? ja/nein", "ja")):
+    if kurz:
+        print(f"  Website, Adresse, Jahr, zweite Ausgabe: später in {w['NAME']}-variablen.md")
+    if sys.stdin.isatty() and not ja(frage("\nSo anlegen? [Enter = ja, n = nein]", "") or "ja"):
         print("Abgebrochen."); return
-    name = buch(ordner, w)
-    motor(ordner, venv)
+    if kette:
+        print("\nDein Buch wird angelegt (beim ersten Mal etwa eine Minute) …", flush=True)
+        with contextlib.redirect_stdout(io.StringIO()):
+            name = buch(ordner, w)
+        motor(ordner, venv)
+    else:
+        name = buch(ordner, w)
+        motor(ordner, venv)
     terminal = ("Im Buchordner «Terminal hier» doppelklicken – das Befehlsfenster öffnet sich genau dort."
                 if os.name == "nt" or sys.platform == "darwin" else
                 "Terminal im Buchordner: Rechtsklick in den Ordner → «Im Terminal öffnen».")
-    print(f"""
+    if kette:
+        print(f"""
+OK  Dein Buch liegt in: {ordner}
+    Der Ordner öffnet sich jetzt. Hier schreibst du:  {name}-buch.md
+    Angaben wie Website, Adresse, Jahr, ISBN:         {name}-variablen.md""")
+    else:
+        print(f"""
 Fertig. Dein Buch liegt in: {ordner}
   {name + '-buch.md':30} hier schreibst du (mit Demo-Kapitel)
-  {name + '-variablen.md':30} Angaben, Technik, Layout
+  {name + '-variablen.md':30} Angaben, Technik, Layout (Website, Adresse, Jahr, ISBN …)
   {name + '-umschlag.md':30} Vorderseite, Buchrücken, Rückseite
   {'stichworte-' + name + '.txt':30} Stichwortverzeichnis
 

@@ -6,9 +6,8 @@ Druckdateien für epubli, BoD, tredition oder KDP (Hardcover/Softcover), E-Book 
 
 **Webseite:** [tgsteiger.github.io/pureSATZ](https://tgsteiger.github.io/pureSATZ/) – Download, fünf Schritte, Hilfe online.
 
-**Zum Starten:** ZIP auspacken, dann Windows `start.bat` · Mac `start.command` doppelklicken · Linux `sh start.sh`.
-Der Start schlägt einen festen Ort vor (`Buchprojekte` im Benutzerordner) und kopiert pureSATZ dorthin, richtet den
-Computer ein, zeigt das Hallo-Buch und legt dein eigenes Buch an. Danach:
+**Zum Starten:** ZIP auspacken, dann Windows `START-Windows.bat` · Mac `START-Mac.command` doppelklicken · Linux
+`sh START-Linux.sh`. Er führt in fünf Schritten durch: Technik (Python), Ort für die Bücher (`Buchprojekte` im Benutzerordner – nicht Downloads, nicht in einer Cloud), Hallo-Buch, dein eigenes Buch (Titel, Untertitel, Autor, Format) und Extras (GitHub, freiwillig). Enter nimmt jeweils den Vorschlag. Danach:
 
 ```
 Buchprojekte/

@@ -27,14 +27,12 @@ Ein **GitHub-Konto** brauchst du nur, wenn dein Buch privat auf GitHub liegen un
 wandern soll (Schritt 4). Ohne GitHub: Schritt 4 weglassen; gesichert wird mit `sh sicherung.sh` (ZIP).
 Nutzungsbedingungen: `LIZENZ.md`.
 
-**Am einfachsten:** Im Ordner pureSATZ den Start aufrufen. Er schlägt einen festen Ort vor (`Buchprojekte` im
-Benutzerordner – nicht Downloads und nicht in einer Cloud wie OneDrive oder iCloud) und kopiert pureSATZ dorthin,
-richtet den Computer ein (Python, git, venv, Ghostscript), zeigt das Hallo-Buch, legt dein eigenes Buch an und
-fragt am Schluss, ob du mit GitHub arbeiten willst. Er darf beliebig oft laufen.
+**Am einfachsten:** Im Ordner pureSATZ den Start aufrufen. Er führt in fünf Schritten durch: Technik (Python), Ort für die Bücher (`Buchprojekte` im Benutzerordner – nicht Downloads, nicht in einer Cloud), Hallo-Buch, dein eigenes Buch (Titel, Untertitel, Autor, Format) und Extras (GitHub, freiwillig). Enter nimmt jeweils den Vorschlag. Beim Ort kopiert er pureSATZ dorthin
+(nicht Downloads und nicht in eine Cloud wie OneDrive oder iCloud). Er darf beliebig oft laufen.
 
 | Linux | Mac | Windows |
 |---|---|---|
-| `sh start.sh` | `start.command` (Doppelklick) | `start.bat` (Doppelklick) |
+| `sh START-Linux.sh` | `START-Mac.command` (Doppelklick) | `START-Windows.bat` (Doppelklick) |
 
 Danach:
 
@@ -45,10 +43,11 @@ Buchprojekte/
   Mein-Buch/     dein Buch – hier schreibst und baust du
 ```
 
-Mac: Blockiert der Mac `start.command`, Rechtsklick → Öffnen, oder Systemeinstellungen → Datenschutz & Sicherheit →
+Mac: Blockiert der Mac `START-Mac.command`, Rechtsklick → Öffnen, oder Systemeinstellungen → Datenschutz & Sicherheit →
 «Dennoch öffnen». Im Buchordner öffnet `Terminal hier` (Windows, Mac) per Doppelklick das Befehlsfenster genau dort.
-Nur das Einrichten, ohne Ort: `bash pc-einrichten/linux-einrichten.sh` · `bash pc-einrichten/mac-einrichten.sh` ·
-`pc-einrichten\win-einrichten.bat`. Die Schritte unten sind dasselbe von Hand.
+Die Skripte dahinter: `bash pc-einrichten/linux-einrichten.sh` · `bash pc-einrichten/mac-einrichten.sh` ·
+`pc-einrichten\win-einrichten.bat` (ohne Angabe: der ganze Ablauf; `--technik` bzw. `--extras` nur diese Teile auf Linux/Mac).
+Die Schritte unten sind dasselbe von Hand.
 
 **Ghostscript (freiwillig):** nur nötig, wenn eine Druckerei CMYK verlangt (z. B. tredition, `{farbmodus}: cmyk`
 in der Druckdatei). Die Einrichte-Skripte fragen danach. Von Hand: Linux `sudo apt install ghostscript` ·

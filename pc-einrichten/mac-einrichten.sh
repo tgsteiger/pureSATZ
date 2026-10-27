@@ -1,82 +1,74 @@
 #!/bin/bash
 # =====================================================================
-#  pureSATZ – Mac einrichten (einmalig)
-#  Für Intel-Macs UND Macs mit Apple-Chip (M1, M2, M3 …), ohne Homebrew.
-#  (Homebrew läuft auf Intel-Macs nicht mehr.)
-#
-#  Am einfachsten: start.command im Ordner pureSATZ doppelklicken (ruft dieses Skript auf).
-#  Auch direkt im Ordner pureSATZ:   bash pc-einrichten/mac-einrichten.sh
-#  Das Skript darf beliebig oft laufen – Erledigtes wird übersprungen.
-#  Hält es an (Schritt 1 oder 2), danach einfach nochmals starten.
-#  GitHub ist freiwillig und kommt am Schluss: Ohne GitHub geht Schreiben und Bauen genauso.
+#  pureSATZ – Mac einrichten. Für Intel-Macs UND Macs mit Apple-Chip (M1, M2, M3 …), ohne Homebrew.
+#  Am einfachsten: im Ordner pureSATZ  START-Mac.command  doppelklicken – führt in fünf Schritten
+#  durch (Technik, Ort, Hallo-Buch, eigenes Buch, Extras) und ruft dieses Skript auf:
+#    bash pc-einrichten/mac-einrichten.sh --technik   Apple-Werkzeuge (git), Python
+#    bash pc-einrichten/mac-einrichten.sh --extras    Ghostscript und GitHub (freiwillig)
+#  Ohne Angabe startet der ganze Ablauf (wie START-Mac.command).
+#  Darf beliebig oft laufen. Hält es an (Apple-Werkzeuge, Python), danach einfach nochmals starten.
 # =====================================================================
 cd "$(dirname "$0")/.." || exit 1          # Ordner pureSATZ
 HIER="$(pwd)"
+case "$1" in
+    --technik|--extras) ;;
+    *) exec bash pc-einrichten/start.sh "$@" ;;
+esac
 
-echo "=== pureSATZ: Mac einrichten ==="
-echo "Prozessor: $(uname -m)   (x86_64 = Intel, arm64 = Apple-Chip)"
+if [ "$1" = "--technik" ]; then
+    echo "Prozessor: $(uname -m)   (x86_64 = Intel, arm64 = Apple-Chip)"
+    # --- 1. Apple-Kommandozeilenwerkzeuge (bringen git mit) ---------------
+    if ! xcode-select -p >/dev/null 2>&1; then
+        echo "Die Apple-Kommandozeilenwerkzeuge fehlen."
+        echo "Gleich öffnet sich ein Fenster: auf «Installieren» klicken."
+        echo "Wenn es fertig ist: START-Mac.command NOCHMALS doppelklicken."
+        xcode-select --install 2>/dev/null
+        exit 2
+    fi
+    echo "OK  Kommandozeilenwerkzeuge – $(git --version)"
+
+    # --- 2. Python 3.10 oder neuer (von python.org, «universal2») ----------
+    if ! python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3,10) else 1)' 2>/dev/null; then
+        echo
+        echo "Es fehlt ein aktuelles Python (3.10 oder neuer)."
+        echo "Gleich öffnet sich python.org: den neusten"
+        echo "«macOS 64-bit universal2 installer» laden und installieren"
+        echo "(läuft auf Intel und Apple-Chip)."
+        echo "Danach Terminal SCHLIESSEN und START-Mac.command nochmals doppelklicken."
+        open "https://www.python.org/downloads/macos/"
+        exit 2
+    fi
+    echo "OK  $(python3 --version)  ($(command -v python3))"
+    exit 0
+fi
+
+# --- Extras ---------------------------------------------------------------
 echo
-
-# --- 1. Apple-Kommandozeilenwerkzeuge (bringen git mit) ---------------
-if ! xcode-select -p >/dev/null 2>&1; then
-    echo "Schritt 1: Apple-Kommandozeilenwerkzeuge fehlen."
-    echo "Gleich öffnet sich ein Fenster: auf «Installieren» klicken."
-    echo "Wenn es fertig ist: dieses Skript NOCHMALS starten."
-    xcode-select --install 2>/dev/null
-    exit 0
-fi
-echo "OK  Kommandozeilenwerkzeuge – $(git --version)"
-
-# --- 2. Python 3.10 oder neuer (von python.org, «universal2») ----------
-if ! python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3,10) else 1)' 2>/dev/null; then
-    echo
-    echo "Schritt 2: Es fehlt ein aktuelles Python (3.10 oder neuer)."
-    echo "Gleich öffnet sich python.org: den neusten"
-    echo "«macOS 64-bit universal2 installer» laden und installieren"
-    echo "(läuft auf Intel und Apple-Chip)."
-    echo "Danach Terminal SCHLIESSEN und start.command nochmals doppelklicken."
-    open "https://www.python.org/downloads/macos/"
-    exit 0
-fi
-echo "OK  $(python3 --version)  ($(command -v python3))"
-
-# --- 3. Ghostscript (freiwillig, für CMYK-Druckdateien) ---------------
+echo "Ghostscript braucht es nur, wenn eine Druckerei CMYK verlangt (z. B. tredition)."
+# --- Extra 1: Ghostscript (freiwillig, für CMYK-Druckdateien) --------
 # Braucht es nur mit «{farbmodus}: cmyk» in einer Druckdatei (z. B. tredition), umgewandelt wird bei final.
 if command -v gs >/dev/null 2>&1; then
-    echo "OK  Ghostscript $(gs --version) (für {farbmodus}: cmyk)"
+    echo "OK  Ghostscript $(gs --version) vorhanden"
 elif command -v brew >/dev/null 2>&1; then
-    read -r -p "Ghostscript für CMYK-Druckdateien (z. B. tredition) installieren? [j/n] (j): " GS
-    if [ -z "$GS" ] || [ "$GS" = "j" ] || [ "$GS" = "ja" ]; then
+    read -r -p "Ghostscript installieren? [j = ja, Enter = nein]: " GS
+    if [ "$GS" = "j" ] || [ "$GS" = "ja" ]; then
         brew install ghostscript && echo "OK  Ghostscript $(gs --version)"
     fi
 elif command -v port >/dev/null 2>&1; then
-    read -r -p "Ghostscript für CMYK-Druckdateien (z. B. tredition) installieren? [j/n] (j): " GS
-    if [ -z "$GS" ] || [ "$GS" = "j" ] || [ "$GS" = "ja" ]; then
+    read -r -p "Ghostscript installieren? [j = ja, Enter = nein]: " GS
+    if [ "$GS" = "j" ] || [ "$GS" = "ja" ]; then
         sudo port install ghostscript && echo "OK  Ghostscript $(gs --version)"
     fi
 else
-    echo "Hinweis: Ghostscript fehlt – nur nötig für {farbmodus}: cmyk (z. B. tredition)."
+    echo "Ghostscript fehlt – nur nötig für CMYK (z. B. tredition)."
     echo "         Installieren mit Homebrew (brew install ghostscript) oder MacPorts (sudo port install ghostscript)."
     echo "         Ohne Ghostscript bleiben die Druckdateien RGB, alles andere läuft normal."
 fi
 
-# --- 4. Hallo-Buch und eigenes Buch ----------------------------------
+# --- Extra 2: GitHub (freiwillig) ---------------------------------------
 echo
-read -r -p "Hallo-Buch jetzt ansehen (Beispielbuch, das PDF öffnet sich)? [j/n] (j): " HB
-if [ -z "$HB" ] || [ "$HB" = "j" ] || [ "$HB" = "ja" ]; then
-    python3 setup/hallo.py                  # fragt am Schluss selbst nach dem eigenen Buch
-else
-    read -r -p "Jetzt dein eigenes Buch anlegen? [j/n] (j): " NB
-    if [ -z "$NB" ] || [ "$NB" = "j" ] || [ "$NB" = "ja" ]; then
-        python3 setup/setup.py
-    fi
-fi
-
-# --- 5. GitHub (freiwillig, geht auch jederzeit später) ---------------
-echo
-echo "GitHub ist freiwillig und geht auch später (dieses Skript nochmals starten, siehe GITHUB.md):"
-echo "private Sicherung und dasselbe Buch auf mehreren Computern (sh sync.sh)."
-read -r -p "Mit GitHub arbeiten? [j/n] (n): " GH
+echo "GitHub: private Sicherung und dasselbe Buch auf mehreren Computern (sh sync.sh)."
+read -r -p "Mit GitHub arbeiten? [j = ja, Enter = nein]: " GH
 if [ "$GH" = "j" ] || [ "$GH" = "ja" ]; then
 
 # Name und Mail für git
@@ -123,7 +115,7 @@ fi
 BESITZER="$(printf '%s' "$URL" | sed -E 's#.*github.com[:/]([^/]+)/.*#\1#')"
 while true; do
     echo
-    read -r -p "Buch von GitHub holen? Repository-Name (z. B. mein-buch), leer = fertig: " R
+    read -r -p "Buch von GitHub holen? Repository-Name (z. B. mein-buch), Enter = fertig: " R
     [ -z "$R" ] && break
     case "$BESITZER" in ""|*/*|*:*) read -r -p "Dein GitHub-Benutzername: " BESITZER ;; esac
     STD="$(printf '%s' "$R" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')"
@@ -144,11 +136,5 @@ else
     echo "OK  ohne GitHub. Gesichert wird mit  sh sicherung.sh  (ZIP)."
 fi
 
-echo
-echo "=== Fertig ==="
-echo "Deine Bücher liegen neben pureSATZ in $(dirname "$HIER")"
-echo "pureSATZ ist die Werkstatt – dort nichts schreiben."
-echo "Im Buchordner:     «Terminal hier» doppelklicken, dann  sh build.sh schnell  ·  sh build.sh final  ·  sh sicherung.sh"
-echo "Neues Buch:        sh setup/setup.sh        (im Ordner pureSATZ)"
-[ "$GH" = "j" ] || [ "$GH" = "ja" ] && echo "Mit GitHub:        sh sync.sh  ·  sh update.sh"
-echo "Hilfe:             hilfe.html öffnen, oben «Start»"
+[ "$GH" = "j" ] || [ "$GH" = "ja" ] && exit 10       # 10 = mit GitHub (für die Schlussseite)
+exit 0

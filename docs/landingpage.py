@@ -77,29 +77,30 @@ def code(lx, win=None):
             f'<code class="win">{html.escape(win)}</code></pre></div>')
 
 
-START = ("Schlägt einen festen Ort vor (<b>Buchprojekte</b> im Benutzerordner) und kopiert pureSATZ dorthin, "
-         "richtet den Computer ein, zeigt das Hallo-Buch und legt dein eigenes Buch an. Enter nimmt jeweils den Vorschlag.")
+START = ("Führt in fünf Schritten durch: Technik (Python), Ort für die Bücher (<b>Buchprojekte</b> im Benutzerordner), "
+         "Hallo-Buch, dein eigenes Buch (Titel, Untertitel, Autor, Format) und Extras (GitHub, freiwillig). "
+         "Enter nimmt jeweils den Vorschlag.")
 SCHRITTE = {
     "linux": [
         ("Herunterladen und auspacken", "ZIP laden und auspacken. Mit git geht auch:",
          "git clone https://github.com/tgsteiger/pureSATZ.git"),
         ("Terminal im Ordner öffnen", "Im Dateimanager Rechtsklick in den Ordner → «Im Terminal öffnen».", None),
-        ("Starten", START, "sh start.sh"),
+        ("Starten", START, "sh START-Linux.sh"),
         ("Dein Buch", "Ab jetzt arbeitest du im Ordner deines Buchs (Rechtsklick → «Im Terminal öffnen»). "
          "Schreiben in <b>Mein-Buch-buch.md</b>, ansehen mit:", "sh build.sh schnell"),
     ],
     "mac": [
         ("Herunterladen und auspacken", "ZIP laden, Safari packt es selbst aus.", None),
-        ("Starten", "Im Ordner <b>start.command</b> doppelklicken. Blockiert der Mac es: Rechtsklick → Öffnen, oder "
+        ("Starten", "Im Ordner <b>START-Mac.command</b> doppelklicken. Blockiert der Mac es: Rechtsklick → Öffnen, oder "
          "Systemeinstellungen → Datenschutz &amp; Sicherheit → «Dennoch öffnen». " + START + " Fehlt Python, öffnet "
-         "sich python.org: den «macOS 64-bit universal2 installer» laden, installieren und start.command nochmals "
+         "sich python.org: den «macOS 64-bit universal2 installer» laden, installieren und START-Mac.command nochmals "
          "doppelklicken.", None),
         ("Dein Buch", "Im Buchordner <b>Terminal hier</b> doppelklicken – das Terminal öffnet sich genau dort. "
          "Schreiben in <b>Mein-Buch-buch.md</b>, ansehen mit:", "sh build.sh schnell"),
     ],
     "win": [
         ("Herunterladen und auspacken", "ZIP laden, Rechtsklick → «Alle extrahieren …».", None),
-        ("Starten", "Im ausgepackten Ordner <b>start.bat</b> doppelklicken. " + START + " Fehlt Python, wird es "
+        ("Starten", "Im ausgepackten Ordner <b>START-Windows.bat</b> doppelklicken. " + START + " Fehlt Python, wird es "
          "installiert, und es geht direkt weiter.", None),
         ("Dein Buch", "Im Buchordner <b>Terminal hier</b> doppelklicken – das Befehlsfenster (cmd) öffnet sich genau "
          "dort. Schreiben in <b>Mein-Buch-buch.md</b>, ansehen mit:", "build.bat schnell"),
