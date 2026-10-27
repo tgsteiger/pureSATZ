@@ -4,10 +4,10 @@ personen.py – Personen im Buch finden und Seiten zum Gegenlesen zusammenstelle
 
 Im Buchordner (über build.sh / build.bat):
     sh build.sh personen            Lese-PDFs durchsuchen → personen-seiten.txt (Personen mit Seiten und Zeilen)
-    sh build.sh personen Andrea     check_Andrea_Gegenlesen.pdf (und …_Gegenlesen-uz.pdf) aus den fertigen Lese-PDFs
+    sh build.sh personen Thomas     check_Thomas_Gegenlesen.pdf (und …_Gegenlesen-uz.pdf) aus den fertigen Lese-PDFs
 
 personen-seiten.txt ist Ergebnis und Eingabe zugleich:
-    Andrea | Medizinfrau | Grosi    Begriffe derselben Person in einer Zeile; der erste ist der Name (für die Datei)
+    Thomas | Thom | Autor           Begriffe derselben Person in einer Zeile; der erste ist der Name (für die Datei)
     --- Ecuador                     nie mehr vorschlagen
     eingerückte Zeilen              schreibt der Motor jedes Mal neu (Seiten, Zeilen, Kapitel)
 Es wird nichts neu gebaut: gesucht wird in den vorhandenen Lese-PDFs (Seitenzahlen = gedruckte Seiten).
@@ -250,7 +250,7 @@ def befehl(base, bk, argumente):
     pfad = os.path.join(base, DATEI)
     gruppen, weg, zusatz = lies(pfad)
 
-    if argumente:                                   # sh build.sh personen Andrea
+    if argumente:                                   # sh build.sh personen Thomas
         name = " ".join(argumente).strip()
         g = next((g for g in gruppen if g[0].lower() == name.lower()), None) \
             or next((g for g in gruppen if any(b.lower() == name.lower() for b in g)), None)

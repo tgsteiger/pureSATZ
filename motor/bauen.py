@@ -19,7 +19,7 @@ Booklets zum Selberdrucken entstehen automatisch: im «final» der Probedruck au
     python motor/bauen.py sicherung       nur die MD-Dateien nach md-history/ sichern
     python motor/bauen.py pruefen         nur die MD prüfen
     python motor/bauen.py personen        Personen in den Lese-PDFs finden → personen-seiten.txt (Seiten, Zeilen)
-    python motor/bauen.py personen Andrea   check_Andrea_Gegenlesen.pdf aus den fertigen Lese-PDFs
+    python motor/bauen.py personen Thomas   check_Thomas_Gegenlesen.pdf aus den fertigen Lese-PDFs
     python motor/bauen.py stand "Name"    jetzigen Stand festhalten (staende/) · ohne Name: alle Stände zeigen
     python motor/bauen.py aenderungen ["Name" ["Name2"]]   was sich seit dem (letzten) Stand geändert hat → …_Aenderungen.pdf
     python motor/bauen.py geschichten [uz]   Sammel-PDF aller Geschichten aus geschichten/ (normal; mit uz auch unzensiert)

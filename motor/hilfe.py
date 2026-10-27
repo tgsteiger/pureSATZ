@@ -45,7 +45,7 @@ SPICKZETTEL = [
     ('sh build.sh stand "Name"', "Jetzigen Stand festhalten, z. B. bei einer Bestellung (ohne Name: alle Stände)"),
     ("sh build.sh aenderungen", "Was hat sich seit dem letzten Stand geändert? → …_Aenderungen.pdf"),
     ("sh build.sh personen", "Personen im Buch mit Seiten und Zeilen → personen-seiten.txt (zum Korrigieren)"),
-    ("sh build.sh personen Andrea", "check_Andrea_Gegenlesen.pdf: ihre Seiten zum Gegenlesen (aus den fertigen Lese-PDFs)"),
+    ("sh build.sh personen Thomas", "check_Thomas_Gegenlesen.pdf: seine Seiten zum Gegenlesen (aus den fertigen Lese-PDFs)"),
     ("sh update.sh", "Neuen Motor von GitHub holen (lokal: sh update.sh lokal)"),
     ("sh sicherung.sh", "Ganzes Buch als ZIP sichern (alte Fassungen einzelner Dateien: Ordner md-history/)"),
     ("sh cleanup.sh", "Aufräumen: alte Motoren und Zwischenspeicher löschen, entfernen (delete) – fragt zuerst, "

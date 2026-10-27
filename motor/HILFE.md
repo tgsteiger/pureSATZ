@@ -300,7 +300,7 @@ sh build.sh korrektur       # Korrekturfassung: A4, Zeilennummern pro Seite, Ran
 sh build.sh geschichten     # Sammel-PDF aller Geschichten aus geschichten/ (mit «uz»: auch unzensiert)
 sh build.sh stand "Probedruck 1"   # jetzigen Stand festhalten · sh build.sh stand = alle Stände
 sh build.sh personen        # Personen im Buch mit Seiten und Zeilen → personen-seiten.txt
-sh build.sh personen Andrea # check_Andrea_Gegenlesen.pdf: ihre Seiten zum Gegenlesen
+sh build.sh personen Thomas # check_Thomas_Gegenlesen.pdf: seine Seiten zum Gegenlesen
 sh build.sh aenderungen     # was seit dem letzten Stand geändert ist → …_Aenderungen.pdf
 sh neu.sh "Titel"           # neue Geschichte anlegen · sh neu.sh = Übersicht (Windows: neu.bat)
 sh sicherung.sh             # ganzes Buch als ZIP sichern (lokal und/oder cloud)
@@ -636,7 +636,7 @@ nichts: gesucht wird in den fertigen Lese-PDFs, das dauert Sekunden.
 ```sh
 sh build.sh personen          # 1. Personen finden → personen-seiten.txt
                               # 2. personen-seiten.txt korrigieren und speichern
-sh build.sh personen Andrea   # 3. check_Andrea_Gegenlesen.pdf (und …_Gegenlesen-uz.pdf)
+sh build.sh personen Thomas   # 3. check_Thomas_Gegenlesen.pdf (und …_Gegenlesen-uz.pdf)
 ```
 
 **personen-seiten.txt** (im Buchordner) ist Ergebnis und Eingabe zugleich:
@@ -647,9 +647,9 @@ sh build.sh personen Andrea   # 3. check_Andrea_Gegenlesen.pdf (und …_Gegenles
 > «--- Wort» = keine Person, nicht mehr vorschlagen (solange diese Datei besteht; ich sammle sie unten).
 > Ganze Zeile gelöscht = wird beim nächsten Mal wieder vorgeschlagen. Datei löschen = alles neu.
 $ sh build.sh personen   (Seiten neu, nach dem Korrigieren)
-$ sh build.sh personen Andrea   (check_Andrea_Gegenlesen.pdf)
+$ sh build.sh personen Thomas   (check_Thomas_Gegenlesen.pdf)
 
-Andrea | Medizinfrau | Grosi                    5 Stellen
+Thomas | Thom | Autor | Techniker               5 Stellen
   normal       S. 112 Z. 8 · S. 113 Z. 2, 17
                Kapitel: Schwitzhütte
   unzensiert   S. 118 Z. 4
@@ -677,7 +677,7 @@ Andrea | Medizinfrau | Grosi                    5 Stellen
   Stichwörter mit Vornamen – der eigene Vorname (`{autor}`) nicht. Das Stichwortverzeichnis zählt nicht mit.
 - **S.** = gedruckte Seite – gleich im Lese-PDF, im Probedruck und in der Leseprobe. **Z.** = Zeile auf der Seite,
   gezählt wie im Korrektur-PDF (die Kopfzeile ist Zeile 1); bei Fotos und Titeln ±1.
-- **Gegenlesen:** `sh build.sh personen Andrea` sucht alle Begriffe der Zeile «Andrea» frisch und macht wie die
+- **Gegenlesen:** `sh build.sh personen Thomas` sucht alle Begriffe der Zeile «Thomas» frisch und macht wie die
   Leseprobe Umschlag, Titelei, die Seiten und eine Schlussseite «Danke fürs Gegenlesen» – alles im Format des
   Korrektur-PDFs: A4, Zeilennummern links, Notizlinien rechts. Die Stellen der Person sind links mit einem roten ▶
   und roter Zeilennummer markiert. So kommt die Rückmeldung als «S. 41, Z. 7: …».

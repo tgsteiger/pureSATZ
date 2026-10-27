@@ -3,6 +3,9 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.43.4 (Oktober 2026)
+- Hilfe: Beispiel Gegenlesen jetzt mit Thomas statt Andrea (nur Text).
+
 ## 2.43.3 (Oktober 2026)
 - Hilfe «Start» neu gegliedert: 1. Erstes PDF · 2. Computer einrichten · 3. Dein Buch bauen (neu mit «Stand
   festhalten») · 4. **Gestalten: Ich will …** (neue Seite, Abstand, unten, Schluss, Zitat, Dank, Foto, QR …) ·
