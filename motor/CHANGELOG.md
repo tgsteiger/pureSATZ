@@ -3,6 +3,20 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.45.1 (Oktober 2026)
+- **Kürzere Texte im Einrichten:** weniger Erklärung, gleiche Wörter auf Windows, Mac und Linux.
+- **Enter-Regel direkt vor dem Cursor:** jede Frage endet mit der empfohlenen Antwort, z. B.
+  `[n = nein | Enter = ja]` oder `[j = ja | Enter = nein]`; Vorgaben als `[Enter = a5]`.
+- Ort: «Vorschlag … · n = pureSATZ hier lassen · Pfad = eigenen Ort eintippen · Ort [Enter = Vorschlag]».
+- **Schritt 5 heisst «Extras»:** zuerst GitHub (freiwillig, Vorgabe nein), am Schluss **Ghostscript (empfohlen,
+  Vorgabe ja)** – dann ist man bereit für CMYK-Druck.
+- **Ghostscript auf Windows:** winget hat es nicht mehr. Ist es schon da, nur «OK». Sonst lädt das Skript den neusten
+  64-Bit-Installer von GitHub (ArtifexSoftware/ghostpdl-downloads) und startet ihn; geht das nicht, öffnet sich
+  ghostscript.com.
+- GitHub-Bücher holen in zwei klaren Fragen: «Hast du schon ein Buch auf GitHub?» → Name → bauen (Vorgabe ja) →
+  «Noch ein Buch holen?».
+- Fix: «Später im Ordner pureSATZ» zeigt auf Windows `setup\setup.bat` statt `sh setup/setup.sh`.
+
 ## 2.45.0 (Oktober 2026)
 - **Ein Starter je System:** `START-Windows.bat`, `START-Mac.command`, `START-Linux.sh` (ersetzen `start.bat`,
   `start.command`, `start.sh`). Der gemeinsame Ablauf für Linux und Mac steht in `pc-einrichten/start.sh`.

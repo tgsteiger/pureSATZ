@@ -4,7 +4,7 @@
 #  Am einfachsten: im Ordner pureSATZ  START-Mac.command  doppelklicken – führt in fünf Schritten
 #  durch (Technik, Ort, Hallo-Buch, eigenes Buch, Extras) und ruft dieses Skript auf:
 #    bash pc-einrichten/mac-einrichten.sh --technik   Apple-Werkzeuge (git), Python
-#    bash pc-einrichten/mac-einrichten.sh --extras    Ghostscript und GitHub (freiwillig)
+#    bash pc-einrichten/mac-einrichten.sh --extras    GitHub (freiwillig), Ghostscript (empfohlen)
 #  Ohne Angabe startet der ganze Ablauf (wie START-Mac.command).
 #  Darf beliebig oft laufen. Hält es an (Apple-Werkzeuge, Python), danach einfach nochmals starten.
 # =====================================================================
@@ -42,33 +42,11 @@ if [ "$1" = "--technik" ]; then
     exit 0
 fi
 
-# --- Extras ---------------------------------------------------------------
+# --- Extra 1: GitHub (freiwillig) ---------------------------------------
+github() {
 echo
-echo "Ghostscript braucht es nur, wenn eine Druckerei CMYK verlangt (z. B. tredition)."
-# --- Extra 1: Ghostscript (freiwillig, für CMYK-Druckdateien) --------
-# Braucht es nur mit «{farbmodus}: cmyk» in einer Druckdatei (z. B. tredition), umgewandelt wird bei final.
-if command -v gs >/dev/null 2>&1; then
-    echo "OK  Ghostscript $(gs --version) vorhanden"
-elif command -v brew >/dev/null 2>&1; then
-    read -r -p "Ghostscript installieren? [j = ja, Enter = nein]: " GS
-    if [ "$GS" = "j" ] || [ "$GS" = "ja" ]; then
-        brew install ghostscript && echo "OK  Ghostscript $(gs --version)"
-    fi
-elif command -v port >/dev/null 2>&1; then
-    read -r -p "Ghostscript installieren? [j = ja, Enter = nein]: " GS
-    if [ "$GS" = "j" ] || [ "$GS" = "ja" ]; then
-        sudo port install ghostscript && echo "OK  Ghostscript $(gs --version)"
-    fi
-else
-    echo "Ghostscript fehlt – nur nötig für CMYK (z. B. tredition)."
-    echo "         Installieren mit Homebrew (brew install ghostscript) oder MacPorts (sudo port install ghostscript)."
-    echo "         Ohne Ghostscript bleiben die Druckdateien RGB, alles andere läuft normal."
-fi
-
-# --- Extra 2: GitHub (freiwillig) ---------------------------------------
-echo
-echo "GitHub: private Sicherung und dasselbe Buch auf mehreren Computern (sh sync.sh)."
-read -r -p "Mit GitHub arbeiten? [j = ja, Enter = nein]: " GH
+echo "GitHub (freiwillig): Sicherung und mehrere Computer."
+read -r -p "Mit GitHub arbeiten? [j = ja | Enter = nein]: " GH
 if [ "$GH" = "j" ] || [ "$GH" = "ja" ]; then
 
 # Name und Mail für git
@@ -107,33 +85,58 @@ GitHub-Zugang klappt nicht. So geht es (einmalig):
   Fehler 403 «Write access … not granted» = Haken «repo» fehlt → neuen Token machen.
   Token nie in Chats oder Dateien weitergeben.
 TXT
-        exit 1
+        return 1
     fi
 fi
 
 # Bücher von GitHub holen (neben diesen Ordner)
 BESITZER="$(printf '%s' "$URL" | sed -E 's#.*github.com[:/]([^/]+)/.*#\1#')"
-while true; do
-    echo
-    read -r -p "Buch von GitHub holen? Repository-Name (z. B. mein-buch), Enter = fertig: " R
+echo
+read -r -p "Hast du schon ein Buch auf GitHub? [j = ja | Enter = nein]: " W
+while [ "$W" = "j" ] || [ "$W" = "ja" ]; do
+    read -r -p "Name des Buchs auf GitHub (z. B. mein-buch): " R
     [ -z "$R" ] && break
     case "$BESITZER" in ""|*/*|*:*) read -r -p "Dein GitHub-Benutzername: " BESITZER ;; esac
     STD="$(printf '%s' "$R" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')"
-    read -r -p "Ordnername [$STD]: " O
+    read -r -p "Ordnername [Enter = $STD]: " O
     O="${O:-$STD}"
     ZIEL="$(dirname "$HIER")/$O"
     if [ -d "$ZIEL/.git" ]; then
         echo "Schon da: $ZIEL – hole neusten Stand"
         (cd "$ZIEL" && sh sync.sh)
-    else
-        git clone "https://github.com/$BESITZER/$R.git" "$ZIEL" || continue
+        bauen
+    elif git clone "https://github.com/$BESITZER/$R.git" "$ZIEL"; then
+        bauen
     fi
-    read -r -p "Jetzt einmal bauen (richtet beim ersten Mal Python ein, ca. 1–2 Min)? [j/n] " B
-    [ "$B" = "j" ] && (cd "$ZIEL" && sh build.sh schnell)
+    echo
+    read -r -p "Noch ein Buch holen? [j = ja | Enter = nein]: " W
 done
 
 else
     echo "OK  ohne GitHub. Gesichert wird mit  sh sicherung.sh  (ZIP)."
+fi
+}
+bauen() {
+    read -r -p "Jetzt einmal bauen (1–2 Min)? [n = nein | Enter = ja]: " B
+    case "$B" in n|nein) ;; *) (cd "$ZIEL" && sh build.sh schnell) ;; esac
+}
+github
+
+# --- Extra 2: Ghostscript (empfohlen, für CMYK-Druckdateien) -------------
+# Gebraucht mit «{farbmodus}: cmyk» in einer Druckdatei (z. B. tredition), umgewandelt wird bei final.
+echo
+echo "Ghostscript (empfohlen): dann bist du bereit für CMYK-Druck."
+if command -v gs >/dev/null 2>&1; then
+    echo "OK  Ghostscript $(gs --version) vorhanden"
+elif command -v brew >/dev/null 2>&1 || command -v port >/dev/null 2>&1; then
+    read -r -p "Ghostscript installieren? [n = nein | Enter = ja]: " GS
+    case "$GS" in
+        n|nein) ;;
+        *) if command -v brew >/dev/null 2>&1; then brew install ghostscript; else sudo port install ghostscript; fi \
+               && echo "OK  Ghostscript $(gs --version)" ;;
+    esac
+else
+    echo "Ghostscript fehlt – installieren mit:  brew install ghostscript"
 fi
 
 [ "$GH" = "j" ] || [ "$GH" = "ja" ] && exit 10       # 10 = mit GitHub (für die Schlussseite)

@@ -44,13 +44,10 @@ def main():
     import setup as S
     ordner = os.path.normpath(os.path.join(HIER, "..", NAME))
     if kette:
-        print(f"""Jetzt entsteht ein Beispielbuch «{NAME}» neben pureSATZ:
-  {ordner}
-Es zeigt, was pureSATZ kann: Kapitel, Fotos, Tabellen, Umschlag. Beim ersten Mal dauert es
-etwa eine Minute (Internet nötig). Danach öffnen sich der Ordner und das PDF.
-Das Hallo-Buch ist nur zum Anschauen und Ausprobieren – es darf später weg.
+        print("""Ein Beispielbuch: Kapitel, Fotos, Tabellen, Umschlag.
+Erstes Mal ca. 1 Minute (Internet). Darf später weg.
 """)
-        if not ja_frage("Hallo-Buch jetzt anlegen? [Enter = ja, n = überspringen]: "):
+        if not ja_frage("Hallo-Buch anlegen? [n = nein | Enter = ja]: "):
             print("Übersprungen.")
             return
         print()
@@ -95,9 +92,8 @@ Das Hallo-Buch ist nur zum Anschauen und Ausprobieren – es darf später weg.
             hilfe.oeffne(pdfs[-1])
     if kette:
         print(f"""
-OK  Hallo-Buch fertig. Ordner und PDF sind offen.
-Zum Ausprobieren: im Ordner {NAME} die Datei {NAME}-buch.md öffnen, einen Satz ändern –
-wie neu gebaut wird, steht am Schluss. Das Hallo-Buch darf später weg.""")
+OK  Hallo-Buch fertig – Ordner und PDF sind offen.
+Ausprobieren: {NAME}-buch.md öffnen, einen Satz ändern.""")
         return
     win = os.name == "nt"
     bau = ".\\build.bat schnell" if win else "sh build.sh schnell"
@@ -111,7 +107,7 @@ Ausprobieren:  {NAME}-buch.md im Ordner {NAME} öffnen, einen Satz ändern, spei
 Eigenes Buch:  im Ordner pureSATZ  {neu}
 Hallo-Buch wegwerfen: den Ordner {NAME} löschen. Ganze Hilfe: hilfe.html""")
     if sys.stdin.isatty() and "--nicht-oeffnen" not in sys.argv:    # nächster Schritt: das eigene Buch
-        if ja_frage("\nJetzt dein eigenes Buch anlegen? [Enter = ja, n = nein]: "):
+        if ja_frage("\nJetzt dein eigenes Buch anlegen? [n = nein | Enter = ja]: "):
             subprocess.run([sys.executable, os.path.join(SETUP, "setup.py")], cwd=HIER)
 
 

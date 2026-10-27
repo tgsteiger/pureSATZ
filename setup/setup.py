@@ -78,7 +78,7 @@ def lese_werte(pfad):
 
 def frage(text, vorgabe):
     try:
-        a = input(f"{text}" + (f" [{vorgabe}]" if vorgabe else "") + ": ").strip()
+        a = input(f"{text}" + (f" [Enter = {vorgabe}]" if vorgabe else "") + ": ").strip()
     except EOFError:
         a = ""
     return a or (vorgabe or "")
@@ -263,13 +263,11 @@ def main():
                 break
     w = lese_werte(datei)
     if kette:
-        print("""Jetzt entsteht DEIN Buch: ein eigener Ordner neben pureSATZ, mit deinem Titel und Namen und
-einem Demo-Kapitel, das du überschreibst. Hier schreibst und baust du ab jetzt – nicht in pureSATZ.
-Gefragt werden nur Titel, Untertitel, Autor und Format. Alles Weitere (Website, Adresse, Jahr,
-zweite Ausgabe, ISBN …) trägst du später in der Datei <Buch>-variablen.md ein.
+        print("""Dein Buch bekommt einen eigenen Ordner, mit Demo-Kapitel.
+Gefragt: Titel, Untertitel, Autor, Format. Rest später in <Buch>-variablen.md.
 """)
-        if not ja(frage("Dein Buch jetzt anlegen? [Enter = ja, n = später]", "")  or "ja"):
-            print("Später im Ordner pureSATZ: sh setup/setup.sh")
+        if not ja(frage("Dein Buch anlegen? [n = später | Enter = ja]", "") or "ja"):
+            print("Später im Ordner pureSATZ: " + ("setup\\setup.bat" if os.name == "nt" else "sh setup/setup.sh"))
             return
         print()
     else:
@@ -298,7 +296,7 @@ zweite Ausgabe, ISBN …) trägst du später in der Datei <Buch>-variablen.md ei
     print(f"  {'Buchordner':15} {ordner}")
     if kurz:
         print(f"  Website, Adresse, Jahr, zweite Ausgabe: später in {w['NAME']}-variablen.md")
-    if sys.stdin.isatty() and not ja(frage("\nSo anlegen? [Enter = ja, n = nein]", "") or "ja"):
+    if sys.stdin.isatty() and not ja(frage("\nSo anlegen? [n = nein | Enter = ja]", "") or "ja"):
         print("Abgebrochen."); return
     if kette:
         print("\nDein Buch wird angelegt (beim ersten Mal etwa eine Minute) …", flush=True)

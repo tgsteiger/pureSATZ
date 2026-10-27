@@ -3,7 +3,7 @@
 #  pureSATZ einrichten, in fünf Schritten (Linux und Mac).
 #  Aufruf über START-Linux.sh (sh START-Linux.sh) bzw. START-Mac.command (Doppelklick).
 #    1. Technik (Python …)   2. Ort für die Bücher   3. Hallo-Buch
-#    4. Dein eigenes Buch    5. Fertig und Extras (Ghostscript, GitHub – freiwillig)
+#    4. Dein eigenes Buch    5. Extras (GitHub freiwillig, Ghostscript empfohlen)
 #  Die Technik und die Extras stehen in linux-einrichten.sh bzw. mac-einrichten.sh.
 #  Darf beliebig oft laufen. --weiter = nach dem Kopieren an den festen Ort.
 # =====================================================================
@@ -27,21 +27,21 @@ fi
 # --- Willkommen -----------------------------------------------------------
 if [ "$1" != "--weiter" ]; then
     titel "pureSATZ – Willkommen"
-    echo "Das passiert jetzt, in fünf Schritten:"
+    echo "In fünf Schritten:"
     echo
-    echo "  1. Technik einrichten       Python, einmalig"
-    echo "  2. Ort für deine Bücher     ein fester Ordner – nicht Downloads"
-    echo "  3. Hallo-Buch               ein Beispielbuch zum Anschauen"
-    echo "  4. Dein eigenes Buch        leer, mit deinem Titel und Namen"
-    echo "  5. Fertig                   Extras wie GitHub sind freiwillig"
+    echo "  1. Technik       Python, einmalig"
+    echo "  2. Ort           fester Ordner für deine Bücher"
+    echo "  3. Hallo-Buch    Beispiel zum Anschauen"
+    echo "  4. Dein Buch     mit Titel und Namen"
+    echo "  5. Extras        GitHub, Ghostscript"
     echo
-    echo "Bei jeder Frage nimmt Enter den Vorschlag."
+    echo "Enter nimmt immer den Vorschlag."
     weiter
 fi
 
 # --- Schritt 1: Technik ---------------------------------------------------
-titel "Schritt 1 von 5 – Technik einrichten"
-echo "pureSATZ braucht Python (3.10 oder neuer). Fehlt etwas, wird es jetzt installiert."
+titel "Schritt 1 von 5 – Technik"
+echo "Python 3.10+ wird geprüft und wenn nötig installiert."
 echo
 bash "pc-einrichten/$OS-einrichten.sh" --technik || exit 1
 sleep 2
@@ -57,17 +57,14 @@ if [ "$1" != "--weiter" ]; then
         echo "  $HIER"
     else
         ZIEL="$HOME/Buchprojekte"
-        echo "pureSATZ liegt jetzt in:  $HIER"
-        echo "Deine Bücher entstehen neben pureSATZ. Besser ist ein fester Ort –"
-        echo "nicht Downloads, nicht Schreibtisch, nicht in einer Cloud (iCloud, OneDrive …)."
+        echo "pureSATZ liegt in:  $HIER"
+        echo "Fester Ort für deine Bücher (nicht Downloads/Schreibtisch/Cloud):"
         echo
         echo "Vorschlag:  $ZIEL"
+        echo "  n     = pureSATZ hier lassen"
+        echo "  Pfad  = eigenen Ort eintippen (oder Ordner ins Fenster ziehen)"
         echo
-        echo "  Enter oder j  = Vorschlag übernehmen"
-        echo "  anderer Pfad  = eintippen (oder Ordner ins Fenster ziehen)"
-        echo "  n             = hier lassen"
-        echo
-        read -r -p "Deine Wahl: " ORT
+        read -r -p "Ort [Enter = Vorschlag]: " ORT
         ORT="${ORT//\'/}"; ORT="${ORT//\"/}"; ORT="${ORT//\\ / }"; ORT="${ORT%"${ORT##*[![:space:]]}"}"
         case "$ORT" in
             n|nein) echo "pureSATZ bleibt hier:"; echo "  $HIER" ;;
@@ -79,8 +76,8 @@ if [ "$1" != "--weiter" ]; then
                     if [ -f "$ZIEL/pureSATZ/motor/VERSION" ]; then
                         ALT="$(cat "$ZIEL/pureSATZ/motor/VERSION")"
                         echo
-                        echo "pureSATZ $ALT ist dort schon vorhanden (diese Version: $NEU)."
-                        read -r -p "Ersetzen? Die alte bleibt als pureSATZ-alt-$ALT. [Enter = ja, n = die vorhandene nehmen]: " ERS
+                        echo "Dort ist schon pureSATZ $ALT."
+                        read -r -p "Durch $NEU ersetzen (alte bleibt als pureSATZ-alt-$ALT)? [n = nein | Enter = ja]: " ERS
                         case "$ERS" in
                             ""|j|ja)
                                 A="$ZIEL/pureSATZ-alt-$ALT"
@@ -102,8 +99,8 @@ if [ "$1" != "--weiter" ]; then
                     fi
                     oeffne "$ZIEL"
                     echo
-                    echo "Ab jetzt geht es in $ZIEL/pureSATZ weiter."
-                    echo "Den Ordner $HIER darfst du am Schluss löschen."
+                    echo "Weiter in $ZIEL/pureSATZ."
+                    echo "Den alten Ordner $HIER darfst du am Schluss löschen."
                     weiter
                     exec bash "$ZIEL/pureSATZ/pc-einrichten/start.sh" --weiter
                 fi ;;
@@ -123,9 +120,9 @@ titel "Schritt 4 von 5 – Dein eigenes Buch"
 python3 setup/setup.py --kette             # fragt Titel, Untertitel, Autor, Format, öffnet den Buchordner
 weiter
 
-# --- Schritt 5: Fertig und Extras ---------------------------------------------
-titel "Schritt 5 von 5 – Fertig und Extras"
-echo "Zwei Extras – beide freiwillig, beide gehen auch später ($START nochmals starten)."
+# --- Schritt 5: Extras (zuerst GitHub, am Schluss Ghostscript) -----------------
+titel "Schritt 5 von 5 – Extras"
+echo "Zwei Extras – gehen auch später."
 bash "pc-einrichten/$OS-einrichten.sh" --extras
 GH=$?                                       # 10 = mit GitHub
 
@@ -146,11 +143,11 @@ for d in "$OBEN"/*/; do
     printf "    %-24s %s\n" "$n/" "$t"
 done
 echo
-echo "Geschrieben und gebaut wird im Ordner deines Buchs – nie in pureSATZ."
+echo "Gearbeitet wird im Buchordner, nie in pureSATZ."
 if [ -n "$MAC" ]; then
-    echo "Im Buchordner «Terminal hier» doppelklicken, dann:"
+    echo "Dort «Terminal hier» doppelklicken, dann:"
 else
-    echo "Im Buchordner Rechtsklick → «Im Terminal öffnen», dann:"
+    echo "Dort Rechtsklick → «Im Terminal öffnen», dann:"
 fi
 echo "  sh build.sh schnell     Lese-PDF ansehen, in Sekunden"
 echo "  sh build.sh final       Druckfassung"

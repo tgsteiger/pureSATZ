@@ -4,7 +4,7 @@
 #  Am einfachsten: im Ordner pureSATZ  sh START-Linux.sh  – führt in fünf Schritten durch
 #  (Technik, Ort, Hallo-Buch, eigenes Buch, Extras) und ruft dieses Skript auf:
 #    bash pc-einrichten/linux-einrichten.sh --technik   Python, venv, git
-#    bash pc-einrichten/linux-einrichten.sh --extras    Ghostscript und GitHub (freiwillig)
+#    bash pc-einrichten/linux-einrichten.sh --extras    GitHub (freiwillig), Ghostscript (empfohlen)
 #  Ohne Angabe startet der ganze Ablauf (wie START-Linux.sh).
 #  Darf beliebig oft laufen – Erledigtes wird übersprungen.
 # =====================================================================
@@ -45,30 +45,15 @@ if [ "$1" = "--technik" ]; then
     exit 0
 fi
 
-# --- Extras ---------------------------------------------------------------
+# --- Extra 1: GitHub (freiwillig) ---------------------------------------
+github() {
 echo
-echo "Ghostscript braucht es nur, wenn eine Druckerei CMYK verlangt (z. B. tredition)."
-# --- Extra 1: Ghostscript (freiwillig, für CMYK-Druckdateien) --------
-# Braucht es nur mit «{farbmodus}: cmyk» in einer Druckdatei (z. B. tredition), umgewandelt wird bei final.
-if command -v gs >/dev/null 2>&1; then
-    echo "OK  Ghostscript $(gs --version) vorhanden"
-elif command -v apt >/dev/null 2>&1; then
-    read -r -p "Ghostscript installieren? [j = ja, Enter = nein]: " GS
-    if [ "$GS" = "j" ] || [ "$GS" = "ja" ]; then
-        sudo apt install -y ghostscript && echo "OK  Ghostscript $(gs --version)"
-    fi
-else
-    echo "Hinweis: Für {farbmodus}: cmyk Ghostscript installieren (Paket «ghostscript»)."
-fi
-
-# --- Extra 2: GitHub (freiwillig) ---------------------------------------
-echo
-echo "GitHub: private Sicherung und dasselbe Buch auf mehreren Computern (sh sync.sh)."
-read -r -p "Mit GitHub arbeiten? [j = ja, Enter = nein]: " GH
+echo "GitHub (freiwillig): Sicherung und mehrere Computer."
+read -r -p "Mit GitHub arbeiten? [j = ja | Enter = nein]: " GH
 if [ "$GH" = "j" ] || [ "$GH" = "ja" ]; then
     if ! command -v gh >/dev/null 2>&1; then
         echo "GitHub-Programm «gh» wird installiert …"
-        sudo apt install -y gh || { echo "gh liess sich nicht installieren. Hilfe: cli.github.com"; exit 1; }
+        sudo apt install -y gh || { echo "gh liess sich nicht installieren. Hilfe: cli.github.com"; return 1; }
     fi
     if [ -z "$(git config --global user.name)" ]; then
         read -r -p "Dein Name für git (z. B. Anna Muster): " N
@@ -85,33 +70,57 @@ if [ "$GH" = "j" ] || [ "$GH" = "ja" ]; then
     if ! gh auth status >/dev/null 2>&1; then
         echo
         echo "Jetzt bei GitHub anmelden. Antworten: GitHub.com → HTTPS → Yes → Login with a web browser"
-        gh auth login || { echo "Anmeldung abgebrochen – Skript später nochmals starten."; exit 1; }
+        gh auth login || { echo "Anmeldung abgebrochen – Skript später nochmals starten."; return 1; }
     fi
     gh auth setup-git >/dev/null 2>&1          # git (auch sync.sh, update.sh) nutzt die gh-Anmeldung
     BESITZER="$(gh api user --jq .login 2>/dev/null)"
     echo "OK  bei GitHub angemeldet als $BESITZER"
 
     # Bücher holen (neben diesen Ordner)
-    while true; do
-        echo
-        read -r -p "Eigenes Buch von GitHub holen? Repository-Name (z. B. mein-buch), Enter = weiter: " R
+    echo
+    read -r -p "Hast du schon ein Buch auf GitHub? [j = ja | Enter = nein]: " W
+    while [ "$W" = "j" ] || [ "$W" = "ja" ]; do
+        read -r -p "Name des Buchs auf GitHub (z. B. mein-buch): " R
         [ -z "$R" ] && break
         case "$R" in */*) QUELLE="$R" ;; *) QUELLE="$BESITZER/$R" ;; esac
         STD="$(basename "$R" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')"
-        read -r -p "Ordnername [$STD]: " O
+        read -r -p "Ordnername [Enter = $STD]: " O
         O="${O:-$STD}"
         ZIEL="$(dirname "$HIER")/$O"
         if [ -d "$ZIEL/.git" ]; then
             echo "Schon da: $ZIEL – hole neusten Stand"
             (cd "$ZIEL" && sh sync.sh)
-        else
-            gh repo clone "$QUELLE" "$ZIEL" || continue
+            bauen
+        elif gh repo clone "$QUELLE" "$ZIEL"; then
+            bauen
         fi
-        read -r -p "Jetzt einmal bauen (richtet beim ersten Mal Python ein, ca. 1–2 Min)? [j/n] " B
-        [ "$B" = "j" ] && (cd "$ZIEL" && sh build.sh schnell)
+        echo
+        read -r -p "Noch ein Buch holen? [j = ja | Enter = nein]: " W
     done
 else
     echo "OK  ohne GitHub. Gesichert wird mit  sh sicherung.sh  (ZIP)."
+fi
+}
+bauen() {
+    read -r -p "Jetzt einmal bauen (1–2 Min)? [n = nein | Enter = ja]: " B
+    case "$B" in n|nein) ;; *) (cd "$ZIEL" && sh build.sh schnell) ;; esac
+}
+github
+
+# --- Extra 2: Ghostscript (empfohlen, für CMYK-Druckdateien) -------------
+# Gebraucht mit «{farbmodus}: cmyk» in einer Druckdatei (z. B. tredition), umgewandelt wird bei final.
+echo
+echo "Ghostscript (empfohlen): dann bist du bereit für CMYK-Druck."
+if command -v gs >/dev/null 2>&1; then
+    echo "OK  Ghostscript $(gs --version) vorhanden"
+elif command -v apt >/dev/null 2>&1; then
+    read -r -p "Ghostscript installieren? [n = nein | Enter = ja]: " GS
+    case "$GS" in
+        n|nein) ;;
+        *) sudo apt install -y ghostscript && echo "OK  Ghostscript $(gs --version)" ;;
+    esac
+else
+    echo "Ghostscript fehlt – mit der Paketverwaltung installieren (Paket «ghostscript»)."
 fi
 
 [ "$GH" = "j" ] || [ "$GH" = "ja" ] && exit 10       # 10 = mit GitHub (für die Schlussseite)

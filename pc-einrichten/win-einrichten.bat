@@ -3,7 +3,7 @@ rem =====================================================================
 rem  pureSATZ - Windows einrichten, in fuenf Schritten
 rem  Am einfachsten: START-Windows.bat im Ordner pureSATZ doppelklicken (ruft dieses Skript auf).
 rem    1. Technik (Python)   2. Ort fuer die Buecher   3. Hallo-Buch
-rem    4. Dein eigenes Buch  5. Fertig und Extras (Ghostscript, GitHub - freiwillig)
+rem    4. Dein eigenes Buch  5. Extras (GitHub freiwillig, Ghostscript empfohlen)
 rem  Darf beliebig oft laufen - Erledigtes wird uebersprungen.
 rem  --weiter = nach dem Kopieren an den festen Ort (ohne Willkommen und Ort)
 rem =====================================================================
@@ -21,21 +21,21 @@ if exist "%TEMP%\puresatz-neustart-python.txt" set "WEITER=2"
 rem --- Willkommen --------------------------------------------------------
 if defined WEITER goto schritt1
 call :titel "pureSATZ - Willkommen"
-echo Das passiert jetzt, in fuenf Schritten:
+echo In fuenf Schritten:
 echo.
-echo   1. Technik einrichten       Python, einmalig
-echo   2. Ort fuer deine Buecher   ein fester Ordner - nicht Downloads
-echo   3. Hallo-Buch               ein Beispielbuch zum Anschauen
-echo   4. Dein eigenes Buch        leer, mit deinem Titel und Namen
-echo   5. Fertig                   Extras wie GitHub sind freiwillig
+echo   1. Technik       Python, einmalig
+echo   2. Ort           fester Ordner fuer deine Buecher
+echo   3. Hallo-Buch    Beispiel zum Anschauen
+echo   4. Dein Buch     mit Titel und Namen
+echo   5. Extras        GitHub, Ghostscript
 echo.
-echo Bei jeder Frage nimmt Enter den Vorschlag.
+echo Enter nimmt immer den Vorschlag.
 call :weiter
 
 rem --- Schritt 1: Technik -----------------------------------------------
 :schritt1
-call :titel "Schritt 1 von 5 - Technik einrichten"
-echo pureSATZ braucht Python (3.10 oder neuer). Fehlt es, wird es jetzt installiert.
+call :titel "Schritt 1 von 5 - Technik"
+echo Python 3.10+ wird geprueft und wenn noetig installiert.
 echo.
 call :python_suchen
 if defined PY goto python_ok
@@ -70,18 +70,15 @@ if exist "%HIER%\.git" goto ort_git
 if /i "%OBENNAME%"=="Buchprojekte" goto ort_fest
 
 set "ZIEL=%USERPROFILE%\Buchprojekte"
-echo pureSATZ liegt jetzt in:  %HIER%
-echo Deine Buecher entstehen neben pureSATZ. Besser ist ein fester Ort -
-echo nicht Downloads, nicht Desktop, nicht OneDrive.
+echo pureSATZ liegt in:  %HIER%
+echo Fester Ort fuer deine Buecher (nicht Downloads/Desktop/OneDrive):
 echo.
 echo Vorschlag:  %ZIEL%
-echo.
-echo   Enter oder j  = Vorschlag uebernehmen
-echo   anderer Pfad  = eintippen (oder Ordner ins Fenster ziehen)
-echo   n             = hier lassen
+echo   n     = pureSATZ hier lassen
+echo   Pfad  = eigenen Ort eintippen (oder Ordner ins Fenster ziehen)
 echo.
 set "ORT="
-set /p "ORT=Deine Wahl: "
+set /p "ORT=Ort [Enter = Vorschlag]: "
 if defined ORT set "ORT=%ORT:"=%"
 if /i "%ORT%"=="n" goto ort_hier
 if /i "%ORT%"=="nein" goto ort_hier
@@ -94,9 +91,9 @@ for /f "usebackq delims=" %%v in ("%HIER%\motor\VERSION") do set "VNEU=%%v"
 if not exist "%ZIEL%\pureSATZ\motor\VERSION" goto kopieren
 for /f "usebackq delims=" %%v in ("%ZIEL%\pureSATZ\motor\VERSION") do set "VALT=%%v"
 echo.
-echo pureSATZ %VALT% ist dort schon vorhanden (diese Version: %VNEU%).
+echo Dort ist schon pureSATZ %VALT%.
 set "ERS=j"
-set /p "ERS=Ersetzen? Die alte bleibt als pureSATZ-alt-%VALT%. [Enter = ja, n = die vorhandene nehmen]: "
+set /p "ERS=Durch %VNEU% ersetzen (alte bleibt als pureSATZ-alt-%VALT%)? [n = nein | Enter = ja]: "
 if /i "%ERS%"=="ja" set "ERS=j"
 if /i not "%ERS%"=="j" goto dort_weiter
 set "ALTNAME=pureSATZ-alt-%VALT%"
@@ -118,7 +115,7 @@ if exist "%ZIEL%\Terminal hier.bat" goto terminal_da
 :terminal_da
 echo.
 set "VK=j"
-set /p "VK=Verknuepfung Buchprojekte auf dem Desktop anlegen? [Enter = ja, n = nein]: "
+set /p "VK=Verknuepfung Buchprojekte auf dem Desktop? [n = nein | Enter = ja]: "
 if /i "%VK%"=="ja" set "VK=j"
 if /i not "%VK%"=="j" goto explorer
 powershell -NoProfile -ExecutionPolicy Bypass -Command "$s=(New-Object -ComObject WScript.Shell).CreateShortcut([Environment]::GetFolderPath('Desktop')+'\Buchprojekte.lnk'); $s.TargetPath='%ZIEL%'; $s.Save()" >nul 2>nul
@@ -126,8 +123,8 @@ if errorlevel 1 (echo Verknuepfung ging nicht - nicht schlimm.) else (echo OK  V
 :explorer
 start "" explorer "%ZIEL%"
 echo.
-echo Ab jetzt geht es in %ZIEL%\pureSATZ weiter.
-echo Den Ordner %HIER% darfst du am Schluss loeschen.
+echo Weiter in %ZIEL%\pureSATZ.
+echo Den alten Ordner %HIER% darfst du am Schluss loeschen.
 call :weiter
 :dort_weiter
 "%ZIEL%\pureSATZ\pc-einrichten\win-einrichten.bat" --weiter
@@ -160,26 +157,13 @@ rem setup.py erklaert, fragt Titel, Untertitel, Autor, Format und oeffnet den Bu
 %PY% setup\setup.py --kette
 call :weiter
 
-rem --- Schritt 5: Fertig und Extras -------------------------------------------
-call :titel "Schritt 5 von 5 - Fertig und Extras"
-echo Zwei Extras - beide freiwillig, beide gehen auch spaeter (START-Windows.bat nochmals starten).
+rem --- Schritt 5: Extras (zuerst GitHub, am Schluss Ghostscript) ---------------
+call :titel "Schritt 5 von 5 - Extras"
+echo Zwei Extras - gehen auch spaeter.
 echo.
-echo Ghostscript braucht es nur, wenn eine Druckerei CMYK verlangt (z. B. tredition).
-set "GSDA="
-where gswin64c >nul 2>nul && set "GSDA=1"
-if exist "%ProgramFiles%\gs\" set "GSDA=1"
-if defined GSDA (echo OK  Ghostscript vorhanden & goto gs_ok)
-where winget >nul 2>nul || (echo Ghostscript fehlt - bei Bedarf: ghostscript.com & goto gs_ok)
-set "GS=n"
-set /p "GS=Ghostscript installieren? [j = ja, Enter = nein]: "
-if /i "%GS%"=="ja" set "GS=j"
-if /i "%GS%"=="j" winget install -e --source winget --id ArtifexSoftware.GhostScript --accept-package-agreements --accept-source-agreements
-:gs_ok
-
-echo.
-echo GitHub: private Sicherung und dasselbe Buch auf mehreren Computern (sync.bat).
+echo GitHub (freiwillig): Sicherung und mehrere Computer.
 set "GH=n"
-set /p "GH=Mit GitHub arbeiten? [j = ja, Enter = nein]: "
+set /p "GH=Mit GitHub arbeiten? [j = ja | Enter = nein]: "
 if /i "%GH%"=="ja" set "GH=j"
 if /i not "%GH%"=="j" goto ohne_github
 
@@ -217,35 +201,67 @@ gh auth status >nul 2>nul && goto angemeldet
 echo.
 echo Jetzt bei GitHub anmelden. Antworten: GitHub.com - HTTPS - Yes - Login with a web browser
 gh auth login
-gh auth status >nul 2>nul || (echo Anmeldung abgebrochen - spaeter nochmals starten. & goto ende)
+gh auth status >nul 2>nul || (echo Anmeldung abgebrochen - spaeter nochmals starten. & goto ghostscript)
 :angemeldet
 gh auth setup-git >nul 2>nul
 set "BESITZER="
 for /f "delims=" %%u in ('gh api user --jq .login') do set "BESITZER=%%u"
 echo OK  bei GitHub angemeldet als %BESITZER%
 
-:buch_holen
 echo.
+set "W="
+set /p "W=Hast du schon ein Buch auf GitHub? [j = ja | Enter = nein]: "
+:buch_holen
+if /i "%W%"=="ja" set "W=j"
+if /i not "%W%"=="j" goto ghostscript
 set "R="
-set /p "R=Eigenes Buch von GitHub holen? Repository-Name (z. B. mein-buch), Enter = weiter: "
-if not defined R goto fertig
+set /p "R=Name des Buchs auf GitHub (z. B. mein-buch): "
+if not defined R goto ghostscript
 set "QUELLE=%BESITZER%/%R%"
 echo %R% | find "/" >nul && set "QUELLE=%R%"
 for %%a in ("%R:/=\%") do set "O=%%~nxa"
-set /p "O=Ordnername [%O%]: "
+set /p "O=Ordnername [Enter = %O%]: "
 if exist "%OBEN%\%O%\.git" (
     echo Schon da: %OBEN%\%O% - hole neusten Stand
     pushd "%OBEN%\%O%" & call sync.bat & popd
 ) else (
-    gh repo clone "%QUELLE%" "%OBEN%\%O%" || goto buch_holen
+    gh repo clone "%QUELLE%" "%OBEN%\%O%" || goto buch_noch
 )
-set "B=n"
-set /p "B=Jetzt einmal bauen (richtet beim ersten Mal Python ein, ca. 1-2 Min)? [j/n] "
-if /i "%B%"=="j" (pushd "%OBEN%\%O%" & call build.bat schnell & popd)
+set "B=j"
+set /p "B=Jetzt einmal bauen (1-2 Min)? [n = nein | Enter = ja]: "
+if /i "%B%"=="nein" set "B=n"
+if /i not "%B%"=="n" (pushd "%OBEN%\%O%" & call build.bat schnell & popd)
+:buch_noch
+echo.
+set "W="
+set /p "W=Noch ein Buch holen? [j = ja | Enter = nein]: "
 goto buch_holen
 
 :ohne_github
 echo OK  ohne GitHub. Gesichert wird mit  sicherung.bat  (ZIP).
+
+rem Ghostscript: empfohlen, fuer CMYK-Druckdateien. winget hat es nicht (mehr) -
+rem darum neusten Installer von GitHub (ArtifexSoftware/ghostpdl-downloads) holen und starten.
+:ghostscript
+echo.
+echo Ghostscript (empfohlen): dann bist du bereit fuer CMYK-Druck.
+call :gs_suchen
+if defined GSDA (echo OK  Ghostscript vorhanden & goto fertig)
+set "GS=j"
+set /p "GS=Ghostscript installieren? [n = nein | Enter = ja]: "
+if /i "%GS%"=="n" goto fertig
+if /i "%GS%"=="nein" goto fertig
+echo.
+echo Ghostscript wird geladen - das kann einige Minuten dauern.
+echo Fenster offen lassen, der Installer erscheint von selbst.
+powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $ProgressPreference='SilentlyContinue'; $r=Invoke-RestMethod https://api.github.com/repos/ArtifexSoftware/ghostpdl-downloads/releases/latest; $a=$r.assets | ? name -like 'gs*w64.exe' | select -First 1; Invoke-WebRequest $a.browser_download_url -OutFile $env:TEMP\gs-setup.exe; Start-Process $env:TEMP\gs-setup.exe -Wait"
+if errorlevel 1 goto gs_web
+call :gs_suchen
+if defined GSDA (echo OK  Ghostscript installiert) else (echo Ghostscript noch nicht gefunden - spaeter START-Windows.bat nochmals starten.)
+goto fertig
+:gs_web
+echo Download ging nicht - die Seite oeffnet sich, dort "Windows 64 bit" laden.
+start "" "https://ghostscript.com/releases/gsdnld.html"
 
 :fertig
 del "%TEMP%\puresatz-neustart-*.txt" >nul 2>nul
@@ -257,8 +273,8 @@ echo.
 echo   %OBEN%\
 for /d %%d in ("%OBEN%\*") do call :ordner_zeile "%%~nxd"
 echo.
-echo Geschrieben und gebaut wird im Ordner deines Buchs - nie in pureSATZ.
-echo Im Buchordner "Terminal hier" doppelklicken, dann:
+echo Gearbeitet wird im Buchordner, nie in pureSATZ.
+echo Dort "Terminal hier" doppelklicken, dann:
 echo   build.bat schnell     Lese-PDF ansehen, in Sekunden
 echo   build.bat final       Druckfassung
 echo   sicherung.bat         ZIP-Sicherung
@@ -295,6 +311,12 @@ if /i "%NM:~0,13%"=="pureSATZ-alt-" set "TXT=alte Version - darf weg"
 if /i "%NM%"=="Hallo-Buch" set "TXT=zum Ausprobieren - darf weg"
 if not defined TXT if exist "%OBEN%\%NM%\build.bat" set "TXT=dein Buch - hier schreibst und baust du"
 if defined TXT echo     %NM%\    %TXT%
+goto :eof
+
+:gs_suchen
+set "GSDA="
+where gswin64c >nul 2>nul && set "GSDA=1"
+if exist "%ProgramFiles%\gs\" set "GSDA=1"
 goto :eof
 
 :python_suchen
