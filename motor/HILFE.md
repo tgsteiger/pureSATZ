@@ -118,7 +118,7 @@ Im Druck allein auf der rechten Seite gegenüber dem Impressum, im unteren Dritt
 Leere Zeilen fallen weg (im Lese-PDF also Herstellung, Logo und ISBN). Die Werte stehen in der Variablen-Datei:
 gemeinsame unter `## Impressum`, die einer Ausgabe unter `## Ausgabe: …`. Eigene Zeilen unter `## @IMPRESSUM`
 gehen auch; dann gelten nur diese. Im Druck: Seite 2 links Impressum (oben das Logo aus `{impressum-logo}`),
-Seite 3 rechts Widmung.
+Seite 3 rechts Widmung. Im Lese-PDF: Titel allein, danach Impressum auf eigener Seite unten.
 
 **Auflage:** `{auflage}: 1. Auflage 2026` steht über der ISBN. Bei Print-on-Demand bleibt sie bei kleinen
 Korrekturen gleich; erst bei spürbar geändertem Inhalt z. B. `2., überarbeitete Auflage 2028` (dann meist neue ISBN).

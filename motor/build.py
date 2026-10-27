@@ -2348,7 +2348,7 @@ def impressum_logo():
 
 def impressum(zeilen, widmung):
     """Druck: Impressum links unten (Logo oben), Widmung auf eigener Seite rechts, im unteren Drittel.
-    Bildschirm: Impressum zentriert, Widmung auf eigener Seite."""
+    Bildschirm: Titel allein, Impressum zentriert unten auf eigener Seite, Widmung auf eigener Seite."""
     html = zeilen_html(zeilen)
     if DRUCK:
         # Seite 2 (links): Impressum unten, Logo der Plattform oben. Seite 3 (rechts): Widmung allein.
@@ -2357,7 +2357,8 @@ def impressum(zeilen, widmung):
         if widmung:
             out += [PageBreak(), ImpressumSeite(inline_einfach(widmung), Paragraph("", small))]
         return out
-    out = [Spacer(1, 25 * mm * min(S, 1.6)), Paragraph(html, ParagraphStyle("imp", parent=small, alignment=TA_CENTER)),
+    # Bildschirm: Titel allein, Impressum ganz auf eigener Seite unten (wie im Druck, nie getrennt)
+    out = [PageBreak(), ImpressumSeite("", Paragraph(html, ParagraphStyle("imp", parent=small, alignment=TA_CENTER))),
            PageBreak()]
     if widmung:   # eigene Seite, Satz unten (gleicher Abstand wie oben)
         out += [ImpressumSeite("", Paragraph("<i>" + inline_einfach(widmung) + "</i>",
