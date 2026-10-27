@@ -20,6 +20,7 @@ import html
 import os
 import re
 import shutil
+import sys
 from datetime import datetime
 
 ORDNER = "staende"
@@ -512,4 +513,5 @@ def befehl(base, bk, argumente):
             orte.append(x[1])
     for o in orte:
         print(f"    {o or 'Anfang'}: {sum(1 for x in aend if x[1] == o)}")
-    print(f"PDF: {os.path.relpath(ziel, base)}")
+    oeffnen = {"darwin": "open", "win32": 'start ""'}.get(sys.platform, "xdg-open")    # wie in bauen.py
+    print(f'PDF: {oeffnen} "{os.path.relpath(ziel, base)}"')
