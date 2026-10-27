@@ -4,9 +4,11 @@
 #  Für Intel-Macs UND Macs mit Apple-Chip (M1, M2, M3 …), ohne Homebrew.
 #  (Homebrew läuft auf Intel-Macs nicht mehr.)
 #
-#  Im Ordner pureSATZ starten:   bash pc-einrichten/mac-einrichten.sh
+#  Am einfachsten: start.command im Ordner pureSATZ doppelklicken (ruft dieses Skript auf).
+#  Auch direkt im Ordner pureSATZ:   bash pc-einrichten/mac-einrichten.sh
 #  Das Skript darf beliebig oft laufen – Erledigtes wird übersprungen.
 #  Hält es an (Schritt 1 oder 2), danach einfach nochmals starten.
+#  GitHub ist freiwillig und kommt am Schluss: Ohne GitHub geht Schreiben und Bauen genauso.
 # =====================================================================
 cd "$(dirname "$0")/.." || exit 1          # Ordner pureSATZ
 HIER="$(pwd)"
@@ -32,13 +34,52 @@ if ! python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3,10) else 1)' 2
     echo "Gleich öffnet sich python.org: den neusten"
     echo "«macOS 64-bit universal2 installer» laden und installieren"
     echo "(läuft auf Intel und Apple-Chip)."
-    echo "Danach Terminal SCHLIESSEN, NEU ÖFFNEN und dieses Skript nochmals starten."
+    echo "Danach Terminal SCHLIESSEN und start.command nochmals doppelklicken."
     open "https://www.python.org/downloads/macos/"
     exit 0
 fi
 echo "OK  $(python3 --version)  ($(command -v python3))"
 
-# --- 3. Name und Mail für git ------------------------------------------
+# --- 3. Ghostscript (freiwillig, für CMYK-Druckdateien) ---------------
+# Braucht es nur mit «{farbmodus}: cmyk» in einer Druckdatei (z. B. tredition), umgewandelt wird bei final.
+if command -v gs >/dev/null 2>&1; then
+    echo "OK  Ghostscript $(gs --version) (für {farbmodus}: cmyk)"
+elif command -v brew >/dev/null 2>&1; then
+    read -r -p "Ghostscript für CMYK-Druckdateien (z. B. tredition) installieren? [j/n] (j): " GS
+    if [ -z "$GS" ] || [ "$GS" = "j" ] || [ "$GS" = "ja" ]; then
+        brew install ghostscript && echo "OK  Ghostscript $(gs --version)"
+    fi
+elif command -v port >/dev/null 2>&1; then
+    read -r -p "Ghostscript für CMYK-Druckdateien (z. B. tredition) installieren? [j/n] (j): " GS
+    if [ -z "$GS" ] || [ "$GS" = "j" ] || [ "$GS" = "ja" ]; then
+        sudo port install ghostscript && echo "OK  Ghostscript $(gs --version)"
+    fi
+else
+    echo "Hinweis: Ghostscript fehlt – nur nötig für {farbmodus}: cmyk (z. B. tredition)."
+    echo "         Installieren mit Homebrew (brew install ghostscript) oder MacPorts (sudo port install ghostscript)."
+    echo "         Ohne Ghostscript bleiben die Druckdateien RGB, alles andere läuft normal."
+fi
+
+# --- 4. Hallo-Buch und eigenes Buch ----------------------------------
+echo
+read -r -p "Hallo-Buch jetzt ansehen (Beispielbuch, das PDF öffnet sich)? [j/n] (j): " HB
+if [ -z "$HB" ] || [ "$HB" = "j" ] || [ "$HB" = "ja" ]; then
+    python3 setup/hallo.py                  # fragt am Schluss selbst nach dem eigenen Buch
+else
+    read -r -p "Jetzt dein eigenes Buch anlegen? [j/n] (j): " NB
+    if [ -z "$NB" ] || [ "$NB" = "j" ] || [ "$NB" = "ja" ]; then
+        python3 setup/setup.py
+    fi
+fi
+
+# --- 5. GitHub (freiwillig, geht auch jederzeit später) ---------------
+echo
+echo "GitHub ist freiwillig und geht auch später (dieses Skript nochmals starten, siehe GITHUB.md):"
+echo "private Sicherung und dasselbe Buch auf mehreren Computern (sh sync.sh)."
+read -r -p "Mit GitHub arbeiten? [j/n] (n): " GH
+if [ "$GH" = "j" ] || [ "$GH" = "ja" ]; then
+
+# Name und Mail für git
 if [ -z "$(git config --global user.name)" ]; then
     read -r -p "Dein Name für git (z. B. Vorname Nachname): " N
     [ -n "$N" ] && git config --global user.name "$N"
@@ -53,7 +94,7 @@ fi
 git config --global credential.helper osxkeychain
 echo "OK  git: $(git config --global user.name) <$(git config --global user.email)>"
 
-# --- 4. Zugang zu GitHub prüfen ----------------------------------------
+# Zugang zu GitHub prüfen
 URL="$(git remote get-url origin 2>/dev/null)"
 if [ -n "$URL" ]; then
     if git ls-remote "$URL" >/dev/null 2>&1; then
@@ -78,32 +119,13 @@ TXT
     fi
 fi
 
-# --- 5. Ghostscript (freiwillig, für CMYK-Druckdateien) ---------------
-# Braucht es nur mit «{farbmodus}: cmyk» in einer Druckdatei (z. B. tredition), umgewandelt wird bei final.
-if command -v gs >/dev/null 2>&1; then
-    echo "OK  Ghostscript $(gs --version) (für {farbmodus}: cmyk)"
-elif command -v brew >/dev/null 2>&1; then
-    read -r -p "Ghostscript für CMYK-Druckdateien (z. B. tredition) installieren? [j/n] (j): " GS
-    if [ -z "$GS" ] || [ "$GS" = "j" ] || [ "$GS" = "ja" ]; then
-        brew install ghostscript && echo "OK  Ghostscript $(gs --version)"
-    fi
-elif command -v port >/dev/null 2>&1; then
-    read -r -p "Ghostscript für CMYK-Druckdateien (z. B. tredition) installieren? [j/n] (j): " GS
-    if [ -z "$GS" ] || [ "$GS" = "j" ] || [ "$GS" = "ja" ]; then
-        sudo port install ghostscript && echo "OK  Ghostscript $(gs --version)"
-    fi
-else
-    echo "Hinweis: Ghostscript fehlt – nur nötig für {farbmodus}: cmyk (z. B. tredition)."
-    echo "         Installieren mit Homebrew (brew install ghostscript) oder MacPorts (sudo port install ghostscript)."
-    echo "         Ohne Ghostscript bleiben die Druckdateien RGB, alles andere läuft normal."
-fi
-
-# --- 6. Bücher von GitHub holen (neben diesen Ordner) ------------------
+# Bücher von GitHub holen (neben diesen Ordner)
 BESITZER="$(printf '%s' "$URL" | sed -E 's#.*github.com[:/]([^/]+)/.*#\1#')"
 while true; do
     echo
     read -r -p "Buch von GitHub holen? Repository-Name (z. B. mein-buch), leer = fertig: " R
     [ -z "$R" ] && break
+    case "$BESITZER" in ""|*/*|*:*) read -r -p "Dein GitHub-Benutzername: " BESITZER ;; esac
     STD="$(printf '%s' "$R" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')"
     read -r -p "Ordnername [$STD]: " O
     O="${O:-$STD}"
@@ -118,6 +140,15 @@ while true; do
     [ "$B" = "j" ] && (cd "$ZIEL" && sh build.sh schnell)
 done
 
+else
+    echo "OK  ohne GitHub. Gesichert wird mit  sh sicherung.sh  (ZIP)."
+fi
+
 echo
 echo "=== Fertig ==="
-echo "Im Alltag (im Buchordner):  sh sync.sh  ·  sh build.sh schnell  ·  sh build.sh final"
+echo "Deine Bücher liegen neben pureSATZ in $(dirname "$HIER")"
+echo "pureSATZ ist die Werkstatt – dort nichts schreiben."
+echo "Im Buchordner:     «Terminal hier» doppelklicken, dann  sh build.sh schnell  ·  sh build.sh final  ·  sh sicherung.sh"
+echo "Neues Buch:        sh setup/setup.sh        (im Ordner pureSATZ)"
+[ "$GH" = "j" ] || [ "$GH" = "ja" ] && echo "Mit GitHub:        sh sync.sh  ·  sh update.sh"
+echo "Hilfe:             hilfe.html öffnen, oben «Start»"

@@ -7,6 +7,9 @@ Für alle, die ein Buch schreiben möchten, auch ohne Erfahrung mit Linux. Ein T
 (Linux: Strg+Alt+T), dann die Befehle Zeile für Zeile eintippen und mit Enter bestätigen.
 
 ## 1. Einmalig vorbereiten
+**Am einfachsten:** Windows `start.bat` · Mac `start.command` doppelklicken · Linux `sh start.sh` im Ordner
+pureSATZ. Der Start erledigt die Schritte 1 und 2: fester Ort (`Buchprojekte`), Einrichten, Hallo-Buch, eigenes Buch.
+Von Hand geht es so:
 Im Ordner pureSATZ das Einrichte-Skript starten – es prüft alles, installiert, was fehlt, und fragt,
 ob du mit GitHub arbeiten willst (freiwillig):
 ```sh

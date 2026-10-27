@@ -13,6 +13,7 @@ Das neue Buch liegt danach neben «pureSATZ» (z. B. ../Mein-Buch/) mit:
   Mein-Buch-buch.md       Titelei und ein Demo-Kapitel mit allen Möglichkeiten
   Mein-Buch-umschlag.md   Vorderseite, Buchrücken, Rückseite
   stichworte-Mein-Buch.txt, fotos/, bilder/, build.sh, README.md, motor/, .venv/
+  Terminal hier (Windows .bat, Mac .command): Doppelklick öffnet das Befehlsfenster im Buchordner
 Bestehende Dateien werden NIE überschrieben.
 """
 import os
@@ -200,7 +201,25 @@ def buch(ordner, w):
     for o in ("fotos", "bilder"):
         for f in os.listdir(os.path.join(VORLAGE, "beispiel", o)):
             kopiere(os.path.join(VORLAGE, "beispiel", o, f), os.path.join(ordner, o, f), f"{o}/{f}")
+    terminal_hier(ordner)
     return name
+
+
+def terminal_hier(ordner):
+    """«Terminal hier»: Doppelklick öffnet das Befehlsfenster genau in diesem Ordner (Windows: cmd, Mac: Terminal).
+    Linux braucht es nicht: Rechtsklick in den Ordner → «Im Terminal öffnen»."""
+    if os.name == "nt":
+        pfad, inhalt = os.path.join(ordner, "Terminal hier.bat"), '@cd /d "%~dp0" & cmd /k\r\n'
+    elif sys.platform == "darwin":
+        pfad, inhalt = (os.path.join(ordner, "Terminal hier.command"),
+                        '#!/bin/sh\ncd "$(dirname "$0")" && exec "${SHELL:-/bin/zsh}" -l\n')
+    else:
+        return
+    if not os.path.exists(pfad):
+        with open(pfad, "w", encoding="utf-8", newline="") as f:
+            f.write(inhalt)
+        os.chmod(pfad, 0o755)
+        print(f"  neu:      {os.path.basename(pfad)} (Doppelklick öffnet das Befehlsfenster hier)")
 
 
 def buchpfad(p):
@@ -260,16 +279,30 @@ def main():
         print("Abgebrochen."); return
     name = buch(ordner, w)
     motor(ordner, venv)
+    terminal = ("Im Buchordner «Terminal hier» doppelklicken – das Befehlsfenster öffnet sich genau dort."
+                if os.name == "nt" or sys.platform == "darwin" else
+                "Terminal im Buchordner: Rechtsklick in den Ordner → «Im Terminal öffnen».")
     print(f"""
-Fertig. Das Buch liegt in: {ordner}
+Fertig. Dein Buch liegt in: {ordner}
+  {name + '-buch.md':30} hier schreibst du (mit Demo-Kapitel)
   {name + '-variablen.md':30} Angaben, Technik, Layout
-  {name + '-buch.md':30} das Buch (mit Demo-Kapitel)
   {name + '-umschlag.md':30} Vorderseite, Buchrücken, Rückseite
   {'stichworte-' + name + '.txt':30} Stichwortverzeichnis
+
+Ab jetzt arbeitest du in diesem Ordner. pureSATZ daneben ist die Werkstatt – dort nichts schreiben.
+{terminal}
 Weiter:
   cd "{ordner}"
-  sh build.sh            alles als Entwurf (Demo ansehen: Ordner ausgabe-normal/)
-  sh build.sh final      Druckfassung""")
+  sh build.sh schnell    nur das Lese-PDF, in Sekunden (Demo ansehen: Ordner ausgabe-normal/)
+  sh build.sh            alles als Entwurf
+  sh build.sh final      Druckfassung
+Später: private Sicherung und mehrere Computer mit GitHub – siehe GITHUB.md im Ordner pureSATZ.""")
+    if sys.stdin.isatty() and not datei:                 # Buchordner im Explorer/Finder/Dateimanager zeigen
+        try:
+            import hilfe
+            hilfe.oeffne(ordner)
+        except Exception:
+            pass
 
 
 if __name__ == "__main__":

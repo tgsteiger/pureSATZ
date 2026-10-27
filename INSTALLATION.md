@@ -19,23 +19,36 @@ und ohne GitHub-Konto:
 
 - **Mit git** (empfohlen): `git clone https://github.com/tgsteiger/pureSATZ.git pureSATZ` (Schritt 2).
   Später holt `git pull` im Ordner pureSATZ den neuesten Stand.
-- **Als ZIP**: auf github.com/tgsteiger/pureSATZ → **Code → Download ZIP**, entpacken, den Ordner
-  `pureSATZ` nennen und bei Schritt 3 weitermachen.
+- **Als ZIP**: auf github.com/tgsteiger/pureSATZ → **Code → Download ZIP**, auspacken und `start` doppelklicken
+  (siehe unten) – er kopiert pureSATZ an einen festen Ort und nennt den Ordner richtig.
 
 Neue Motor-Versionen holt jedes Buch selbst mit `sh update.sh` (Windows: `update.bat`) – ohne Anmeldung.
 Ein **GitHub-Konto** brauchst du nur, wenn dein Buch privat auf GitHub liegen und zwischen Computern
 wandern soll (Schritt 4). Ohne GitHub: Schritt 4 weglassen; gesichert wird mit `sh sicherung.sh` (ZIP).
 Nutzungsbedingungen: `LIZENZ.md`.
 
-**Am einfachsten:** Im Ordner pureSATZ das Einrichte-Skript starten. Es prüft Python, git und venv,
-installiert, was fehlt, fragt, ob du mit GitHub arbeiten willst, holt auf Wunsch Bücher und legt ein neues an.
-Es darf beliebig oft laufen.
+**Am einfachsten:** Im Ordner pureSATZ den Start aufrufen. Er schlägt einen festen Ort vor (`Buchprojekte` im
+Benutzerordner – nicht Downloads und nicht in einer Cloud wie OneDrive oder iCloud) und kopiert pureSATZ dorthin,
+richtet den Computer ein (Python, git, venv, Ghostscript), zeigt das Hallo-Buch, legt dein eigenes Buch an und
+fragt am Schluss, ob du mit GitHub arbeiten willst. Er darf beliebig oft laufen.
 
 | Linux | Mac | Windows |
 |---|---|---|
-| `bash pc-einrichten/linux-einrichten.sh` | `bash pc-einrichten/mac-einrichten.sh` | `pc-einrichten\win-einrichten.bat` (Doppelklick) |
+| `sh start.sh` | `start.command` (Doppelklick) | `start.bat` (Doppelklick) |
 
-Die Schritte unten sind dasselbe von Hand.
+Danach:
+
+```
+Buchprojekte/
+  pureSATZ/      die Werkstatt – hier nichts schreiben
+  Hallo-Buch/    zum Ausprobieren, darf weg
+  Mein-Buch/     dein Buch – hier schreibst und baust du
+```
+
+Mac: Blockiert der Mac `start.command`, Rechtsklick → Öffnen, oder Systemeinstellungen → Datenschutz & Sicherheit →
+«Dennoch öffnen». Im Buchordner öffnet `Terminal hier` (Windows, Mac) per Doppelklick das Befehlsfenster genau dort.
+Nur das Einrichten, ohne Ort: `bash pc-einrichten/linux-einrichten.sh` · `bash pc-einrichten/mac-einrichten.sh` ·
+`pc-einrichten\win-einrichten.bat`. Die Schritte unten sind dasselbe von Hand.
 
 **Ghostscript (freiwillig):** nur nötig, wenn eine Druckerei CMYK verlangt (z. B. tredition, `{farbmodus}: cmyk`
 in der Druckdatei). Die Einrichte-Skripte fragen danach. Von Hand: Linux `sudo apt install ghostscript` ·
@@ -51,7 +64,7 @@ Windows `winget install ArtifexSoftware.GhostScript`. Ohne Ghostscript bleiben d
 sudo apt install git python3-venv
 
 ## 2. pureSATZ holen (öffentlich, ohne Anmeldung)
-mkdir -p ~/Buecher && cd ~/Buecher
+mkdir -p ~/Buchprojekte && cd ~/Buchprojekte
 git clone https://github.com/tgsteiger/pureSATZ.git pureSATZ
 
 ## 3. Eigenes Buch anlegen – fragt Titel, Untertitel, Autor, Name, Format …
@@ -87,7 +100,7 @@ xcode-select --install
 #   Python 3.10+ von python.org: «macOS 64-bit universal2 installer» (Intel und Apple-Chip)
 
 ## 2. pureSATZ holen (öffentlich, ohne Anmeldung)
-mkdir -p ~/Documents/Buecher && cd ~/Documents/Buecher
+mkdir -p ~/Buchprojekte && cd ~/Buchprojekte
 git clone https://github.com/tgsteiger/pureSATZ.git pureSATZ
 
 ## 3. Rest einrichten: prüft Werkzeuge, Python, git-Name/Mail, GitHub-Zugang; holt auf Wunsch Bücher
@@ -129,24 +142,28 @@ Häufige Fehler:
 - Einfügen geht nicht → anderes Terminal nehmen (Programme → Dienstprogramme → Terminal).
 - Token nie in einen Chat oder eine Datei kopieren; ist das passiert: auf github.com/settings/tokens löschen, neu machen.
 
-## Windows (PowerShell)
+## Windows (cmd)
 
-```powershell
-## 1. Werkzeuge (einmalig) – danach PowerShell SCHLIESSEN und NEU ÖFFNEN
-## («--source winget» umgeht den Store-Fehler «Serverzertifikat» auf älterem Windows 10)
+Befehlsfenster öffnen: im Explorer in die Adresszeile `cmd` tippen, Enter (oder `Terminal hier` doppelklicken).
+
+```bat
+rem 1. Werkzeuge (einmalig) - danach das Fenster SCHLIESSEN und NEU OEFFNEN
+rem    («--source winget» umgeht den Store-Fehler «Serverzertifikat» auf älterem Windows 10)
 winget install -e --source winget --id Python.Python.3.12
 winget install -e --source winget --id Git.Git
 
-## 2. pureSATZ holen (öffentlich, ohne Anmeldung)
-mkdir $HOME\Documents\Buecher; cd $HOME\Documents\Buecher
+rem 2. pureSATZ holen (öffentlich, ohne Anmeldung)
+mkdir "%USERPROFILE%\Buchprojekte"
+cd /d "%USERPROFILE%\Buchprojekte"
 git clone https://github.com/tgsteiger/pureSATZ.git pureSATZ
 
-## 3. Eigenes Buch anlegen
+rem 3. Eigenes Buch anlegen
 cd pureSATZ
-.\setup\setup.bat
+setup\setup.bat
 
-## 4. Optional: Buch privat mit GitHub verbinden (einmalig, braucht ein GitHub-Konto)
-winget install -e --source winget --id GitHub.cli     # danach PowerShell neu öffnen
+rem 4. Optional: Buch privat mit GitHub verbinden (einmalig, braucht ein GitHub-Konto)
+rem    nach der Installation von gh das Fenster schliessen und neu öffnen
+winget install -e --source winget --id GitHub.cli
 gh auth login
 git config --global user.name "Vorname Nachname"
 git config --global user.email "NUMMER+BENUTZER@users.noreply.github.com"
@@ -156,11 +173,12 @@ git add .
 git commit -m "Erster Stand"
 gh repo create MEIN-BUCH --private --source . --push
 
-## 5. Alltag
-.\sync.bat               # nur mit Schritt 4
-.\build.bat schnell
-.\build.bat final
-.\update.bat             # neue pureSATZ-Version ins Buch holen
+rem 5. Alltag (im Buchordner)
+rem    sync.bat nur mit Schritt 4; update.bat holt eine neue pureSATZ-Version ins Buch
+sync.bat
+build.bat schnell
+build.bat final
+update.bat
 ```
 
 ---

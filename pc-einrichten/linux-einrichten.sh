@@ -3,9 +3,10 @@
 #  pureSATZ – Linux einrichten (einmalig)
 #  Für Linux Mint, Ubuntu, Debian (apt). Andere Linux: Hinweise unten.
 #
-#  Im Ordner pureSATZ starten:   bash pc-einrichten/linux-einrichten.sh
+#  Am einfachsten: sh start.sh im Ordner pureSATZ (ruft dieses Skript auf).
+#  Auch direkt im Ordner pureSATZ:   bash pc-einrichten/linux-einrichten.sh
 #  Das Skript darf beliebig oft laufen – Erledigtes wird übersprungen.
-#  GitHub ist freiwillig: Ohne GitHub geht Schreiben und Bauen genauso.
+#  GitHub ist freiwillig und kommt am Schluss: Ohne GitHub geht Schreiben und Bauen genauso.
 # =====================================================================
 cd "$(dirname "$0")/.." || exit 1          # Ordner pureSATZ
 HIER="$(pwd)"
@@ -40,10 +41,36 @@ if [ -n "$FEHLT" ]; then
 fi
 echo "OK  $(python3 --version), venv, $(git --version)"
 
-# --- 2. GitHub (freiwillig) -------------------------------------------
+# --- 2. Ghostscript (freiwillig, für CMYK-Druckdateien) ---------------
+# Braucht es nur mit «{farbmodus}: cmyk» in einer Druckdatei (z. B. tredition), umgewandelt wird bei final.
+if command -v gs >/dev/null 2>&1; then
+    echo "OK  Ghostscript $(gs --version) (für {farbmodus}: cmyk)"
+elif command -v apt >/dev/null 2>&1; then
+    echo
+    read -r -p "Ghostscript für CMYK-Druckdateien (z. B. tredition) installieren? [j/n] (j): " GS
+    if [ -z "$GS" ] || [ "$GS" = "j" ] || [ "$GS" = "ja" ]; then
+        sudo apt install -y ghostscript && echo "OK  Ghostscript $(gs --version)"
+    fi
+else
+    echo "Hinweis: Für {farbmodus}: cmyk Ghostscript installieren (Paket «ghostscript»)."
+fi
+
+# --- 3. Hallo-Buch und eigenes Buch ----------------------------------
 echo
-echo "GitHub brauchst du nur für: Buch auf mehreren Computern (sh sync.sh)"
-echo "und Motor-Updates direkt aus dem Buch (sh update.sh)."
+read -r -p "Hallo-Buch jetzt ansehen (Beispielbuch, das PDF öffnet sich)? [j/n] (j): " HB
+if [ -z "$HB" ] || [ "$HB" = "j" ] || [ "$HB" = "ja" ]; then
+    python3 setup/hallo.py                  # fragt am Schluss selbst nach dem eigenen Buch
+else
+    read -r -p "Jetzt dein eigenes Buch anlegen? [j/n] (j): " NB
+    if [ -z "$NB" ] || [ "$NB" = "j" ] || [ "$NB" = "ja" ]; then
+        python3 setup/setup.py
+    fi
+fi
+
+# --- 4. GitHub (freiwillig, geht auch jederzeit später) ---------------
+echo
+echo "GitHub ist freiwillig und geht auch später (dieses Skript nochmals starten, siehe GITHUB.md):"
+echo "private Sicherung und dasselbe Buch auf mehreren Computern (sh sync.sh)."
 read -r -p "Mit GitHub arbeiten? [j/n] (n): " GH
 if [ "$GH" = "j" ] || [ "$GH" = "ja" ]; then
     if ! command -v gh >/dev/null 2>&1; then
@@ -94,30 +121,12 @@ else
     echo "OK  ohne GitHub. Gesichert wird mit  sh sicherung.sh  (ZIP)."
 fi
 
-# --- 3. Ghostscript (freiwillig, für CMYK-Druckdateien) ---------------
-# Braucht es nur mit «{farbmodus}: cmyk» in einer Druckdatei (z. B. tredition), umgewandelt wird bei final.
-if command -v gs >/dev/null 2>&1; then
-    echo "OK  Ghostscript $(gs --version) (für {farbmodus}: cmyk)"
-elif command -v apt >/dev/null 2>&1; then
-    echo
-    read -r -p "Ghostscript für CMYK-Druckdateien (z. B. tredition) installieren? [j/n] (j): " GS
-    if [ -z "$GS" ] || [ "$GS" = "j" ] || [ "$GS" = "ja" ]; then
-        sudo apt install -y ghostscript && echo "OK  Ghostscript $(gs --version)"
-    fi
-else
-    echo "Hinweis: Für {farbmodus}: cmyk Ghostscript installieren (Paket «ghostscript»)."
-fi
-
-# --- 4. Neues Buch? ----------------------------------------------------
-echo
-read -r -p "Jetzt ein neues Buch anlegen (sh setup/setup.sh)? [j/n] (n): " NB
-if [ "$NB" = "j" ] || [ "$NB" = "ja" ]; then
-    sh setup/setup.sh
-fi
-
 echo
 echo "=== Fertig ==="
-echo "Neues Buch:        sh setup/setup.sh        (im Ordner pureSATZ)"
+echo "Deine Bücher liegen neben pureSATZ in $(dirname "$HIER")"
+echo "pureSATZ ist die Werkstatt – dort nichts schreiben."
 echo "Im Buchordner:     sh build.sh schnell  ·  sh build.sh final  ·  sh sicherung.sh"
+echo "                   (Terminal: Rechtsklick in den Buchordner → «Im Terminal öffnen»)"
+echo "Neues Buch:        sh setup/setup.sh        (im Ordner pureSATZ)"
 [ "$GH" = "j" ] || [ "$GH" = "ja" ] && echo "Mit GitHub:        sh sync.sh  ·  sh update.sh"
-echo "Erste Schritte:    ERSTES-BUCH.md"
+echo "Hilfe:             hilfe.html öffnen, oben «Start»"

@@ -66,6 +66,13 @@ Ausprobieren:  {NAME}-buch.md im Ordner {NAME} öffnen, einen Satz ändern, spei
   {bau}
 Eigenes Buch:  im Ordner pureSATZ  {neu}
 Hallo-Buch wegwerfen: den Ordner {NAME} löschen. Ganze Hilfe: hilfe.html""")
+    if sys.stdin.isatty() and "--nicht-oeffnen" not in sys.argv:    # nächster Schritt: das eigene Buch
+        try:
+            a = input("\nJetzt dein eigenes Buch anlegen? [j/n] (j): ").strip().lower()
+        except EOFError:
+            a = "n"
+        if a in ("", "j", "ja"):
+            subprocess.run([sys.executable, os.path.join(SETUP, "setup.py")], cwd=HIER)
 
 
 if __name__ == "__main__":

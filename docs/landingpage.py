@@ -77,42 +77,32 @@ def code(lx, win=None):
             f'<code class="win">{html.escape(win)}</code></pre></div>')
 
 
+START = ("Schlägt einen festen Ort vor (<b>Buchprojekte</b> im Benutzerordner) und kopiert pureSATZ dorthin, "
+         "richtet den Computer ein, zeigt das Hallo-Buch und legt dein eigenes Buch an. Enter nimmt jeweils den Vorschlag.")
 SCHRITTE = {
     "linux": [
-        ("Herunterladen und auspacken", "ZIP laden, auspacken und den Ordner <b>pureSATZ-main</b> in <b>pureSATZ</b> "
-         "umbenennen. Mit git geht auch:", "git clone https://github.com/tgsteiger/pureSATZ.git"),
-        ("Terminal im Ordner öffnen", "Im Dateimanager Rechtsklick in den Ordner pureSATZ → «Im Terminal öffnen».", None),
-        ("Einrichten (einmalig)", "Prüft alles und installiert, was fehlt (Python, auf Wunsch git):",
-         "bash pc-einrichten/linux-einrichten.sh"),
-        ("Hallo-Buch ansehen", "Legt ein Beispielbuch an, baut es und öffnet das PDF. Beim ersten Mal etwa eine Minute.",
-         "sh hallo.sh"),
-        ("Eigenes Buch anlegen", "Fragt Titel, Autor und Format ab und legt dein Buch neben pureSATZ an.",
-         "sh setup/setup.sh"),
+        ("Herunterladen und auspacken", "ZIP laden und auspacken. Mit git geht auch:",
+         "git clone https://github.com/tgsteiger/pureSATZ.git"),
+        ("Terminal im Ordner öffnen", "Im Dateimanager Rechtsklick in den Ordner → «Im Terminal öffnen».", None),
+        ("Starten", START, "sh start.sh"),
+        ("Dein Buch", "Ab jetzt arbeitest du im Ordner deines Buchs (Rechtsklick → «Im Terminal öffnen»). "
+         "Schreiben in <b>Mein-Buch-buch.md</b>, ansehen mit:", "sh build.sh schnell"),
     ],
     "mac": [
-        ("Herunterladen und auspacken", "ZIP laden (Safari packt es selbst aus) und den Ordner <b>pureSATZ-main</b> in "
-         "<b>pureSATZ</b> umbenennen.", None),
-        ("Terminal im Ordner öffnen", "Programme → Dienstprogramme → Terminal. <code>cd </code> tippen (mit Leerzeichen), "
-         "den Ordner pureSATZ ins Fenster ziehen, Enter.", None),
-        ("Einrichten (einmalig)", "Prüft alles. Fehlt Python, öffnet sich python.org: den «macOS 64-bit universal2 "
-         "installer» laden, installieren und den Befehl nochmals starten.", "bash pc-einrichten/mac-einrichten.sh"),
-        ("Hallo-Buch ansehen", "Legt ein Beispielbuch an, baut es und öffnet das PDF. Beim ersten Mal etwa eine Minute.",
-         "sh hallo.sh"),
-        ("Eigenes Buch anlegen", "Fragt Titel, Autor und Format ab und legt dein Buch neben pureSATZ an.",
-         "sh setup/setup.sh"),
+        ("Herunterladen und auspacken", "ZIP laden, Safari packt es selbst aus.", None),
+        ("Starten", "Im Ordner <b>start.command</b> doppelklicken. Blockiert der Mac es: Rechtsklick → Öffnen, oder "
+         "Systemeinstellungen → Datenschutz &amp; Sicherheit → «Dennoch öffnen». " + START + " Fehlt Python, öffnet "
+         "sich python.org: den «macOS 64-bit universal2 installer» laden, installieren und start.command nochmals "
+         "doppelklicken.", None),
+        ("Dein Buch", "Im Buchordner <b>Terminal hier</b> doppelklicken – das Terminal öffnet sich genau dort. "
+         "Schreiben in <b>Mein-Buch-buch.md</b>, ansehen mit:", "sh build.sh schnell"),
     ],
     "win": [
-        ("Herunterladen und auspacken", "ZIP laden, Rechtsklick → «Alle extrahieren …» und den Ordner "
-         "<b>pureSATZ-main</b> in <b>pureSATZ</b> umbenennen. Steht darin nochmals ein Ordner pureSATZ-main "
-         "(das macht Windows gern), den inneren nehmen.", None),
-        ("Einrichten (einmalig)", "Im Ordner <b>pc-einrichten</b> die Datei <b>win-einrichten.bat</b> doppelklicken. "
-         "Fehlt Python, wird es installiert (oder python.org öffnet sich: beim Installieren «Add python.exe to PATH» "
-         "anhaken). Danach das Fenster schliessen und die Datei nochmals starten.", None),
-        ("Hallo-Buch ansehen", "Im Ordner pureSATZ <b>hallo.bat</b> doppelklicken. Legt ein Beispielbuch an, baut es "
-         "und öffnet das PDF. Beim ersten Mal etwa eine Minute.", None),
-        ("Terminal im Ordner öffnen", "Rechtsklick in den Ordner pureSATZ → «Im Terminal öffnen» (PowerShell).", None),
-        ("Eigenes Buch anlegen", "Fragt Titel, Autor und Format ab und legt dein Buch neben pureSATZ an.",
-         ".\\setup\\setup.bat"),
+        ("Herunterladen und auspacken", "ZIP laden, Rechtsklick → «Alle extrahieren …».", None),
+        ("Starten", "Im ausgepackten Ordner <b>start.bat</b> doppelklicken. " + START + " Fehlt Python, wird es "
+         "installiert, und es geht direkt weiter.", None),
+        ("Dein Buch", "Im Buchordner <b>Terminal hier</b> doppelklicken – das Befehlsfenster (cmd) öffnet sich genau "
+         "dort. Schreiben in <b>Mein-Buch-buch.md</b>, ansehen mit:", "build.bat schnell"),
     ],
 }
 PYTHON = {"linux": "", "mac": "https://www.python.org/downloads/macos/",
@@ -217,6 +207,11 @@ summary{{font:500 16px Poppins,system-ui,sans-serif;color:var(--haupt);cursor:po
 <p class="leise">Dein System ist schon gewählt – sonst einfach umschalten.</p>
 <div class="tabs">{"".join(tabs)}</div>
 {"".join(panels)}
+<p>Danach sieht es so aus – geschrieben und gebaut wird immer im Ordner deines Buchs:</p>
+<pre><code>Buchprojekte/
+  pureSATZ/      die Werkstatt – hier nichts schreiben
+  Hallo-Buch/    zum Ausprobieren, darf weg
+  Mein-Buch/     dein Buch – hier schreibst und baust du</code></pre>
 <p>Klappt etwas nicht? In der Hilfe unter «Start» stehen <a href="hilfe.html#a1">die Checkliste</a> und <a href="hilfe.html#a5">«Wenn etwas klemmt»</a> mit den häufigsten Meldungen und was zu tun ist. Nach dem Bauen zeigt <b>00-UEBERSICHT.txt</b> im Ausgabeordner, welche Datei wofür ist.</p>
 </div></section>
 
@@ -238,7 +233,7 @@ summary{{font:500 16px Poppins,system-ui,sans-serif;color:var(--haupt);cursor:po
 <p class="leise">Ohne GitHub geht alles genauso. Mit GitHub ist dein Buch privat gesichert und du schreibst auf mehreren Computern.</p>
 <details><summary>In drei Schritten verbinden</summary>
 <ol><li>Ein kostenloses Konto auf <a href="https://github.com/signup">github.com</a> anlegen.</li>
-<li>Beim Einrichten (Schritt 3) die Frage nach GitHub mit «ja» beantworten – das Skript führt durch die Anmeldung.</li>
+<li>Am Schluss des Starts die Frage nach GitHub mit «ja» beantworten (oder später den Start nochmals aufrufen) – das Skript führt durch die Anmeldung.</li>
 <li>Dein Buch als <b>privates</b> Repository anlegen. Danach im Buchordner am Anfang und am Ende: <code>sh sync.sh</code></li></ol>
 <p>Genaue Anleitung mit allen Befehlen: <a href="{REPO}/blob/main/INSTALLATION.md">INSTALLATION.md</a></p>
 </details>

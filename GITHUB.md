@@ -74,19 +74,21 @@ bash pc-einrichten/mac-einrichten.sh       # prüft alles, holt auf Wunsch eigen
 
 Token, Fehlermeldungen und Lösungen: `INSTALLATION.md`, Abschnitt Mac.
 
-**Windows** (PowerShell; nach den drei `winget`-Zeilen PowerShell schliessen und neu öffnen):
+**Windows** (cmd: im Explorer in die Adresszeile `cmd` tippen, Enter; nach den drei `winget`-Zeilen das Fenster
+schliessen und neu öffnen):
 
-```powershell
+```bat
 winget install -e --source winget --id Python.Python.3.12
 winget install -e --source winget --id Git.Git
 winget install -e --source winget --id GitHub.cli
 gh auth login
 git config --global user.name "Vorname Nachname"
 git config --global user.email "NUMMER+deinname@users.noreply.github.com"
-mkdir $HOME\Documents\Buchprojekt-TGS; cd $HOME\Documents\Buchprojekt-TGS
+mkdir "%USERPROFILE%\Documents\Buchprojekt-TGS"
+cd /d "%USERPROFILE%\Documents\Buchprojekt-TGS"
 git clone https://github.com/tgsteiger/pureSATZ.git pureSATZ
 cd pureSATZ
-.\setup\setup.bat
+setup\setup.bat
 ```
 
 Ein bestehendes Buch (z. B. MeinBuch) ist nicht auf GitHub: den Buchordner **neben** pureSATZ kopieren

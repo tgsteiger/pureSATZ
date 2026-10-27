@@ -5,33 +5,28 @@
 Einmal von oben nach unten. Die Häkchen kannst du anklicken, der Browser merkt sie sich.
 Oben rechts **Linux/Mac** oder **Windows** wählen, dann stimmen alle Befehle.
 
-- [ ] **Terminal öffnen.** Linux: Strg+Alt+T · Mac: Cmd+Leertaste, «Terminal» · Windows: Start, «PowerShell».
-  Dann in den Ordner pureSATZ wechseln (Ordner ins Fenster ziehen setzt den Pfad ein):
+- [ ] **Starten.** ZIP auspacken (Windows: Rechtsklick → «Alle extrahieren …»), dann im Ordner:
+  Windows `start.bat` doppelklicken · Mac `start.command` doppelklicken (blockiert der Mac es: Rechtsklick → Öffnen,
+  oder Systemeinstellungen → Datenschutz & Sicherheit → «Dennoch öffnen») · Linux: Rechtsklick in den Ordner →
+  «Im Terminal öffnen», dann den Befehl unten. Der Start schlägt einen festen Ort vor (`Buchprojekte` im
+  Benutzerordner, nicht Downloads und nicht in einer Cloud) und kopiert pureSATZ dorthin, richtet den Computer ein,
+  zeigt das Hallo-Buch und legt dein eigenes Buch an. Enter nimmt jeweils den Vorschlag.
 
 ```sh
-cd "Pfad/zu/pureSATZ"
+sh start.sh
 ```
 
-- [ ] **Python da?** Es braucht Python 3.10 oder neuer. Fehlt es oder ist es älter: einfach weiter mit dem nächsten Punkt.
+Danach sieht es so aus – geschrieben und gebaut wird immer im Ordner deines Buchs, nie in pureSATZ:
 
-```sh
-python3 --version
+```
+Buchprojekte/
+  pureSATZ/      die Werkstatt – hier nichts schreiben
+  Hallo-Buch/    zum Ausprobieren, darf weg
+  Mein-Buch/     dein Buch – hier schreibst und baust du
 ```
 
-- [ ] **Computer einrichten** (einmalig). Prüft alles und installiert, was fehlt. Windows: die Datei im Ordner
-  `pc-einrichten` auch einfach doppelklicken. Danach das Terminal schliessen und neu öffnen.
-
-```sh
-bash pc-einrichten/linux-einrichten.sh     # Linux
-bash pc-einrichten/mac-einrichten.sh       # Mac
-```
-
-- [ ] **Hallo-Buch.** Legt neben pureSATZ ein Beispielbuch an, baut es und öffnet das PDF. Beim ersten Mal etwa
-  eine Minute (Internet nötig), danach wenige Sekunden. Windows: `hallo.bat` auch einfach doppelklicken.
-
-```sh
-sh hallo.sh
-```
+- [ ] **Terminal im Buchordner.** Windows und Mac: im Buchordner `Terminal hier` doppelklicken – das Befehlsfenster
+  öffnet sich genau dort (Windows: cmd). Linux: Rechtsklick in den Ordner → «Im Terminal öffnen».
 
 - [ ] **Selbst ändern.** Im Ordner `Hallo-Buch` die Datei `Hallo-Buch-buch.md` öffnen, einen Satz ändern,
   speichern, dann neu bauen. Oder in `tabellen/muster.csv` eine Zahl ändern und die Tabelle im PDF ansehen. Das PDF liegt in `Hallo-Buch/ausgabe-normal/`.
@@ -48,8 +43,8 @@ sh build.sh schnell
 sh sicherung.sh
 ```
 
-- [ ] **Eigenes Buch.** Zurück im Ordner pureSATZ: fragt Titel, Autor, Format und legt dein Buch an.
-  Das Hallo-Buch darf danach gelöscht werden.
+- [ ] **Eigenes Buch.** Fragt der Start nach dem Hallo-Buch schon (Enter = ja). Sonst im Ordner pureSATZ:
+  fragt Titel, Autor, Format und legt dein Buch neben pureSATZ an. Das Hallo-Buch darf danach gelöscht werden.
 
 ```sh
 sh setup/setup.sh
@@ -58,22 +53,53 @@ sh setup/setup.sh
 Weiter geht es mit **Mein erstes Buch** (fünf Schritte bis zur Bestellung) und mit der Hilfe im Buchordner
 (`hilfe.html`, neu mit `sh build.sh hilfe`).
 
-## 2. Computer einrichten
+### Von Hand, falls der Start nicht klappt
 
-Einmalig. Prüft Python und alles Nötige und installiert, was fehlt.
-**Erfolg:** Am Schluss steht «alles bereit». Danach das Terminal schliessen und neu öffnen.
+- **Terminal öffnen.** Linux: Strg+Alt+T · Mac: Cmd+Leertaste, «Terminal» · Windows: im Explorer in die Adresszeile `cmd` tippen, Enter.
+  Dann in den Ordner pureSATZ wechseln (Ordner ins Fenster ziehen setzt den Pfad ein):
+
+```sh
+cd "Pfad/zu/pureSATZ"
+```
+
+- **Python da?** Es braucht Python 3.10 oder neuer. Fehlt es oder ist es älter: einfach weiter mit dem nächsten Punkt.
+
+```sh
+python3 --version
+```
+
+- **Computer einrichten** (einmalig). Prüft alles und installiert, was fehlt. Windows: die Datei im Ordner
+  `pc-einrichten` auch einfach doppelklicken. Danach das Terminal schliessen und neu öffnen.
 
 ```sh
 bash pc-einrichten/linux-einrichten.sh     # Linux
 bash pc-einrichten/mac-einrichten.sh       # Mac
 ```
 
-Windows: im Ordner `pc-einrichten` die Datei `win-einrichten.bat` doppelklicken.
-Details: Punkt 1, «Computer einrichten».
+- **Hallo-Buch.** Legt neben pureSATZ ein Beispielbuch an, baut es und öffnet das PDF. Beim ersten Mal etwa
+  eine Minute (Internet nötig), danach wenige Sekunden. Windows: `hallo.bat` auch einfach doppelklicken.
+
+```sh
+sh hallo.sh
+```
+
+## 2. Computer einrichten
+
+Einmalig – macht der Start (Punkt 1) automatisch. Prüft Python und alles Nötige und installiert, was fehlt.
+GitHub ist freiwillig und kommt am Schluss. **Erfolg:** Am Schluss steht «=== Fertig ===».
+
+```sh
+bash pc-einrichten/linux-einrichten.sh     # Linux
+bash pc-einrichten/mac-einrichten.sh       # Mac
+```
+
+Windows: im Ordner `pc-einrichten` die Datei `win-einrichten.bat` doppelklicken. Fehlt Python, installiert sie es und
+macht gleich weiter (wenn nötig in einem neuen Fenster). Details: Punkt 1, «Von Hand».
 
 ## 3. Dein Buch bauen
 
-1. **Anlegen** (im Ordner pureSATZ): fragt Titel, Autor, Format. `sh setup/setup.sh`
+1. **Anlegen** (macht der Start, sonst im Ordner pureSATZ): fragt Titel, Autor, Format. `sh setup/setup.sh`
+   Ab dann arbeitest du im Buchordner – `Terminal hier` doppelklicken öffnet das Befehlsfenster dort.
 2. **Schreiben** in `<buch>-buch.md`, Angaben in `<buch>-variablen.md`, Umschlag in `<buch>-umschlag.md`.
 3. **Ansehen** (im Buchordner): `sh build.sh schnell` – nur das Lese-PDF, in Sekunden.
 4. **Alles bauen**: `sh build.sh` (Entwurf) bzw. `sh build.sh final` (Druckfassung).
@@ -117,12 +143,14 @@ Alle Befehle: Hilfe «Befehle (@)» und «Blöcke (:::)».
 
 | Meldung | Was tun |
 |---|---|
-| Windows: Ordner `pureSATZ-main` steckt in einem zweiten `pureSATZ-main` | Den inneren Ordner nehmen, an einen guten Ort verschieben (z. B. Dokumente) und in `pureSATZ` umbenennen. |
+| Windows: Ordner `pureSATZ-main` steckt in einem zweiten `pureSATZ-main` | Im inneren Ordner `start.bat` doppelklicken – er kopiert pureSATZ an den richtigen Ort (`Buchprojekte`) und benennt ihn richtig. |
+| Windows: Python nach der Installation «nicht erkannt» | Fenster schliessen, `start.bat` nochmals doppelklicken. Hilft das nicht: Computer neu starten. |
+| Mac: «start.command kann nicht geöffnet werden» | Rechtsklick → Öffnen, oder Systemeinstellungen → Datenschutz & Sicherheit → «Dennoch öffnen». Oder im Terminal `sh start.sh`. |
 | `python3: command not found` / «nicht erkannt» | Punkt «Computer einrichten». Windows: Python von python.org, beim Installieren «Add python.exe to PATH» anhaken. |
 | «Python … ist zu alt» | Neues Python installieren (3.10 oder neuer), Terminal neu öffnen. |
 | Hängt beim ersten Mal / «keine Verbindung» | Der erste Bau lädt Pakete aus dem Internet. Verbindung prüfen, nochmals starten. |
 | PDF öffnet sich nicht | Es liegt trotzdem da: `Hallo-Buch/ausgabe-normal/`. |
-| Windows: «Ausführung von Skripts deaktiviert» | Die `.bat`-Dateien nehmen (z. B. `.\hallo.bat`), nicht `.sh`. |
+| Windows: «Ausführung von Skripts deaktiviert» | Das ist PowerShell. cmd nehmen (`Terminal hier` doppelklicken) und die `.bat`-Dateien starten (z. B. `hallo.bat`), nicht `.sh`. |
 | Welche Datei soll ich hochladen? | `00-UEBERSICHT.txt` im Ausgabeordner zeigt es, mit FINAL oder ENTWURF und Datum. |
 | `sh build.sh pruefen` meldet einen Fehler | Die Meldung nennt Datei und Zeile. Meist ein Tippfehler bei `{variable}` oder `@BEFEHL`. |
 | Plattform-Datei fehlt («Druckangaben: … fehlt») | Name bei `{druck-datei}` unter `## Ausgabe: Druck …` prüfen (ohne `.md`), Muster in `pureSATZ/vorlage/druck/`. |

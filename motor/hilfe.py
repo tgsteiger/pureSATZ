@@ -80,7 +80,7 @@ def _inline(t):
 
 
 def _windows(code):
-    """Linux/Mac-Befehle in Windows-Befehle (PowerShell) umschreiben."""
+    """Linux/Mac-Befehle in Windows-Befehle (cmd) umschreiben."""
     zeilen = [z for z in code.split("\n") if "mac-einrichten" not in z]
     code = "\n".join(re.sub(r"(einrichten\.sh)\s+#\s*Linux\s*$", r"\1", z) for z in zeilen)
     code = re.sub(r"\bpython3 --version\b", "py --version", code)

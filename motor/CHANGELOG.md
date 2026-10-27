@@ -3,6 +3,22 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.44.0 (Oktober 2026)
+- **Startknopf** `start.bat` (Windows), `start.command` (Mac, Doppelklick) und `sh start.sh` (Linux, Mac): schlägt einen
+  festen Ort vor (`Buchprojekte` im Benutzerordner, nicht Downloads, nicht in einer Cloud) und kopiert pureSATZ dorthin
+  (Ordnername stimmt, auch aus `pureSATZ-main`). Ist dort schon ein pureSATZ, bleibt der alte als `pureSATZ-alt-<Version>`.
+  Windows: auf Wunsch Verknüpfung «Buchprojekte» auf dem Desktop. Danach geht es mit dem Einrichten weiter.
+  Mit git geholt oder schon in `Buchprojekte`: kein Kopieren. Aus dem ZIP heraus gestartet: klarer Hinweis «auspacken».
+- **Geführte Kette:** Einrichten → «Hallo-Buch jetzt ansehen? (j)» → «Jetzt dein eigenes Buch anlegen? (j)» → der
+  Buchordner öffnet sich. GitHub kommt in den Einrichte-Skripten erst am Schluss (freiwillig, Vorgabe n).
+- **Windows:** Nach der Installation von Python, git oder gh liest `win-einrichten.bat` das PATH neu ein und macht
+  gleich weiter. Reicht das nicht, startet es sich einmal über den Explorer in einem neuen Fenster neu, sonst schliesst
+  sich das Fenster mit klarer Anleitung. Überall cmd statt PowerShell.
+- **«Terminal hier»** (Windows `.bat`, Mac `.command`) in jedem neuen Buchordner und in `Buchprojekte`: Doppelklick
+  öffnet das Befehlsfenster genau dort.
+- `setup` sagt am Schluss klar: «Ab jetzt arbeitest du in diesem Ordner, pureSATZ ist die Werkstatt», und zeigt den
+  Weg zu GitHub für später. Hilfe «Start», readme.txt, README.md, INSTALLATION.md und Webseite mit Ordnerbild.
+
 ## 2.43.4 (Oktober 2026)
 - Hilfe: Beispiel Gegenlesen jetzt mit Thomas statt Andrea (nur Text).
 
