@@ -3,6 +3,16 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.45.2 (Oktober 2026)
+- **Weniger Fenster beim Einrichten:** nach dem Kopieren öffnet sich kein Ordner mehr; beim Hallo-Buch nur das PDF.
+  Am Schluss öffnet sich wie bisher der Buchordner.
+- **Schritt 4** knüpft ans Hallo-Buch an: «So einfach entsteht ein Buch – das Hallo-Buch-PDF ist offen. Jetzt dein
+  eigenes: nur Titel, Untertitel, Autor und Format.» (erste Zeile nur, wenn das Hallo-Buch gebaut wurde).
+- **00-UEBERSICHT.txt** im Ordner der Bücher (z. B. Buchprojekte): welcher Ordner wofür (dein Buch · Hallo-Buch ·
+  pureSATZ = Werkstatt) und die wichtigsten Befehle. START schreibt sie bei jedem Durchlauf neu; dieselbe Übersicht
+  steht auf der Schlussseite.
+- readme.txt: Hinweis oben «Hier wird nicht geschrieben», Extras mit Ghostscript (empfohlen).
+
 ## 2.45.1 (Oktober 2026)
 - **Kürzere Texte im Einrichten:** weniger Erklärung, gleiche Wörter auf Windows, Mac und Linux.
 - **Enter-Regel direkt vor dem Cursor:** jede Frage endet mit der empfohlenen Antwort, z. B.

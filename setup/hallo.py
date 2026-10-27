@@ -86,13 +86,11 @@ Erstes Mal ca. 1 Minute (Internet). Darf später weg.
     if "--nicht-oeffnen" not in sys.argv:
         sys.path.insert(0, os.path.join(HIER, "motor"))
         import hilfe
-        if kette:
-            hilfe.oeffne(ordner)
         if pdfs:
             hilfe.oeffne(pdfs[-1])
     if kette:
         print(f"""
-OK  Hallo-Buch fertig – Ordner und PDF sind offen.
+OK  Hallo-Buch fertig – das PDF ist offen.
 Ausprobieren: {NAME}-buch.md öffnen, einen Satz ändern.""")
         return
     win = os.name == "nt"

@@ -1,6 +1,9 @@
 pureSATZ - Vorlage und Motor für eigene Bücher
 =====================================================================
 
+>> Hier wird nicht geschrieben - dein Buch hat einen eigenen Ordner daneben.
+   Übersicht: 00-UEBERSICHT.txt im Ordner darüber (z. B. Buchprojekte).
+
 ZUM STARTEN   Windows: START-Windows.bat doppelklicken
               Mac:     START-Mac.command doppelklicken
                        (blockiert: Rechtsklick -> Öffnen, oder Systemeinstellungen ->
@@ -8,9 +11,11 @@ ZUM STARTEN   Windows: START-Windows.bat doppelklicken
               Linux:   Rechtsklick in den Ordner -> «Im Terminal öffnen», dann  sh START-Linux.sh
               Fünf Schritte: Technik (Python) · Ort für die Bücher (Buchprojekte im
               Benutzerordner) · Hallo-Buch · dein eigenes Buch (Titel, Untertitel, Autor,
-              Format) · Extras (GitHub, freiwillig). Enter nimmt jeweils den Vorschlag.
+              Format) · Extras (GitHub freiwillig, Ghostscript empfohlen). Enter nimmt
+              jeweils den Vorschlag.
 
 DANACH        Buchprojekte/
+                00-UEBERSICHT.txt  welcher Ordner wofür (schreibt START)
                 pureSATZ/      die Werkstatt – hier nichts schreiben
                 Hallo-Buch/    zum Ausprobieren, darf weg
                 Mein-Buch/     dein Buch – hier schreibst und baust du

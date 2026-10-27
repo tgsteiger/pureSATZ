@@ -263,9 +263,13 @@ def main():
                 break
     w = lese_werte(datei)
     if kette:
-        print("""Dein Buch bekommt einen eigenen Ordner, mit Demo-Kapitel.
-Gefragt: Titel, Untertitel, Autor, Format. Rest später in <Buch>-variablen.md.
-""")
+        import glob
+        if glob.glob(os.path.join(HIER, "..", "Hallo-Buch", "ausgabe-normal", "*.pdf")):
+            print("So einfach entsteht ein Buch – das Hallo-Buch-PDF ist offen.\n"
+                  "Jetzt dein eigenes: nur Titel, Untertitel, Autor und Format.")
+        else:
+            print("Dein Buch: nur Titel, Untertitel, Autor und Format.")
+        print("Alles Weitere später in <Buch>-variablen.md.\n")
         if not ja(frage("Dein Buch anlegen? [n = später | Enter = ja]", "") or "ja"):
             print("Später im Ordner pureSATZ: " + ("setup\\setup.bat" if os.name == "nt" else "sh setup/setup.sh"))
             return

@@ -121,7 +121,6 @@ if /i not "%VK%"=="j" goto explorer
 powershell -NoProfile -ExecutionPolicy Bypass -Command "$s=(New-Object -ComObject WScript.Shell).CreateShortcut([Environment]::GetFolderPath('Desktop')+'\Buchprojekte.lnk'); $s.TargetPath='%ZIEL%'; $s.Save()" >nul 2>nul
 if errorlevel 1 (echo Verknuepfung ging nicht - nicht schlimm.) else (echo OK  Verknuepfung Buchprojekte auf dem Desktop)
 :explorer
-start "" explorer "%ZIEL%"
 echo.
 echo Weiter in %ZIEL%\pureSATZ.
 echo Den alten Ordner %HIER% darfst du am Schluss loeschen.
@@ -266,20 +265,25 @@ start "" "https://ghostscript.com/releases/gsdnld.html"
 :fertig
 del "%TEMP%\puresatz-neustart-*.txt" >nul 2>nul
 echo.
-echo ==============================================================
-echo   Fertig - so sieht es jetzt aus:
-echo ==============================================================
-echo.
-echo   %OBEN%\
+rem Uebersicht in 00-UEBERSICHT.txt schreiben (neben die Buecher) und hier anzeigen
+set "UEB=%OBEN%\00-UEBERSICHT.txt"
+ >"%UEB%" echo Uebersicht: %OBEN%
+>>"%UEB%" echo =====================================================================
+>>"%UEB%" echo.
 for /d %%d in ("%OBEN%\*") do call :ordner_zeile "%%~nxd"
+>>"%UEB%" echo.
+>>"%UEB%" echo Im Buchordner "Terminal hier" doppelklicken, dann:
+>>"%UEB%" echo   build.bat schnell     Lese-PDF ansehen, in Sekunden
+>>"%UEB%" echo   build.bat final       Druckfassung
+>>"%UEB%" echo   sicherung.bat         ZIP-Sicherung
+if /i "%GH%"=="j" >>"%UEB%" echo   sync.bat              mit GitHub abgleichen (am Anfang und am Ende)
+>>"%UEB%" echo.
+>>"%UEB%" echo Hilfe: pureSATZ\hilfe.html doppelklicken, oben "Start".
+echo ==============================================================
+echo   Fertig - so sieht es jetzt aus (steht auch in 00-UEBERSICHT.txt):
+echo ==============================================================
 echo.
-echo Gearbeitet wird im Buchordner, nie in pureSATZ.
-echo Dort "Terminal hier" doppelklicken, dann:
-echo   build.bat schnell     Lese-PDF ansehen, in Sekunden
-echo   build.bat final       Druckfassung
-echo   sicherung.bat         ZIP-Sicherung
-if /i "%GH%"=="j" echo   sync.bat              mit GitHub abgleichen (am Anfang und am Ende)
-echo Hilfe: hilfe.html im Ordner pureSATZ doppelklicken, oben "Start".
+type "%UEB%"
 
 :ende
 echo.
@@ -306,11 +310,11 @@ goto :eof
 :ordner_zeile
 set "NM=%~1"
 set "TXT="
-if /i "%NM%"=="%HIERNAME%" set "TXT=die Werkstatt - hier nichts schreiben"
+if /i "%NM%"=="%HIERNAME%" set "TXT=die Werkstatt - fuer ein neues Buch und Updates, hier nichts schreiben"
 if /i "%NM:~0,13%"=="pureSATZ-alt-" set "TXT=alte Version - darf weg"
-if /i "%NM%"=="Hallo-Buch" set "TXT=zum Ausprobieren - darf weg"
-if not defined TXT if exist "%OBEN%\%NM%\build.bat" set "TXT=dein Buch - hier schreibst und baust du"
-if defined TXT echo     %NM%\    %TXT%
+if /i "%NM%"=="Hallo-Buch" set "TXT=Beispielbuch zum Ausprobieren - darf weg"
+if not defined TXT if exist "%OBEN%\%NM%\build.bat" set "TXT=DEIN BUCH - hier schreibst und baust du"
+if defined TXT >>"%UEB%" echo   %NM%\    %TXT%
 goto :eof
 
 :gs_suchen

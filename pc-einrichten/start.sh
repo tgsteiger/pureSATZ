@@ -97,7 +97,6 @@ if [ "$1" != "--weiter" ]; then
                         printf '#!/bin/sh\ncd "$(dirname "$0")" && exec "${SHELL:-/bin/zsh}" -l\n' > "$ZIEL/Terminal hier.command"
                         chmod +x "$ZIEL/Terminal hier.command"
                     fi
-                    oeffne "$ZIEL"
                     echo
                     echo "Weiter in $ZIEL/pureSATZ."
                     echo "Den alten Ordner $HIER darfst du am Schluss löschen."
@@ -112,7 +111,7 @@ fi
 
 # --- Schritt 3: Hallo-Buch ----------------------------------------------------
 titel "Schritt 3 von 5 – Hallo-Buch"
-python3 setup/hallo.py --kette             # erklärt, fragt, baut, öffnet Ordner und PDF
+python3 setup/hallo.py --kette             # erklärt, fragt, baut, öffnet das PDF
 weiter
 
 # --- Schritt 4: Dein eigenes Buch ---------------------------------------------
@@ -126,31 +125,37 @@ echo "Zwei Extras – gehen auch später."
 bash "pc-einrichten/$OS-einrichten.sh" --extras
 GH=$?                                       # 10 = mit GitHub
 
+# Übersicht in 00-UEBERSICHT.txt schreiben (neben die Bücher) und hier anzeigen
+uebersicht() {
+    echo "Übersicht: $OBEN"
+    echo "====================================================================="
+    echo
+    for d in "$OBEN"/*/; do
+        n="$(basename "$d")"
+        case "$n" in
+            "$(basename "$HIER")") t="die Werkstatt – für ein neues Buch und Updates, hier nichts schreiben" ;;
+            pureSATZ-alt-*)        t="alte Version – darf weg" ;;
+            Hallo-Buch)            t="Beispielbuch zum Ausprobieren – darf weg" ;;
+            *) [ -f "$d/build.sh" ] || continue; t="DEIN BUCH – hier schreibst und baust du" ;;
+        esac
+        printf "  %-16s %s\n" "$n/" "$t"
+    done
+    echo
+    if [ -n "$MAC" ]; then
+        echo "Im Buchordner «Terminal hier» doppelklicken, dann:"
+    else
+        echo "Im Buchordner Rechtsklick → «Im Terminal öffnen», dann:"
+    fi
+    echo "  sh build.sh schnell     Lese-PDF ansehen, in Sekunden"
+    echo "  sh build.sh final       Druckfassung"
+    echo "  sh sicherung.sh         ZIP-Sicherung"
+    [ "$GH" = "10" ] && echo "  sh sync.sh              mit GitHub abgleichen (am Anfang und am Ende)"
+    echo
+    echo "Hilfe: pureSATZ/hilfe.html öffnen, oben «Start»."
+}
 echo
 echo "=============================================================="
-echo "  Fertig – so sieht es jetzt aus:"
+echo "  Fertig – so sieht es jetzt aus (steht auch in 00-UEBERSICHT.txt):"
 echo "=============================================================="
 echo
-echo "  $OBEN/"
-for d in "$OBEN"/*/; do
-    n="$(basename "$d")"
-    case "$n" in
-        "$(basename "$HIER")") t="die Werkstatt – hier nichts schreiben" ;;
-        pureSATZ-alt-*)        t="alte Version – darf weg" ;;
-        Hallo-Buch)            t="zum Ausprobieren – darf weg" ;;
-        *) [ -f "$d/build.sh" ] || continue; t="dein Buch – hier schreibst und baust du" ;;
-    esac
-    printf "    %-24s %s\n" "$n/" "$t"
-done
-echo
-echo "Gearbeitet wird im Buchordner, nie in pureSATZ."
-if [ -n "$MAC" ]; then
-    echo "Dort «Terminal hier» doppelklicken, dann:"
-else
-    echo "Dort Rechtsklick → «Im Terminal öffnen», dann:"
-fi
-echo "  sh build.sh schnell     Lese-PDF ansehen, in Sekunden"
-echo "  sh build.sh final       Druckfassung"
-echo "  sh sicherung.sh         ZIP-Sicherung"
-[ "$GH" = "10" ] && echo "  sh sync.sh              mit GitHub abgleichen (am Anfang und am Ende)"
-echo "Hilfe: hilfe.html im Ordner pureSATZ öffnen, oben «Start»."
+uebersicht | tee "$OBEN/00-UEBERSICHT.txt"
