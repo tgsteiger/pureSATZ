@@ -501,10 +501,11 @@ p.uztitel { color: @@haupt@@; font-weight: bold; margin: 0 0 0.4em 0; }
 @font-face { font-family: "Text"; font-weight: bold; src: url(fonts/@@f_text_fett@@); }
 @font-face { font-family: "Titel"; font-weight: 500; src: url(fonts/@@f_titel@@); }
 body { font-family: "Text", serif; line-height: 1.5; color: @@text@@; margin: 0 4%; }
-p { margin: 0 0 0.7em 0; text-align: left; }
+p { margin: 0 0 0.7em 0; text-align: justify; hyphens: auto; -webkit-hyphens: auto; -epub-hyphens: auto; }
+.impressum p { text-align: left; hyphens: manual; -webkit-hyphens: manual; -epub-hyphens: manual; }
 h1, h2, h3 { font-family: "Titel", sans-serif; font-weight: 500; color: @@haupt@@; }
 h3 { font-size: 1.1em; margin: 1.4em 0 0.5em 0; page-break-after: avoid; }
-h2 { font-size: 1.25em; margin: 1.6em 0 0.6em 0; page-break-after: avoid; }
+h2 { font-size: 1.25em; margin: 1.6em 0 0.6em 0; page-break-before: always; page-break-after: avoid; }
 .teil { text-align: center; margin-top: 18%; page-break-after: always; }
 .teillotus { width: 30%; max-width: 160px; opacity: 0.35; }
 .teilnr { font-family: "Titel", sans-serif; color: @@akzenttext@@; letter-spacing: 0.15em;
