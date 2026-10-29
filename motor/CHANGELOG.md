@@ -3,6 +3,10 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.57.0 (Oktober 2026)
+- Menü: `?` Quickies – Befehle zum Tippen (final, leseprobe uz 18,20, personen Name, stand …), aus dem Spickzettel
+  der Hilfe, ohne «sh build.sh» davor. Eingabe auf eigener Zeile: «Wahl oder Befehl (…)» / «Eingabe: _».
+
 ## 2.56.3 (Oktober 2026)
 - personen-seiten.txt: Namenszeile nur noch mit den Begriffen; die Anzahl steht als erste `>`-Zeile
   («> 2 Stellen gefunden» bzw. «> kommt nicht vor»). Ältere Dateien mit «2 Stellen» werden weiter gelesen.

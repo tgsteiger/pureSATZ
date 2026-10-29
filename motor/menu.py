@@ -154,7 +154,7 @@ def zeige():
     zeilen = [("s", "schnell"), ("k", "komplett"), ("b", "bauen …"), ("m", "MD öffnen …"),
               ("p", "PDF …"), ("o", "Ordner …"), ("g", "gegenlesen …"), ("a", "änderungen"),
               ("sy", "sync"), ("u", "update")] + ([("ul", "update lokal")] if LOKAL else []) + \
-             [("n", "neu …"), ("t", "Terminal"), ("h", "hilfe"), ("q", "beenden")]
+             [("n", "neu …"), ("t", "Terminal"), ("?", "Quickies"), ("h", "hilfe"), ("q", "beenden")]
     raster(zeilen)
     print(" " + "─" * 66)
 
@@ -162,6 +162,18 @@ def zeige():
 def raster(zeilen):
     for i in range(0, len(zeilen), 4):
         print(("  " + "".join(f"{k:<3}{t:<14}" for k, t in zeilen[i:i + 4])).rstrip())
+
+
+def quickies():
+    """Befehle zum Tippen – aus dem Spickzettel der Hilfe (hilfe.py), ohne «sh build.sh» davor."""
+    from hilfe import SPICKZETTEL
+    print("\n Quickies – im Menü tippen (ohne Menü: sh build.sh … davor)")
+    for befehl, text in SPICKZETTEL:
+        if befehl.startswith("sh build.sh ") and befehl.split()[2] in BEFEHLE:
+            text = text if len(text) <= 42 else text[:41] + "…"
+            print(f"  {befehl[12:]:<26} {text}")
+    print(" Ganze Hilfe: h (hilfe.html im Browser)")
+    frage(" Enter = zurück ")
 
 
 def terminal():
@@ -232,7 +244,8 @@ def main():
     einstellungen()
     while True:
         zeige()
-        e = frage(" Wahl oder Befehl (z. B. final · ↑ = letzte): ", merken=True)
+        print(" Wahl oder Befehl (z. B. final · ↑ = letzte):")
+        e = frage(" Eingabe: ", merken=True)
         w = e.lower()
         if w in ("", "z"):
             continue
@@ -304,6 +317,8 @@ def main():
             klang()                                   # Probe beim Einschalten
         elif w == "t":
             terminal()
+        elif w == "?":
+            quickies()
         elif w == "n":
             neu = {"b": ("neues Buch", 0), "h": ("Hallo-Buch", 0), "e": ("einrichten", 0)} if LOKAL else {}
             k = untermenue("neu …", {**neu, "v": ("Verknüpfung", 0)})
