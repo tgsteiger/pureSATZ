@@ -10,6 +10,7 @@ sh menu.sh verknuepfung = Starter mit Lotus auf den Schreibtisch (n → v im Men
 """
 import glob
 import os
+import shlex
 import shutil
 import subprocess
 import sys
@@ -336,6 +337,9 @@ def main():
                     print(f"  Neues Buch: ../{d} – dort sh menu.sh")
         elif w == "h":
             bauen("hilfe")
+        elif w.split()[0] in ("xdg-open", "open", "start"):   # wie im Terminal: Datei öffnen, ohne zu warten
+            for teil in shlex.split(e, posix=not WIN)[1:]:
+                oeffnen(os.path.join(BASE, os.path.expanduser(teil.strip('"'))))
         elif w.split()[0] in BEFEHLE:          # ganzer Befehl: final · leseprobe uz 18,20 · personen Eltern
             bauen(*e.split())
         else:

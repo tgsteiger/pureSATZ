@@ -6,6 +6,7 @@ Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.
 ## 2.57.0 (Oktober 2026)
 - Menü: `?` Quickies – Befehle zum Tippen (final, leseprobe uz 18,20, personen Name, stand …), aus dem Spickzettel
   der Hilfe, ohne «sh build.sh» davor. Eingabe auf eigener Zeile: «Wahl oder Befehl (…)» / «Eingabe: _».
+- Menü: `xdg-open Pfad` / `open` / `start` öffnet eine Datei wie im Terminal (Pfad ab dem Buchordner), ohne zu warten.
 
 ## 2.56.3 (Oktober 2026)
 - personen-seiten.txt: Namenszeile nur noch mit den Begriffen; die Anzahl steht als erste `>`-Zeile

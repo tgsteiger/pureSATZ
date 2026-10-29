@@ -295,6 +295,8 @@ Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {v
   `c` check-PDF für eine Person (check_Name_Gegenlesen.pdf, öffnet sich danach), `t` Textdatei öffnen.
 - ↑ ↓ = letzte Befehle, Enter führt sie aus. Ganze Befehle gehen auch: `final`, `leseprobe uz 18,20`, `personen Eltern`.
   `?` Quickies zeigt diese Befehle zum Tippen (aus dem Spickzettel der Hilfe).
+  Datei öffnen wie im Terminal: `xdg-open ausgabe-normal/….pdf` (Mac `open`, Windows `start`) – Pfad ab dem
+  Buchordner, das Menü wartet nicht. Die Zeilen am Schluss eines Baus lassen sich so direkt einfügen.
 - MD, PDF und Ordner öffnen im eigenen Programm, das Menü bleibt bereit. Bauen läuft im Menüfenster;
   am Schluss «Fertig» mit Dauer und Klang. Oben rechts «Klang (!) ein/aus», Taste `!` (beim Einschalten klingt er einmal zur Probe).
   `t` öffnet ein Terminal im Buchordner, das Menü bleibt offen (praktisch, wenn das Menü per Lotus-Starter läuft).
