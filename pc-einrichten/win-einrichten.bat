@@ -156,9 +156,9 @@ rem setup.py erklaert, fragt Titel, Untertitel, Autor, Format und oeffnet den Bu
 %PY% setup\setup.py --kette
 call :weiter
 
-rem --- Schritt 5: Extras (zuerst GitHub, am Schluss Ghostscript) ---------------
+rem --- Schritt 5: Extras (GitHub, Ghostscript, am Schluss ghostwriter) ---------
 call :titel "Schritt 5 von 5 - Extras"
-echo Zwei Extras - gehen auch spaeter.
+echo Drei Extras - gehen auch spaeter.
 echo.
 echo GitHub (freiwillig): Sicherung und mehrere Computer.
 set "GH=n"
@@ -245,11 +245,11 @@ rem darum neusten Installer von GitHub (ArtifexSoftware/ghostpdl-downloads) hole
 echo.
 echo Ghostscript (empfohlen): dann bist du bereit fuer CMYK-Druck.
 call :gs_suchen
-if defined GSDA (echo OK  Ghostscript vorhanden & goto fertig)
+if defined GSDA (echo OK  Ghostscript vorhanden & goto ghostwriter)
 set "GS=j"
 set /p "GS=Ghostscript installieren? [n = nein | Enter = ja]: "
-if /i "%GS%"=="n" goto fertig
-if /i "%GS%"=="nein" goto fertig
+if /i "%GS%"=="n" goto ghostwriter
+if /i "%GS%"=="nein" goto ghostwriter
 echo.
 echo Ghostscript wird geladen - das kann einige Minuten dauern.
 echo Fenster offen lassen, der Installer erscheint von selbst.
@@ -257,10 +257,30 @@ powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $ProgressPreferen
 if errorlevel 1 goto gs_web
 call :gs_suchen
 if defined GSDA (echo OK  Ghostscript installiert) else (echo Ghostscript noch nicht gefunden - spaeter START-Windows.bat nochmals starten.)
-goto fertig
+goto ghostwriter
 :gs_web
 echo Download ging nicht - die Seite oeffnet sich, dort "Windows 64 bit" laden.
 start "" "https://ghostscript.com/releases/gsdnld.html"
+
+:ghostwriter
+echo.
+echo ghostwriter (empfohlen): Schreibprogramm fuer die MD-Dateien, mit Gliederung (ca. 150 MB).
+set "GWEXE="
+if exist "%LOCALAPPDATA%\Programs\ghostwriter" for /r "%LOCALAPPDATA%\Programs\ghostwriter" %%f in (ghostwriter.exe) do if exist "%%f" set "GWEXE=%%f"
+if defined GWEXE (echo OK  ghostwriter vorhanden & goto fertig)
+set "GW=j"
+set /p "GW=ghostwriter installieren? [n = nein | Enter = ja]: "
+if /i "%GW%"=="n" goto fertig
+if /i "%GW%"=="nein" goto fertig
+echo ghostwriter wird geladen (neuste Version von GitHub) ...
+powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $ProgressPreference='SilentlyContinue'; $r=Invoke-RestMethod https://api.github.com/repos/KDE/ghostwriter/releases/latest; $a=$r.assets | ? name -like '*win64_portable.zip' | select -First 1; Write-Host ('  Version ' + $r.tag_name); $z=$env:TEMP+'\ghostwriter.zip'; Invoke-WebRequest $a.browser_download_url -OutFile $z; $d=$env:LOCALAPPDATA+'\Programs\ghostwriter'; Expand-Archive $z $d -Force; $e=(Get-ChildItem $d -Recurse -Filter ghostwriter.exe | select -First 1).FullName; $s=(New-Object -ComObject WScript.Shell).CreateShortcut($env:APPDATA+'\Microsoft\Windows\Start Menu\Programs\ghostwriter.lnk'); $s.TargetPath=$e; $s.Save(); $q=[char]34; $k='HKCU:\Software\Classes\pureSATZ.md\shell\open\command'; New-Item $k -Force | Out-Null; Set-ItemProperty $k '(default)' ($q+$e+$q+' '+$q+'%%1'+$q); New-Item 'HKCU:\Software\Classes\.md' -Force | Out-Null; Set-ItemProperty 'HKCU:\Software\Classes\.md' '(default)' 'pureSATZ.md'"
+if errorlevel 1 goto gw_web
+echo OK  ghostwriter installiert - Startmenue "ghostwriter", .md-Dateien oeffnen damit.
+echo     (Oeffnet .md noch ein anderes Programm: Rechtsklick - Oeffnen mit - ghostwriter - Immer.)
+goto fertig
+:gw_web
+echo Download ging nicht - die Seite oeffnet sich, dort "..._win64_portable.zip" laden und entpacken.
+start "" "https://github.com/KDE/ghostwriter/releases/latest"
 
 :fertig
 del "%TEMP%\puresatz-neustart-*.txt" >nul 2>nul
