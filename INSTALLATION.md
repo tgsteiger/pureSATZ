@@ -57,7 +57,9 @@ Windows `winget install ArtifexSoftware.GhostScript`. Ohne Ghostscript bleiben d
 **Schreibprogramm (Windows, freiwillig):** Die Einrichtung bietet am Schluss **ghostwriter** an (ca. 150 MB,
 neuste portable Version von GitHub, nach `%LOCALAPPDATA%\Programs\ghostwriter`, ohne Administratorrechte),
 mit Eintrag im Startmenü; `.md`-Dateien öffnen dann damit. Von Hand: https://github.com/KDE/ghostwriter/releases/latest
-→ `…_win64_portable.zip` entpacken. Linux: ghostwriter aus der Paketverwaltung; Mac: eingebauter Editor genügt.
+→ `…_win64_portable.zip` entpacken. Linux: ghostwriter aus der Paketverwaltung. Mac: die Einrichtung bietet **CotEditor** an (mit Homebrew
+`brew install --cask coteditor`, sonst öffnet sich der App Store); `.md` danach mit Rechtsklick → Informationen →
+Öffnen mit: CotEditor → Alle ändern.
 
 ---
 

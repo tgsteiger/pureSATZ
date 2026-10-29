@@ -4,7 +4,7 @@
 #  Am einfachsten: im Ordner pureSATZ  START-Mac.command  doppelklicken – führt in fünf Schritten
 #  durch (Technik, Ort, Hallo-Buch, eigenes Buch, Extras) und ruft dieses Skript auf:
 #    bash pc-einrichten/mac-einrichten.sh --technik   Apple-Werkzeuge (git), Python
-#    bash pc-einrichten/mac-einrichten.sh --extras    GitHub (freiwillig), Ghostscript (empfohlen)
+#    bash pc-einrichten/mac-einrichten.sh --extras    GitHub (freiwillig), Ghostscript, CotEditor (empfohlen)
 #  Ohne Angabe startet der ganze Ablauf (wie START-Mac.command).
 #  Darf beliebig oft laufen. Hält es an (Apple-Werkzeuge, Python), danach einfach nochmals starten.
 # =====================================================================
@@ -137,6 +137,26 @@ elif command -v brew >/dev/null 2>&1 || command -v port >/dev/null 2>&1; then
     esac
 else
     echo "Ghostscript fehlt – installieren mit:  brew install ghostscript"
+fi
+
+# --- Extra 3: CotEditor (empfohlen, Schreibprogramm für die MD-Dateien) -------
+echo
+echo "CotEditor (empfohlen): Schreibprogramm für die MD-Dateien – schlicht, dunkles Design, Gliederung."
+if [ -d /Applications/CotEditor.app ] || [ -d "$HOME/Applications/CotEditor.app" ]; then
+    echo "OK  CotEditor vorhanden"
+else
+    read -r -p "CotEditor installieren? [n = nein | Enter = ja]: " CE
+    case "$CE" in
+        n|nein) ;;
+        *) if command -v brew >/dev/null 2>&1; then
+               brew install --cask coteditor && echo "OK  CotEditor installiert"
+           else
+               open "macappstore://apps.apple.com/app/id1024640650" 2>/dev/null || open "https://coteditor.com"
+               echo "Im App Store bei CotEditor auf «Laden» klicken."
+               read -r -p "Weiter mit Enter … " _
+           fi
+           echo "    .md immer mit CotEditor: Rechtsklick auf eine .md → Informationen → Öffnen mit: CotEditor → Alle ändern" ;;
+    esac
 fi
 
 [ "$GH" = "j" ] || [ "$GH" = "ja" ] && exit 10       # 10 = mit GitHub (für die Schlussseite)

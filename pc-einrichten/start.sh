@@ -121,7 +121,7 @@ weiter
 
 # --- Schritt 5: Extras (zuerst GitHub, am Schluss Ghostscript) -----------------
 titel "Schritt 5 von 5 – Extras"
-echo "Zwei Extras – gehen auch später."
+echo "Extras – gehen auch später."
 bash "pc-einrichten/$OS-einrichten.sh" --extras
 GH=$?                                       # 10 = mit GitHub
 
