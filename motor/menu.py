@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """
-menu.py – Menü mit den häufigsten Befehlen (ab 2.50). Aufruf im Buchordner: sh menu.sh (Windows: menu.bat)
+menu.py – Menü mit den häufigsten Befehlen (ab 2.50, Buchstaben 2.51). Aufruf im Buchordner: sh menu.sh (Windows: menu.bat)
 
-Ein Buchstabe pro Befehl, b / m / o mit Untermenü. ↑ ↓ = letzte Eingaben, Enter = zurück, q = beenden.
+Ein Buchstabe pro Befehl, b / m / p / o / g mit Untermenü. ↑ ↓ = letzte Eingaben, Enter = zurück, q = beenden.
 Ganze Befehle gehen auch: final · leseprobe uz 18,20 · personen Eltern.
 MD, PDF und Ordner öffnen im eigenen Programm (das Menü wartet nicht), Bauen läuft hier im Fenster.
-Ton und Verlauf stehen in .menu (kommt nicht zu GitHub).
+Ton und Verlauf stehen in .menu (kommt nicht zu GitHub). Klang: klang.wav im Buchordner, sonst Piepton.
 """
 import glob
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -89,9 +90,26 @@ def lauf(cmd):
     except KeyboardInterrupt:                   # Ctrl+C bricht nur den Befehl ab, nicht das Menü
         r = 1
     d = int(time.time() - t)
-    print(("\nFertig" if r == 0 else "\nFehler – siehe Meldungen oben") + f" ({d // 60} Min. {d % 60} s)"
-          + ("\a" if ton else ""))
+    print(("\nFertig" if r == 0 else "\nFehler – siehe Meldungen oben") + f" ({d // 60} Min. {d % 60} s)")
+    klang()
     return r
+
+
+def klang():
+    """klang.wav im Buchordner abspielen (ohne zu warten), sonst Piepton."""
+    if not ton:
+        return
+    wav = os.path.join(BASE, "klang.wav")
+    try:
+        if os.path.exists(wav) and WIN:
+            import winsound
+            return winsound.PlaySound(wav, winsound.SND_FILENAME | winsound.SND_ASYNC)
+        spieler = next((s for s in (["afplay"] if MAC else ["paplay", "aplay"]) if shutil.which(s)), None)
+        if os.path.exists(wav) and spieler:
+            return subprocess.Popen([spieler, wav], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception:
+        pass
+    print("\a", end="", flush=True)
 
 
 def pdfs():
@@ -129,7 +147,7 @@ def zeige():
     print("\n" + links + f"Ton {'ein' if ton else 'aus'}".rjust(67 - len(links)))
     print(" " + "─" * 66)
     zeilen = [("s", "schnell"), ("k", "komplett"), ("b", "bauen …"), ("m", "MD öffnen …"),
-              ("o", "PDF öffnen …"), ("d", "Ordner"), ("p", "personen"), ("a", "änderungen"),
+              ("p", "PDF …"), ("o", "Ordner …"), ("g", "gegenlesen …"), ("a", "änderungen"),
               ("sy", "sync"), ("u", "update")] + ([("ul", "update lokal")] if LOKAL else []) + \
              [("t", "Ton ein/aus"), ("h", "hilfe"), ("q", "beenden")]
     raster(zeilen)
@@ -169,20 +187,24 @@ def main():
             k = untermenue("MD öffnen …", {k: v for k, v in md.items() if v[1]})
             if k:
                 oeffnen(md[k][1])
-        elif w == "o":
+        elif w == "p":
             liste = pdfs()
             if not liste:
                 print("  Noch kein PDF – zuerst bauen (s).")
             elif len(liste) == 1:
                 oeffnen(next(iter(liste.values()))[1])
             else:
-                k = untermenue("PDF öffnen …", liste)
+                k = untermenue("PDF …", liste)
                 if k:
                     oeffnen(liste[k][1])
-        elif w == "d":
-            oeffnen(next(iter(glob.glob(os.path.join(BASE, "ausgabe-normal"))), BASE))
-        elif w == "p":
-            k = untermenue("personen …", {"l": ("Liste neu", 0), "c": ("Check-PDF …", 0), "t": ("Textdatei", 0)})
+        elif w == "o":
+            ordner = {k: (t, os.path.join(BASE, d)) for k, t, d in (("b", "Buchordner", ""), ("n", "normal", "ausgabe-normal"),
+                      ("u", "unzensiert", "ausgabe-unzensiert"), ("d", "druck", "druck"))}
+            k = untermenue("Ordner …", {k: v for k, v in ordner.items() if os.path.isdir(v[1])})
+            if k:
+                oeffnen(ordner[k][1])
+        elif w == "g":
+            k = untermenue("gegenlesen …", {"l": ("Liste neu", 0), "c": ("check-PDF …", 0), "t": ("Textdatei", 0)})
             if k == "l":
                 bauen("personen")
             elif k == "t":

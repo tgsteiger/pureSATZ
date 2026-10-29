@@ -285,16 +285,17 @@ Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {v
 
 ```
   s  schnell       k  komplett      b  bauen …       m  MD öffnen …
-  o  PDF öffnen …  d  Ordner        p  personen      a  änderungen
+  p  PDF …         o  Ordner …      g  gegenlesen …  a  änderungen
   sy sync          u  update        t  Ton ein/aus   h  hilfe
   q  beenden
 ```
 
-- `b`, `m`, `o`, `p` haben ein Untermenü (Enter oder `z` = zurück). `p`: `l` Liste neu, `c` Check-PDF für eine
-  Person (öffnet sich danach), `t` personen-seiten.txt öffnen.
+- `b`, `m`, `p`, `o`, `g` haben ein Untermenü (Enter oder `z` = zurück). `o` Ordner: Buchordner, normal,
+  unzensiert, druck. `g` gegenlesen (Personen prüfen ihre Stellen): `l` Liste neu (personen-seiten.txt),
+  `c` check-PDF für eine Person (check_Name_Gegenlesen.pdf, öffnet sich danach), `t` Textdatei öffnen.
 - ↑ ↓ = letzte Befehle, Enter führt sie aus. Ganze Befehle gehen auch: `final`, `leseprobe uz 18,20`, `personen Eltern`.
 - MD, PDF und Ordner öffnen im eigenen Programm, das Menü bleibt bereit. Bauen läuft im Menüfenster;
-  am Schluss «Fertig» mit Dauer und Ton (`t` = ein/aus).
+  am Schluss «Fertig» mit Dauer und Ton (`t` = ein/aus). Eigener Klang: `klang.wav` in den Buchordner legen.
 - `ul` (update lokal) erscheint nur, wenn neben dem Buch ein Ordner `pureSATZ` liegt.
 - Ton und letzte Befehle stehen in `.menu` (kommt nicht zu GitHub).
 
