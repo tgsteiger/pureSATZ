@@ -330,8 +330,9 @@ Fertig. Dein Buch liegt in: {ordner}
 
 Ab jetzt arbeitest du in diesem Ordner. pureSATZ daneben ist die Werkstatt – dort nichts schreiben.
 {terminal}
-Weiter:
+Weiter (am einfachsten: Lotus «{name} Menü» doppelklicken):
   cd "{ordner}"
+  sh menu.sh             Menü: alles mit einem Buchstaben (s schnell, k komplett …)
   sh build.sh schnell    nur das Lese-PDF, in Sekunden (Demo ansehen: Ordner ausgabe-normal/)
   sh build.sh            alles als Entwurf
   sh build.sh final      Druckfassung

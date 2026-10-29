@@ -95,13 +95,14 @@ Ausprobieren: {NAME}-buch.md öffnen, einen Satz ändern.""")
         return
     win = os.name == "nt"
     bau = ".\\build.bat schnell" if win else "sh build.sh schnell"
+    menu = ".\\menu.bat" if win else "sh menu.sh"
     neu = ".\\setup\\setup.bat" if win else "sh setup/setup.sh"
     print(f"""
 Geschafft! Das PDF: {pdfs[-1] if pdfs else os.path.join(ordner, 'ausgabe-normal')}
 
 Ausprobieren:  {NAME}-buch.md im Ordner {NAME} öffnen, einen Satz ändern, speichern, dann
   cd "{ordner}"
-  {bau}
+  {bau}          (oder {menu}: Menü mit allen Befehlen)
 Eigenes Buch:  im Ordner pureSATZ  {neu}
 Hallo-Buch wegwerfen: den Ordner {NAME} löschen. Ganze Hilfe: hilfe.html""")
     if sys.stdin.isatty() and "--nicht-oeffnen" not in sys.argv:    # nächster Schritt: das eigene Buch

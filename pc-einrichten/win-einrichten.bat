@@ -272,7 +272,9 @@ set "UEB=%OBEN%\00-UEBERSICHT.txt"
 >>"%UEB%" echo.
 for /d %%d in ("%OBEN%\*") do call :ordner_zeile "%%~nxd"
 >>"%UEB%" echo.
->>"%UEB%" echo Im Buchordner "Terminal hier" doppelklicken, dann:
+>>"%UEB%" echo Am einfachsten: Lotus "Buch Menue" auf dem Schreibtisch doppelklicken - oder
+>>"%UEB%" echo im Buchordner "Terminal hier" doppelklicken, dann:
+>>"%UEB%" echo   menu.bat              Menue: alles mit einem Buchstaben (s schnell, k komplett ...)
 >>"%UEB%" echo   build.bat schnell     Lese-PDF ansehen, in Sekunden
 >>"%UEB%" echo   build.bat final       Druckfassung
 >>"%UEB%" echo   sicherung.bat         ZIP-Sicherung

@@ -141,11 +141,13 @@ uebersicht() {
         printf "  %-16s %s\n" "$n/" "$t"
     done
     echo
+    echo "Am einfachsten: Lotus «Buch Menü» auf dem Schreibtisch doppelklicken – oder"
     if [ -n "$MAC" ]; then
-        echo "Im Buchordner «Terminal hier» doppelklicken, dann:"
+        echo "im Buchordner «Terminal hier» doppelklicken, dann:"
     else
-        echo "Im Buchordner Rechtsklick → «Im Terminal öffnen», dann:"
+        echo "im Buchordner Rechtsklick → «Im Terminal öffnen», dann:"
     fi
+    echo "  sh menu.sh              Menü: alles mit einem Buchstaben (s schnell, k komplett …)"
     echo "  sh build.sh schnell     Lese-PDF ansehen, in Sekunden"
     echo "  sh build.sh final       Druckfassung"
     echo "  sh sicherung.sh         ZIP-Sicherung"
