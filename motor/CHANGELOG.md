@@ -3,6 +3,16 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.55.1 (Oktober 2026)
+- Windows-Einrichtung: Downloads von Ghostscript und ghostwriter mit Fortschrittsbalken (`curl.exe`, ab Windows 10
+  eingebaut). Nach «OK … installiert» wartet sie auf Enter, damit die Meldung nicht von der Übersicht verdrängt wird.
+
+## 2.55.0 (Oktober 2026)
+- Windows-Einrichtung, Schritt 5 «Extras»: ghostwriter (Schreibprogramm mit Gliederung, ca. 150 MB) als Option.
+  Holt immer die neuste `…_win64_portable.zip` von GitHub (releases/latest), entpackt nach
+  `%LOCALAPPDATA%\Programs\ghostwriter`, Startmenü-Eintrag, `.md` öffnet damit (auch `m` im Menü).
+  Schon vorhanden: nur «OK». Download nicht möglich: die Release-Seite öffnet sich.
+
 ## 2.54.1 (Oktober 2026)
 - Einrichten (START-…, 00-UEBERSICHT.txt), setup und Hallo-Buch nennen am Schluss das Menü (`sh menu.sh` /
   `menu.bat`) und den Lotus-Starter. Nur Texte.

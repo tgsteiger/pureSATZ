@@ -253,10 +253,11 @@ if /i "%GS%"=="nein" goto ghostwriter
 echo.
 echo Ghostscript wird geladen - das kann einige Minuten dauern.
 echo Fenster offen lassen, der Installer erscheint von selbst.
-powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $ProgressPreference='SilentlyContinue'; $r=Invoke-RestMethod https://api.github.com/repos/ArtifexSoftware/ghostpdl-downloads/releases/latest; $a=$r.assets | ? name -like 'gs*w64.exe' | select -First 1; Invoke-WebRequest $a.browser_download_url -OutFile $env:TEMP\gs-setup.exe; Start-Process $env:TEMP\gs-setup.exe -Wait"
+powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $ProgressPreference='SilentlyContinue'; $r=Invoke-RestMethod https://api.github.com/repos/ArtifexSoftware/ghostpdl-downloads/releases/latest; $a=$r.assets | ? name -like 'gs*w64.exe' | select -First 1; $z=$env:TEMP+'\gs-setup.exe'; curl.exe -L --progress-bar -o $z $a.browser_download_url; if ($LASTEXITCODE) { exit 1 }; Start-Process $z -Wait"
 if errorlevel 1 goto gs_web
 call :gs_suchen
 if defined GSDA (echo OK  Ghostscript installiert) else (echo Ghostscript noch nicht gefunden - spaeter START-Windows.bat nochmals starten.)
+call :weiter
 goto ghostwriter
 :gs_web
 echo Download ging nicht - die Seite oeffnet sich, dort "Windows 64 bit" laden.
@@ -273,10 +274,11 @@ set /p "GW=ghostwriter installieren? [n = nein | Enter = ja]: "
 if /i "%GW%"=="n" goto fertig
 if /i "%GW%"=="nein" goto fertig
 echo ghostwriter wird geladen (neuste Version von GitHub) ...
-powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $ProgressPreference='SilentlyContinue'; $r=Invoke-RestMethod https://api.github.com/repos/KDE/ghostwriter/releases/latest; $a=$r.assets | ? name -like '*win64_portable.zip' | select -First 1; Write-Host ('  Version ' + $r.tag_name); $z=$env:TEMP+'\ghostwriter.zip'; Invoke-WebRequest $a.browser_download_url -OutFile $z; $d=$env:LOCALAPPDATA+'\Programs\ghostwriter'; Expand-Archive $z $d -Force; $e=(Get-ChildItem $d -Recurse -Filter ghostwriter.exe | select -First 1).FullName; $s=(New-Object -ComObject WScript.Shell).CreateShortcut($env:APPDATA+'\Microsoft\Windows\Start Menu\Programs\ghostwriter.lnk'); $s.TargetPath=$e; $s.Save(); $q=[char]34; $k='HKCU:\Software\Classes\pureSATZ.md\shell\open\command'; New-Item $k -Force | Out-Null; Set-ItemProperty $k '(default)' ($q+$e+$q+' '+$q+'%%1'+$q); New-Item 'HKCU:\Software\Classes\.md' -Force | Out-Null; Set-ItemProperty 'HKCU:\Software\Classes\.md' '(default)' 'pureSATZ.md'"
+powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $ProgressPreference='SilentlyContinue'; $r=Invoke-RestMethod https://api.github.com/repos/KDE/ghostwriter/releases/latest; $a=$r.assets | ? name -like '*win64_portable.zip' | select -First 1; Write-Host ('  Version ' + $r.tag_name); $z=$env:TEMP+'\ghostwriter.zip'; curl.exe -L --progress-bar -o $z $a.browser_download_url; if ($LASTEXITCODE) { exit 1 }; $d=$env:LOCALAPPDATA+'\Programs\ghostwriter'; Expand-Archive $z $d -Force; $e=(Get-ChildItem $d -Recurse -Filter ghostwriter.exe | select -First 1).FullName; $s=(New-Object -ComObject WScript.Shell).CreateShortcut($env:APPDATA+'\Microsoft\Windows\Start Menu\Programs\ghostwriter.lnk'); $s.TargetPath=$e; $s.Save(); $q=[char]34; $k='HKCU:\Software\Classes\pureSATZ.md\shell\open\command'; New-Item $k -Force | Out-Null; Set-ItemProperty $k '(default)' ($q+$e+$q+' '+$q+'%%1'+$q); New-Item 'HKCU:\Software\Classes\.md' -Force | Out-Null; Set-ItemProperty 'HKCU:\Software\Classes\.md' '(default)' 'pureSATZ.md'"
 if errorlevel 1 goto gw_web
 echo OK  ghostwriter installiert - Startmenue "ghostwriter", .md-Dateien oeffnen damit.
 echo     (Oeffnet .md noch ein anderes Programm: Rechtsklick - Oeffnen mit - ghostwriter - Immer.)
+call :weiter
 goto fertig
 :gw_web
 echo Download ging nicht - die Seite oeffnet sich, dort "..._win64_portable.zip" laden und entpacken.
