@@ -182,8 +182,9 @@ def buch(ordner, w):
                  fuelle(open(os.path.join(VORLAGE, teil + ".md"), encoding="utf-8").read(), d), f"{name}-{teil}.md ({text})")
     kopiere(os.path.join(VORLAGE, "stichworte-buch.txt"), os.path.join(ordner, f"stichworte-{name}.txt"),
             f"stichworte-{name}.txt (Stichwortverzeichnis)")
-    for f in ("build.sh", "cleanup.sh", "sicherung.sh", "sync.sh", "update.sh", "neu.sh",
-              "build.bat", "cleanup.bat", "sicherung.bat", "sync.bat", "update.bat", "neu.bat", "README.md", "CHECKLISTE.md"):
+    for f in ("build.sh", "cleanup.sh", "sicherung.sh", "sync.sh", "update.sh", "neu.sh", "menu.sh",
+              "build.bat", "cleanup.bat", "sicherung.bat", "sync.bat", "update.bat", "neu.bat", "menu.bat",
+              "README.md", "CHECKLISTE.md"):
         kopiere(os.path.join(VORLAGE, f), os.path.join(ordner, f), f)
     for f in ("LIESMICH.txt", "muster.csv"):
         kopiere(os.path.join(VORLAGE, "tabellen", f), os.path.join(ordner, "tabellen", f), f"tabellen/{f}")

@@ -279,6 +279,25 @@ Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {v
 
 # Bauen
 
+## Menü
+
+`sh menu.sh` (Windows: `menu.bat`) zeigt die häufigsten Befehle. Ein Buchstabe genügt:
+
+```
+  s  schnell       k  komplett      b  bauen …       m  MD öffnen …
+  o  PDF öffnen …  d  Ordner        p  personen      a  änderungen
+  sy sync          u  update        t  Ton ein/aus   h  hilfe
+  q  beenden
+```
+
+- `b`, `m`, `o`, `p` haben ein Untermenü (Enter oder `z` = zurück). `p`: `l` Liste neu, `c` Check-PDF für eine
+  Person (öffnet sich danach), `t` personen-seiten.txt öffnen.
+- ↑ ↓ = letzte Befehle, Enter führt sie aus. Ganze Befehle gehen auch: `final`, `leseprobe uz 18,20`, `personen Eltern`.
+- MD, PDF und Ordner öffnen im eigenen Programm, das Menü bleibt bereit. Bauen läuft im Menüfenster;
+  am Schluss «Fertig» mit Dauer und Ton (`t` = ein/aus).
+- `ul` (update lokal) erscheint nur, wenn neben dem Buch ein Ordner `pureSATZ` liegt.
+- Ton und letzte Befehle stehen in `.menu` (kommt nicht zu GitHub).
+
 ## Bauen
 
 ```sh

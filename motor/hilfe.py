@@ -30,6 +30,7 @@ WEBSEITE = "https://tgsteiger.github.io/pureSATZ/"
 GITHUB = "https://github.com/tgsteiger/pureSATZ"
 
 SPICKZETTEL = [
+    ("sh menu.sh", "Menü: die häufigsten Befehle mit einer Taste (s schnell, k komplett, m MD, o PDF; ↑ = letzte)"),
     ("sh sync.sh", "Am Anfang und am Ende: Stand mit den anderen Computern abgleichen"),
     ("sh build.sh schnell", "Beim Schreiben: nur die Lese-PDFs, in wenigen Sekunden"),
     ("sh build.sh", "Alles als Entwurf: PDF, Druckdateien, E-Book"),

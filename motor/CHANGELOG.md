@@ -3,6 +3,13 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.47.0 (Oktober 2026)
+- **Neu: Menü** `sh menu.sh` (Windows `menu.bat`): die häufigsten Befehle mit einem Buchstaben – `s` schnell,
+  `k` komplett, `b` bauen …, `m` MD öffnen …, `o` PDF öffnen …, `d` Ordner, `p` personen … (Liste, Check-PDF, Textdatei), `a` änderungen,
+  `sy` sync, `u` update (`ul` lokal), `t` Ton, `h` hilfe, `q` beenden. ↑ ↓ = letzte Befehle, Enter/`z` = zurück.
+  MD/PDF öffnen ohne das Menü zu blockieren; nach dem Bau «Fertig» mit Dauer und Ton. Einstellungen in `.menu`.
+- `sh update.sh` ergänzt `menu.sh`/`menu.bat` in bestehenden Büchern; `.menu` kommt in `.gitignore`.
+
 ## 2.46.0 (Oktober 2026)
 Zusammenfassung seit 2.45.7 (Einzelheiten unten bei 2.45.8–2.45.11):
 - **Impressum:** neue Variable `{impressum-hinweis}`, eigener Absatz vor der Kontaktadresse.
