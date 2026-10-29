@@ -3,6 +3,10 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.54.0 (Oktober 2026)
+- Menü: `t` öffnet ein Terminal im Buchordner (Linux: Standard-Terminal, Mac: Terminal, Windows: cmd), das Menü
+  bleibt offen – praktisch beim Start über den Lotus-Starter. Klang neu mit `!`, oben rechts «Klang (!) ein/aus».
+
 ## 2.53.0 (Oktober 2026)
 - **Starter mit Lotus:** Menü `n` → `v` Verknüpfung oder `sh menu.sh verknuepfung`. Doppelklick öffnet das Menü.
   Linux: `.desktop` im Startmenü und auf dem Schreibtisch; Windows: Verknüpfung `.lnk` im Buchordner und auf dem

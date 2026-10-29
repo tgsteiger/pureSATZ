@@ -5,7 +5,7 @@ menu.py – Menü mit den häufigsten Befehlen (ab 2.50, Buchstaben 2.51). Aufru
 Ein Buchstabe pro Befehl, b / m / p / o / g mit Untermenü. ↑ ↓ = letzte Eingaben, Enter = zurück, q = beenden.
 Ganze Befehle gehen auch: final · leseprobe uz 18,20 · personen Eltern.
 MD, PDF und Ordner öffnen im eigenen Programm (das Menü wartet nicht), Bauen läuft hier im Fenster.
-Ton und Verlauf stehen in .menu (kommt nicht zu GitHub). Klang: motor/klang.wav (oder klang.wav im Buchordner), sonst Piepton.
+Klang (!) und Verlauf stehen in .menu (kommt nicht zu GitHub). Klang: motor/klang.wav (oder klang.wav im Buchordner), sonst Piepton.
 sh menu.sh verknuepfung = Starter mit Lotus auf den Schreibtisch (n → v im Menü).
 """
 import glob
@@ -149,12 +149,12 @@ def zeige():
     buch = next(iter(glob.glob(os.path.join(BASE, "*-buch.md"))), "Buch")
     version = open(os.path.join(MOTOR, "VERSION"), encoding="utf-8").read().strip()
     links = f" pureSATZ {version} · {os.path.basename(buch)[:-8]}"
-    print("\n" + links + f"(T)on {'ein' if ton else 'aus'}".rjust(67 - len(links)))
+    print("\n" + links + f"Klang (!) {'ein' if ton else 'aus'}".rjust(67 - len(links)))
     print(" " + "─" * 66)
     zeilen = [("s", "schnell"), ("k", "komplett"), ("b", "bauen …"), ("m", "MD öffnen …"),
               ("p", "PDF …"), ("o", "Ordner …"), ("g", "gegenlesen …"), ("a", "änderungen"),
               ("sy", "sync"), ("u", "update")] + ([("ul", "update lokal")] if LOKAL else []) + \
-             [("n", "neu …"), ("h", "hilfe"), ("q", "beenden")]
+             [("n", "neu …"), ("t", "Terminal"), ("h", "hilfe"), ("q", "beenden")]
     raster(zeilen)
     print(" " + "─" * 66)
 
@@ -162,6 +162,18 @@ def zeige():
 def raster(zeilen):
     for i in range(0, len(zeilen), 4):
         print(("  " + "".join(f"{k:<3}{t:<14}" for k, t in zeilen[i:i + 4])).rstrip())
+
+
+def terminal():
+    """Neues Terminal im Buchordner öffnen; das Menü wartet nicht."""
+    if WIN:
+        return subprocess.Popen(["cmd"], cwd=BASE, creationflags=subprocess.CREATE_NEW_CONSOLE)
+    if MAC:
+        return subprocess.Popen(["open", "-a", "Terminal", BASE])
+    for t in ("x-terminal-emulator", "gnome-terminal", "konsole", "xfce4-terminal", "xterm"):
+        if shutil.which(t):
+            return subprocess.Popen([t], cwd=BASE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    print("  Kein Terminal gefunden – Rechtsklick in den Buchordner → «Im Terminal öffnen».")
 
 
 def schreibtisch():
@@ -286,10 +298,12 @@ def main():
                 if WIN:                                                  # neues Menü laden
                     sys.exit(subprocess.call([sys.executable, os.path.abspath(__file__)]))
                 os.execv(sys.executable, [sys.executable, os.path.abspath(__file__)])
-        elif w == "t":
+        elif w == "!":
             ton = not ton
-            print(f"  Ton {'ein' if ton else 'aus'}")
+            print(f"  Klang {'ein' if ton else 'aus'}")
             klang()                                   # Probe beim Einschalten
+        elif w == "t":
+            terminal()
         elif w == "n":
             neu = {"b": ("neues Buch", 0), "h": ("Hallo-Buch", 0), "e": ("einrichten", 0)} if LOKAL else {}
             k = untermenue("neu …", {**neu, "v": ("Verknüpfung", 0)})

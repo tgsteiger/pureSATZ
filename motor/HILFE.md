@@ -287,7 +287,7 @@ Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {v
   s  schnell       k  komplett      b  bauen …       m  MD öffnen …
   p  PDF …         o  Ordner …      g  gegenlesen …  a  änderungen
   sy sync          u  update        ul update lokal  n  neu …
-  h  hilfe         q  beenden
+  t  Terminal      h  hilfe         q  beenden
 ```
 
 - `b`, `m`, `p`, `o`, `g` haben ein Untermenü (Enter oder `z` = zurück). `o` Ordner: Buchordner, normal,
@@ -295,7 +295,8 @@ Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {v
   `c` check-PDF für eine Person (check_Name_Gegenlesen.pdf, öffnet sich danach), `t` Textdatei öffnen.
 - ↑ ↓ = letzte Befehle, Enter führt sie aus. Ganze Befehle gehen auch: `final`, `leseprobe uz 18,20`, `personen Eltern`.
 - MD, PDF und Ordner öffnen im eigenen Programm, das Menü bleibt bereit. Bauen läuft im Menüfenster;
-  am Schluss «Fertig» mit Dauer und Ton (`t` = ein/aus). Oben rechts «(T)on ein/aus», Taste `t` (beim Einschalten klingt er einmal zur Probe).
+  am Schluss «Fertig» mit Dauer und Klang. Oben rechts «Klang (!) ein/aus», Taste `!` (beim Einschalten klingt er einmal zur Probe).
+  `t` öffnet ein Terminal im Buchordner, das Menü bleibt offen (praktisch, wenn das Menü per Lotus-Starter läuft).
   Klang: `motor/klang.wav`, eigener Klang: `klang.wav` in den Buchordner legen; sonst Piepton.
 - `ul` (update lokal) erscheint nur, wenn neben dem Buch ein Ordner `pureSATZ` liegt; ebenso in `n` neu …:
   `b` neues Buch (setup), `h` Hallo-Buch, `e` einrichten (START-Linux.sh / START-Mac.command / START-Windows.bat).
@@ -303,7 +304,7 @@ Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {v
   Linux: Startmenü und Schreibtisch (beim ersten Mal Rechtsklick → «Start erlauben»), Windows: Buchordner und
   Schreibtisch, Mac: «Buch Menü.command» im Buchordner und auf dem Schreibtisch. Neue Bücher bekommen ihn mit `setup`.
   Buchordner verschoben? `v` nochmals – überschreibt den alten Starter.
-- Ton und letzte Befehle stehen in `.menu` (kommt nicht zu GitHub).
+- Klang und letzte Befehle stehen in `.menu` (kommt nicht zu GitHub).
 
 ## Bauen
 

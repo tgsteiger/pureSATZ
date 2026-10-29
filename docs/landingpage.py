@@ -241,10 +241,10 @@ summary{{font:500 16px Poppins,system-ui,sans-serif;color:var(--haupt);cursor:po
 </div></section>
 
 <div class="wrap"><footer>
-pureSATZ {html.escape(version)} · © 2026 Thomas Gsteiger · kostenlos für eigene Bücher, Quelltext einsehbar –
+pureSATZ {html.escape(version)} · © 2026 <a href="https://www.thomasgsteiger.ch">Thomas Gsteiger</a> · kostenlos für eigene Bücher, Quelltext einsehbar –
 <a href="{REPO}/blob/main/LIZENZ.md">Lizenz</a> · Schriften Lora und Poppins (SIL Open Font License)<br>
 Fragen und Fehler: <a href="{REPO}/issues">Issues auf GitHub</a> · E-Mail: <a id="mail" href="#">puresatz (at) gsteiger.ch</a><br>
-Entstanden beim Schreiben von «Leben 1.0, 2.0, 3.0». Der Name erinnert an pureRACE, eine Zeitmess-Software von 1994.
+Entstanden beim Schreiben von «<a href="https://www.thomasgsteiger.ch">Leben 1.0, 2.0, 3.0</a>». Der Name erinnert an pureRACE, eine Zeitmess-Software von 1994.
 </footer></div>
 <script>
 const p=(navigator.userAgentData&&navigator.userAgentData.platform)||navigator.platform||navigator.userAgent;
