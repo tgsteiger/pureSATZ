@@ -182,3 +182,12 @@ dem Ziel; die Zahlen sind grobe Erfahrungswerte und lassen sich anpassen.
 17. [ ] **Pflichtexemplare:** Schweiz: zwei Exemplare an die Nationalbibliothek; Deutschland: an die DNB. Prüfen, ob die Druckerei das übernimmt. {⏱ 1 Woche · fertig +1}
 18. [ ] **Danach:** Dank-Mail an die Gäste, Rückmeldungen und Rezensionen sammeln, nachbestellen, Fehler für eine zweite Auflage notieren (`stand`). {⏱ laufend · fertig +4}
 :::
+
+## Tipp: Menü statt Befehle
+
+Im Buchordner `sh menu.sh` (Windows: `menu.bat` doppelklicken). Dann genügt ein Buchstabe: `s` schnell,
+`k` komplett, `m` MD öffnen, `p` PDF, `o` Ordner, `g` gegenlesen, `sy` sync, `u` update,
+`n` neu (neues Buch, Hallo-Buch, einrichten).
+Mit ↑ holst du die letzten Befehle zurück, `q` beendet.
+
+Mehr dazu in der Hilfe unter «Bauen → Menü».

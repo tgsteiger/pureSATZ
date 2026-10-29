@@ -5,7 +5,7 @@ menu.py – Menü mit den häufigsten Befehlen (ab 2.50, Buchstaben 2.51). Aufru
 Ein Buchstabe pro Befehl, b / m / p / o / g mit Untermenü. ↑ ↓ = letzte Eingaben, Enter = zurück, q = beenden.
 Ganze Befehle gehen auch: final · leseprobe uz 18,20 · personen Eltern.
 MD, PDF und Ordner öffnen im eigenen Programm (das Menü wartet nicht), Bauen läuft hier im Fenster.
-Ton und Verlauf stehen in .menu (kommt nicht zu GitHub). Klang: klang.wav im Buchordner, sonst Piepton.
+Ton und Verlauf stehen in .menu (kommt nicht zu GitHub). Klang: motor/klang.wav (oder klang.wav im Buchordner), sonst Piepton.
 """
 import glob
 import os
@@ -22,7 +22,8 @@ MOTOR = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.dirname(MOTOR)
 WIN, MAC = sys.platform == "win32", sys.platform == "darwin"
 EINST = os.path.join(BASE, ".menu")
-LOKAL = os.path.isdir(os.path.join(os.path.dirname(BASE), "pureSATZ", "motor"))
+PURESATZ = os.path.join(os.path.dirname(BASE), "pureSATZ")
+LOKAL = os.path.isdir(os.path.join(PURESATZ, "motor"))
 BEFEHLE = ("schnell", "komplett", "final", "entwurf", "leseprobe", "korrektur", "nur-pdf", "nur-druck", "nur-ebook",
            "pruefen", "personen", "stand", "aenderungen", "änderungen", "geschichten", "hilfe", "mockup", "sicherung")
 MD = {"b": ("Buch", "*-buch.md"), "v": ("Variablen", "*-variablen.md"), "u": ("Umschlag", "*-umschlag.md"),
@@ -73,20 +74,23 @@ def oeffnen(pfad):
         subprocess.Popen(["open" if MAC else "xdg-open", pfad], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
-def skript(name, *args):
-    """sync / update über die Startdateien des Buchs (wie von Hand)."""
-    cmd = ["cmd", "/c", name + ".bat"] if WIN else ["sh", name + ".sh"]
-    return lauf(cmd + list(args))
+def skript(name, *args, ordner=BASE, mac=None):
+    """Startdateien aufrufen wie von Hand: sync, update im Buch; setup, hallo, START in ../pureSATZ."""
+    if WIN:
+        cmd = ["cmd", "/c", name + ".bat"]
+    else:
+        cmd = ["bash" if mac else "sh", (mac if MAC and mac else name + ".sh")]
+    return lauf(cmd + list(args), ordner)
 
 
 def bauen(*args):
     return lauf([sys.executable, os.path.join(MOTOR, "bauen.py")] + [a for a in args if a != "entwurf"])
 
 
-def lauf(cmd):
+def lauf(cmd, ordner=BASE):
     t = time.time()
     try:
-        r = subprocess.run(cmd, cwd=BASE).returncode
+        r = subprocess.run(cmd, cwd=ordner).returncode
     except KeyboardInterrupt:                   # Ctrl+C bricht nur den Befehl ab, nicht das Menü
         r = 1
     d = int(time.time() - t)
@@ -99,7 +103,7 @@ def klang():
     """klang.wav im Buchordner abspielen (ohne zu warten), sonst Piepton."""
     if not ton:
         return
-    wav = os.path.join(BASE, "klang.wav")
+    wav = next((p for p in (os.path.join(BASE, "klang.wav"), os.path.join(MOTOR, "klang.wav")) if os.path.exists(p)), "")
     try:
         if os.path.exists(wav) and WIN:
             import winsound
@@ -144,12 +148,12 @@ def zeige():
     buch = next(iter(glob.glob(os.path.join(BASE, "*-buch.md"))), "Buch")
     version = open(os.path.join(MOTOR, "VERSION"), encoding="utf-8").read().strip()
     links = f" pureSATZ {version} · {os.path.basename(buch)[:-8]}"
-    print("\n" + links + f"Ton {'ein' if ton else 'aus'}".rjust(67 - len(links)))
+    print("\n" + links + f"(T)on {'ein' if ton else 'aus'}".rjust(67 - len(links)))
     print(" " + "─" * 66)
     zeilen = [("s", "schnell"), ("k", "komplett"), ("b", "bauen …"), ("m", "MD öffnen …"),
               ("p", "PDF …"), ("o", "Ordner …"), ("g", "gegenlesen …"), ("a", "änderungen"),
-              ("sy", "sync"), ("u", "update")] + ([("ul", "update lokal")] if LOKAL else []) + \
-             [("t", "Ton ein/aus"), ("h", "hilfe"), ("q", "beenden")]
+              ("sy", "sync"), ("u", "update")] + ([("ul", "update lokal"), ("n", "neu …")] if LOKAL else []) + \
+             [("h", "hilfe"), ("q", "beenden")]
     raster(zeilen)
     print(" " + "─" * 66)
 
@@ -233,6 +237,17 @@ def main():
         elif w == "t":
             ton = not ton
             print(f"  Ton {'ein' if ton else 'aus'}")
+            klang()                                   # Probe beim Einschalten
+        elif w == "n" and LOKAL:
+            k = untermenue("neu …", {"b": ("neues Buch", 0), "h": ("Hallo-Buch", 0), "e": ("einrichten", 0)})
+            if k:
+                vorher = set(os.listdir(os.path.dirname(BASE)))
+                {"b": lambda: skript(os.path.join("setup", "setup"), ordner=PURESATZ),
+                 "h": lambda: skript("hallo", ordner=PURESATZ),
+                 "e": lambda: skript("START-Windows" if WIN else "START-Linux", ordner=PURESATZ,
+                                     mac="START-Mac.command")}[k]()
+                for d in sorted(set(os.listdir(os.path.dirname(BASE))) - vorher):
+                    print(f"  Neues Buch: ../{d} – dort sh menu.sh")
         elif w == "h":
             bauen("hilfe")
         elif w.split()[0] in BEFEHLE:          # ganzer Befehl: final · leseprobe uz 18,20 · personen Eltern

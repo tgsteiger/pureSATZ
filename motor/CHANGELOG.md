@@ -3,6 +3,12 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.52.0 (Oktober 2026)
+- Menü: `n` neu … (nur wenn ../pureSATZ daneben liegt) ruft die bestehenden Startdateien auf: `b` neues Buch
+  (setup), `h` Hallo-Buch, `e` einrichten (START-…). Ein neues Buch wird mit Ordner gemeldet (dort `sh menu.sh`).
+- Ton oben rechts als «(T)on ein/aus»; beim Einschalten klingt er einmal zur Probe.
+- Klang `motor/klang.wav` (Gong); ein eigener `klang.wav` im Buchordner hat Vorrang.
+
 ## 2.51.0 (Oktober 2026)
 - Menü: klarere Buchstaben – `p` PDF …, `o` Ordner … (Buchordner, normal, unzensiert, druck), `g` gegenlesen …
   (`l` Liste neu, `c` check-PDF für eine Person, `t` Textdatei).

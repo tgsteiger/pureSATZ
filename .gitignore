@@ -25,3 +25,6 @@ _backup/
 Thumbs.db
 .vscode/
 Claude outputs/
+
+# Klang für das Menü: nur lokal (Herkunft der Aufnahme unklar, nicht öffentlich verteilen)
+motor/klang.wav
