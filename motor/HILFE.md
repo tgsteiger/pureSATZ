@@ -678,10 +678,10 @@ $ sh build.sh personen   (Seiten neu, nach dem Korrigieren)
 $ sh build.sh personen Thomas   (check_Thomas_Gegenlesen.pdf)
 
 Thomas | Thom | Autor | Techniker               5 Stellen
++ normal: 115
   normal       S. 112 Z. 8 · S. 113 Z. 2, 17
-               Kapitel: Schwitzhütte
   unzensiert   S. 118 Z. 4
-  {leseprobe-seiten}: 112-113
+  {leseprobe-seiten}: 112-113,115
   {leseprobe-seiten-uz}: 118
 
 # KEINE PERSONEN
@@ -696,9 +696,14 @@ Thomas | Thom | Autor | Techniker               5 Stellen
   einem Namen, den der Motor nicht kennt, geht auch. Datei löschen = alles beginnt neu.
 - **Ganzes Kapitel:** Steht ein Begriff im **Kapiteltitel** (z. B. «Ecuador» in «Ecuador und das runde Rad»), kommen
   alle Seiten dieses Kapitels dazu – in `{leseprobe-seiten…}` und im Gegenlesen-PDF (Zeile «ganzes Kapitel: …»).
-- **Seiten von Hand:** Eine Zeile `+ uz: 59-60, 63` oder `+ normal: 41` direkt unter einer Person (ganz links) nimmt
-  diese Seiten dazu, z. B. die Folgeseite eines Kastens. Der Motor lässt sie stehen, passt sie aber nicht an:
-  nach einem Umbau selbst prüfen.
+- **Seiten von Hand:** eigene Zeile direkt unter einer Person, **ganz links** (ohne Leerzeichen davor), mehrere
+  Seiten mit Komma, Bereiche mit Strich:
+  ```
+  + normal: 46,47,49-52
+  + uz: 61,63-64
+  ```
+  Nimmt diese Seiten dazu, z. B. die Folgeseite eines Kastens. Der Motor lässt sie stehen, passt sie aber nicht an:
+  nach einem Umbau selbst prüfen. Eingerückt oder hinten an eine Zeile angehängt wird sie nicht gelesen.
 - Die Kopfzeile jeder Seite («Teil · Kapitel») zählt nicht als Fundstelle.
 - Die eingerückten Zeilen schreibt der Motor bei jedem `sh build.sh personen` neu. Deine Namenszeilen bleiben,
   neu Gefundenes kommt unten dazu. Vorgeschlagen werden Vornamen, Rollen (Vater, Tochter, Nachbarin …) und

@@ -196,7 +196,9 @@ def schreiben(base, bk, gruppen, weg, daten, neu_ab, pdfs, zusatz):
          "> Ganze Zeile gelöscht = wird beim nächsten Mal wieder vorgeschlagen. Datei löschen = alles neu.",
          "> S. = gedruckte Seite · Z. = Zeile auf der Seite, gezählt wie im Korrektur-PDF (Kopfzeile = Zeile 1).",
          "> Steht ein Begriff im Kapiteltitel, kommt das ganze Kapitel dazu (Leseprobe-Seiten, Gegenlesen).",
-         "> «+ uz: 59» bzw. «+ normal: 41» unter einer Person = Seiten von Hand dazu (bleibt stehen; nach Umbau prüfen).",
+         "> Seiten von Hand dazu: eigene Zeile direkt unter der Person, ganz links (bleibt stehen; nach Umbau prüfen):",
+         ">   + normal: 46,47,49-52",
+         ">   + uz: 61,63-64",
          "> Gesucht in: " + " · ".join(f"{os.path.relpath(p, base)} ({datetime.fromtimestamp(os.path.getmtime(p)):%d.%m.%Y %H:%M})"
                                       for _, _, p in pdfs),
          "$ sh build.sh personen   (Seiten neu, nach dem Korrigieren)",
@@ -217,8 +219,6 @@ def schreiben(base, bk, gruppen, weg, daten, neu_ab, pdfs, zusatz):
                                  for s, zs in sorted(t.items()))
             z.append(f"  {name_f[f]:<12} {stellen}")
             kap = list(dict.fromkeys(k for s in sorted(t) for k in [d[f]["kapitel"].get(s, "")] if k))
-            if kap:
-                z.append(f"  {'':<12} Kapitel: {' · '.join(kap)}")
             for k in kap:
                 if any(b.lower() in k.lower() for b in g):
                     z.append(f"  {'':<12} ganzes Kapitel: {k} (S. {seiten_text([s for s, x in d[f]['kapitel'].items() if x == k])})")

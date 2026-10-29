@@ -3,6 +3,10 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.56.1 (Oktober 2026)
+- personen-seiten.txt kürzer: ohne Zeilen «Kapitel: …» (nur Info, nie gelesen; «ganzes Kapitel» bleibt). Oben das
+  Beispiel für Seiten von Hand: `+ normal: 46,47,49-52` / `+ uz: 61,63-64` (eigene Zeile, ganz links). Hilfe ebenso.
+
 ## 2.56.0 (Oktober 2026)
 - Mac-Einrichtung, Extras: CotEditor (schlichtes Schreibprogramm, dunkles Design, Gliederung) als Option –
   mit Homebrew `brew install --cask coteditor`, sonst öffnet sich der App Store. Schon vorhanden: nur «OK».
