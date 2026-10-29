@@ -3,6 +3,12 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.56.2 (Oktober 2026)
+- personen-seiten.txt neu aufgebaut: pro Person `normal: 44-45,55` / `uz: 60,74` (Seiten fürs Check-PDF – eigene
+  Seiten direkt dazuschreiben, bleiben stehen) und darunter `> normal: S. 44 Z. 28 …` (Details, jedes Mal neu).
+  Abschnitte `# GEFUNDENE PERSONEN UND BEGRIFFE` und immer `# KEINE PERSONEN` (Beispiel `--- MusterName`).
+  Ohne unzensierte Fassung nur `normal:`. Alte `+ normal: 45`-Zeilen werden übernommen.
+
 ## 2.56.1 (Oktober 2026)
 - personen-seiten.txt kürzer: ohne Zeilen «Kapitel: …» (nur Info, nie gelesen; «ganzes Kapitel» bleibt). Oben das
   Beispiel für Seiten von Hand: `+ normal: 46,47,49-52` / `+ uz: 61,63-64` (eigene Zeile, ganz links). Hilfe ebenso.

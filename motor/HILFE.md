@@ -672,40 +672,36 @@ sh build.sh personen Thomas   # 3. check_Thomas_Gegenlesen.pdf (und …_Gegenles
 ```
 # PERSONEN UND SEITEN – Mein Buch · 24.10.2026 22:40
 > Begriffe derselben Person in eine Zeile, mit | getrennt. Der erste ist der Name (für die Datei).
-> «--- Wort» = keine Person, nicht mehr vorschlagen (solange diese Datei besteht; ich sammle sie unten).
-> Ganze Zeile gelöscht = wird beim nächsten Mal wieder vorgeschlagen. Datei löschen = alles neu.
+> normal: / uz: = Seiten fürs Check-PDF – eigene Seiten einfach dazuschreiben, z. B. normal: 44-45,47,55
+> Zeilen mit > schreibt pureSATZ jedes Mal neu: S. = gedruckte Seite, Z. = Zeile (wie im Korrektur-PDF).
 $ sh build.sh personen   (Seiten neu, nach dem Korrigieren)
 $ sh build.sh personen Thomas   (check_Thomas_Gegenlesen.pdf)
 
+# GEFUNDENE PERSONEN UND BEGRIFFE
+
 Thomas | Thom | Autor | Techniker               5 Stellen
-+ normal: 115
-  normal       S. 112 Z. 8 · S. 113 Z. 2, 17
-  unzensiert   S. 118 Z. 4
-  {leseprobe-seiten}: 112-113,115
-  {leseprobe-seiten-uz}: 118
+normal: 112-113,115
+uz: 118
+> normal: S. 112 Z. 8 · S. 113 Z. 2, 17
+> uz: S. 118 Z. 4
 
 # KEINE PERSONEN
 > nicht mehr vorschlagen – Zeile löschen = wieder vorschlagen
 --- Ecuador
 ```
 
-- `#` Titel · `>` Erklärung · `$` Befehl. Wichtig sind nur die Zeilen mit den Namen (ganz links): Begriffe
-  **derselben Person** mit `|` in eine Zeile nehmen, der **erste** gibt den Dateinamen. `--- Wort` (irgendwo in
-  der Datei) = keine Person: wird unten unter «KEINE PERSONEN» gesammelt und nicht mehr vorgeschlagen, solange die
-  Datei besteht. Eine ganz gelöschte Zeile kommt beim nächsten Mal wieder als Vorschlag. Eine eigene Zeile mit
-  einem Namen, den der Motor nicht kennt, geht auch. Datei löschen = alles beginnt neu.
-- **Ganzes Kapitel:** Steht ein Begriff im **Kapiteltitel** (z. B. «Ecuador» in «Ecuador und das runde Rad»), kommen
-  alle Seiten dieses Kapitels dazu – in `{leseprobe-seiten…}` und im Gegenlesen-PDF (Zeile «ganzes Kapitel: …»).
-- **Seiten von Hand:** eigene Zeile direkt unter einer Person, **ganz links** (ohne Leerzeichen davor), mehrere
-  Seiten mit Komma, Bereiche mit Strich:
-  ```
-  + normal: 46,47,49-52
-  + uz: 61,63-64
-  ```
-  Nimmt diese Seiten dazu, z. B. die Folgeseite eines Kastens. Der Motor lässt sie stehen, passt sie aber nicht an:
-  nach einem Umbau selbst prüfen. Eingerückt oder hinten an eine Zeile angehängt wird sie nicht gelesen.
+- Wichtig sind nur die Zeilen **ganz links**: Begriffe **derselben Person** mit `|` in eine Zeile nehmen, der
+  **erste** gibt den Dateinamen. `--- Wort` (unter «KEINE PERSONEN») = keine Person, nicht mehr vorschlagen
+  (`--- MusterName` ist nur ein Beispiel). Eine ganz gelöschte Zeile kommt beim nächsten Mal wieder als Vorschlag.
+  Eine eigene Zeile mit einem Namen, den der Motor nicht kennt, geht auch. Datei löschen = alles beginnt neu.
+- **`normal:` / `uz:`** = die Seiten fürs Check-PDF. **Eigene Seiten einfach dazuschreiben**, mit Komma und
+  Bereichen: `normal: 44-45,47,49-52`. Sie bleiben beim nächsten Lauf stehen (der Motor vergleicht mit den
+  gefundenen Seiten in der `>`-Zeile); gefundene Seiten berechnet er jedes Mal neu. Nach einem Umbau eigene
+  Seiten selbst prüfen. Ohne unzensierte Fassung gibt es nur `normal:`. (Alte Zeilen `+ normal: 45` gehen weiter.)
+- **`>`-Zeilen** schreibt der Motor: Seite und Zeile jeder Fundstelle. **Ganzes Kapitel:** Steht ein Begriff im
+  **Kapiteltitel** (z. B. «Ecuador» in «Ecuador und das runde Rad»), kommen alle Seiten dieses Kapitels dazu.
 - Die Kopfzeile jeder Seite («Teil · Kapitel») zählt nicht als Fundstelle.
-- Die eingerückten Zeilen schreibt der Motor bei jedem `sh build.sh personen` neu. Deine Namenszeilen bleiben,
+- Die `>`-Zeilen und Seiten schreibt der Motor bei jedem `sh build.sh personen` neu. Deine Namenszeilen bleiben,
   neu Gefundenes kommt unten dazu. Vorgeschlagen werden Vornamen, Rollen (Vater, Tochter, Nachbarin …) und
   Stichwörter mit Vornamen – der eigene Vorname (`{autor}`) nicht. Das Stichwortverzeichnis zählt nicht mit.
 - **S.** = gedruckte Seite – gleich im Lese-PDF, im Probedruck und in der Leseprobe. **Z.** = Zeile auf der Seite,

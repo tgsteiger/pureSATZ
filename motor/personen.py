@@ -8,8 +8,9 @@ Im Buchordner (über build.sh / build.bat):
 
 personen-seiten.txt ist Ergebnis und Eingabe zugleich:
     Thomas | Thom | Autor           Begriffe derselben Person in einer Zeile; der erste ist der Name (für die Datei)
+    normal: 44-45,55 / uz: 60,74    Seiten fürs Check-PDF – eigene Seiten einfach dazuschreiben (bleiben stehen)
     --- Ecuador                     nie mehr vorschlagen
-    eingerückte Zeilen              schreibt der Motor jedes Mal neu (Seiten, Zeilen, Kapitel)
+    > normal: S. 44 Z. 28 …         schreibt der Motor jedes Mal neu (Fundstellen mit Seite und Zeile)
 Es wird nichts neu gebaut: gesucht wird in den vorhandenen Lese-PDFs (Seitenzahlen = gedruckte Seiten).
 """
 import os
@@ -115,7 +116,17 @@ def lies(pfad):
     gruppen, weg, zusatz = [], set(), {}
     if not os.path.exists(pfad):
         return gruppen, weg, zusatz
+    liste, auto = {}, {}                                # «normal: 44,45» und gefundene Seiten aus «> normal: S. 44 …»
     for z in open(pfad, encoding="utf-8").read().split("\n"):
+        m = re.match(r"(>\s*)?(normal|uz|unzensiert)\s*:(.*)$", z.strip(), re.I)
+        if m and gruppen:
+            f = "normal" if m.group(2).lower() == "normal" else "uz"
+            if m.group(1):
+                auto.setdefault(len(gruppen) - 1, {})[f] = {n for a, b in re.findall(r"S\.\s*(\d+)(?:-(\d+))?", m.group(3))
+                                                            for n in range(int(a), int(b or a) + 1)}
+            else:
+                liste.setdefault(len(gruppen) - 1, {})[f] = m.group(3).strip()
+            continue
         if not z.strip() or z[0] in " \t" or z.lstrip()[0] in "#>$":
             continue
         s = STELLEN.sub("", z.strip())
@@ -124,11 +135,17 @@ def lies(pfad):
             zusatz.setdefault(len(gruppen) - 1, {})["uz" if f.strip().lower() in ("uz", "unzensiert") else "normal"] = nr.strip()
             continue
         if s.startswith(WEG):
-            weg.update(b.strip() for b in s[len(WEG):].split("|") if b.strip())
+            weg.update(b.strip() for b in s[len(WEG):].split("|") if b.strip() and b.strip() != "MusterName")
             continue
         begriffe = [b.strip() for b in STELLEN.sub("", s).split("|") if b.strip()]
         if begriffe:
             gruppen.append(begriffe)
+    import fassungen
+    for i, fs in liste.items():                         # eigene Seiten = in der Liste, aber nicht gefunden
+        for f, text in fs.items():
+            eigen = sorted(set(fassungen.seiten_lesen(text)) - auto.get(i, {}).get(f, set())
+                           | set(fassungen.seiten_lesen(zusatz.get(i, {}).get(f, ""))))
+            zusatz.setdefault(i, {})[f] = seiten_text(eigen)
     return gruppen, weg, zusatz
 
 
@@ -192,18 +209,14 @@ def schreiben(base, bk, gruppen, weg, daten, neu_ab, pdfs, zusatz):
     beispiel = gruppen[0][0] if gruppen else "Name"
     z = [f"# PERSONEN UND SEITEN – {titel} · {datetime.now():%d.%m.%Y %H:%M}",
          "> Begriffe derselben Person in eine Zeile, mit | getrennt. Der erste ist der Name (für die Datei).",
-         f"> «{WEG} Wort» = keine Person, nicht mehr vorschlagen (solange diese Datei besteht; ich sammle sie unten).",
-         "> Ganze Zeile gelöscht = wird beim nächsten Mal wieder vorgeschlagen. Datei löschen = alles neu.",
-         "> S. = gedruckte Seite · Z. = Zeile auf der Seite, gezählt wie im Korrektur-PDF (Kopfzeile = Zeile 1).",
-         "> Steht ein Begriff im Kapiteltitel, kommt das ganze Kapitel dazu (Leseprobe-Seiten, Gegenlesen).",
-         "> Seiten von Hand dazu: eigene Zeile direkt unter der Person, ganz links (bleibt stehen; nach Umbau prüfen):",
-         ">   + normal: 46,47,49-52",
-         ">   + uz: 61,63-64",
+         "> normal: / uz: = Seiten fürs Check-PDF – eigene Seiten einfach dazuschreiben, z. B. normal: 44-45,47,55",
+         "> Zeilen mit > schreibt pureSATZ jedes Mal neu: S. = gedruckte Seite, Z. = Zeile (wie im Korrektur-PDF).",
+         f"> Keine Person: unten unter «KEINE PERSONEN» als «{WEG} Wort». Ganze Zeile gelöscht = wieder vorgeschlagen.",
          "> Gesucht in: " + " · ".join(f"{os.path.relpath(p, base)} ({datetime.fromtimestamp(os.path.getmtime(p)):%d.%m.%Y %H:%M})"
                                       for _, _, p in pdfs),
          "$ sh build.sh personen   (Seiten neu, nach dem Korrigieren)",
-         f"$ sh build.sh personen {beispiel}   (check_{_dateiname(beispiel)}_Gegenlesen.pdf)", ""]
-    name_f = {"normal": "normal", "uz": "unzensiert"}
+         f"$ sh build.sh personen {beispiel}   (check_{_dateiname(beispiel)}_Gegenlesen.pdf)", "",
+         "# GEFUNDENE PERSONEN UND BEGRIFFE", ""]
     for i, g in enumerate(gruppen):
         if i == neu_ab:
             z += [f"# NEU GEFUNDEN {datetime.now():%d.%m.%Y}", f"> prüfen, zusammennehmen oder mit «{WEG}» ausschliessen", ""]
@@ -211,27 +224,22 @@ def schreiben(base, bk, gruppen, weg, daten, neu_ab, pdfs, zusatz):
         n = sum(len(zs) for f in d for zs in d[f]["treffer"].values())
         kopf = " | ".join(g)
         z.append(f"{kopf:<46} {n} Stelle{'n' if n != 1 else ''}" + ("   ← kommt nicht vor" if n == 0 else ""))
+        details = []
         for f in d:
-            t = d[f]["treffer"]
-            if not t:
-                continue
-            stellen = " · ".join(f"S. {s} Z. {', '.join(map(str, zs))}" if s > 1 else f"Umschlag Z. {', '.join(map(str, zs))}"
-                                 for s, zs in sorted(t.items()))
-            z.append(f"  {name_f[f]:<12} {stellen}")
-            kap = list(dict.fromkeys(k for s in sorted(t) for k in [d[f]["kapitel"].get(s, "")] if k))
-            for k in kap:
-                if any(b.lower() in k.lower() for b in g):
-                    z.append(f"  {'':<12} ganzes Kapitel: {k} (S. {seiten_text([s for s, x in d[f]['kapitel'].items() if x == k])})")
-        for f, nr in zusatz.get(i, {}).items():
-            z.append(f"+ {f}: {nr}")
-        for f in d:
-            alle = alle_seiten(d[f]["treffer"], d[f]["kapitel"], g, zusatz.get(i, {}).get(f, ""))
+            t, kap = d[f]["treffer"], d[f]["kapitel"]
+            alle = alle_seiten(t, kap, g, zusatz.get(i, {}).get(f, ""))
             if alle:
-                z.append(f"  {{leseprobe-seiten{'' if f == 'normal' else '-uz'}}}: {seiten_text(alle)}")
+                z.append(f"{f}: {seiten_text(alle)}")
+            if t:
+                stellen = [f"S. {s} Z. {', '.join(map(str, zs))}" if s > 1 else f"Umschlag Z. {', '.join(map(str, zs))}"
+                           for s, zs in sorted(t.items())]
+                stellen += [f"ganzes Kapitel S. {seiten_text([s for s, x in kap.items() if x == k])}"
+                            for k in dict.fromkeys(kap.get(s, "") for s in sorted(t)) if k and any(b.lower() in k.lower() for b in g)]
+                details.append(f"> {f}: {' · '.join(stellen)}")
+        z += details
         z.append("")
-    if weg:
-        z += ["# KEINE PERSONEN", "> nicht mehr vorschlagen – Zeile löschen = wieder vorschlagen"] \
-            + [f"{WEG} {w}" for w in sorted(weg, key=str.lower)] + [""]
+    z += ["# KEINE PERSONEN", "> nicht mehr vorschlagen – Zeile löschen = wieder vorschlagen"] \
+        + [f"{WEG} {w}" for w in sorted(weg, key=str.lower) or ["MusterName"]] + [""]
     with open(os.path.join(base, DATEI), "w", encoding="utf-8") as f:
         f.write("\n".join(z))
 
