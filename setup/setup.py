@@ -311,6 +311,7 @@ def main():
     else:
         name = buch(ordner, w)
         motor(ordner, venv)
+    subprocess.run([sys.executable, os.path.join(ordner, "motor", "menu.py"), "verknuepfung"], cwd=ordner)  # Lotus-Starter
     terminal = ("Im Buchordner «Terminal hier» doppelklicken – das Befehlsfenster öffnet sich genau dort."
                 if os.name == "nt" or sys.platform == "darwin" else
                 "Terminal im Buchordner: Rechtsklick in den Ordner → «Im Terminal öffnen».")

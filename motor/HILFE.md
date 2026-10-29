@@ -297,8 +297,12 @@ Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {v
 - MD, PDF und Ordner öffnen im eigenen Programm, das Menü bleibt bereit. Bauen läuft im Menüfenster;
   am Schluss «Fertig» mit Dauer und Ton (`t` = ein/aus). Oben rechts «(T)on ein/aus», Taste `t` (beim Einschalten klingt er einmal zur Probe).
   Klang: `motor/klang.wav`, eigener Klang: `klang.wav` in den Buchordner legen; sonst Piepton.
-- `ul` (update lokal) und `n` neu … erscheinen nur, wenn neben dem Buch ein Ordner `pureSATZ` liegt.
-  `n`: `b` neues Buch (setup), `h` Hallo-Buch, `e` einrichten (START-Linux.sh / START-Mac.command / START-Windows.bat).
+- `ul` (update lokal) erscheint nur, wenn neben dem Buch ein Ordner `pureSATZ` liegt; ebenso in `n` neu …:
+  `b` neues Buch (setup), `h` Hallo-Buch, `e` einrichten (START-Linux.sh / START-Mac.command / START-Windows.bat).
+- `n` → `v` Verknüpfung (auch `sh menu.sh verknuepfung`): Starter mit Lotus, Doppelklick öffnet das Menü.
+  Linux: Startmenü und Schreibtisch (beim ersten Mal Rechtsklick → «Start erlauben»), Windows: Buchordner und
+  Schreibtisch, Mac: «Buch Menü.command» im Buchordner und auf dem Schreibtisch. Neue Bücher bekommen ihn mit `setup`.
+  Buchordner verschoben? `v` nochmals – überschreibt den alten Starter.
 - Ton und letzte Befehle stehen in `.menu` (kommt nicht zu GitHub).
 
 ## Bauen

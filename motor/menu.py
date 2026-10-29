@@ -6,6 +6,7 @@ Ein Buchstabe pro Befehl, b / m / p / o / g mit Untermenü. ↑ ↓ = letzte Ein
 Ganze Befehle gehen auch: final · leseprobe uz 18,20 · personen Eltern.
 MD, PDF und Ordner öffnen im eigenen Programm (das Menü wartet nicht), Bauen läuft hier im Fenster.
 Ton und Verlauf stehen in .menu (kommt nicht zu GitHub). Klang: motor/klang.wav (oder klang.wav im Buchordner), sonst Piepton.
+sh menu.sh verknuepfung = Starter mit Lotus auf den Schreibtisch (n → v im Menü).
 """
 import glob
 import os
@@ -152,8 +153,8 @@ def zeige():
     print(" " + "─" * 66)
     zeilen = [("s", "schnell"), ("k", "komplett"), ("b", "bauen …"), ("m", "MD öffnen …"),
               ("p", "PDF …"), ("o", "Ordner …"), ("g", "gegenlesen …"), ("a", "änderungen"),
-              ("sy", "sync"), ("u", "update")] + ([("ul", "update lokal"), ("n", "neu …")] if LOKAL else []) + \
-             [("h", "hilfe"), ("q", "beenden")]
+              ("sy", "sync"), ("u", "update")] + ([("ul", "update lokal")] if LOKAL else []) + \
+             [("n", "neu …"), ("h", "hilfe"), ("q", "beenden")]
     raster(zeilen)
     print(" " + "─" * 66)
 
@@ -163,8 +164,59 @@ def raster(zeilen):
         print(("  " + "".join(f"{k:<3}{t:<14}" for k, t in zeilen[i:i + 4])).rstrip())
 
 
+def schreibtisch():
+    """Schreibtisch-Ordner (Linux: xdg-user-dir, z. B. ~/Schreibtisch; Windows auch mit OneDrive)."""
+    try:
+        if WIN:
+            return subprocess.run(["powershell", "-NoProfile", "-Command", "[Environment]::GetFolderPath('Desktop')"],
+                                  capture_output=True, text=True).stdout.strip()
+        if not MAC and shutil.which("xdg-user-dir"):
+            return subprocess.run(["xdg-user-dir", "DESKTOP"], capture_output=True, text=True).stdout.strip()
+    except OSError:
+        pass
+    return next((p for p in (os.path.join(os.path.expanduser("~"), d) for d in ("Desktop", "Schreibtisch"))
+                 if os.path.isdir(p)), "")
+
+
+def verknuepfung():
+    """Starter mit Lotus, der dieses Menü öffnet: Linux .desktop (Startmenü), Windows .lnk, Mac .command."""
+    name = os.path.basename(next(iter(glob.glob(os.path.join(BASE, "*-buch.md"))), "Buch-buch.md"))[:-8]
+    orte = [BASE] + ([schreibtisch()] if frage(" Auch auf den Schreibtisch? [n = nein | Enter = ja]: ").lower() != "n"
+                     else [])
+    png, ico = (os.path.join(MOTOR, "bilder", f) for f in ("lotus.png", "lotus.ico"))
+    if not WIN and not MAC:                    # Linux: Startmenü statt Buchordner (dort startet .desktop nicht)
+        orte[0] = os.path.join(os.path.expanduser("~"), ".local", "share", "applications")
+    for ort in orte:
+        if not ort or not os.path.isdir(ort):
+            print("  Schreibtisch nicht gefunden – Starter nur im Buchordner bzw. Startmenü.")
+            continue
+        if WIN:
+            p, q = os.path.join(ort, f"{name} Menü.lnk"), lambda s: s.replace("'", "''")
+            subprocess.run(["powershell", "-NoProfile", "-Command",
+                            f"$s=(New-Object -ComObject WScript.Shell).CreateShortcut('{q(p)}');"
+                            f"$s.TargetPath='{q(os.path.join(BASE, 'menu.bat'))}';$s.WorkingDirectory='{q(BASE)}';"
+                            f"$s.IconLocation='{q(ico)}';$s.Save()"])
+        else:
+            p = os.path.join(ort, f"{name} Menü.command" if MAC else f"puresatz-{name}.desktop")
+            with open(p, "w", encoding="utf-8") as f:
+                f.write(f'#!/bin/sh\ncd "{BASE}" && exec sh menu.sh\n' if MAC else
+                        f'[Desktop Entry]\nType=Application\nName={name} Menü\nComment=pureSATZ-Menü für {name}\n'
+                        f'Exec=sh "{os.path.join(BASE, "menu.sh")}"\nPath={BASE}\nIcon={png}\nTerminal=true\n')
+            os.chmod(p, 0o755)
+            hilfe = (["osascript", "-l", "JavaScript", "-e", 'ObjC.import("AppKit");$.NSWorkspace.sharedWorkspace'
+                      f'.setIconForFileOptions($.NSImage.alloc.initWithContentsOfFile({png!r}),{p!r},0)'] if MAC
+                     else ["gio", "set", p, "metadata::trusted", "true"])
+            if shutil.which(hilfe[0]):
+                subprocess.run(hilfe, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        print(f"  Starter: {p}")
+    if not WIN and not MAC and len(orte) > 1:
+        print("  Schreibtisch: beim ersten Mal Rechtsklick auf das Lotus-Icon → «Start erlauben».")
+
+
 def main():
     global ton
+    if sys.argv[1:2] == ["verknuepfung"]:
+        return verknuepfung()
     einstellungen()
     while True:
         zeige()
@@ -238,9 +290,12 @@ def main():
             ton = not ton
             print(f"  Ton {'ein' if ton else 'aus'}")
             klang()                                   # Probe beim Einschalten
-        elif w == "n" and LOKAL:
-            k = untermenue("neu …", {"b": ("neues Buch", 0), "h": ("Hallo-Buch", 0), "e": ("einrichten", 0)})
-            if k:
+        elif w == "n":
+            neu = {"b": ("neues Buch", 0), "h": ("Hallo-Buch", 0), "e": ("einrichten", 0)} if LOKAL else {}
+            k = untermenue("neu …", {**neu, "v": ("Verknüpfung", 0)})
+            if k == "v":
+                verknuepfung()
+            elif k:
                 vorher = set(os.listdir(os.path.dirname(BASE)))
                 {"b": lambda: skript(os.path.join("setup", "setup"), ordner=PURESATZ),
                  "h": lambda: skript("hallo", ordner=PURESATZ),
