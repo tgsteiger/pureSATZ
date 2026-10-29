@@ -167,11 +167,13 @@ def raster(zeilen):
 def quickies():
     """Befehle zum Tippen – aus dem Spickzettel der Hilfe (hilfe.py), ohne «sh build.sh» davor."""
     from hilfe import SPICKZETTEL
+    liste = [(b[12:], t) for b, t in SPICKZETTEL if b.startswith("sh build.sh ") and b.split()[2] in BEFEHLE]
+    liste.append(("leseprobe uz 18,20", "Leseprobe nur mit diesen Seiten, nur Unzensiert"))
+    breit = max(len(b) for b, _ in liste) + 2
+    rest = max(20, min(90, shutil.get_terminal_size((90, 24)).columns) - breit - 3)   # Zeile höchstens 90 Zeichen
     print("\n Quickies – im Menü tippen (ohne Menü: sh build.sh … davor)")
-    for befehl, text in SPICKZETTEL:
-        if befehl.startswith("sh build.sh ") and befehl.split()[2] in BEFEHLE:
-            text = text if len(text) <= 42 else text[:41] + "…"
-            print(f"  {befehl[12:]:<26} {text}")
+    for befehl, text in liste:
+        print(f"  {befehl:<{breit}}{text if len(text) <= rest else text[:rest - 1] + '…'}")
     print(" Ganze Hilfe: h (hilfe.html im Browser)")
     frage(" Enter = zurück ")
 
