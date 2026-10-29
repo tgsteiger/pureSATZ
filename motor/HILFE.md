@@ -674,6 +674,7 @@ sh build.sh personen Thomas   # 3. check_Thomas_Gegenlesen.pdf (und …_Gegenles
 > Begriffe derselben Person in eine Zeile, mit | getrennt. Der erste ist der Name (für die Datei).
 > normal: / uz: = Seiten fürs Check-PDF – eigene Seiten einfach dazuschreiben, z. B. normal: 44-45,47,55
 > Zeilen mit > schreibt pureSATZ jedes Mal neu: S. = gedruckte Seite, Z. = Zeile (wie im Korrektur-PDF).
+> Dir fehlt ein Name oder Begriff? Als eigene Zeile hinzufügen und sh build.sh personen nochmals aufrufen.
 $ sh build.sh personen   (Seiten neu, nach dem Korrigieren)
 $ sh build.sh personen Thomas   (check_Thomas_Gegenlesen.pdf)
 

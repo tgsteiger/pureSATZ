@@ -212,6 +212,7 @@ def schreiben(base, bk, gruppen, weg, daten, neu_ab, pdfs, zusatz):
          "> normal: / uz: = Seiten fürs Check-PDF – eigene Seiten einfach dazuschreiben, z. B. normal: 44-45,47,55",
          "> Zeilen mit > schreibt pureSATZ jedes Mal neu: S. = gedruckte Seite, Z. = Zeile (wie im Korrektur-PDF).",
          f"> Keine Person: unten unter «KEINE PERSONEN» als «{WEG} Wort». Ganze Zeile gelöscht = wieder vorgeschlagen.",
+         "> Dir fehlt ein Name oder Begriff? Als eigene Zeile hinzufügen und sh build.sh personen nochmals aufrufen.",
          "> Gesucht in: " + " · ".join(f"{os.path.relpath(p, base)} ({datetime.fromtimestamp(os.path.getmtime(p)):%d.%m.%Y %H:%M})"
                                       for _, _, p in pdfs),
          "$ sh build.sh personen   (Seiten neu, nach dem Korrigieren)",

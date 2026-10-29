@@ -349,6 +349,7 @@ sh build.sh personen Thomas   # 3. check_Thomas_Gegenlesen.pdf (und …_Gegenles
 &gt; Begriffe derselben Person in eine Zeile, mit | getrennt. Der erste ist der Name (für die Datei).
 &gt; normal: / uz: = Seiten fürs Check-PDF – eigene Seiten einfach dazuschreiben, z. B. normal: 44-45,47,55
 &gt; Zeilen mit &gt; schreibt pureSATZ jedes Mal neu: S. = gedruckte Seite, Z. = Zeile (wie im Korrektur-PDF).
+&gt; Dir fehlt ein Name oder Begriff? Als eigene Zeile hinzufügen und sh build.sh personen nochmals aufrufen.
 $ sh build.sh personen   (Seiten neu, nach dem Korrigieren)
 $ sh build.sh personen Thomas   (check_Thomas_Gegenlesen.pdf)
 
@@ -366,6 +367,7 @@ uz: 118
 &gt; Begriffe derselben Person in eine Zeile, mit | getrennt. Der erste ist der Name (für die Datei).
 &gt; normal: / uz: = Seiten fürs Check-PDF – eigene Seiten einfach dazuschreiben, z. B. normal: 44-45,47,55
 &gt; Zeilen mit &gt; schreibt pureSATZ jedes Mal neu: S. = gedruckte Seite, Z. = Zeile (wie im Korrektur-PDF).
+&gt; Dir fehlt ein Name oder Begriff? Als eigene Zeile hinzufügen und .\build.bat personen nochmals aufrufen.
 $ .\build.bat personen   (Seiten neu, nach dem Korrigieren)
 $ .\build.bat personen Thomas   (check_Thomas_Gegenlesen.pdf)
 
@@ -697,7 +699,7 @@ gh repo create meinbuch --private --source . --push</code></pre></div>
 <p>Weiterentwickelt wird pureSATZ ausschliesslich vom Autor. Neue Versionen kommen über <code>sh update.sh</code>. Vorschläge und Fehlermeldungen sind willkommen – als Issue auf GitHub (github.com/tgsteiger/pureSATZ) oder per E-Mail an puresatz@gsteiger.ch.</p></section><section id="a64"><h2>GPL-3.0 auf Anfrage</h2><p>Wer pureSATZ für ein freies Projekt verändern und weitergeben möchte, kann auf Anfrage eine Lizenz nach der GNU General Public License, Version 3 (GPL-3.0) erhalten. Anfrage über GitHub oder an puresatz@gsteiger.ch.</p></section><section id="a65"><h2>Gewähr</h2><p>pureSATZ wird so zur Verfügung gestellt, wie es ist, ohne jede Gewähr. Für Fehler im Satz, in Druckdaten oder E-Books und für daraus entstehende Kosten oder Schäden wird keine Haftung übernommen. Druckdaten vor der Bestellung immer selbst prüfen.</p></section><section id="a66"><h2>Schriften und Fremdbestandteile</h2><ul><li>Die Schriften <b>Lora</b> und <b>Poppins</b> in <code>motor/fonts/</code> stehen nicht unter dieser Lizenz, sondern unter der <b>SIL Open Font License 1.1</b> (siehe <code>motor/fonts/SCHRIFTEN-LIZENZ.md</code>).</li><li>Verwendete Python-Pakete (reportlab, Pillow, pypdf, pypdfium2) haben ihre eigenen Lizenzen und werden beim Einrichten aus dem Internet geladen, nicht mit pureSATZ verteilt.</li></ul></section>
 <p id="leer">Nichts gefunden.</p>
 <footer><a href="https://tgsteiger.github.io/pureSATZ/">Webseite</a> · <a href="https://github.com/tgsteiger/pureSATZ">GitHub</a> · <a href="https://github.com/tgsteiger/pureSATZ/issues">Fehler melden</a> · <a class=mail href=#>puresatz (at) gsteiger.ch</a><br>
-Erstellt 29.10.2026 22:11 von pureSATZ 2.56.2 · neu mit «sh build.sh hilfe» · Quellen: START.md, motor/HILFE.md, meine-hilfe.md, Variablen-Datei</footer>
+Erstellt 29.10.2026 22:17 von pureSATZ 2.56.2 · neu mit «sh build.sh hilfe» · Quellen: START.md, motor/HILFE.md, meine-hilfe.md, Variablen-Datei</footer>
 </main></div>
 <script>
 document.querySelectorAll('a.mail').forEach(m=>{const a=['puresatz','gsteiger.ch'].join('@');m.textContent=a;m.href='mailto:'+a});
