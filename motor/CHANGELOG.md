@@ -7,7 +7,8 @@ Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.
 - Menü: `n` neu … (nur wenn ../pureSATZ daneben liegt) ruft die bestehenden Startdateien auf: `b` neues Buch
   (setup), `h` Hallo-Buch, `e` einrichten (START-…). Ein neues Buch wird mit Ordner gemeldet (dort `sh menu.sh`).
 - Ton oben rechts als «(T)on ein/aus»; beim Einschalten klingt er einmal zur Probe.
-- Klang `motor/klang.wav` (Gong); ein eigener `klang.wav` im Buchordner hat Vorrang.
+- Klang `motor/klang.wav`: eigener, mit Python erzeugter Gong (frei verwendbar); ein eigener `klang.wav` im
+  Buchordner hat Vorrang.
 
 ## 2.51.0 (Oktober 2026)
 - Menü: klarere Buchstaben – `p` PDF …, `o` Ordner … (Buchordner, normal, unzensiert, druck), `g` gegenlesen …
