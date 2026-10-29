@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-menu.py – Menü mit den häufigsten Befehlen (ab 2.47). Aufruf im Buchordner: sh menu.sh (Windows: menu.bat)
+menu.py – Menü mit den häufigsten Befehlen (ab 2.50). Aufruf im Buchordner: sh menu.sh (Windows: menu.bat)
 
 Ein Buchstabe pro Befehl, b / m / o mit Untermenü. ↑ ↓ = letzte Eingaben, Enter = zurück, q = beenden.
 Ganze Befehle gehen auch: final · leseprobe uz 18,20 · personen Eltern.
