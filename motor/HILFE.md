@@ -680,9 +680,10 @@ $ sh build.sh personen Thomas   (check_Thomas_Gegenlesen.pdf)
 
 # GEFUNDENE PERSONEN UND BEGRIFFE
 
-Thomas | Thom | Autor | Techniker               5 Stellen
+Thomas | Thom | Autor | Techniker
 normal: 112-113,115
 uz: 118
+> 4 Stellen gefunden
 > normal: S. 112 Z. 8 · S. 113 Z. 2, 17
 > uz: S. 118 Z. 4
 
@@ -699,7 +700,8 @@ uz: 118
   Bereichen: `normal: 44-45,47,49-52`. Sie bleiben beim nächsten Lauf stehen (der Motor vergleicht mit den
   gefundenen Seiten in der `>`-Zeile); gefundene Seiten berechnet er jedes Mal neu. Nach einem Umbau eigene
   Seiten selbst prüfen. Ohne unzensierte Fassung gibt es nur `normal:`. (Alte Zeilen `+ normal: 45` gehen weiter.)
-- **`>`-Zeilen** schreibt der Motor: Seite und Zeile jeder Fundstelle. **Ganzes Kapitel:** Steht ein Begriff im
+- **`>`-Zeilen** schreibt der Motor: zuerst die Anzahl («4 Stellen gefunden» bzw. «kommt nicht vor»), dann Seite
+  und Zeile jeder Fundstelle. **Ganzes Kapitel:** Steht ein Begriff im
   **Kapiteltitel** (z. B. «Ecuador» in «Ecuador und das runde Rad»), kommen alle Seiten dieses Kapitels dazu.
 - Die Kopfzeile jeder Seite («Teil · Kapitel») zählt nicht als Fundstelle.
 - Die `>`-Zeilen und Seiten schreibt der Motor bei jedem `sh build.sh personen` neu. Deine Namenszeilen bleiben,

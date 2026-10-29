@@ -232,7 +232,7 @@ def main():
     einstellungen()
     while True:
         zeige()
-        e = frage(" Wahl (↑ = letzte Befehle): ", merken=True)
+        e = frage(" Wahl oder Befehl (z. B. final · ↑ = letzte): ", merken=True)
         w = e.lower()
         if w in ("", "z"):
             continue

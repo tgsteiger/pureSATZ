@@ -223,9 +223,8 @@ def schreiben(base, bk, gruppen, weg, daten, neu_ab, pdfs, zusatz):
             z += [f"# NEU GEFUNDEN {datetime.now():%d.%m.%Y}", f"> prüfen, zusammennehmen oder mit «{WEG}» ausschliessen", ""]
         d = daten[i]
         n = sum(len(zs) for f in d for zs in d[f]["treffer"].values())
-        kopf = " | ".join(g)
-        z.append(f"{kopf:<46} {n} Stelle{'n' if n != 1 else ''}" + ("   ← kommt nicht vor" if n == 0 else ""))
-        details = []
+        z.append(" | ".join(g))
+        details = [f"> {n} Stelle{'n' if n != 1 else ''} gefunden" if n else "> kommt nicht vor"]
         for f in d:
             t, kap = d[f]["treffer"], d[f]["kapitel"]
             alle = alle_seiten(t, kap, g, zusatz.get(i, {}).get(f, ""))
