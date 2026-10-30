@@ -3,6 +3,11 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.62.2 (Oktober 2026)
+- `g` → `b` nimmt auch Tabellen mit, die weder im Buch noch in einer Geschichte stehen (`@#name`, ohne Demo-Tabelle muster).
+- Fehler behoben: «Demo durch Geschichten ersetzen» löschte einen schon vorhandenen Block «## Noch einordnen» –
+  dessen Zeilen kommen jetzt mit unter Teil 1.
+
 ## 2.62.1 (Oktober 2026)
 - Menü `t` → `n` neue Tabelle: die Zeile `@#name` kommt gleich in den Block «## Noch einordnen» im Buch (wie `g` → `b`),
   vorher Sicherung. Von dort an den richtigen Platz schieben – in der Buch-MD oder in einer Geschichte.

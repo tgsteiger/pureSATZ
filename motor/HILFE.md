@@ -270,7 +270,7 @@ Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {v
 - **Einbinden:** in der Buchdatei eine eigene Zeile `@@schutzschild-hoch` (Name = Dateiname ohne .md).
   Die Reihenfolge der `@@`-Zeilen ist die Reihenfolge im Buch. In `::: nur-uz` … `:::` gesetzt erscheint
   die Geschichte nur in der zweiten Ausgabe (die Geschichte selbst darf dann keine eigenen `:::`-Blöcke haben).
-- **Mit dem Menü ins Buch:** `g` → `b` setzt fehlende Geschichten als `@@`-Zeilen in einen Block `## Noch einordnen`
+- **Mit dem Menü ins Buch:** `g` → `b` setzt fehlende Geschichten (`@@`) und Tabellen (`@#`) in einen Block `## Noch einordnen`
   (nach der letzten `@@`-Zeile). Zeilen an ihren Platz schieben, Block löschen. Deine Reihenfolge im Buch bleibt immer.
   Neues Buch mit Demo-Inhalt: `b` fragt, ob Vorwort und Teil 1 der Demo durch deine Geschichten ersetzt werden
   (Titelei, Anhang, Über den Autor, Danke bleiben). Danach `s` schnell und `p` = deine Geschichten als Buch.

@@ -211,14 +211,18 @@ def buchdatei():
 
 
 def einordnen(extra=None):
-    """g → b: fehlende Geschichten als @@-Zeilen in den Block «## Noch einordnen» (Buch-Reihenfolge bleibt).
+    """g → b: fehlende Geschichten (@@) und Tabellen (@#) in den Block «## Noch einordnen» (Buch-Reihenfolge bleibt).
     extra = eigene Zeilen statt Geschichten, z. B. ["@#preise"] nach t → n."""
     import geschichten as G
     buch, kopf = buchdatei(), "## Noch einordnen"
     v = G.verweise(buch)
-    fehlt = extra or ["@@" + n for n in G.reihe(BASE, buch) if n not in {n for _, n in v}]
+    texte = [buch] + list(G.alle(BASE).values()) if buch else []
+    drin = {x.strip()[2:].split()[0] for p in texte for x in open(p, encoding="utf-8") if x.strip().startswith("@#") and x.strip()[2:].split()}
+    tab = sorted(glob.glob(os.path.join(BASE, "tabellen", "*.csv")), key=os.path.getmtime)
+    fehlt = extra or (["@@" + n for n in G.reihe(BASE, buch) if n not in {n for _, n in v}]
+                      + ["@#" + n for n in (os.path.basename(p)[:-4] for p in tab) if n not in drin and n != "muster"])
     if not buch or not fehlt:
-        return print("  Alle Geschichten sind im Buch.")
+        return print("  Alles ist im Buch (Geschichten und Tabellen).")
     z = open(buch, encoding="utf-8").read().split("\n")
     s = [x.strip() for x in z]
     neu = sum((["", x] for x in fehlt), [])
@@ -231,6 +235,10 @@ def einordnen(extra=None):
             del z[b:next((i for i in range(b + 1, len(s)) if s[i].startswith("#")), len(s))]
             s = [x.strip() for x in z]
         a = next(i for i, x in enumerate(s) if x.startswith("# ") and "anhang" in x.lower())
+        if kopf in s:                                            # Inhalt eines vorhandenen Blocks behalten
+            k = s.index(kopf)
+            neu = sum((["", x] for x in s[k + 1:next((i for i in range(k + 1, len(s)) if s[i].startswith("#")), len(s))]
+                       if x.startswith(("@@", "@#"))), []) + neu
         z[s.index("## Vorwort"):a] = ["## Vorwort", "", "Hier kommt dein Vorwort.", "", "# Teil 1|Geschichten|"] + neu + [""]
         open(buch, "w", encoding="utf-8").write("\n".join(z))
         return print("  Demo-Inhalt ersetzt durch: " + ", ".join(fehlt) + "\n  → ansehen: s schnell, dann p")
