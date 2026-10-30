@@ -3,6 +3,14 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.60.0 (Oktober 2026)
+- Menü `g` → `b` fehlende ins Buch: fehlende Geschichten als `@@`-Zeilen in den Block «## Noch einordnen»
+  (nach der letzten @@-Zeile, sonst vor dem Anhang); bestehende Reihenfolge wird nie geändert. Vorher Sicherung.
+- Menü `g` → `a` alle in einer Datei: geschichten-alle.md mit Trennzeilen «@@@ name» (z. B. für eine KI); nochmals
+  `a` holt geänderte Geschichten zurück (vorher Sicherung, Datei danach in md-history/). Solange sie existiert: Sperre.
+- Eine Reihenfolge überall (Liste g → e, Block, Sammeldatei, Sammel-PDF): wie im Buch, dann wie angelegt
+  (geschichten/kuerzel.txt). Liste zeigt «nicht im Buch».
+
 ## 2.59.0 (Oktober 2026)
 - Menü: Geschichte zum Schreiben öffnen – `g` → `e` oder `m` → `g`. Liste mit Titel und Stand, jede Geschichte mit
   festem Kürzel (1–3 Buchstaben, z. B. h · he · hig), gespeichert in geschichten/kuerzel.txt; frei gewordene

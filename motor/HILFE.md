@@ -270,6 +270,12 @@ Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {v
 - **Einbinden:** in der Buchdatei eine eigene Zeile `@@schutzschild-hoch` (Name = Dateiname ohne .md).
   Die Reihenfolge der `@@`-Zeilen ist die Reihenfolge im Buch. In `::: nur-uz` … `:::` gesetzt erscheint
   die Geschichte nur in der zweiten Ausgabe (die Geschichte selbst darf dann keine eigenen `:::`-Blöcke haben).
+- **Mit dem Menü ins Buch:** `g` → `b` setzt fehlende Geschichten als `@@`-Zeilen in einen Block `## Noch einordnen`
+  (nach der letzten `@@`-Zeile). Zeilen an ihren Platz schieben, Block löschen. Deine Reihenfolge im Buch bleibt immer.
+- **Reihenfolge** überall (Liste, Block, Sammel-PDF): zuerst wie im Buch, dann wie angelegt.
+- **Alle in einer Datei** (z. B. für eine KI): `g` → `a` schreibt `geschichten-alle.md`, ändern, speichern,
+  nochmals `g` → `a` holt alles zurück in die Einzeldateien (vorher Sicherung). Die Zeilen `@@@ name` nicht ändern.
+  Solange die Datei existiert, sind die Einzeldateien im Menü gesperrt.
 - **Übersicht:** Bei jedem Bau und bei `sh neu.sh` entsteht `geschichten-uebersicht.html` (im Browser öffnen:
   Fortschrittsbalken, Tabelle zum Sortieren und Filtern, Kanban-Ansicht) und `geschichten/UEBERSICHT.md`.
   Beide werden immer neu erzeugt und kommen nicht zu GitHub.
@@ -300,7 +306,7 @@ Untermenüs (Enter oder `z` = zurück; «…» = nur was es gibt):
 | | |
 |---|---|
 | `m` MD öffnen | `b` Buch · `v` Variablen · `u` Umschlag · `s` Stichworte · `h` meine Hilfe · `g` Geschichten … |
-| `g` Geschichten | `e` schreiben … (Liste mit Kürzel) · `n` neue Geschichte (fragt nach dem Titel, öffnet sie) · `ü` Übersicht (auch `u`) · `s` Sammel-PDF · `t` neue Tabelle |
+| `g` Geschichten | `e` schreiben … (Liste mit Kürzel) · `n` neue Geschichte (fragt nach dem Titel, öffnet sie) · `b` fehlende ins Buch · `a` alle in 1 Datei · `ü` Übersicht (auch `u`) · `s` Sammel-PDF · `t` neue Tabelle |
 | `c` check / gegenlesen | `n` Liste neu (personen-seiten.txt) · `c` check-PDF für eine Person (öffnet sich danach) · `t` Textdatei |
 | `b` weitere | `l` Leseprobe · `k` Korrektur · `p` nur-pdf · `e` nur E-Book · `c` prüfen · `s` Stand merken |
 | `p` PDF öffnen | `n` normal · `u` unzensiert · `l` Leseprobe · `k` Korrektur … |

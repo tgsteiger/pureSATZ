@@ -124,6 +124,19 @@ def verweise(buchdatei):
     return out
 
 
+def reihe(basis, buchdatei):
+    """Namen aller Geschichten: zuerst wie im Buch (@@), dann wie angelegt (geschichten/kuerzel.txt), dann nach Datum."""
+    a = alle(basis)
+    k = os.path.join(ordner(basis), "kuerzel.txt")
+    angelegt = [z.split(None, 1)[1].strip() for z in open(k, encoding="utf-8").read().splitlines()
+                if not z.startswith("#") and len(z.split(None, 1)) == 2] if os.path.exists(k) else []
+    out = []
+    for n in [n for _, n in verweise(buchdatei)] + angelegt + sorted(a, key=lambda n: os.path.getmtime(a[n])):
+        if n in a and n not in out:
+            out.append(n)
+    return out
+
+
 def teile_der_verweise(buchdatei):
     """{name: «Teil …»} – in welchem Teil des Buchs eine Geschichte eingebunden ist."""
     out, teil = {}, ""

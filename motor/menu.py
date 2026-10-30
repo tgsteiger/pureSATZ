@@ -166,7 +166,7 @@ def kuerzel():
                 alt[t[1].strip()] = t[0].lower()
     km = {n: k for n, k in alt.items() if n in alle}
     vergeben = set(km.values()) | {"z"}
-    for n in sorted(alle):
+    for n in sorted(alle, key=lambda n: os.path.getmtime(alle[n])):      # neue: wie angelegt
         if n not in km:
             w = [x for x in re.split(r"[^a-zäöüß]+", n.lower()) if x] or ["g"]
             a = "".join(w)
@@ -177,7 +177,7 @@ def kuerzel():
     if km != alt:
         with open(datei, "w", encoding="utf-8") as f:
             f.write("# Kürzel der Geschichten fürs Menü (g → e). Bleiben fest, von Hand änderbar.\n"
-                    + "".join(f"{k:<4}{n}\n" for n, k in sorted(km.items())))
+                    + "".join(f"{k:<4}{n}\n" for n, k in km.items()))
     return {k: (n, alle[n]) for n, k in km.items()}
 
 
@@ -187,14 +187,79 @@ def geschichte_oeffnen():
     if not ks:
         print("  Noch keine Geschichte – g → n.")
         return
+    if os.path.exists(ALLE):
+        return print(SPERRE)
+    nach, drin = {n: k for k, (n, _) in ks.items()}, {n for _, n in G.verweise(buchdatei())}
     print("\n Geschichte öffnen …")
-    for k, (n, p) in sorted(ks.items(), key=lambda x: x[1][0]):
-        titel, kopf, _ = G.lies(p)
-        print(f"  {k:<4}{titel[:44]:<46}{G.stand(kopf)}".rstrip())
+    for n in G.reihe(BASE, buchdatei()):
+        titel, kopf, _ = G.lies(ks[nach[n]][1])
+        print(f"  {nach[n]:<4}{titel[:40]:<42}{G.stand(kopf):<14}{'' if n in drin else 'nicht im Buch'}".rstrip())
     print("  z   zurück")
     e = frage(" Wahl: ").lower()
     if e in ks:
         oeffnen(ks[e][1])
+
+
+ALLE = os.path.join(BASE, "geschichten-alle.md")
+SPERRE = "  ⚠ Alle Geschichten liegen in geschichten-alle.md – zuerst g → a zurückholen."
+
+
+def buchdatei():
+    return next(iter(glob.glob(os.path.join(BASE, "*-buch.md"))), None)
+
+
+def einordnen():
+    """g → b: fehlende Geschichten als @@-Zeilen in den Block «## Noch einordnen» (Buch-Reihenfolge bleibt)."""
+    import geschichten as G
+    buch, kopf = buchdatei(), "## Noch einordnen"
+    v = G.verweise(buch)
+    fehlt = [n for n in G.reihe(BASE, buch) if n not in {n for _, n in v}]
+    if not buch or not fehlt:
+        return print("  Alle Geschichten sind im Buch.")
+    bauen("sicherung")
+    z = open(buch, encoding="utf-8").read().split("\n")
+    s = [x.strip() for x in z]
+    neu = sum((["", "@@" + n] for n in fehlt), [])
+    if kopf in s:                                   # Block gibt es schon: hinten anhängen
+        k = s.index(kopf)
+        ende = next((i for i in range(k + 1, len(s)) if s[i].startswith("#")), len(s))
+        pos = max([i for i, _ in v if k < i <= ende] or [k + 1])
+    else:                                           # nach der letzten @@-Zeile, sonst vor den Anhang, sonst ans Ende
+        pos = v[-1][0] if v else next((i for i, x in enumerate(s) if x.startswith("# ") and "anhang" in x.lower()), len(s))
+        pos += 1 if v and pos < len(s) and s[pos] == ":::" else 0          # nicht in einen ::: nur-uz-Block
+        neu = ["", kopf] + neu + ([""] if not v and pos < len(s) else [])
+    z[pos:pos] = neu
+    open(buch, "w", encoding="utf-8").write("\n".join(z))
+    print(f"  Ins Buch (ab Zeile {pos + 2}, «{kopf}»): " + ", ".join(fehlt))
+
+
+def alle_in_einer_datei():
+    """g → a: alle Geschichten in geschichten-alle.md – beim zweiten Mal zurück in die Einzeldateien."""
+    import geschichten as G
+    alle = G.alle(BASE)
+    if not os.path.exists(ALLE):
+        if not alle:
+            return print("  Noch keine Geschichte – g → n.")
+        with open(ALLE, "w", encoding="utf-8") as f:
+            f.write("> Alle Geschichten in einer Datei. Text frei ändern – die Zeilen «@@@ name» nicht ändern.\n"
+                    "> Zurück in die Einzeldateien: Menü g → a.\n\n"
+                    + "".join(f"@@@ {n}\n{open(alle[n], encoding='utf-8').read().strip()}\n\n" for n in G.reihe(BASE, buchdatei())))
+        print("  geschichten-alle.md geschrieben – Einzeldateien sind gesperrt, bis g → a zurückholt.")
+        return oeffnen(ALLE)
+    bauen("sicherung")
+    teile = re.split(r"^@@@ *(\S+) *$", open(ALLE, encoding="utf-8").read(), flags=re.M)
+    namen, geaendert = teile[1::2], []
+    for n, text in zip(namen, teile[2::2]):
+        if n in alle and text.strip() != open(alle[n], encoding="utf-8").read().strip():
+            open(alle[n], "w", encoding="utf-8").write(text.strip() + "\n")
+            geaendert.append(n)
+    os.makedirs(os.path.join(BASE, "md-history"), exist_ok=True)
+    os.replace(ALLE, os.path.join(BASE, "md-history", f"geschichten-alle_{time.strftime('%Y%m%d-%H-%M-%S')}.md"))
+    print("  Zurückgeholt, geändert: " + (", ".join(geaendert) or "keine"))
+    for text, liste in (("nicht in der Datei, unverändert", [n for n in alle if n not in namen]),
+                        ("unbekannt, nicht übernommen", [n for n in namen if n not in alle])):
+        if liste:
+            print(f"  ⚠ {text}: " + ", ".join(liste))
 
 
 def zeige():
@@ -212,6 +277,8 @@ def zeige():
             if a[0] or b[0]:
                 print(f"  {a[0]:<3}{a[1]:<33}{b[0]:<3}{b[1]}".rstrip())
     print(" ── Weiteres:  n neu · t Terminal · ? Quickies · h hilfe · ! Klang · q beenden")
+    if os.path.exists(ALLE):
+        print(SPERRE)
 
 
 def raster(zeilen):
@@ -346,9 +413,17 @@ def main():
             if k:
                 oeffnen(ordner[k][1])
         elif w == "g":
-            k = untermenue("Geschichten …", {"e": ("schreiben …", 0), "n": ("neue Geschichte", 0), "ü": ("Übersicht", 0), "s": ("Sammel-PDF", 0),
-                                             "t": ("neue Tabelle", 0)})
-            if k == "e":
+            k = untermenue("Geschichten …", {"e": ("schreiben …", 0), "n": ("neue Geschichte", 0),
+                                             "b": ("fehlende ins Buch", 0),
+                                             "a": ("alle zurückholen" if os.path.exists(ALLE) else "alle in 1 Datei", 0),
+                                             "s": ("Sammel-PDF", 0), "ü": ("Übersicht", 0), "t": ("neue Tabelle", 0)})
+            if k and k != "a" and os.path.exists(ALLE):
+                print(SPERRE)
+            elif k == "a":
+                alle_in_einer_datei()
+            elif k == "b":
+                einordnen()
+            elif k == "e":
                 geschichte_oeffnen()
             elif k in ("n", "t"):
                 titel = frage(" Titel: ")
@@ -356,7 +431,7 @@ def main():
                 if titel and skript("neu", *(["tabelle"] if k == "t" else []), titel) == 0 and k == "n":
                     for kz, (n, p) in kuerzel().items():
                         if p not in vorher:
-                            print(f"  Kürzel {kz}: {n}")
+                            print(f"  Kürzel {kz}: {n}  → ins Buch: g → b")
                             oeffnen(p)
             elif k == "ü":
                 skript("neu")

@@ -136,12 +136,12 @@ def uebersicht(zeigen=False):
 
 
 def sammlung(mit_uz):
-    """Sammel-PDF: alle Geschichten aus geschichten/, alphabetisch, mit Stand im Titel."""
+    """Sammel-PDF: alle Geschichten aus geschichten/ (Reihenfolge wie im Buch, dann wie angelegt), mit Stand im Titel."""
     import geschichten as G
     alle = G.alle(BASE)
     if not alle:
         sys.exit("Keine Geschichten im Ordner geschichten/. Neue Geschichte:  sh neu.sh \"Titel\"")
-    reihe = sorted(alle, key=lambda n: G.lies(alle[n])[0].lower())
+    reihe = G.reihe(BASE, os.path.join(BASE, bk.TEXT))
     tmp = "_geschichten-sammlung.md"
     with open(os.path.join(BASE, tmp), "w", encoding="utf-8") as f:
         f.write("## @TITEL\n{titel}\nSammlung aller Geschichten\n\n## @INHALTSVERZEICHNIS\n\n"
