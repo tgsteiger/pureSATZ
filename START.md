@@ -124,6 +124,7 @@ Danach mit `sh build.sh schnell` ansehen. **Klick auf einen Code = kopiert.** Ga
 | ein Zitat **mit Verzierung** | `@ZITAT-ZIER Satz` (kurz `> Satz`). Nur eine Verzierung pro Seite – sonst wird es unruhig. |
 | einen kurzen **Abschluss am Teil-Ende** | `::: mitte` … `:::` |
 | eine **Dankesseite oder ein Nachwort** im Inhaltsverzeichnis | als Kapitel `## Danke`, Text im Blocksatz, zum Schluss `@ZITAT` und `@ZIER 10` |
+| Text **hervorheben** (fett, kursiv) | `**Wort**` = fett mitten im Text · kursiv als eigene Zeile: `~ Satz` (Randbemerkung) oder `@ZITAT Satz`. [→ fett und kursiv](#Text-hervorheben) |
 | einen **Zwischentitel** | `### Titel`, kleiner `#### Titel`. Im Inhaltsverzeichnis erscheinen sie mit `{inhalt-tiefe}: 3` bzw. `4` in der Variablen-Datei (Standard: nur `##`) |
 | eine **Randbemerkung** | `~ Satz` (klein, kursiv) |
 | eine **Zeile umbrechen**, ohne neuen Absatz | `\` am Zeilenende (in Variablen: `<br/>`) |

@@ -3,6 +3,11 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.67.4 (Oktober 2026)
+- Hilfe: neuer Abschnitt «Text hervorheben: fett und kursiv» (was fett/kursiv macht, *Wort* gibt es noch nicht),
+  Zeile in «Ich will …», Block bei «Zum Kopieren», alle verlinkt. hilfe.py: Code in Backticks bleibt wörtlich
+  (`**Wort**` erscheint mit Sternen statt fett). Bau unverändert.
+
 ## 2.67.3 (Oktober 2026)
 - Webseite (docs/landingpage.py): Einleitung kürzer, Schritt «Dein Buch» mit dem Menü (Lotus, menu.sh / menu.bat)
   für Linux, Mac und Windows, neue Kachel «Ein Menü für alles», Bild «Strichcode mit Goldrahmen» aus dem Hallo-Buch,

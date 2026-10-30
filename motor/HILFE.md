@@ -79,6 +79,17 @@ breite: 80
 ---
 ```
 
+**Text hervorheben** – fett mitten im Satz, kursiv als eigene Zeile ([→ fett und kursiv](#Text-hervorheben))
+```
+Ein Satz mit **fettem Wort** mitten im Text.
+
+~ Eine Randbemerkung: klein und kursiv.
+
+@ZITAT Ein Zitat: kursiv, zentriert, schlicht.
+
+> Ein Zitat: kursiv, zentriert, mit Verzierung.
+```
+
 **Nur in der unzensierten Fassung**
 ```
 ::: nur-uz
@@ -221,6 +232,21 @@ weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen �
 **Weiteres:** `@TITEL`, `@IMPRESSUM`, `@HINWEIS`, `@WIDMUNG`, `@KERNSATZ`, `@INHALTSVERZEICHNIS`, `@ZITAT`, `@ZITAT-ZIER`, `@MOTTO`, `@UNTEN`,
 `@ZIER 12`, `@ZIER-UNTEN`, `@ZIER-TRENNER`, `@QR url | Text`, `@QR-PAAR … ;; …`, `@PORTRAIT bild | Text`,
 `@KOPF`, `@STICHWORTE`, `@RUECKSEITE`. Vollständige Liste: `python3 motor/manuskript.py`.
+
+## Text hervorheben: fett und kursiv
+
+Suchwörter: fett, kursiv, hervorheben, betonen. Bausteine: [Zum Kopieren](#Zum-Kopieren) · [← Ich will …](#Gestalten)
+
+| Steuerzeichen | Wirkung |
+|---|---|
+| `**Wort**` | **fett**, mitten im Text (PDF und E-Book) |
+| `~ Satz` | Randbemerkung: klein, kursiv, leicht eingerückt |
+| `@ZITAT Satz` | Zitat: kursiv, zentriert, schlicht |
+| `> Satz` oder `@ZITAT-ZIER Satz` | Zitat: kursiv, zentriert, mit Verzierung oben und unten |
+| `text:` beim Foto | Bildunterschrift, automatisch kursiv |
+
+Kursiv mitten im Satz (`*Wort*`) gibt es noch nicht – ein einzelner Stern bleibt als Stern stehen.
+Tipp: Fett sparsam einsetzen. Eine Leerzeile vor einem kurzen Satz betont oft schon genug.
 
 ## Variablen
 
