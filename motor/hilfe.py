@@ -492,7 +492,11 @@ const da=l.filter(t=>secs.some(x=>titel(x)===t));zl.innerHTML='';if(!da.length)r
 da.forEach((t,i)=>{{const sp=document.createElement('span');sp.textContent=t;sp.onclick=()=>{{
 if(such.value){{such.value='';such.dispatchEvent(new Event('input'))}}const z=secs.find(x=>titel(x)===t);if(z)location.hash=z.id}};
 if(i)zl.append(' · ');zl.append(sp)}})}}
-addEventListener('hashchange',()=>zuletzt(location.hash.slice(1)));zuletzt(location.hash.slice(1));
+addEventListener('hashchange',()=>zuletzt(location.hash.slice(1)));
+{{const z=decodeURIComponent(location.hash.slice(1)),k=t=>norm2(t).replace(/[^a-z0-9]+/g,'');   // hilfe.html#Gestalten von aussen
+if(z&&!document.getElementById(z)){{const s=secs.find(x=>k(x.querySelector('h2').textContent).includes(k(z)));
+if(s){{history.replaceState(null,'','#'+s.id);s.scrollIntoView()}}}}}}
+zuletzt(location.hash.slice(1));
 function haken(){{let h={{}};try{{h=JSON.parse(localStorage.getItem('ps-haken')||'{{}}')}}catch(e){{}}
 document.querySelectorAll('li.haken input').forEach(c=>{{const k=c.parentNode.textContent.trim().slice(0,60);
 if(k in h)c.checked=h[k];c.onchange=()=>{{h[k]=c.checked;try{{localStorage.setItem('ps-haken',JSON.stringify(h))}}catch(e){{}}}}}})}}

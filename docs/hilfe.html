@@ -68,7 +68,7 @@ main :not(pre)>code{cursor:copy} .hist{white-space:nowrap}
 #zuletzt{font-size:12px;color:var(--leise);margin:4px 6px 8px} #zuletzt span{color:var(--haupt);cursor:pointer}
 #zuletzt span:hover{text-decoration:underline} main code.kopiert{background:var(--mark)}
 </style></head><body>
-<header><h1>pureSATZ Hilfe · pureSATZ <small>Motor 2.67.2</small></h1>
+<header><h1>pureSATZ Hilfe · pureSATZ <small>Motor 2.67.3</small></h1>
 <input id="suche" type="search" placeholder="Suchen … (Taste /)" autocomplete="off">
 <span class="hist"><button id="zur" title="zurück (Alt+←)">‹ zurück</button> <button id="vor" title="vor (Alt+→)">vor ›</button></span>
 <span class="os"><a class="startk" href="#a1">Start</a> <button data-os="lx" class="aktiv">Linux/Mac</button> <button data-os="win">Windows</button></span></header>
@@ -835,7 +835,7 @@ gh repo create meinbuch --private --source . --push</code></pre></div>
 <p>Weiterentwickelt wird pureSATZ ausschliesslich vom Autor. Neue Versionen kommen über <code>sh update.sh</code>. Vorschläge und Fehlermeldungen sind willkommen – als Issue auf GitHub (github.com/tgsteiger/pureSATZ) oder per E-Mail an puresatz@gsteiger.ch.</p></section><section id="a66"><h2>GPL-3.0 auf Anfrage</h2><p>Wer pureSATZ für ein freies Projekt verändern und weitergeben möchte, kann auf Anfrage eine Lizenz nach der GNU General Public License, Version 3 (GPL-3.0) erhalten. Anfrage über GitHub oder an puresatz@gsteiger.ch.</p></section><section id="a67"><h2>Gewähr</h2><p>pureSATZ wird so zur Verfügung gestellt, wie es ist, ohne jede Gewähr. Für Fehler im Satz, in Druckdaten oder E-Books und für daraus entstehende Kosten oder Schäden wird keine Haftung übernommen. Druckdaten vor der Bestellung immer selbst prüfen.</p></section><section id="a68"><h2>Schriften und Fremdbestandteile</h2><ul><li>Die Schriften <b>Lora</b> und <b>Poppins</b> in <code>motor/fonts/</code> stehen nicht unter dieser Lizenz, sondern unter der <b>SIL Open Font License 1.1</b> (siehe <code>motor/fonts/SCHRIFTEN-LIZENZ.md</code>).</li><li>Verwendete Python-Pakete (reportlab, Pillow, pypdf, pypdfium2) haben ihre eigenen Lizenzen und werden beim Einrichten aus dem Internet geladen, nicht mit pureSATZ verteilt.</li></ul></section>
 <p id="leer">Nichts gefunden.</p>
 <footer><a href="https://tgsteiger.github.io/pureSATZ/">Webseite</a> · <a href="https://github.com/tgsteiger/pureSATZ">GitHub</a> · <a href="https://github.com/tgsteiger/pureSATZ/issues">Fehler melden</a> · <a class=mail href=#>puresatz (at) gsteiger.ch</a><br>
-Erstellt 30.10.2026 20:50 von pureSATZ 2.67.2 · neu mit «sh build.sh hilfe» · Quellen: START.md, motor/HILFE.md, meine-hilfe.md, Variablen-Datei</footer>
+Erstellt 30.10.2026 21:09 von pureSATZ 2.67.3 · neu mit «sh build.sh hilfe» · Quellen: START.md, motor/HILFE.md, meine-hilfe.md, Variablen-Datei</footer>
 </main></div>
 <script>
 document.querySelectorAll('a.mail').forEach(m=>{const a=['puresatz','gsteiger.ch'].join('@');m.textContent=a;m.href='mailto:'+a});
@@ -885,7 +885,11 @@ const da=l.filter(t=>secs.some(x=>titel(x)===t));zl.innerHTML='';if(!da.length)r
 da.forEach((t,i)=>{const sp=document.createElement('span');sp.textContent=t;sp.onclick=()=>{
 if(such.value){such.value='';such.dispatchEvent(new Event('input'))}const z=secs.find(x=>titel(x)===t);if(z)location.hash=z.id};
 if(i)zl.append(' · ');zl.append(sp)})}
-addEventListener('hashchange',()=>zuletzt(location.hash.slice(1)));zuletzt(location.hash.slice(1));
+addEventListener('hashchange',()=>zuletzt(location.hash.slice(1)));
+{const z=decodeURIComponent(location.hash.slice(1)),k=t=>norm2(t).replace(/[^a-z0-9]+/g,'');   // hilfe.html#Gestalten von aussen
+if(z&&!document.getElementById(z)){const s=secs.find(x=>k(x.querySelector('h2').textContent).includes(k(z)));
+if(s){history.replaceState(null,'','#'+s.id);s.scrollIntoView()}}}
+zuletzt(location.hash.slice(1));
 function haken(){let h={};try{h=JSON.parse(localStorage.getItem('ps-haken')||'{}')}catch(e){}
 document.querySelectorAll('li.haken input').forEach(c=>{const k=c.parentNode.textContent.trim().slice(0,60);
 if(k in h)c.checked=h[k];c.onchange=()=>{h[k]=c.checked;try{localStorage.setItem('ps-haken',JSON.stringify(h))}catch(e){}}})}

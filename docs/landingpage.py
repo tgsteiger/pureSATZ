@@ -53,6 +53,9 @@ def bilder():
     rahmen([seite(links, 520), seite(links + 1, 520)], "doppelseite.jpg")
     k = next((k for k, t in enumerate(texte) if "Erster Schritt" in t), 7)
     rahmen([seite(k, 520)], "aufzaehlung.jpg")
+    s = next((k for k, t in enumerate(texte) if "Strichcode mit Bergkette" in t), None)
+    if s is not None:                            # nur, wenn das Hallo-Buch das Beispiel schon hat
+        sc = seite(s, 520); rahmen([sc.crop((0, 0, sc.width, int(sc.height * 0.36)))], "strichcode.jpg")   # nur oben
 
 
 def hilfe_kopieren():
@@ -86,8 +89,9 @@ SCHRITTE = {
          "git clone https://github.com/tgsteiger/pureSATZ.git"),
         ("Terminal im Ordner öffnen", "Im Dateimanager Rechtsklick in den Ordner → «Im Terminal öffnen».", None),
         ("Starten", START, "sh START-Linux.sh"),
-        ("Dein Buch", "Ab jetzt arbeitest du im Ordner deines Buchs (Rechtsklick → «Im Terminal öffnen»). "
-         "Schreiben in <b>Mein-Buch-buch.md</b>, ansehen mit:", "sh build.sh schnell"),
+        ("Dein Buch", "Schreiben in <b>Mein-Buch-buch.md</b>. Das Menü öffnet der <b>Lotus</b> auf dem Schreibtisch "
+         "oder im Buchordner <code>sh menu.sh</code> – ein Buchstabe genügt: <b>s</b> baut, <b>p</b> zeigt das PDF. "
+         "Ohne Menü:", "sh build.sh schnell"),
     ],
     "mac": [
         ("Herunterladen und auspacken", "ZIP laden, Safari packt es selbst aus.", None),
@@ -95,32 +99,38 @@ SCHRITTE = {
          "Systemeinstellungen → Datenschutz &amp; Sicherheit → «Dennoch öffnen». " + START + " Fehlt Python, öffnet "
          "sich python.org: den «macOS 64-bit universal2 installer» laden, installieren und START-Mac.command nochmals "
          "doppelklicken.", None),
-        ("Dein Buch", "Im Buchordner <b>Terminal hier</b> doppelklicken – das Terminal öffnet sich genau dort. "
-         "Schreiben in <b>Mein-Buch-buch.md</b>, ansehen mit:", "sh build.sh schnell"),
+        ("Dein Buch", "Schreiben in <b>Mein-Buch-buch.md</b>. Das Menü öffnet ein Doppelklick auf "
+         "<b>Mein-Buch Menü.command</b> (Lotus) – ein Buchstabe genügt: <b>s</b> baut, <b>p</b> zeigt das PDF. "
+         "Ohne Menü: im Buchordner <b>Terminal hier</b> doppelklicken, dann:", "sh build.sh schnell"),
     ],
     "win": [
         ("Herunterladen und auspacken", "ZIP laden, Rechtsklick → «Alle extrahieren …».", None),
         ("Starten", "Im ausgepackten Ordner <b>START-Windows.bat</b> doppelklicken. " + START + " Fehlt Python, wird es "
          "installiert, und es geht direkt weiter.", None),
-        ("Dein Buch", "Im Buchordner <b>Terminal hier</b> doppelklicken – das Befehlsfenster (cmd) öffnet sich genau "
-         "dort. Schreiben in <b>Mein-Buch-buch.md</b>, ansehen mit:", "build.bat schnell"),
+        ("Dein Buch", "Schreiben in <b>Mein-Buch-buch.md</b>. Das Menü öffnet ein Doppelklick auf <b>menu.bat</b> "
+         "oder den <b>Lotus</b> auf dem Schreibtisch – ein Buchstabe genügt: <b>s</b> baut, <b>p</b> zeigt das PDF. "
+         "Ohne Menü: im Buchordner <b>Terminal hier</b> doppelklicken, dann:", "build.bat schnell"),
     ],
 }
 PYTHON = {"linux": "", "mac": "https://www.python.org/downloads/macos/",
           "win": "https://www.python.org/downloads/windows/"}
 
 KACHELN = [
+    ("Ein Menü für alles", "Bauen, ansehen, Geschichten und Tabellen – ein Buchstabe genügt. Die Meldungen bleiben "
+     "stehen, neue PDFs öffnen sich von selbst."),
     ("Zwei Ausgaben, eine Datei", "Öffentliche Fassung und z. B. «Unzensiert» oder «Director's Cut» aus demselben Text."),
     ("Jedes Format, druckfertig", "A5, Taschenbuch, Sachbuch, A4, Quadrat oder ein eigenes Mass. Buchblock und Umschlag "
      "mit Rücken für epubli, BoD und andere Plattformen (Hardcover und Softcover), Probedruck als Booklet."),
     ("E-Book", "EPUB mit Inhaltsverzeichnis, Bildbeschreibungen und Leseprobe – aus denselben Dateien."),
     ("Geschichten sammeln", "Jede Geschichte eine Datei, mit Stand von der Idee bis fertig und einer Übersicht."),
-    ("Tabellen, Fotos, Farben", "Tabellen aus CSV, Fotos in einheitlicher Grösse, Aufzählungen, Zeitstrahl – und Farbschemas, die du mit einer Zahl umschaltest."),
+    ("Tabellen, Fotos, Farben", "Tabellen aus CSV, Fotos in einheitlicher Grösse, Aufzählungen, Zeitstrahl, Bilder- und "
+     "Tabellenverzeichnis, Strichcode mit Goldrahmen – und Farbschemas, die du mit einer Zahl umschaltest."),
     ("Was hat sich geändert?", "Jede Korrekturrunde mit einem Befehl festhalten – ein PDF zeigt Absatz für Absatz, "
      "was neu, umformuliert oder gestrichen ist: seit der letzten Runde, seit Stand 3 oder seit einem Datum."),
     ("Personen gegenlesen", "Wer im Buch vorkommt, mit Seite und Zeile – und pro Person ein PDF mit genau ihren "
      "Seiten zum Gegenlesen – mit Zeilennummern und Notizrand für die Rückmeldung, in Sekunden aus dem fertigen Buch."),
-    ("Hilfe und Sicherheit", "Hilfe mit Suche, automatischer Verlauf jeder Fassung, ZIP-Sicherung, auf Wunsch GitHub."),
+    ("Hilfe und Sicherheit", "Hilfe mit Suche, Bausteinen zum Kopieren und «Ich will …», Verlauf jeder Fassung, "
+     "ZIP-Sicherung, auf Wunsch GitHub."),
     ("Fahrplan bis zum Buch", "Vom Manuskript über Lektorat und zwei Probedrucke bis zur Freigabe: Schritte zum Abhaken, "
      "mit Daten passend zu deinem Wunschtermin."),
 ]
@@ -139,10 +149,13 @@ def seite(version):
               '<p class="leise">Python ist auf Linux meist schon da; das Einrichten ergänzt, was fehlt.</p>')
         panels.append(f'<div class="panel" data-os="{os_}"><ol class="schritte">{"".join(items)}</ol>{py}</div>')
     kacheln = "".join(f'<div class="kachel"><h3>{t}</h3><p>{x}</p></div>' for t, x in KACHELN)
+    STRICHCODE = ('<figure><img src="bilder/strichcode.jpg" alt="Seite mit Strichcode im goldenen Rahmen, oben als '
+                  'Bergkette" loading="lazy"><figcaption>Strichcode mit Goldrahmen – oben als Bergkette, bleibt lesbar'
+                  '</figcaption></figure>' if os.path.exists(os.path.join(DOCS, "bilder", "strichcode.jpg")) else "")
     return f"""<!doctype html>
 <html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>pureSATZ – in fünf Minuten zu deinem ersten Buch</title>
-<meta name="description" content="pureSATZ macht aus Markdown ein druckfertiges Buch mit Umschlag und E-Book für epubli, BoD, KDP und andere – dazu Leseprobe, Korrektur-PDF, Probedruck-Booklet und Änderungs-PDF. Linux, Mac und Windows, kostenlos für eigene Bücher.">
+<meta name="description" content="pureSATZ macht aus Markdown ein druckfertiges Buch mit Umschlag und E-Book für epubli, tredition, BoD, KDP und andere – dazu Leseprobe, Korrektur-PDF, Probedruck-Booklet und Änderungs-PDF. Linux, Mac und Windows, kostenlos für eigene Bücher.">
 <style>
 @font-face{{font-family:Poppins;src:url(fonts/Poppins-Regular.ttf)}}
 @font-face{{font-family:Poppins;font-weight:500;src:url(fonts/Poppins-Medium.ttf)}}
@@ -193,10 +206,8 @@ summary{{font:500 16px Poppins,system-ui,sans-serif;color:var(--haupt);cursor:po
 
 <div class="held"><div>
 <h1>In fünf Minuten zu deinem ersten Buch.</h1>
-<p class="unter">Du schreibst dein Buch in einfachen Textdateien (Markdown). pureSATZ kümmert sich um den Rest: ein druckfertiges Buch im gewünschten Format, mit Umschlag und E-Book – für epubli, BoD, KDP und andere Plattformen oder zum Selberdrucken.</p>
-<p class="unter">Dazu Leseprobe, Korrekturfassung fürs Lektorat, Booklet für den Probedruck, Änderungen seit dem letzten Stand und Werbebilder – alles aus denselben Dateien.</p> 
-<p class="unter">Pandoc, Typst, LaTeX, Vellum oder Atticus setzen dein Buch. pureSATZ begleitet dich dazu den ganzen Weg – vom Manuskript bis zum fertigen Buch bei der Druckplattform.</p>
-<p class="unter">Auf Linux, Mac und Windows.</p>
+<p class="unter"><b>Du schreibst in einfachen Textdateien (Markdown) – pureSATZ macht daraus ein druckfertiges Buch:</b> Buchblock und Umschlag für epubli, tredition, BoD, KDP oder zum Selberdrucken, dazu E-Book, Leseprobe, Korrekturfassung, Probedruck-Booklet, Änderungs-PDF und Werbebilder. Alles aus denselben Dateien.</p>
+<p class="unter"><b>Andere Programme setzen ein Buch. pureSATZ begleitet dich den ganzen Weg</b> – vom ersten Satz bis zum Hochladen bei der Druckerei. Auf Linux, Mac und Windows.</p>
 <a class="knopf voll" href="{ZIP}">⬇ pureSATZ herunterladen (ZIP)</a><a class="knopf rand" href="{REPO}">Auf GitHub ansehen</a>
 <p class="klein">Version {html.escape(version)} · kostenlos für eigene Bücher · ohne Konto, ohne Cloud</p>
 </div>
@@ -213,7 +224,7 @@ summary{{font:500 16px Poppins,system-ui,sans-serif;color:var(--haupt);cursor:po
   pureSATZ/      die Werkstatt – hier nichts schreiben
   Hallo-Buch/    zum Ausprobieren, darf weg
   Mein-Buch/     dein Buch – hier schreibst und baust du</code></pre>
-<p>Klappt etwas nicht? In der Hilfe unter «Start» stehen <a href="hilfe.html#a1">die Checkliste</a> und <a href="hilfe.html#a5">«Wenn etwas klemmt»</a> mit den häufigsten Meldungen und was zu tun ist. Nach dem Bauen zeigt <b>00-UEBERSICHT.txt</b> im Ausgabeordner, welche Datei wofür ist.</p>
+<p>Gestalten: in der Hilfe <a href="hilfe.html#Gestalten">«Ich will …»</a> und <a href="hilfe.html#Zum-Kopieren">Bausteine zum Kopieren</a>. Klappt etwas nicht? In der Hilfe unter «Start» stehen <a href="hilfe.html#Erstes-PDF">die Checkliste</a> und <a href="hilfe.html#Wenn-etwas-klemmt">«Wenn etwas klemmt»</a> mit den häufigsten Meldungen und was zu tun ist. Nach dem Bauen zeigt <b>00-UEBERSICHT.txt</b> im Ausgabeordner, welche Datei wofür ist.</p>
 </div></section>
 
 <section><div class="wrap">
@@ -222,7 +233,7 @@ summary{{font:500 16px Poppins,system-ui,sans-serif;color:var(--haupt);cursor:po
 <div class="bilder">
 <figure><img src="bilder/doppelseite.jpg" alt="Doppelseite mit Fotos und einer Tabelle" loading="lazy"><figcaption>Fotos in Hoch- und Querformat, Textfluss und eine Tabelle aus einer CSV-Datei</figcaption></figure>
 <figure><img src="bilder/aufzaehlung.jpg" alt="Seite mit Liste und nummerierter Aufzählung" loading="lazy"><figcaption>Kapitel, Listen und Aufzählung</figcaption></figure>
-</div></div></section>
+{STRICHCODE}</div></div></section>
 
 <section><div class="wrap">
 <h2>Was pureSATZ kann</h2>
