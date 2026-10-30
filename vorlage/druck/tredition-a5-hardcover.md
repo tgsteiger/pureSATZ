@@ -48,9 +48,11 @@
 {barcode-position}: rechts
 {barcode-groesse}: 40x19
 {barcode-bild}:
+{barcode-rahmen}:
 > {barcode-position}: default: leer = epubli links frei, bod rechts · optional: links | mitte | rechts
 > {barcode-groesse}: default: leer = 60 x 35 mm frei ab Ecke · optional: Breite x Höhe in mm, z. B. 40x20
 > {barcode-bild}: default: leer = nichts zeichnen (bod: Strichcode aus der ISBN) · optional: PNG aus bilder/
+> {barcode-rahmen}: default: leer = kein Rahmen · optional: gold = Goldrahmen · berge = Goldrahmen, oben als Bergkette (Striche eines PNG werden oben zu Gipfeln geschnitten)
 
 ## Offen
 > Umschlag: Rücken, Deckelmass und Einschlag von tredition

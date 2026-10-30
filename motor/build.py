@@ -102,7 +102,7 @@ def _grundvariablen():
 DRUCK_NAMEN = ("plattform", "format", "seite", "bindung", "projekt", "ruecken", "ruecken-hardcover",
                "ruecken-softcover", "beschnitt-hardcover", "beschnitt-softcover", "beschnitt-buchblock",
                "deckel-hardcover", "papier", "extra-seiten", "isbn-buch", "barcode-position",
-               "barcode-groesse", "barcode-bild", "versatz-vertikal", "versatz-horizontal",
+               "barcode-groesse", "barcode-bild", "barcode-rahmen", "versatz-vertikal", "versatz-horizontal",
                "neu-berechnen", "berechnet-fuer-seiten", "farbmodus")
 
 
@@ -1321,11 +1321,15 @@ class Doc(BaseDocTemplate):
                 c.setFillColor(BLAU); c.setFont(schrift("titel"), 9 * S)
                 if len(fuss) > 1: c.drawString(x0, 8.5 * mm * S, fuss[1])
             if feld["bild"]:                     # weisses Feld + Bild (z. B. Strichcode der Plattform als PNG)
-                c.setFillColor(colors.white); c.rect(fx, fy, fw, fh, fill=1, stroke=0)
-                c.drawImage(feld["bild"], fx, fy, fw, fh, mask="auto", preserveAspectRatio=True, anchor="c")
+                if not barcode_rahmen(c, fx, fy, fw, fh, feld["bild"]):
+                    c.setFillColor(colors.white); c.rect(fx, fy, fw, fh, fill=1, stroke=0)
+                    c.drawImage(feld["bild"], fx, fy, fw, fh, mask="auto", preserveAspectRatio=True, anchor="c")
             elif EIGENER_BARCODE:                # Strichcode aus der ISBN (bzw. Platzhalter), in Feldgrösse
+                barcode_rahmen(c, fx, fy, fw, fh, oberhalb=True)
                 c.saveState(); c.translate(fx, fy); c.scale(fw / (40 * mm), fh / (24 * mm))
                 barcode(c, 0, 0); c.restoreState()
+            else:                                # Plattform druckt den Code selbst: nur Rahmen ums Feld
+                barcode_rahmen(c, fx + 2 * mm, fy + 2 * mm, fw - 4 * mm, fh - 4 * mm)
             c.restoreState(); return
         if DRUCK and EIGENER_BARCODE:  # BoD: Fuss links, rechts eigener ISBN-Strichcode
             c.drawImage(bild(LOTUS, "creme"), x0, 19 * mm * S, lw, lh, mask="auto")
@@ -1333,6 +1337,7 @@ class Doc(BaseDocTemplate):
             if fuss: c.drawString(x0, 13 * mm * S, fuss[0])
             c.setFillColor(BLAU); c.setFont(schrift("titel"), 9 * S)
             if len(fuss) > 1: c.drawString(x0, 8.5 * mm * S, fuss[1])
+            barcode_rahmen(c, W - x0 - 40 * mm, 8 * mm, 40 * mm, 24 * mm, oberhalb=True)
             barcode(c, W - x0 - 40 * mm, 8 * mm)
             c.restoreState(); return
         if DRUCK:  # epubli setzt den Strichcode unten links -> Fuss rechtsbündig, links 60 x 35 mm frei
@@ -1348,6 +1353,7 @@ class Doc(BaseDocTemplate):
             if fuss: c.drawRightString(xr, 13 * mm * S, fuss[0])
             c.setFillColor(BLAU); c.setFont(schrift("titel"), 9 * S)
             if len(fuss) > 1: c.drawRightString(xr, 8.5 * mm * S, fuss[1])
+            barcode_rahmen(c, 4 * mm, 4 * mm, 52 * mm, 27 * mm)   # nur mit {barcode-rahmen}: um das freie Feld
             c.restoreState(); return
         c.drawImage(bild(LOTUS, "creme"), W / 2 - lw / 2, 19 * mm * S, lw, lh, mask="auto")
         c.setFillColor(SOFT); c.setFont(schrift("titel_leicht"), 8.5 * S)
@@ -1463,6 +1469,53 @@ def barcode(c, x, y):
         c.setFillColor(SOFT); c.setFont(schrift("titel_leicht"), 7)
         c.drawCentredString(x + 20 * mm, y + 11 * mm, "Platz für ISBN-Strichcode")
     c.restoreState()
+
+
+# Gipfellinie für «barcode-rahmen: berge»: x als Anteil der Breite, y als Anteil (0 = oben, 0.31 = tiefster Punkt)
+GRAT = [(0, .30), (.143, .18), (.226, .26), (.339, .036), (.391, .13), (.439, .072), (.513, .21), (.617, .084),
+        (.678, .17), (.765, .114), (.848, .25), (1, .31)]
+
+
+def barcode_rahmen(c, x, y, b, h, bild=None, oberhalb=False):
+    """{barcode-rahmen}: gold = Goldrahmen · berge = Goldrahmen, oben als Bergkette. Leer = nichts.
+    Mit bild (PNG des Strichcodes) wird das Bild eingepasst und seine Striche oben zu Gipfeln geschnitten
+    (unten bleiben über 70 % frei); ohne Bild liegt die Bergkette im obersten Fünftel des Felds (epubli druckt
+    den Code später), mit oberhalb=True (eigener Strichcode) 6 mm über dem Feld."""
+    art = V("barcode-rahmen").strip().lower()
+    if art not in ("gold", "berge"):
+        if art:
+            raise SystemExit(f"Variable «barcode-rahmen»: «{art}» – möglich: gold, berge (oder leer)")
+        return False
+    m, oben = 1.5 * mm, y + h
+    if bild:                                       # Bild wie bisher einpassen, Rahmen eng darum
+        from reportlab.lib.utils import ImageReader
+        iw, ih = ImageReader(bild).getSize(); f = min(b / iw, h / ih)
+        x, y, b, h = x + (b - iw * f) / 2, y + (h - ih * f) / 2, iw * f, ih * f
+        oben = y + h
+    if oberhalb:                                   # eigener Strichcode zeichnet sein weisses Feld selbst
+        oben = y + h + m + (6 * mm if art == "berge" else 0)
+    if art == "berge":
+        tief = 0.75 * h if bild else 6 * mm / 0.31 if oberhalb else 0.2 * h / 0.31
+        grat = [(x - m + fx * (b + 2 * m), oben - fy * tief) for fx, fy in GRAT]
+    else:
+        grat = [(x - m, oben + (m if bild else 0)), (x + b + m, oben + (m if bild else 0))]
+    form = [(x - m, y - m)] + grat + [(x + b + m, y - m)]
+    c.saveState()
+    p = c.beginPath(); p.moveTo(*form[0])
+    for q in form[1:]: p.lineTo(*q)
+    p.close(); c.setFillColor(colors.white); c.drawPath(p, fill=1, stroke=0)
+    if bild:                                       # Bild nur innerhalb des Rahmens: oben entstehen die Gipfel
+        c.saveState()
+        p = c.beginPath(); p.moveTo(*form[0])
+        for q in form[1:]: p.lineTo(*q)
+        p.close(); c.clipPath(p, stroke=0, fill=0)
+        c.drawImage(bild, x, y, b, h, mask="auto")
+        c.restoreState()
+    p = c.beginPath(); p.moveTo(*form[0])
+    for q in form[1:]: p.lineTo(*q)
+    p.close(); c.setStrokeColor(GOLD); c.setLineWidth(0.8); c.setLineJoin(1); c.drawPath(p, fill=0, stroke=1)
+    c.restoreState()
+    return True
 
 
 class SetPart(Flowable):

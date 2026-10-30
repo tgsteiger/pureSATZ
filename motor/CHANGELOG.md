@@ -3,6 +3,12 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.65.0 (Oktober 2026)
+- Neu `{barcode-rahmen}` in der Druckdatei: `gold` = Goldrahmen um den Strichcode, `berge` = Goldrahmen, oben als
+  Bergkette. tredition (PNG): Striche oben zu Gipfeln geschnitten, unten frei (mit Scanner geprüft) · BoD (eigener Code):
+  Bergkette darüber · epubli (druckt selbst): Rahmen um das freie Feld. Leer = wie bisher (Leben123: alle PDFs gleich).
+  Neue ISBN: nur das PNG in `{barcode-bild}` tauschen. Zeile in allen Druck-Vorlagen.
+
 ## 2.64.0 (Oktober 2026)
 - Neu `{inhalt-tiefe}: 1–4`: welche Titel ins Inhaltsverzeichnis kommen (PDF und E-Book), eingerückt:
   1 = nur # · 2 = bis ## (Standard, wie bisher) · 3 = bis ### · 4 = bis ####. Gilt im Buch und in den Geschichten.
