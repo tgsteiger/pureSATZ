@@ -3,6 +3,11 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.63.0 (Oktober 2026)
+- Menü: nach einem Bau (und sync, update, …) bleiben die Meldungen stehen – statt des ganzen Menüs nur
+  «Eingabe (Enter = Menü)»; gleich weitertippen geht (auch xdg-open-Zeilen). Neu gebaute Lese-PDFs öffnen sich
+  gleich (bei mehr als zwei nur normal und unzensiert).
+
 ## 2.62.3 (Oktober 2026)
 - Menü: Terminal jetzt `$` (statt `>`), wie die Eingabezeile im Terminal.
 

@@ -34,6 +34,7 @@ MD = {"b": ("Buch", "*-buch.md"), "v": ("Variablen", "*-variablen.md"), "u": ("U
 WEG = ("check_", "_Buchblock", "_Cover", "_Umschlag", "_booklet", "_Inhalt", "_Aenderungen", "_Leseprobe", "_Korrektur",
        "_tmp")
 ton = True
+gelaufen = False                       # hat der letzte Menüpunkt etwas ausgeführt (Meldungen stehen lassen)?
 
 
 def einstellungen(speichern=False):
@@ -91,7 +92,8 @@ def bauen(*args):
 
 
 def lauf(cmd, ordner=BASE, env=None):
-    t = time.time()
+    global gelaufen
+    gelaufen, t = True, time.time()
     try:
         r = subprocess.run(cmd, cwd=ordner, env=env).returncode
     except KeyboardInterrupt:                   # Ctrl+C bricht nur den Befehl ab, nicht das Menü
@@ -417,7 +419,7 @@ def verknuepfung():
 
 
 def main():
-    global ton
+    global ton, gelaufen
     if sys.argv[1:2] == ["verknuepfung"]:
         return verknuepfung()
     einstellungen()
@@ -425,6 +427,11 @@ def main():
     while True:
         if naechste:                                  # Eingabe aus «: Befehle»
             e, naechste = naechste, ""
+        elif gelaufen:                                # Meldungen stehen lassen, kein neues Menü
+            gelaufen = False
+            e = frage(" Eingabe (Enter = Menü): ", merken=True)
+            if not e:
+                continue
         else:
             zeige()
             print(" Wahl oder Befehl (z. B. final · ↑ = letzte):")
@@ -434,6 +441,7 @@ def main():
             continue
         if w == "q":
             break
+        seit = time.time()
         if w == "s":
             bauen("schnell")
         elif w == "k":
@@ -563,6 +571,9 @@ def main():
             bauen(*e.split())
         else:
             print(f"  Unbekannt: {e}")
+        neu = {k: p for k, (_, p) in pdfs().items() if os.path.getmtime(p) >= seit - 1} if gelaufen else {}
+        for p in ([neu[k] for k in ("n", "u") if k in neu] if len(neu) > 2 else neu.values()):
+            oeffnen(p)                                # neu gebaute Lese-PDFs gleich öffnen
         einstellungen(speichern=True)
     einstellungen(speichern=True)
 
