@@ -330,7 +330,7 @@ def zeige():
         for a, b in zip(z1 + [("", "")] * 3, z2 + [("", "")] * 3):
             if a[0] or b[0]:
                 print(f"  {a[0]:<3}{a[1]:<33}{b[0]:<3}{b[1]}".rstrip())
-    print(" ── Weiteres:  n neu · > Terminal · : Befehle · h hilfe · ! Klang · q beenden")
+    print(" ── Weiteres:  n neu · $ Terminal · : Befehle · h hilfe · ! Klang · q beenden")
     if os.path.exists(ALLE):
         print(SPERRE)
 
@@ -534,7 +534,7 @@ def main():
             klang()                                   # Probe beim Einschalten
         elif w == "t":
             tabellen_menue()
-        elif w == ">":
+        elif w == "$":
             terminal()
         elif w == ":":
             naechste = befehle()
