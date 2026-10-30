@@ -148,16 +148,17 @@ def untermenue(titel, eintraege):
     return e if e in eintraege else None
 
 
-def kuerzel():
-    """{Kürzel: (name, pfad)} aller Geschichten. Kürzel bleiben fest (geschichten/kuerzel.txt), frei gewordene
-    werden wieder vergeben. Neues Kürzel: h · he · hig (Anfänge der Wörter) · hei · …"""
-    try:
-        import geschichten as G
-        alle = G.alle(BASE)
-    except (ImportError, SystemExit) as f:
-        print(f"  {f}")
-        return {}
-    datei = os.path.join(BASE, "geschichten", "kuerzel.txt")
+def kuerzel(alle=None, datei=None):
+    """{Kürzel: (name, pfad)} aller Geschichten (oder Tabellen). Kürzel bleiben fest (…/kuerzel.txt), frei
+    gewordene werden wieder vergeben. Neues Kürzel: h · he · hig (Anfänge der Wörter) · hei · …"""
+    if alle is None:
+        try:
+            import geschichten as G
+            alle = G.alle(BASE)
+        except (ImportError, SystemExit) as f:
+            print(f"  {f}")
+            return {}
+        datei = os.path.join(BASE, "geschichten", "kuerzel.txt")
     alt = {}
     if os.path.exists(datei):
         for z in open(datei, encoding="utf-8").read().splitlines():
@@ -176,7 +177,7 @@ def kuerzel():
             vergeben.add(km[n])
     if km != alt:
         with open(datei, "w", encoding="utf-8") as f:
-            f.write("# Kürzel der Geschichten fürs Menü (g → e). Bleiben fest, von Hand änderbar.\n"
+            f.write("# Kürzel fürs Menü (… → e). Bleiben fest, von Hand änderbar.\n"
                     + "".join(f"{k:<4}{n}\n" for n, k in km.items()))
     return {k: (n, alle[n]) for n, k in km.items()}
 
@@ -201,6 +202,7 @@ def geschichte_oeffnen():
 
 
 ALLE = os.path.join(BASE, "geschichten-alle.md")
+DEMO = "Dieses Demo-Kapitel zeigt alle Möglichkeiten"
 SPERRE = "  ⚠ Alle Geschichten liegen in geschichten-alle.md – zuerst g → a zurückholen."
 
 
@@ -216,10 +218,22 @@ def einordnen():
     fehlt = [n for n in G.reihe(BASE, buch) if n not in {n for _, n in v}]
     if not buch or not fehlt:
         return print("  Alle Geschichten sind im Buch.")
-    bauen("sicherung")
     z = open(buch, encoding="utf-8").read().split("\n")
     s = [x.strip() for x in z]
     neu = sum((["", "@@" + n] for n in fehlt), [])
+    demo = DEMO in "\n".join(z) and "## Vorwort" in s and any(x.startswith("# ") and "anhang" in x.lower() for x in s)
+    if demo and frage(" Das Buch enthält noch den Demo-Inhalt. Durch deine Geschichten ersetzen? "
+                      "[j = ja | Enter = nein] ").lower() == "j":
+        bauen("sicherung")
+        if "## Ein Teil mit eigenem Bild" in s:                  # Beispielkapitel im Anhang
+            b = s.index("## Ein Teil mit eigenem Bild")
+            del z[b:next((i for i in range(b + 1, len(s)) if s[i].startswith("#")), len(s))]
+            s = [x.strip() for x in z]
+        a = next(i for i, x in enumerate(s) if x.startswith("# ") and "anhang" in x.lower())
+        z[s.index("## Vorwort"):a] = ["## Vorwort", "", "Hier kommt dein Vorwort.", "", "# Teil 1|Geschichten|"] + neu + [""]
+        open(buch, "w", encoding="utf-8").write("\n".join(z))
+        return print("  Demo-Inhalt ersetzt durch: " + ", ".join(fehlt) + "\n  → ansehen: s schnell, dann p")
+    bauen("sicherung")
     if kopf in s:                                   # Block gibt es schon: hinten anhängen
         k = s.index(kopf)
         ende = next((i for i in range(k + 1, len(s)) if s[i].startswith("#")), len(s))
@@ -230,7 +244,36 @@ def einordnen():
         neu = ["", kopf] + neu + ([""] if not v and pos < len(s) else [])
     z[pos:pos] = neu
     open(buch, "w", encoding="utf-8").write("\n".join(z))
-    print(f"  Ins Buch (ab Zeile {pos + 2}, «{kopf}»): " + ", ".join(fehlt))
+    print(f"  Ins Buch (ab Zeile {pos + 2}, «{kopf}»): " + ", ".join(fehlt) + "\n  → ansehen: s schnell, dann p")
+
+
+def tabellen_menue():
+    """g → t / m → t: Tabellen bearbeiten, neu anlegen, Ordner – wie bei den Geschichten."""
+    ordner = os.path.join(BASE, "tabellen")
+    liste = lambda: {os.path.basename(p)[:-4]: p for p in sorted(glob.glob(os.path.join(ordner, "*.csv")))}
+    datei = os.path.join(ordner, "kuerzel.txt")
+    k = untermenue("Tabellen …", {"e": ("bearbeiten …", 0), "n": ("neue Tabelle", 0), "o": ("Ordner", 0)})
+    if k == "e":
+        ks = kuerzel(liste(), datei)
+        if not ks:
+            return print("  Noch keine Tabelle – n.")
+        print("\n Tabelle öffnen …")
+        for kz, (n, _) in ks.items():
+            print(f"  {kz:<4}{n}")
+        print("  z   zurück")
+        e = frage(" Wahl: ").lower()
+        if e in ks:
+            oeffnen(ks[e][1])
+    elif k == "n":
+        titel, vorher = frage(" Titel: "), set(liste())
+        if titel and skript("neu", "tabelle", titel) == 0:
+            for kz, (n, p) in kuerzel(liste(), datei).items():
+                if n not in vorher:
+                    print(f"  Kürzel {kz}: {n}  → einbinden: eigene Zeile @#{n} in der Buch-MD oder in einer Geschichte")
+                    oeffnen(p)
+    elif k == "o":
+        os.makedirs(ordner, exist_ok=True)
+        oeffnen(ordner)
 
 
 def alle_in_einer_datei():
@@ -391,9 +434,12 @@ def main():
             md = {k: (t, next(iter(sorted(glob.glob(os.path.join(BASE, m)))), None)) for k, (t, m) in MD.items()}
             if os.path.isdir(os.path.join(BASE, "geschichten")):
                 md["g"] = ("Geschichten …", "g")
+            md["t"] = ("Tabellen …", "t")
             k = untermenue("MD öffnen …", {k: v for k, v in md.items() if v[1]})
             if k == "g":
                 geschichte_oeffnen()
+            elif k == "t":
+                tabellen_menue()
             elif k:
                 oeffnen(md[k][1])
         elif w == "p":
@@ -408,7 +454,8 @@ def main():
                     oeffnen(liste[k][1])
         elif w == "o":
             ordner = {k: (t, os.path.join(BASE, d)) for k, t, d in (("b", "Buchordner", ""), ("n", "normal", "ausgabe-normal"),
-                      ("u", "unzensiert", "ausgabe-unzensiert"), ("d", "druck", "druck"), ("g", "geschichten", "geschichten"))}
+                      ("u", "unzensiert", "ausgabe-unzensiert"), ("d", "druck", "druck"), ("g", "geschichten", "geschichten"),
+                      ("t", "tabellen", "tabellen"))}
             k = untermenue("Ordner …", {k: v for k, v in ordner.items() if os.path.isdir(v[1])})
             if k:
                 oeffnen(ordner[k][1])
@@ -416,8 +463,8 @@ def main():
             k = untermenue("Geschichten …", {"e": ("schreiben …", 0), "n": ("neue Geschichte", 0),
                                              "b": ("fehlende ins Buch", 0),
                                              "a": ("alle zurückholen" if os.path.exists(ALLE) else "alle in 1 Datei", 0),
-                                             "s": ("Sammel-PDF", 0), "ü": ("Übersicht", 0), "t": ("neue Tabelle", 0)})
-            if k and k != "a" and os.path.exists(ALLE):
+                                             "s": ("Sammel-PDF", 0), "ü": ("Übersicht", 0), "t": ("Tabellen …", 0)})
+            if k and k not in ("a", "t") and os.path.exists(ALLE):
                 print(SPERRE)
             elif k == "a":
                 alle_in_einer_datei()
@@ -425,16 +472,19 @@ def main():
                 einordnen()
             elif k == "e":
                 geschichte_oeffnen()
-            elif k in ("n", "t"):
+            elif k == "t":
+                tabellen_menue()
+            elif k == "n":
                 titel = frage(" Titel: ")
                 vorher = {p for _, p in kuerzel().values()}
-                if titel and skript("neu", *(["tabelle"] if k == "t" else []), titel) == 0 and k == "n":
+                if titel and skript("neu", titel) == 0:
                     for kz, (n, p) in kuerzel().items():
                         if p not in vorher:
                             print(f"  Kürzel {kz}: {n}  → ins Buch: g → b")
                             oeffnen(p)
             elif k == "ü":
-                skript("neu")
+                if skript("neu") == 0:
+                    oeffnen(os.path.join(BASE, "geschichten-uebersicht.html"))
             elif k == "s":
                 bauen("geschichten")
         elif w == "c":

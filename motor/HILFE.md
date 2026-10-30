@@ -232,7 +232,7 @@ Quelle: eigene Praxisstatistik         ← optional: letzte Zeile, klein darunte
 
 - Bearbeiten mit LibreOffice: öffnen, ändern, **Speichern unter → Text CSV**, Feldtrenner `;`, Zeichensatz UTF-8.
   Trenner `;` oder `,` erkennt pureSATZ selbst. Gedruckt werden nur die Werte.
-- Im Buch: `@#behandlungen-pro-jahr` (auch `@# name`). In Zellen gehen `**fett**` und `{variablen}`.
+- Im Buch: `@#behandlungen-pro-jahr` (auch `@# name`), auch in einer Geschichte. In Zellen gehen `**fett**` und `{variablen}`.
   Zahlen stehen rechtsbündig, lange Tabellen gehen über mehrere Seiten (Kopfzeile wiederholt sich).
 - **Zu breit?** pureSATZ bricht zuerst Text in den Zellen um, verkleinert dann die Schrift (bis 7.5 pt) und
   stellt die Tabelle notfalls **quer** auf eine eigene Seite (um 90° gedreht, das Buch zum Lesen drehen).
@@ -272,6 +272,8 @@ Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {v
   die Geschichte nur in der zweiten Ausgabe (die Geschichte selbst darf dann keine eigenen `:::`-Blöcke haben).
 - **Mit dem Menü ins Buch:** `g` → `b` setzt fehlende Geschichten als `@@`-Zeilen in einen Block `## Noch einordnen`
   (nach der letzten `@@`-Zeile). Zeilen an ihren Platz schieben, Block löschen. Deine Reihenfolge im Buch bleibt immer.
+  Neues Buch mit Demo-Inhalt: `b` fragt, ob Vorwort und Teil 1 der Demo durch deine Geschichten ersetzt werden
+  (Titelei, Anhang, Über den Autor, Danke bleiben). Danach `s` schnell und `p` = deine Geschichten als Buch.
 - **Reihenfolge** überall (Liste, Block, Sammel-PDF): zuerst wie im Buch, dann wie angelegt.
 - **Alle in einer Datei** (z. B. für eine KI): `g` → `a` schreibt `geschichten-alle.md`, ändern, speichern,
   nochmals `g` → `a` holt alles zurück in die Einzeldateien (vorher Sicherung). Die Zeilen `@@@ name` nicht ändern.
@@ -305,12 +307,12 @@ Untermenüs (Enter oder `z` = zurück; «…» = nur was es gibt):
 
 | | |
 |---|---|
-| `m` MD öffnen | `b` Buch · `v` Variablen · `u` Umschlag · `s` Stichworte · `h` meine Hilfe · `g` Geschichten … |
-| `g` Geschichten | `e` schreiben … (Liste mit Kürzel) · `n` neue Geschichte (fragt nach dem Titel, öffnet sie) · `b` fehlende ins Buch · `a` alle in 1 Datei · `ü` Übersicht (auch `u`) · `s` Sammel-PDF · `t` neue Tabelle |
+| `m` MD öffnen | `b` Buch · `v` Variablen · `u` Umschlag · `s` Stichworte · `h` meine Hilfe · `g` Geschichten … · `t` Tabellen … |
+| `g` Geschichten | `e` schreiben … (Liste mit Kürzel) · `n` neue Geschichte (fragt nach dem Titel, öffnet sie) · `b` fehlende ins Buch · `a` alle in 1 Datei · `t` Tabellen … (`e` bearbeiten · `n` neu · `o` Ordner) · `ü` Übersicht (auch `u`) · `s` Sammel-PDF |
 | `c` check / gegenlesen | `n` Liste neu (personen-seiten.txt) · `c` check-PDF für eine Person (öffnet sich danach) · `t` Textdatei |
 | `b` weitere | `l` Leseprobe · `k` Korrektur · `p` nur-pdf · `e` nur E-Book · `c` prüfen · `s` Stand merken |
 | `p` PDF öffnen | `n` normal · `u` unzensiert · `l` Leseprobe · `k` Korrektur … |
-| `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten … |
+| `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten · `t` tabellen … |
 | `n` neu | `b` neues Buch · `h` Hallo-Buch · `e` einrichten · `v` Verknüpfung |
 
 - Geschichten (`g` → `e` oder `m` → `g`): jede hat ein festes Kürzel aus 1–3 Buchstaben, z. B. `h` herz-im-glueck,
