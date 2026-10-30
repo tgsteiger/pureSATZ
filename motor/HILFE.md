@@ -29,11 +29,45 @@ quelle:
 notiz: stand = idee · entwurf · ueberarbeiten · fertig
 ```
 
-**Foto** (Bild in `fotos/`; die erste Leerzeile beendet das Foto)
+**Foto, kurz** (eigenes Bild in `fotos/`; `beispiel-foto.jpg` hat jedes Buch (im Motor) – zum Ausprobieren)
 ```
-#### @FOTO Sommer
-datei: sommer.jpg
-text: Am See, 1985
+#### @FOTO Titel
+datei: beispiel-foto.jpg
+text: Bildunterschrift
+```
+
+**Fotos – alle Möglichkeiten** (einfügen, `sh build.sh schnell`, ansehen; danach `beispiel-foto.jpg` durch dein Foto ersetzen)
+```
+#### @FOTO Bild 1 – volle Breite
+datei: beispiel-foto.jpg
+text: Bildunterschrift unter dem Foto
+quelle: Foto: Vorname Nachname
+alt: Was auf dem Bild zu sehen ist (für die Vorlesefunktion im E-Book)
+
+Text nach Bild 1. Die erste Leerzeile oben beendet den Foto-Block.
+
+#### @FOTO Bild 2 – klein, Text fliesst links daneben
+datei: beispiel-foto.jpg
+text: Bild rechts, 45 mm breit
+breite: 45
+fluss: rechts
+
+Dieser Absatz fliesst links neben Bild 2. Auch die nächsten Absätze fliessen daneben, bis das Bild zu Ende ist.
+
+Noch ein Absatz neben dem Bild.
+
+#### @FOTO Bild 3 – klein, Text fliesst rechts daneben
+datei: beispiel-foto.jpg
+text: Bild links, 45 mm breit
+breite: 45
+fluss: links
+
+Dieser Absatz fliesst rechts neben Bild 3.
+
+#### @FOTO-UZ Bild 4 – nur in der unzensierten Fassung
+datei: beispiel-foto.jpg
+text: Erscheint nur in der zweiten Ausgabe
+breite: 80
 ```
 
 **Tabelle** (CSV in `tabellen/`) · **Zitat** · **neue Seite**

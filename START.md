@@ -128,7 +128,7 @@ Danach mit `sh build.sh schnell` ansehen. **Klick auf einen Code = kopiert.** Ga
 | eine **Randbemerkung** | `~ Satz` (klein, kursiv) |
 | eine **Zeile umbrechen**, ohne neuen Absatz | `\` am Zeilenende (in Variablen: `<br/>`) |
 | Text **nur in einer Fassung** | `::: nur-uz` … `:::` oder `::: nur-normal` … `:::` |
-| ein **Foto** | `#### @FOTO Titel`, darunter `datei: bild.jpg` – eine Leerzeile beendet das Foto. [→ alle Angaben](#Bilder-und-Fotos) |
+| ein **Foto** | `#### @FOTO Titel`, darunter `datei: bild.jpg` – eine Leerzeile beendet das Foto. [→ Blöcke zum Kopieren](#Zum-Kopieren) · [→ alle Angaben](#Bilder-und-Fotos) |
 | ein Foto, das der **Text umfliesst** | zusätzlich `fluss: rechts` oder `fluss: links` und `breite: 40` (mm) – die nächsten Absätze fliessen daneben |
 | eine **Geschichte** einbinden | `##### @@name` (Dateiname ohne .md, im Ordner geschichten/) – Menü `g` → `b` macht es selbst. [→ Geschichten](#Geschichten-sammeln) |
 | eine **Tabelle** | `@#name` (CSV im Ordner tabellen/) – Menü `t` → `n` legt sie an. [→ Tabellen](#Tabellen) |
