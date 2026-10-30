@@ -2,7 +2,7 @@
 """
 menu.py – Menü mit den häufigsten Befehlen (ab 2.50, Buchstaben 2.51). Aufruf im Buchordner: sh menu.sh (Windows: menu.bat)
 
-Ein Buchstabe pro Befehl, b / m / p / o / g mit Untermenü. ↑ ↓ = letzte Eingaben, Enter = zurück, q = beenden.
+Ein Buchstabe pro Befehl, b / m / p / o / g / c mit Untermenü; Geschichten mit festem Kürzel (g → e). ↑ ↓ = letzte Eingaben, Enter = zurück, q = beenden.
 Ganze Befehle gehen auch: final · leseprobe uz 18,20 · personen Eltern.
 MD, PDF und Ordner öffnen im eigenen Programm (das Menü wartet nicht), Bauen läuft hier im Fenster.
 Klang (!) und Verlauf stehen in .menu (kommt nicht zu GitHub). Klang: motor/klang.wav (oder klang.wav im Buchordner), sonst Piepton.
@@ -10,6 +10,7 @@ sh menu.sh verknuepfung = Starter mit Lotus auf den Schreibtisch (n → v im Men
 """
 import glob
 import os
+import re
 import shlex
 import shutil
 import subprocess
@@ -147,6 +148,55 @@ def untermenue(titel, eintraege):
     return e if e in eintraege else None
 
 
+def kuerzel():
+    """{Kürzel: (name, pfad)} aller Geschichten. Kürzel bleiben fest (geschichten/kuerzel.txt), frei gewordene
+    werden wieder vergeben. Neues Kürzel: h · he · hig (Anfänge der Wörter) · hei · …"""
+    try:
+        import geschichten as G
+        alle = G.alle(BASE)
+    except (ImportError, SystemExit) as f:
+        print(f"  {f}")
+        return {}
+    datei = os.path.join(BASE, "geschichten", "kuerzel.txt")
+    alt = {}
+    if os.path.exists(datei):
+        for z in open(datei, encoding="utf-8").read().splitlines():
+            t = z.split(None, 1)
+            if len(t) == 2 and not z.startswith("#") and t[0] not in alt.values():
+                alt[t[1].strip()] = t[0].lower()
+    km = {n: k for n, k in alt.items() if n in alle}
+    vergeben = set(km.values()) | {"z"}
+    for n in sorted(alle):
+        if n not in km:
+            w = [x for x in re.split(r"[^a-zäöüß]+", n.lower()) if x] or ["g"]
+            a = "".join(w)
+            kand = [a[:1], a[:2], "".join(x[0] for x in w)[:3], a[:3]] + [a[0] + c for c in a[1:]]
+            km[n] = next((k for k in kand if k not in vergeben),
+                         next(f"{a[0]}{i}" for i in range(1, 999) if f"{a[0]}{i}" not in vergeben))
+            vergeben.add(km[n])
+    if km != alt:
+        with open(datei, "w", encoding="utf-8") as f:
+            f.write("# Kürzel der Geschichten fürs Menü (g → e). Bleiben fest, von Hand änderbar.\n"
+                    + "".join(f"{k:<4}{n}\n" for n, k in sorted(km.items())))
+    return {k: (n, alle[n]) for n, k in km.items()}
+
+
+def geschichte_oeffnen():
+    import geschichten as G
+    ks = kuerzel()
+    if not ks:
+        print("  Noch keine Geschichte – g → n.")
+        return
+    print("\n Geschichte öffnen …")
+    for k, (n, p) in sorted(ks.items(), key=lambda x: x[1][0]):
+        titel, kopf, _ = G.lies(p)
+        print(f"  {k:<4}{titel[:44]:<46}{G.stand(kopf)}".rstrip())
+    print("  z   zurück")
+    e = frage(" Wahl: ").lower()
+    if e in ks:
+        oeffnen(ks[e][1])
+
+
 def zeige():
     buch = next(iter(glob.glob(os.path.join(BASE, "*-buch.md"))), "Buch")
     version = open(os.path.join(MOTOR, "VERSION"), encoding="utf-8").read().strip()
@@ -272,8 +322,12 @@ def main():
                 bauen({"l": "leseprobe", "k": "korrektur", "p": "nur-pdf", "e": "nur-ebook", "c": "pruefen"}[k])
         elif w == "m":
             md = {k: (t, next(iter(sorted(glob.glob(os.path.join(BASE, m)))), None)) for k, (t, m) in MD.items()}
+            if os.path.isdir(os.path.join(BASE, "geschichten")):
+                md["g"] = ("Geschichten …", "g")
             k = untermenue("MD öffnen …", {k: v for k, v in md.items() if v[1]})
-            if k:
+            if k == "g":
+                geschichte_oeffnen()
+            elif k:
                 oeffnen(md[k][1])
         elif w == "p":
             liste = pdfs()
@@ -292,12 +346,18 @@ def main():
             if k:
                 oeffnen(ordner[k][1])
         elif w == "g":
-            k = untermenue("Geschichten …", {"n": ("neue Geschichte", 0), "ü": ("Übersicht", 0), "s": ("Sammel-PDF", 0),
+            k = untermenue("Geschichten …", {"e": ("schreiben …", 0), "n": ("neue Geschichte", 0), "ü": ("Übersicht", 0), "s": ("Sammel-PDF", 0),
                                              "t": ("neue Tabelle", 0)})
-            if k in ("n", "t"):
+            if k == "e":
+                geschichte_oeffnen()
+            elif k in ("n", "t"):
                 titel = frage(" Titel: ")
-                if titel:
-                    skript("neu", *(["tabelle"] if k == "t" else []), titel)
+                vorher = {p for _, p in kuerzel().values()}
+                if titel and skript("neu", *(["tabelle"] if k == "t" else []), titel) == 0 and k == "n":
+                    for kz, (n, p) in kuerzel().items():
+                        if p not in vorher:
+                            print(f"  Kürzel {kz}: {n}")
+                            oeffnen(p)
             elif k == "ü":
                 skript("neu")
             elif k == "s":
