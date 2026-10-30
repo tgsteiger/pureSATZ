@@ -475,6 +475,9 @@ def _bild_laden(pfad, umwandeln=None):
     for versuch in range(10):
         try:
             with _I.open(pfad) as im:
+                if umwandeln == "RGB" and (im.mode in ("RGBA", "LA") or "transparency" in im.info):
+                    im = im.convert("RGBA"); weiss = _I.new("RGB", im.size, "white")
+                    weiss.paste(im, mask=im.split()[3]); return weiss   # durchsichtig wird weiss, nicht schwarz
                 if umwandeln:
                     return im.convert(umwandeln)        # convert() liest alles ein, Datei danach frei
                 return im.size, im.mode

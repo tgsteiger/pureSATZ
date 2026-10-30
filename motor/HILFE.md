@@ -237,13 +237,13 @@ weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen �
 | Bereich | Variablen |
 |---|---|
 | Buch | `titel`, `untertitel`, `autor`, `website`, `ort`, `jahr`, `auflage`, `stand`, `format` |
-| Zwei Ausgaben | `zweite-ausgabe` (ja/nein), `ausgabe-name-normal` / `-uz`, `stempel-uz` (z. B. UNZENSIERT), `kasten-hinweis` |
+| Zwei Ausgaben | `zweite-ausgabe` (ja/nein), `ausgabe-name-normal` / `-uz`, `titel-zusatz-normal` / `-uz` (Zeile unter dem Untertitel, je Ausgabe), `stempel-uz` (z. B. UNZENSIERT), `kasten-hinweis`, `kasten-kopf` (Wort oben im Kasten der zweiten Ausgabe, Standard: wie der Stempel) |
 | Impressum | `impressum-rechte`, `impressum-kontakt` |
 | Ausgabe: … | `druck-datei`, `isbn`, `preis`, `impressum-herstellung`, `impressum-kontakt`, `impressum-logo`, `erstellen` (nur E-Book) |
-| E-Book | `ebook-epub2` (ja = zusätzlich EPUB 2), `ebook-rueckseite` (bild / text / nein), `ebook-barrierefreiheit`, `farbe-akzent-ebook` |
-| Shop | `shop-beschreibung`, `shop-schlagwoerter`, `shop-kategorie`, `shop-link` |
+| E-Book | `ebook-epub2` (ja = zusätzlich EPUB 2), `ebook-rueckseite` (bild / text / nein), `ebook-barrierefreiheit`, `farbe-akzent-ebook`, `ebook-id` bzw. `buch-id` (feste Kennung des E-Books; leer = Website/Titel) |
+| Shop | `shop-beschreibung`, `shop-schlagwoerter`, `shop-kategorie`, `shop-link`, `sprache` (Standard `de`, steht in den Shop-Angaben) |
 | Leseprobe | `leseprobe`, `leseprobe-seiten`, `leseprobe-seiten-uz`, `leseprobe-text` |
-| Technik | `kurz-…`, `datei-…`, `ordner-…` |
+| Technik | `kurz-normal` / `-uz` (Kürzel vorne an den Druckdateien, z. B. L123), `datei-normal` / `-uz` (Name der Lese-PDFs und E-Books), `ordner-normal` / `-uz` (Ausgabeordner) |
 | Weiteres | `stichworte`, `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt\|anschauung), `zier`, `zier-hell`, `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund` |
 | Sicherung | `sicherung-lokal`, `sicherung-cloud`, `sicherung-behalten` |
 | Layout | `farbschema`, `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `inhalt-dichte`, `inhalt-tiefe`, `blocksatz` |
@@ -618,6 +618,19 @@ Das E-Book enthält Angaben zur **Barrierefreiheit** (Gliederung, Inhaltsverzeic
 `sh build.sh` warnt bei Fotos ohne `alt:` und ohne `text:`. Eigene Zusammenfassung: `ebook-barrierefreiheit:`. Die Akzentfarbe für Text wird im E-Book automatisch
 lesbar dunkel gesetzt (Kontrast 4,5:1); eigene Farbe mit `farbe-akzent-ebook:`.
 
+## Farben für den Druck: RGB oder CMYK
+
+Bildschirm, Lese-PDF und E-Book arbeiten mit **RGB**. Viele Druckereien wollen **CMYK** (tredition: ja, epubli: RGB
+geht). Einstellung in der Plattform-Datei (`druck/…md`):
+
+```
+{farbmodus}: cmyk
+```
+
+Dann wandelt `sh build.sh final` (und `komplett`) Buchblock und Umschlag mit Ghostscript nach CMYK um; alles andere
+bleibt RGB. Fotos selber in RGB liefern (nicht CMYK), JPG oder PNG – durchsichtige Stellen in PNG werden weiss.
+Wirken Farben im Druck zu dunkel oder zu hell: Probedruck ansehen, bei Bedarf ein zweites Farbschema (siehe «Farbschemas»).
+
 ## Ausgaben
 
 In der Variablen-Datei hat jede Ausgabe einen Abschnitt. Was dort steht, gilt nur für diese Ausgabe:
@@ -650,7 +663,7 @@ Lese-PDF, E-Book, Leseprobe, Korrektur und Mockup bleiben beim `{format}` der Va
 | `neu-berechnen` | `ja` = Seitenzahl hat sich geändert, im Coverrechner neu berechnen (der Bau erinnert daran) · `nein` = Werte passen |
 | `berechnet-fuer-seiten` | Seiten des Buchblocks, für die Rücken und Umschlag berechnet sind; weicht der Buchblock ab, warnt `final` |
 | `plattform` | `epubli`, `bod`, `tredition` oder `kdp` (bestimmt Strichcode-Platz und Füllseite; tredition und kdp wie bod) |
-| `farbmodus` | `rgb` (Standard) oder `cmyk`: Buchblock und Umschlag werden bei `final` und `komplett` mit Ghostscript nach CMYK umgewandelt (z. B. für tredition); im Entwurf bleiben sie RGB (schneller). Jeder Bau rechnet neu aus den Originalbildern, es wird nie mehrfach umgewandelt. Braucht Ghostscript (Linux `sudo apt install ghostscript` · Mac `brew install ghostscript` · Windows `winget install ArtifexSoftware.GhostScript`). Lese-PDF, E-Book und Leseprobe bleiben RGB. |
+| `farbmodus` | `rgb` (Standard) oder `cmyk`: Buchblock und Umschlag werden bei `final` und `komplett` mit Ghostscript nach CMYK umgewandelt (z. B. für tredition); im Entwurf bleiben sie RGB (schneller). Jeder Bau rechnet neu aus den Originalbildern, es wird nie mehrfach umgewandelt. Braucht Ghostscript (Linux `sudo apt install ghostscript` · Mac `brew install ghostscript` · Windows: START-Windows, Schritt «Extras», holt den Installer). Lese-PDF, E-Book und Leseprobe bleiben RGB. |
 | `format` | nur, wenn das Druckformat vom Grundformat abweicht; auch eigenes Mass `148 x 210` (Ränder und Schrift vom nächstliegenden Format) |
 | `bindung`, `projekt`, `papier`, `extra-seiten` | `hardcover`/`softcover`/`beide` · `veroeffentlichen`/`privatdruck` · Papier zur Info · leere Notizseiten am Schluss |
 | `ruecken-hardcover`, `ruecken-softcover` | Rücken in mm laut Coverrechner der Plattform |

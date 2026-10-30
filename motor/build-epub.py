@@ -362,7 +362,7 @@ for zeile in bk.text_zeilen():
                 if not alt:
                     OHNE_ALT.append(datei)
                 alt = alt or zeile[1]
-                im = Image.open(pfad).convert("RGB"); im.thumbnail((1400, 1400))
+                im = bk._bild_laden(pfad, "RGB"); im.thumbnail((1400, 1400))   # durchsichtig = weiss
                 name = "foto_" + os.path.splitext(datei)[0] + ".jpg"
                 im.save(os.path.join(TMP, "img", name), quality=88)
                 if name not in FOTOS:          # dasselbe Foto zweimal: nur einmal ins Paket
