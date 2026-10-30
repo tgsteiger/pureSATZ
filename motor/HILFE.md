@@ -295,13 +295,13 @@ Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {v
  ── Schreiben ─────────────────────   ── Bauen ─────────────────────────
   m  MD öffnen …                      s  schnell  (Lese-PDF)
   g  Geschichten …                    k  komplett (vor dem Druck)
-  t  Tabellen …                       b  weitere …
+  t  Tabellen …                       w  weitere …
   c  check / gegenlesen …
  ── Ansehen ───────────────────────   ── Abgleichen ────────────────────
   p  PDF öffnen …                     sy sync   (GitHub)
   o  Ordner öffnen …                  u  update (ul lokal)
   a  änderungen
- ── Weiteres:  n neu · > Terminal · ? Quickies · h hilfe · ! Klang · q beenden
+ ── Weiteres:  n neu · > Terminal · : Befehle · h hilfe · ! Klang · q beenden
 ```
 
 Untermenüs (Enter oder `z` = zurück; «…» = nur was es gibt):
@@ -312,16 +312,16 @@ Untermenüs (Enter oder `z` = zurück; «…» = nur was es gibt):
 | `g` Geschichten | `e` schreiben … (Liste mit Kürzel) · `n` neue Geschichte (fragt nach dem Titel, öffnet sie) · `b` fehlende ins Buch · `a` alle in 1 Datei · `ü` Übersicht (auch `u`) · `s` Sammel-PDF |
 | `t` Tabellen | `e` bearbeiten … (Liste mit Kürzel) · `n` neue Tabelle (öffnet die CSV, nennt die Zeile `@#name`) · `o` Ordner |
 | `c` check / gegenlesen | `n` Liste neu (personen-seiten.txt) · `c` check-PDF für eine Person (öffnet sich danach) · `t` Textdatei |
-| `b` weitere | `l` Leseprobe · `k` Korrektur · `p` nur-pdf · `e` nur E-Book · `c` prüfen · `s` Stand merken |
+| `w` weitere | `l` Leseprobe · `k` Korrektur · `p` nur-pdf · `e` nur E-Book · `c` prüfen · `s` Stand merken |
 | `p` PDF öffnen | `n` normal · `u` unzensiert · `l` Leseprobe · `k` Korrektur … |
 | `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten · `t` tabellen … |
-| `n` neu | `b` neues Buch · `h` Hallo-Buch · `e` einrichten · `v` Verknüpfung |
+| `n` neu | `b` neues Buch · `h` Hallo-Buch · `e` einrichten · `m` Motor-Selbsttest · `v` Verknüpfung |
 
 - Geschichten (`g` → `e` oder `m` → `g`): jede hat ein festes Kürzel aus 1–3 Buchstaben, z. B. `h` herz-im-glueck,
   `he` heimweh. Neue bekommen das kürzeste freie (h · he · Anfänge der Wörter · hei), bestehende bleiben.
   Gespeichert in `geschichten/kuerzel.txt` (kommt mit sync zu GitHub, von Hand änderbar); gelöschte geben ihr Kürzel frei.
 - ↑ ↓ = letzte Befehle, Enter führt sie aus. Ganze Befehle gehen auch: `final`, `leseprobe uz 18,20`, `personen Eltern`.
-  `?` Quickies zeigt diese Befehle zum Tippen (aus dem Spickzettel der Hilfe).
+  `:` Befehle zeigt diese Befehle zum Tippen (aus dem Spickzettel der Hilfe), danach gleich eingeben. `?` = hilfe.
   Datei öffnen wie im Terminal: `xdg-open ausgabe-normal/….pdf` (Mac `open`, Windows `start`) – Pfad ab dem
   Buchordner, das Menü wartet nicht. Die Zeilen am Schluss eines Baus lassen sich so direkt einfügen.
 - MD, PDF und Ordner öffnen im eigenen Programm, das Menü bleibt bereit. Bauen läuft im Menüfenster;
@@ -329,7 +329,8 @@ Untermenüs (Enter oder `z` = zurück; «…» = nur was es gibt):
   `>` öffnet ein Terminal im Buchordner, das Menü bleibt offen (praktisch, wenn das Menü per Lotus-Starter läuft).
   Klang: `motor/klang.wav`, eigener Klang: `klang.wav` in den Buchordner legen; sonst Piepton.
 - `ul` (update lokal) erscheint nur, wenn neben dem Buch ein Ordner `pureSATZ` liegt; ebenso in `n` neu …:
-  `b` neues Buch (setup), `h` Hallo-Buch, `e` einrichten (START-Linux.sh / START-Mac.command / START-Windows.bat).
+  `b` neues Buch (setup), `h` Hallo-Buch, `e` einrichten (START-Linux.sh / START-Mac.command / START-Windows.bat),
+  `m` Motor-Selbsttest (test/selbsttest.py, einige Minuten, Ende «SELBSTTEST IN ORDNUNG»).
 - `n` → `v` Verknüpfung (auch `sh menu.sh verknuepfung`): Starter mit Lotus, Doppelklick öffnet das Menü.
   Linux: Startmenü und Schreibtisch (beim ersten Mal Rechtsklick → «Start erlauben»), Windows: Buchordner und
   Schreibtisch, Mac: «Buch Menü.command» im Buchordner und auf dem Schreibtisch. Neue Bücher bekommen ihn mit `setup`.

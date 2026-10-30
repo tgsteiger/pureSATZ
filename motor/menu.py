@@ -2,7 +2,7 @@
 """
 menu.py – Menü mit den häufigsten Befehlen (ab 2.50, Buchstaben 2.51). Aufruf im Buchordner: sh menu.sh (Windows: menu.bat)
 
-Ein Buchstabe pro Befehl, b / m / p / o / g / c mit Untermenü; Geschichten mit festem Kürzel (g → e). ↑ ↓ = letzte Eingaben, Enter = zurück, q = beenden.
+Ein Buchstabe pro Befehl, m / g / t / c / w / p / o / n mit Untermenü; Geschichten mit festem Kürzel (g → e). ↑ ↓ = letzte Eingaben, Enter = zurück, q = beenden.
 Ganze Befehle gehen auch: final · leseprobe uz 18,20 · personen Eltern.
 MD, PDF und Ordner öffnen im eigenen Programm (das Menü wartet nicht), Bauen läuft hier im Fenster.
 Klang (!) und Verlauf stehen in .menu (kommt nicht zu GitHub). Klang: motor/klang.wav (oder klang.wav im Buchordner), sonst Piepton.
@@ -90,10 +90,10 @@ def bauen(*args):
     return lauf([sys.executable, os.path.join(MOTOR, "bauen.py")] + [a for a in args if a != "entwurf"])
 
 
-def lauf(cmd, ordner=BASE):
+def lauf(cmd, ordner=BASE, env=None):
     t = time.time()
     try:
-        r = subprocess.run(cmd, cwd=ordner).returncode
+        r = subprocess.run(cmd, cwd=ordner, env=env).returncode
     except KeyboardInterrupt:                   # Ctrl+C bricht nur den Befehl ab, nicht das Menü
         r = 1
     d = int(time.time() - t)
@@ -312,7 +312,7 @@ def zeige():
     print("\n" + links + f"Klang (!) {'ein' if ton else 'aus'}".rjust(68 - len(links)))
     spalten = [("Schreiben", [("m", "MD öffnen …"), ("g", "Geschichten …"), ("t", "Tabellen …"),
                              ("c", "check / gegenlesen …")]),
-               ("Bauen", [("s", "schnell  (Lese-PDF)"), ("k", "komplett (vor dem Druck)"), ("b", "weitere …")]),
+               ("Bauen", [("s", "schnell  (Lese-PDF)"), ("k", "komplett (vor dem Druck)"), ("w", "weitere …")]),
                ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen")]),
                ("Abgleichen", [("sy", "sync   (GitHub)"), ("u", "update" + (" (ul lokal)" if LOKAL else ""))])]
     for (t1, z1), (t2, z2) in (spalten[:2], spalten[2:]):
@@ -320,7 +320,7 @@ def zeige():
         for a, b in zip(z1 + [("", "")] * 3, z2 + [("", "")] * 3):
             if a[0] or b[0]:
                 print(f"  {a[0]:<3}{a[1]:<33}{b[0]:<3}{b[1]}".rstrip())
-    print(" ── Weiteres:  n neu · > Terminal · ? Quickies · h hilfe · ! Klang · q beenden")
+    print(" ── Weiteres:  n neu · > Terminal · : Befehle · h hilfe · ! Klang · q beenden")
     if os.path.exists(ALLE):
         print(SPERRE)
 
@@ -331,18 +331,18 @@ def raster(zeilen):
         print(("  " + "".join(f"{k:<3}{t:<{b}}" for k, t in zeilen[i:i + (4 if b <= 16 else 3)])).rstrip())
 
 
-def quickies():
-    """Befehle zum Tippen – aus dem Spickzettel der Hilfe (hilfe.py), ohne «sh build.sh» davor."""
+def befehle():
+    """: Befehle zum Tippen – aus dem Spickzettel der Hilfe (hilfe.py); die Eingabe geht danach direkt ans Menü."""
     from hilfe import SPICKZETTEL
     liste = [(b[12:], t) for b, t in SPICKZETTEL if b.startswith("sh build.sh ") and b.split()[2] in BEFEHLE]
     liste.append(("leseprobe uz 18,20", "Leseprobe nur mit diesen Seiten, nur Unzensiert"))
     breit = max(len(b) for b, _ in liste) + 2
     rest = max(20, min(90, shutil.get_terminal_size((90, 24)).columns) - breit - 3)   # Zeile höchstens 90 Zeichen
-    print("\n Quickies – im Menü tippen (ohne Menü: sh build.sh … davor)")
+    print("\n Befehle – hier tippen (ohne Menü: sh build.sh … davor)")
     for befehl, text in liste:
         print(f"  {befehl:<{breit}}{text if len(text) <= rest else text[:rest - 1] + '…'}")
     print(" Ganze Hilfe: h (hilfe.html im Browser)")
-    frage(" Enter = zurück ")
+    return frage(" Eingabe (Enter = zurück): ", merken=True)
 
 
 def terminal():
@@ -411,10 +411,14 @@ def main():
     if sys.argv[1:2] == ["verknuepfung"]:
         return verknuepfung()
     einstellungen()
+    naechste = ""
     while True:
-        zeige()
-        print(" Wahl oder Befehl (z. B. final · ↑ = letzte):")
-        e = frage(" Eingabe: ", merken=True)
+        if naechste:                                  # Eingabe aus «: Befehle»
+            e, naechste = naechste, ""
+        else:
+            zeige()
+            print(" Wahl oder Befehl (z. B. final · ↑ = letzte):")
+            e = frage(" Eingabe: ", merken=True)
         w = e.lower()
         if w in ("", "z"):
             continue
@@ -424,7 +428,7 @@ def main():
             bauen("schnell")
         elif w == "k":
             bauen("komplett")
-        elif w == "b":
+        elif w == "w":
             k = untermenue("weitere …", {"l": ("Leseprobe", 0), "k": ("Korrektur", 0), "p": ("nur-pdf", 0),
                                          "e": ("nur E-Book", 0), "c": ("prüfen", 0), "s": ("Stand merken", 0)})
             if k == "s":
@@ -522,10 +526,11 @@ def main():
             tabellen_menue()
         elif w == ">":
             terminal()
-        elif w == "?":
-            quickies()
+        elif w == ":":
+            naechste = befehle()
         elif w == "n":
-            neu = {"b": ("neues Buch", 0), "h": ("Hallo-Buch", 0), "e": ("einrichten", 0)} if LOKAL else {}
+            neu = {"b": ("neues Buch", 0), "h": ("Hallo-Buch", 0), "e": ("einrichten", 0),
+                   "m": ("Motor-Selbsttest", 0)} if LOKAL else {}
             k = untermenue("neu …", {**neu, "v": ("Verknüpfung", 0)})
             if k == "v":
                 verknuepfung()
@@ -533,11 +538,13 @@ def main():
                 vorher = set(os.listdir(os.path.dirname(BASE)))
                 {"b": lambda: skript(os.path.join("setup", "setup"), ordner=PURESATZ),
                  "h": lambda: skript("hallo", ordner=PURESATZ),
+                 "m": lambda: lauf([sys.executable, os.path.join("test", "selbsttest.py")], PURESATZ,
+                                   dict(os.environ, SELBSTTEST_OHNE_VENV="1")),
                  "e": lambda: skript("START-Windows" if WIN else "START-Linux", ordner=PURESATZ,
                                      mac="START-Mac.command")}[k]()
                 for d in sorted(set(os.listdir(os.path.dirname(BASE))) - vorher):
                     print(f"  Neues Buch: ../{d} – dort sh menu.sh")
-        elif w == "h":
+        elif w in ("h", "?"):
             bauen("hilfe")
         elif w.split()[0] in ("xdg-open", "open", "start"):   # wie im Terminal: Datei öffnen, ohne zu warten
             for teil in shlex.split(e, posix=not WIN)[1:]:

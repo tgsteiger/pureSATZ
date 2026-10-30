@@ -186,8 +186,9 @@ dem Ziel; die Zahlen sind grobe Erfahrungswerte und lassen sich anpassen.
 ## Tipp: Menü statt Befehle
 
 Im Buchordner `sh menu.sh` (Windows: `menu.bat` doppelklicken). Dann genügt ein Buchstabe – geordnet nach
-Schreiben (`m` MD öffnen, `g` Geschichten, `c` gegenlesen), Bauen (`s` schnell, `k` komplett), Ansehen (`p` PDF,
-`o` Ordner) und Abgleichen (`sy` sync, `u` update); `n` neu (neues Buch, Hallo-Buch, `v` Lotus-Starter).
+Schreiben (`m` MD öffnen, `g` Geschichten, `t` Tabellen, `c` gegenlesen), Bauen (`s` schnell, `k` komplett,
+`w` weitere), Ansehen (`p` PDF, `o` Ordner) und Abgleichen (`sy` sync, `u` update); `n` neu (neues Buch,
+Hallo-Buch, `v` Lotus-Starter). `:` zeigt Befehle zum Tippen, `h` oder `?` die Hilfe.
 Mit ↑ holst du die letzten Befehle zurück, `q` beendet.
 
 Mehr dazu in der Hilfe unter «Bauen → Menü».
