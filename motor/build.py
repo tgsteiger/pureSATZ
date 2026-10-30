@@ -764,6 +764,72 @@ class QuellenMarke(Flowable):
         QUELLEN_SEITE[self.nr] = self.canv.getPageNumber()
 
 
+# --- Bilder- und Tabellenverzeichnis ({bilderverzeichnis}: ja · {tabellenverzeichnis}: ja) -----------
+# Gleiches Prinzip wie der Bildnachweis: unsichtbare Marken merken sich die Seite, die Liste nimmt sie aus dem
+# vorherigen Durchlauf. Ohne «ja» wird nichts gesammelt – das Buch bleibt genau wie bisher.
+VERZ = {"bild": [], "tabelle": []}        # art -> [(nr, text)]
+VERZ_SEITE = {}                           # (art, nr) -> Seite
+VERZ_GESETZT = set()
+
+
+def verz_an(art):
+    return (V("bilderverzeichnis" if art == "bild" else "tabellenverzeichnis") or "").strip().lower() in ("ja", "j")
+
+
+class VerzMarke(Flowable):
+    """Unsichtbar, steht direkt NACH dem Foto bzw. der Tabelle. Wurde sie allein auf die nächste Seite
+    geschoben (Foto füllte die Seite bis unten), gilt die Seite davor."""
+    def __init__(self, art, nr):
+        super().__init__(); self.art, self.nr = art, nr
+    def wrap(self, aw, ah):
+        self.oben = ah >= H - TOP - BOT - 12 * mm     # ganz oben auf einer neuen Seite?
+        return 0, 0
+    def draw(self):
+        VERZ_SEITE[(self.art, self.nr)] = self.canv.getPageNumber() - (1 if self.oben else 0)
+
+
+class VerzSeite(Flowable):
+    """«S. 12» rechtsbündig – erst beim Zeichnen gelesen, darum stimmt es schon im ersten Durchlauf
+    (die Marken stehen im Buch vor dem Verzeichnis)."""
+    def __init__(self, art, nr, stil):
+        super().__init__(); self.art, self.nr, self.stil = art, nr, stil
+    def wrap(self, aw, ah):
+        self.b = aw; return aw, self.stil.leading
+    def draw(self):
+        self.canv.setFont(self.stil.fontName, self.stil.fontSize); self.canv.setFillColor(self.stil.textColor)
+        self.canv.drawRightString(self.b, self.stil.leading - self.stil.fontSize,
+                                  f"S. {VERZ_SEITE.get((self.art, self.nr), '–')}")
+
+
+def verz_marke(art, text):
+    """Eintrag sammeln (nur wenn das Verzeichnis eingeschaltet ist) und die Marke zurückgeben."""
+    if not verz_an(art):
+        return []
+    nr = len(VERZ[art]) + 1; VERZ[art].append((nr, text))
+    return [VerzMarke(art, nr)]
+
+
+def verzeichnis(art):
+    """Seite «Bilderverzeichnis» bzw. «Tabellenverzeichnis»: Text links, Seite rechts, ohne Links."""
+    VERZ_GESETZT.add(art)
+    if not VERZ[art]:
+        return []
+    titel = "Bilderverzeichnis" if art == "bild" else "Tabellenverzeichnis"
+    p = Paragraph(titel, ZEIT_STIL); p._toc = (0, titel)
+    st = ParagraphStyle("vz", parent=small, fontSize=9, leading=13, textColor=INK)
+    zeilen = [[Paragraph(inline_einfach(t), st), VerzSeite(art, nr, st)] for nr, t in VERZ[art]]
+    tab = Table(zeilen, colWidths=[W - IN - OUT - 18 * mm, 18 * mm])
+    tab.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"), ("LEFTPADDING", (0, 0), (-1, -1), 0),
+                             ("RIGHTPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+                             ("LINEBELOW", (0, 0), (-1, -1), 0.3, colors.HexColor("#e7dfd0"))]))
+    return [NextPageTemplate("body"), PageBreak(), p, Spacer(1, 4), tab]
+
+
+def verzeichnisse_auto():
+    """Eingeschaltete Verzeichnisse, die nicht schon mit @BILDERVERZEICHNIS / @TABELLENVERZEICHNIS stehen."""
+    return sum((verzeichnis(a) for a in ("bild", "tabelle") if verz_an(a) and a not in VERZ_GESETZT), [])
+
+
 def bildnachweis():
     if not QUELLEN:
         return []
@@ -1836,7 +1902,7 @@ def _build(out, ausgleich=None):
                 story.append(p)
 
     sammle = None          # @TITEL / @IMPRESSUM: die folgenden Zeilen gehören dazu
-    QUELLEN.clear()
+    QUELLEN.clear(); VERZ["bild"].clear(); VERZ["tabelle"].clear(); VERZ_GESETZT.clear()
     bn_gesetzt = False     # Bildnachweis schon gesetzt?
 
     def vorspann_fertig():
@@ -1875,9 +1941,11 @@ def _build(out, ausgleich=None):
         if isinstance(ln, tuple) and ln[0] == "ZEITSTRAHL":
             story += zeitstrahl_tabelle(ln[2]); continue
         if not isinstance(ln, tuple) and ln.lstrip().startswith("@#"):
-            story += tabelle(ln); continue
+            t_ = tabelle(ln); story += t_[:2] + verz_marke("tabelle", tabellen_titel(ln)) + t_[2:]; continue   # Marke nach der Tabelle
         if isinstance(ln, tuple) and ln[0] == "WIDMUNG":
             raise M.Fehler("::: widmung gehört direkt unter @IMPRESSUM.")
+        marke = (verz_marke("bild", foto_info(ln[2])[1] or ln[1])
+                 if isinstance(ln, tuple) and ln[0] == "FOTO" and foto_info(ln[2])[0] else [])
         if isinstance(ln, tuple) and ln[0] == "FOTO" and foto_quelle(ln[2]) and foto_info(ln[2])[0]:
             nr = len(QUELLEN) + 1
             QUELLEN.append((nr, foto_info(ln[2])[1] or ln[1], foto_quelle(ln[2])))
@@ -1886,10 +1954,11 @@ def _build(out, ausgleich=None):
             teile = {"UZ": uz_kasten, "OFFEN": offen_kasten, "PH": platzhalter, "FOTO": foto, "MITTE": mitte,
                      "ZUSAMMEN": zusammen}[ln[0]](ln[1], ln[2])
             if teile and isinstance(teile[0], tuple) and teile[0][0] == "FLOAT":
+                story += marke
                 _, t, seite, bw = teile[0]
                 schwebe.update(teile=t, seite=seite, bw=bw, paras=[])
             else:
-                story += teile
+                story += teile + marke          # Marke nach dem Bild: Seite, auf der es steht (ändert den Umbruch nicht)
             continue
         s = ln.rstrip()
         if not s.strip():
@@ -2013,14 +2082,18 @@ def _build(out, ausgleich=None):
             flush(); story.append(Umbruch())
         elif s == "@RUECKSEITE":
             flush()
+            story += verzeichnisse_auto()
             if not bn_gesetzt:
                 story += bildnachweis(); bn_gesetzt = True
             if not DRUCK:  # im Druck ist die Rückseite Teil des Umschlags
                 story += [NextPageTemplate("back"), PageBreak(), Spacer(1, 1)]
         elif s == "@BILDNACHWEIS":
             flush(); story += bildnachweis(); bn_gesetzt = True
+        elif s in ("@BILDERVERZEICHNIS", "@TABELLENVERZEICHNIS"):
+            flush(); story += verzeichnis("bild" if s == "@BILDERVERZEICHNIS" else "tabelle")
         elif s == "@STICHWORTE":
             flush()
+            story += verzeichnisse_auto()
             if not bn_gesetzt:
                 story += bildnachweis(); bn_gesetzt = True
             story += stichwortverzeichnis()
@@ -2030,6 +2103,7 @@ def _build(out, ausgleich=None):
             para.append(s.strip())
     story += liste.ende()
     flush(); ausgeben(); vorspann_fertig()
+    story += verzeichnisse_auto()
     if not bn_gesetzt:
         story += bildnachweis()
     IM_ANHANG = False      # Bildtexte werden erst beim Umbruch gesetzt: dort wieder normal markieren
@@ -2239,6 +2313,14 @@ _TAB_GEMELDET = set()
 
 def _tab_text(t):
     return re.sub(r"<[^>]+>", "", t.replace("**", ""))
+
+
+def tabellen_titel(zeile):
+    """Titel einer Tabelle (erste Zeile der CSV) fürs Tabellenverzeichnis."""
+    import tabellen as T
+    name = (T.verweis(zeile) or (zeile.strip()[2:].strip(), ""))[0]
+    pfad = T.alle(BASE).get(name)
+    return (T.lies(pfad)["titel"] if pfad else "") or name
 
 
 def tabelle(zeile):

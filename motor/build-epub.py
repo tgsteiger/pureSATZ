@@ -191,6 +191,27 @@ vorspann = {"titel": [], "impressum": [], "widmung": "", "kernsatz": ""}
 sammle = None
 QUELLEN_E = []        # (bildtext, quelle) für den Bildnachweis
 bn_gesetzt = False
+VERZ_E = {"bild": [], "tabelle": []}      # {bilderverzeichnis}: ja / {tabellenverzeichnis}: ja – ohne Seitenzahlen
+VERZ_E_AN = {a: (bk.V(v) or "").strip().lower() in ("ja", "j") for a, v in (("bild", "bilderverzeichnis"),
+                                                                            ("tabelle", "tabellenverzeichnis"))}
+VERZ_E_GESETZT = set()
+
+
+def verzeichnis_datei(art):
+    VERZ_E_GESETZT.add(art)
+    if not VERZ_E[art]:
+        return
+    titel = "Bilderverzeichnis" if art == "bild" else "Tabellenverzeichnis"
+    name = "bilderverzeichnis.xhtml" if art == "bild" else "tabellenverzeichnis.xhtml"
+    neue_datei(name, titel)
+    aktuell["html"].append(f"<h2>{esc(titel)}</h2>" + "".join(f"<p class='notiz'>{esc(t)}</p>" for t in VERZ_E[art]))
+    nav.append((1, titel, name))
+
+
+def verzeichnisse_auto_e():
+    for a in ("bild", "tabelle"):
+        if VERZ_E_AN[a] and a not in VERZ_E_GESETZT:
+            verzeichnis_datei(a)
 
 
 def bildnachweis_datei():
@@ -332,6 +353,8 @@ for zeile in bk.text_zeilen():
             aktuell["html"].append(ORN + "".join(f'<p class="mitte">{esc(a)}</p>' for a in absaetze) + ORN)
         elif zeile[0] == "FOTO":          # nur echte Fotos, keine Vorschläge im E-Book
             pfad, text, _, datei = bk.foto_info(zeile[2])
+            if pfad and VERZ_E_AN["bild"]:
+                VERZ_E["bild"].append(text or zeile[1])
             if pfad and bk.foto_quelle(zeile[2]):
                 QUELLEN_E.append((text or zeile[1], bk.foto_quelle(zeile[2])))
             if pfad:
@@ -442,17 +465,26 @@ for zeile in bk.text_zeilen():
             url, _, label = x.partition("|")
             label = (label.strip() or url.strip()).replace("<br/>", ": ")
             aktuell["html"].append(f'<p><a href="{esc(url.strip())}">{esc(label)}</a></p>')
+    elif s.strip() in ("@BILDERVERZEICHNIS", "@TABELLENVERZEICHNIS"):
+        flush_absatz(); verzeichnis_datei("bild" if s.strip() == "@BILDERVERZEICHNIS" else "tabelle")
     elif s.startswith(("@BILDNACHWEIS", "@STICHWORTE", "@RUECKSEITE")):
         flush_absatz()
+        if not s.startswith("@BILDNACHWEIS"):
+            verzeichnisse_auto_e()
         if not bn_gesetzt:
             bildnachweis_datei()
     elif s.startswith("@#"):                     # Tabelle aus tabellen/*.csv
         flush_absatz(); aktuell["html"].append(tabelle_html(s))
+        if VERZ_E_AN["tabelle"]:
+            import tabellen as _T
+            _v = _T.verweis(s); _p = _T.alle(bk.BASE).get(_v[0]) if _v else None
+            VERZ_E["tabelle"].append((_T.lies(_p)["titel"] if _p else "") or (_v[0] if _v else s[2:].strip()))
     elif s.startswith("@"):
         flush_absatz()      # Steuerzeilen für das Seitenlayout gelten im E-Book nicht
     else:
         absatz.append(s.strip())
 liste_zu()
+verzeichnisse_auto_e()
 if not bn_gesetzt:
     bildnachweis_datei()
 if LESEPROBE:                             # Schlussseite wie im PDF, mit Link statt QR-Code

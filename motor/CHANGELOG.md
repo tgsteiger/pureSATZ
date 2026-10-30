@@ -3,6 +3,11 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.67.0 (Oktober 2026)
+- Neu `{bilderverzeichnis}: ja` / `{tabellenverzeichnis}: ja`: eigene Seite mit allen Fotos bzw. Tabellen und Seitenzahl
+  (wie der Bildnachweis), automatisch vor dem Stichwortverzeichnis; anderer Ort mit `@BILDERVERZEICHNIS` /
+  `@TABELLENVERZEICHNIS`. E-Book: Liste ohne Seitenzahlen. Ohne «ja» unverändert (Leben123: alle PDFs gleich).
+
 ## 2.66.2 (Oktober 2026)
 - Hilfe «Zum Kopieren»: Foto kurz und «Fotos – alle Möglichkeiten» (volle Breite, Textfluss rechts/links, nur-uz)
   mit `beispiel-foto.jpg` (neu in motor/bilder/, hat jedes Buch) – funktioniert sofort beim Einfügen.

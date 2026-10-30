@@ -491,6 +491,8 @@ BEFEHLE = {             # Befehl: (Schreibweise im Buch, Wirkung)
     "@#name":              ("@#name", "Tabelle tabellen/name.csv; «@#name quer» / «@#name hoch» = Ausrichtung"),
     "@@name":              ("@@name", "Geschichte geschichten/name.md einbinden"),
     "@STICHWORTE":         ("@STICHWORTE", "Stichwortverzeichnis (Liste: stichworte-<buch>.txt)"),
+    "@BILDERVERZEICHNIS":  ("@BILDERVERZEICHNIS", "Bilderverzeichnis an dieser Stelle (sonst mit {bilderverzeichnis}: ja automatisch vor den Stichworten)"),
+    "@TABELLENVERZEICHNIS": ("@TABELLENVERZEICHNIS", "Tabellenverzeichnis an dieser Stelle (sonst mit {tabellenverzeichnis}: ja automatisch)"),
     "@BILDNACHWEIS":       ("@BILDNACHWEIS", "Bildnachweis (Fotos mit «quelle:»); ohne Zeile automatisch vor den Stichworten"),
     "@RUECKSEITE":         ("@RUECKSEITE", "Rückseite (nur Bildschirm-PDF)"),
     "@LOTUS":              ("@LOTUS", "(gleich wie @ZIER)"),

@@ -112,6 +112,8 @@
 
 ## Weiteres
 {stichworte}: ja
+{bilderverzeichnis}: nein
+{tabellenverzeichnis}: nein
 {trennstellen}: Welt|anschauung, Gedanken|karussell
 {zier}:
 {zier-hell}:
@@ -119,6 +121,7 @@
 {bildschirm-dunkler}: nein
 {mockup-hintergrund}: #E9EEF4, #C9D3DF
 > {stichworte}: Stichwortverzeichnis aus stichworte-<name>.txt: ja | nein
+> {bilderverzeichnis}, {tabellenverzeichnis}: ja = eigene Seite mit allen Fotos bzw. Tabellen und Seitenzahl, vor dem Stichwortverzeichnis (anderer Ort: Zeile @BILDERVERZEICHNIS / @TABELLENVERZEICHNIS)
 > {trennstellen}: | = hier darf ein langes Wort getrennt werden
 > {zier}: eigenes Bild der Verzierung im Ordner bilder/, leer = Standard
 > {kopfzeile}: ohne-autor (Teil · Kapitel, Standard) | autor (Autor · Teil · Kapitel) | wechselnd (links Teil, rechts Kapitel)

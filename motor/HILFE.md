@@ -244,7 +244,7 @@ weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen �
 | Shop | `shop-beschreibung`, `shop-schlagwoerter`, `shop-kategorie`, `shop-link` |
 | Leseprobe | `leseprobe`, `leseprobe-seiten`, `leseprobe-seiten-uz`, `leseprobe-text` |
 | Technik | `kurz-…`, `datei-…`, `ordner-…` |
-| Weiteres | `stichworte`, `trennstellen` (Welt\|anschauung), `zier`, `zier-hell`, `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund` |
+| Weiteres | `stichworte`, `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt\|anschauung), `zier`, `zier-hell`, `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund` |
 | Sicherung | `sicherung-lokal`, `sicherung-cloud`, `sicherung-behalten` |
 | Layout | `farbschema`, `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `inhalt-dichte`, `inhalt-tiefe`, `blocksatz` |
 
@@ -302,6 +302,11 @@ breit, ein Hochformat schmaler. Steht es am Seitenende, wird es etwas kleiner (b
 Beim Zuschneiden bleibt die Mitte; pro Foto `ausschnitt: oben` (Köpfe!), `unten`, `links` oder `rechts`.
 Fotos mit `fluss:` werden nicht zugeschnitten. Das Original in `fotos/` bleibt immer unverändert.
 
+
+**Bilderverzeichnis / Tabellenverzeichnis:** in der Variablen-Datei `{bilderverzeichnis}: ja` bzw.
+`{tabellenverzeichnis}: ja` – eine eigene Seite listet alle Fotos (Bildtext, sonst Titel) bzw. Tabellen (Titel = erste
+Zeile der CSV) mit Seitenzahl, vor dem Stichwortverzeichnis. An anderer Stelle: eigene Zeile `@BILDERVERZEICHNIS` bzw.
+`@TABELLENVERZEICHNIS`. Im E-Book ohne Seitenzahlen.
 ## Tabellen
 
 [← Gestalten: Ich will …](#Gestalten) · [Zum Kopieren](#Zum-Kopieren)
