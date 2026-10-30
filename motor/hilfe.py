@@ -385,7 +385,7 @@ header h1{{font:500 18px Poppins,system-ui,sans-serif;color:var(--haupt);margin:
 header small{{color:var(--leise);font-weight:400}}
 #suche{{flex:1 1 260px;max-width:420px;padding:8px 12px;border:1px solid var(--linie);border-radius:18px;
 background:var(--karte);color:var(--text);font:15px Poppins,system-ui,sans-serif}}
-.os button,button.kopie{{font:13px Poppins,system-ui,sans-serif;border:1px solid var(--linie);background:var(--karte);
+.os button,.hist button,button.kopie{{font:13px Poppins,system-ui,sans-serif;border:1px solid var(--linie);background:var(--karte);
 color:var(--text);border-radius:14px;padding:4px 10px;cursor:pointer}} .os button.aktiv{{border-color:var(--akzent);color:var(--akzent)}}
 .wrap{{display:flex;max-width:1200px;margin:0 auto}}
 nav{{flex:0 0 230px;position:sticky;top:58px;align-self:flex-start;max-height:calc(100vh - 60px);overflow:auto;
@@ -431,12 +431,15 @@ body.nur main section:not(.drucke){{display:none}} section{{border:0;margin:0}}
 .spick{{margin:8px 0 0}} .spicktext{{margin:2px 0 10px 4px;color:var(--leise);font-size:14px}}
 #leer{{display:none;color:var(--leise);padding:20px}} footer{{color:var(--leise);font-size:13px;padding:10px 0}}
 @media (max-width:760px){{nav{{display:none}} main{{padding:8px 10px 60px}}}}
-main :not(pre)>code{{cursor:copy}} main code.kopiert{{background:var(--mark)}}
+main :not(pre)>code{{cursor:copy}} .hist{{white-space:nowrap}}
+#zuletzt{{font-size:12px;color:var(--leise);margin:4px 6px 8px}} #zuletzt span{{color:var(--haupt);cursor:pointer}}
+#zuletzt span:hover{{text-decoration:underline}} main code.kopiert{{background:var(--mark)}}
 </style></head><body>
 <header><h1>pureSATZ Hilfe · {html.escape(titel)} <small>Motor {html.escape(version)}</small></h1>
 <input id="suche" type="search" placeholder="Suchen … (Taste /)" autocomplete="off">
+<span class="hist"><button id="zur" title="zurück (Alt+←)">‹ zurück</button> <button id="vor" title="vor (Alt+→)">vor ›</button></span>
 <span class="os">{'<a class="startk" href="#a1">Start</a> ' if start else ''}<button data-os="lx" class="aktiv">Linux/Mac</button> <button data-os="win">Windows</button></span></header>
-<div class="wrap"><nav>{"".join(nav)}</nav><main>{"".join(inhalt)}
+<div class="wrap"><nav><p id="zuletzt"></p>{"".join(nav)}</nav><main>{"".join(inhalt)}
 <p id="leer">Nichts gefunden.</p>
 <footer><a href="{WEBSEITE}">Webseite</a> · <a href="{GITHUB}">GitHub</a> · <a href="{GITHUB}/issues">Fehler melden</a> · <a class=mail href=#>puresatz (at) gsteiger.ch</a><br>
 Erstellt {datetime.now():%d.%m.%Y %H:%M} von pureSATZ {html.escape(version)} · neu mit «sh build.sh hilfe» · Quellen: START.md, motor/HILFE.md, meine-hilfe.md, Variablen-Datei</footer>
@@ -479,7 +482,17 @@ const a=e.target.closest('a[href^="#"]');if(!a)return;                          
 const ziel=decodeURIComponent(a.getAttribute('href').slice(1)),k=t=>norm2(t).replace(/[^a-z0-9]+/g,'');
 if(!ziel||document.getElementById(ziel))return;
 const s=secs.find(x=>k(x.querySelector('h2').textContent).includes(k(ziel)));if(!s)return;e.preventDefault();
-if(such.value){{such.value='';such.dispatchEvent(new Event('input'))}}s.scrollIntoView();history.replaceState(null,'','#'+s.id)}});
+if(such.value){{such.value='';such.dispatchEvent(new Event('input'))}}s.scrollIntoView();history.pushState(null,'','#'+s.id);zuletzt(s.id)}});
+document.getElementById('zur').onclick=()=>history.back();document.getElementById('vor').onclick=()=>history.forward();
+const zl=document.getElementById('zuletzt'),titel=s=>s.querySelector('h2').textContent;      // zuletzt besuchte Abschnitte
+function zuletzt(id){{let l=[];try{{l=JSON.parse(localStorage.getItem('ps-zuletzt')||'[]')}}catch(e){{}}
+const s=id&&document.getElementById(id);if(s&&s.tagName==='SECTION'){{const t=titel(s);l=[t].concat(l.filter(x=>x!==t)).slice(0,5);
+try{{localStorage.setItem('ps-zuletzt',JSON.stringify(l))}}catch(e){{}}}}
+const da=l.filter(t=>secs.some(x=>titel(x)===t));zl.innerHTML='';if(!da.length)return;zl.append('Zuletzt: ');
+da.forEach((t,i)=>{{const sp=document.createElement('span');sp.textContent=t;sp.onclick=()=>{{
+if(such.value){{such.value='';such.dispatchEvent(new Event('input'))}}const z=secs.find(x=>titel(x)===t);if(z)location.hash=z.id}};
+if(i)zl.append(' · ');zl.append(sp)}})}}
+addEventListener('hashchange',()=>zuletzt(location.hash.slice(1)));zuletzt(location.hash.slice(1));
 function haken(){{let h={{}};try{{h=JSON.parse(localStorage.getItem('ps-haken')||'{{}}')}}catch(e){{}}
 document.querySelectorAll('li.haken input').forEach(c=>{{const k=c.parentNode.textContent.trim().slice(0,60);
 if(k in h)c.checked=h[k];c.onchange=()=>{{h[k]=c.checked;try{{localStorage.setItem('ps-haken',JSON.stringify(h))}}catch(e){{}}}}}})}}
