@@ -281,18 +281,32 @@ Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {v
 
 ## Menü
 
-`sh menu.sh` (Windows: `menu.bat`) zeigt die häufigsten Befehle. Ein Buchstabe genügt:
+`sh menu.sh` (Windows: `menu.bat`) zeigt die häufigsten Befehle, nach Arbeitsschritten geordnet. Ein Buchstabe genügt:
 
 ```
-  s  schnell       k  komplett      b  bauen …       m  MD öffnen …
-  p  PDF …         o  Ordner …      g  gegenlesen …  a  änderungen
-  sy sync          u  update        ul update lokal  n  neu …
-  t  Terminal      ?  Quickies      h  hilfe         q  beenden
+ ── Schreiben ─────────────────────   ── Bauen ─────────────────────────
+  m  MD öffnen …                      s  schnell  (Lese-PDF)
+  g  Geschichten …                    k  komplett (vor dem Druck)
+  c  check / gegenlesen …             b  weitere …
+ ── Ansehen ───────────────────────   ── Abgleichen ────────────────────
+  p  PDF öffnen …                     sy sync   (GitHub)
+  o  Ordner öffnen …                  u  update (ul lokal)
+  a  änderungen
+ ── Weiteres:  n neu · t Terminal · ? Quickies · h hilfe · ! Klang · q beenden
 ```
 
-- `b`, `m`, `p`, `o`, `g` haben ein Untermenü (Enter oder `z` = zurück). `o` Ordner: Buchordner, normal,
-  unzensiert, druck. `g` gegenlesen (Personen prüfen ihre Stellen): `l` Liste neu (personen-seiten.txt),
-  `c` check-PDF für eine Person (check_Name_Gegenlesen.pdf, öffnet sich danach), `t` Textdatei öffnen.
+Untermenüs (Enter oder `z` = zurück; «…» = nur was es gibt):
+
+| | |
+|---|---|
+| `m` MD öffnen | `b` Buch · `v` Variablen · `u` Umschlag · `s` Stichworte · `h` meine Hilfe |
+| `g` Geschichten | `n` neue Geschichte (fragt nach dem Titel) · `ü` Übersicht (auch `u`) · `s` Sammel-PDF · `t` neue Tabelle |
+| `c` check / gegenlesen | `n` Liste neu (personen-seiten.txt) · `c` check-PDF für eine Person (öffnet sich danach) · `t` Textdatei |
+| `b` weitere | `l` Leseprobe · `k` Korrektur · `p` nur-pdf · `e` nur E-Book · `c` prüfen · `s` Stand merken |
+| `p` PDF öffnen | `n` normal · `u` unzensiert · `l` Leseprobe · `k` Korrektur … |
+| `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten … |
+| `n` neu | `b` neues Buch · `h` Hallo-Buch · `e` einrichten · `v` Verknüpfung |
+
 - ↑ ↓ = letzte Befehle, Enter führt sie aus. Ganze Befehle gehen auch: `final`, `leseprobe uz 18,20`, `personen Eltern`.
   `?` Quickies zeigt diese Befehle zum Tippen (aus dem Spickzettel der Hilfe).
   Datei öffnen wie im Terminal: `xdg-open ausgabe-normal/….pdf` (Mac `open`, Windows `start`) – Pfad ab dem

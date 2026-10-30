@@ -29,7 +29,7 @@ LOKAL = os.path.isdir(os.path.join(PURESATZ, "motor"))
 BEFEHLE = ("schnell", "komplett", "final", "entwurf", "leseprobe", "korrektur", "nur-pdf", "nur-druck", "nur-ebook",
            "pruefen", "personen", "stand", "aenderungen", "änderungen", "geschichten", "hilfe", "mockup", "sicherung")
 MD = {"b": ("Buch", "*-buch.md"), "v": ("Variablen", "*-variablen.md"), "u": ("Umschlag", "*-umschlag.md"),
-      "w": ("Stichworte", "stichworte-*.txt"), "h": ("meine Hilfe", "meine-hilfe.md")}
+      "s": ("Stichworte", "stichworte-*.txt"), "h": ("meine Hilfe", "meine-hilfe.md")}
 WEG = ("check_", "_Buchblock", "_Cover", "_Umschlag", "_booklet", "_Inhalt", "_Aenderungen", "_Leseprobe", "_Korrektur",
        "_tmp")
 ton = True
@@ -130,7 +130,7 @@ def pdfs():
             continue
         h = min(haupt, key=lambda p: len(os.path.basename(p)))[:-4]
         for k, n, p in (("n", "normal", h + ".pdf"), ("l", "leseprobe", h + "_Leseprobe.pdf"),
-                        ("r", "korrektur", h + "_Korrektur.pdf")):
+                        ("k", "korrektur", h + "_Korrektur.pdf")):
             if os.path.exists(p):
                 if uz:
                     k, n = ("u", "unzensiert") if k == "n" else (k + "u", n + " uz")
@@ -143,6 +143,7 @@ def untermenue(titel, eintraege):
     print(f"\n {titel}")
     raster([(k, t) for k, (t, _) in eintraege.items()] + [("z", "zurück")])
     e = frage(" Wahl: ").lower()
+    e = "ü" if e == "u" and "ü" in eintraege and "u" not in eintraege else e      # ohne ü-Taste
     return e if e in eintraege else None
 
 
@@ -150,19 +151,22 @@ def zeige():
     buch = next(iter(glob.glob(os.path.join(BASE, "*-buch.md"))), "Buch")
     version = open(os.path.join(MOTOR, "VERSION"), encoding="utf-8").read().strip()
     links = f" pureSATZ {version} · {os.path.basename(buch)[:-8]}"
-    print("\n" + links + f"Klang (!) {'ein' if ton else 'aus'}".rjust(67 - len(links)))
-    print(" " + "─" * 66)
-    zeilen = [("s", "schnell"), ("k", "komplett"), ("b", "bauen …"), ("m", "MD öffnen …"),
-              ("p", "PDF …"), ("o", "Ordner …"), ("g", "gegenlesen …"), ("a", "änderungen"),
-              ("sy", "sync"), ("u", "update")] + ([("ul", "update lokal")] if LOKAL else []) + \
-             [("n", "neu …"), ("t", "Terminal"), ("?", "Quickies"), ("h", "hilfe"), ("q", "beenden")]
-    raster(zeilen)
-    print(" " + "─" * 66)
+    print("\n" + links + f"Klang (!) {'ein' if ton else 'aus'}".rjust(68 - len(links)))
+    spalten = [("Schreiben", [("m", "MD öffnen …"), ("g", "Geschichten …"), ("c", "check / gegenlesen …")]),
+               ("Bauen", [("s", "schnell  (Lese-PDF)"), ("k", "komplett (vor dem Druck)"), ("b", "weitere …")]),
+               ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen")]),
+               ("Abgleichen", [("sy", "sync   (GitHub)"), ("u", "update" + (" (ul lokal)" if LOKAL else ""))])]
+    for (t1, z1), (t2, z2) in (spalten[:2], spalten[2:]):
+        print(f" ── {t1} " + "─" * (30 - len(t1)) + f"   ── {t2} " + "─" * (30 - len(t2)))
+        for a, b in zip(z1 + [("", "")] * 3, z2 + [("", "")] * 3):
+            if a[0] or b[0]:
+                print(f"  {a[0]:<3}{a[1]:<33}{b[0]:<3}{b[1]}".rstrip())
+    print(" ── Weiteres:  n neu · t Terminal · ? Quickies · h hilfe · ! Klang · q beenden")
 
 
 def raster(zeilen):
     for i in range(0, len(zeilen), 4):
-        print(("  " + "".join(f"{k:<3}{t:<14}" for k, t in zeilen[i:i + 4])).rstrip())
+        print(("  " + "".join(f"{k:<3}{t:<16}" for k, t in zeilen[i:i + 4])).rstrip())
 
 
 def quickies():
@@ -259,13 +263,13 @@ def main():
         elif w == "k":
             bauen("komplett")
         elif w == "b":
-            k = untermenue("bauen …", {"l": ("leseprobe", 0), "r": ("korrektur", 0), "n": ("nur-pdf", 0),
-                                       "e": ("nur-ebook", 0), "pr": ("pruefen", 0), "st": ("Stand merken", 0)})
-            if k == "st":
+            k = untermenue("weitere …", {"l": ("Leseprobe", 0), "k": ("Korrektur", 0), "p": ("nur-pdf", 0),
+                                         "e": ("nur E-Book", 0), "c": ("prüfen", 0), "s": ("Stand merken", 0)})
+            if k == "s":
                 name = frage(" Name des Stands: ")
                 bauen("stand", *([name] if name else []))
             elif k:
-                bauen({"l": "leseprobe", "r": "korrektur", "n": "nur-pdf", "e": "nur-ebook", "pr": "pruefen"}[k])
+                bauen({"l": "leseprobe", "k": "korrektur", "p": "nur-pdf", "e": "nur-ebook", "c": "pruefen"}[k])
         elif w == "m":
             md = {k: (t, next(iter(sorted(glob.glob(os.path.join(BASE, m)))), None)) for k, (t, m) in MD.items()}
             k = untermenue("MD öffnen …", {k: v for k, v in md.items() if v[1]})
@@ -283,13 +287,24 @@ def main():
                     oeffnen(liste[k][1])
         elif w == "o":
             ordner = {k: (t, os.path.join(BASE, d)) for k, t, d in (("b", "Buchordner", ""), ("n", "normal", "ausgabe-normal"),
-                      ("u", "unzensiert", "ausgabe-unzensiert"), ("d", "druck", "druck"))}
+                      ("u", "unzensiert", "ausgabe-unzensiert"), ("d", "druck", "druck"), ("g", "geschichten", "geschichten"))}
             k = untermenue("Ordner …", {k: v for k, v in ordner.items() if os.path.isdir(v[1])})
             if k:
                 oeffnen(ordner[k][1])
         elif w == "g":
-            k = untermenue("gegenlesen …", {"l": ("Liste neu", 0), "c": ("check-PDF …", 0), "t": ("Textdatei", 0)})
-            if k == "l":
+            k = untermenue("Geschichten …", {"n": ("neue Geschichte", 0), "ü": ("Übersicht", 0), "s": ("Sammel-PDF", 0),
+                                             "t": ("neue Tabelle", 0)})
+            if k in ("n", "t"):
+                titel = frage(" Titel: ")
+                if titel:
+                    skript("neu", *(["tabelle"] if k == "t" else []), titel)
+            elif k == "ü":
+                skript("neu")
+            elif k == "s":
+                bauen("geschichten")
+        elif w == "c":
+            k = untermenue("check / gegenlesen …", {"n": ("Liste neu", 0), "c": ("check-PDF …", 0), "t": ("Textdatei", 0)})
+            if k == "n":
                 bauen("personen")
             elif k == "t":
                 oeffnen(os.path.join(BASE, "personen-seiten.txt"))

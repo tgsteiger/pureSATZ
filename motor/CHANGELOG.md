@@ -3,6 +3,13 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.58.0 (Oktober 2026)
+- Menü nach Arbeitsschritten geordnet: Schreiben (m, g Geschichten, c check/gegenlesen) · Bauen (s, k, b) ·
+  Ansehen (p, o, a) · Abgleichen (sy, u/ul) · Weiteres (n, t, ?, h, !, q).
+- Neu `g` Geschichten …: neue Geschichte, Übersicht (ü/u), Sammel-PDF, neue Tabelle (ruft neu.sh bzw. geschichten).
+- Gegenlesen jetzt `c` (wie check_…pdf). Untermenü-Buchstaben nach Begriff: weitere `k` Korrektur, `p` nur-pdf,
+  `c` prüfen, `s` Stand · MD `s` Stichworte · PDF `k` Korrektur · Ordner `g` geschichten.
+
 ## 2.57.1 (Oktober 2026)
 - Menü: `xdg-open Pfad` / `open` / `start` öffnet eine Datei wie im Terminal (Pfad ab dem Buchordner), ohne zu warten.
 - Quickies: Befehlsspalte so breit wie nötig, Erklärung bis höchstens 90 Zeichen pro Zeile; `leseprobe uz 18,20`.
