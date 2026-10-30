@@ -210,18 +210,19 @@ def buchdatei():
     return next(iter(glob.glob(os.path.join(BASE, "*-buch.md"))), None)
 
 
-def einordnen():
-    """g → b: fehlende Geschichten als @@-Zeilen in den Block «## Noch einordnen» (Buch-Reihenfolge bleibt)."""
+def einordnen(extra=None):
+    """g → b: fehlende Geschichten als @@-Zeilen in den Block «## Noch einordnen» (Buch-Reihenfolge bleibt).
+    extra = eigene Zeilen statt Geschichten, z. B. ["@#preise"] nach t → n."""
     import geschichten as G
     buch, kopf = buchdatei(), "## Noch einordnen"
     v = G.verweise(buch)
-    fehlt = [n for n in G.reihe(BASE, buch) if n not in {n for _, n in v}]
+    fehlt = extra or ["@@" + n for n in G.reihe(BASE, buch) if n not in {n for _, n in v}]
     if not buch or not fehlt:
         return print("  Alle Geschichten sind im Buch.")
     z = open(buch, encoding="utf-8").read().split("\n")
     s = [x.strip() for x in z]
-    neu = sum((["", "@@" + n] for n in fehlt), [])
-    demo = DEMO in "\n".join(z) and "## Vorwort" in s and any(x.startswith("# ") and "anhang" in x.lower() for x in s)
+    neu = sum((["", x] for x in fehlt), [])
+    demo = not extra and DEMO in "\n".join(z) and "## Vorwort" in s and any(x.startswith("# ") and "anhang" in x.lower() for x in s)
     if demo and frage(" Das Buch enthält noch den Demo-Inhalt. Durch deine Geschichten ersetzen? "
                       "[j = ja | Enter = nein] ").lower() == "j":
         bauen("sicherung")
@@ -237,7 +238,7 @@ def einordnen():
     if kopf in s:                                   # Block gibt es schon: hinten anhängen
         k = s.index(kopf)
         ende = next((i for i in range(k + 1, len(s)) if s[i].startswith("#")), len(s))
-        pos = max([i for i, _ in v if k < i <= ende] or [k + 1])
+        pos = max([i + 1 for i in range(k + 1, ende) if s[i].startswith(("@@", "@#"))] or [k + 1])
     else:                                           # nach der letzten @@-Zeile, sonst vor den Anhang, sonst ans Ende
         pos = v[-1][0] if v else next((i for i, x in enumerate(s) if x.startswith("# ") and "anhang" in x.lower()), len(s))
         pos += 1 if v and pos < len(s) and s[pos] == ":::" else 0          # nicht in einen ::: nur-uz-Block
@@ -269,7 +270,8 @@ def tabellen_menue():
         if titel and skript("neu", "tabelle", titel) == 0:
             for kz, (n, p) in kuerzel(liste(), datei).items():
                 if n not in vorher:
-                    print(f"  Kürzel {kz}: {n}  → einbinden: eigene Zeile @#{n} in der Buch-MD oder in einer Geschichte")
+                    print(f"  Kürzel {kz}: {n}")
+                    einordnen([f"@#{n}"])
                     oeffnen(p)
     elif k == "o":
         os.makedirs(ordner, exist_ok=True)
