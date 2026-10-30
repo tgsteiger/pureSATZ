@@ -221,7 +221,7 @@ def einordnen(extra=None):
     texte = [buch] + list(G.alle(BASE).values()) if buch else []
     drin = {x.strip()[2:].split()[0] for p in texte for x in open(p, encoding="utf-8") if x.strip().startswith("@#") and x.strip()[2:].split()}
     tab = sorted(glob.glob(os.path.join(BASE, "tabellen", "*.csv")), key=os.path.getmtime)
-    fehlt = extra or (["@@" + n for n in G.reihe(BASE, buch) if n not in {n for _, n in v}]
+    fehlt = extra or (["##### @@" + n for n in G.reihe(BASE, buch) if n not in {n for _, n in v}]
                       + ["@#" + n for n in (os.path.basename(p)[:-4] for p in tab) if n not in drin and n != "muster"])
     if not buch or not fehlt:
         return print("  Alles ist im Buch (Geschichten und Tabellen).")
@@ -239,16 +239,17 @@ def einordnen(extra=None):
         a = next(i for i, x in enumerate(s) if x.startswith("# ") and "anhang" in x.lower())
         if kopf in s:                                            # Inhalt eines vorhandenen Blocks behalten
             k = s.index(kopf)
-            neu = sum((["", x] for x in s[k + 1:next((i for i in range(k + 1, len(s)) if s[i].startswith("#")), len(s))]
-                       if x.startswith(("@@", "@#"))), []) + neu
+            neu = sum((["", x] for x in s[k + 1:next((i for i in range(k + 1, len(s)) if s[i].startswith("#")
+                                                      and not s[i].lstrip("# ").startswith("@@")), len(s))]
+                       if x.lstrip("# ").startswith(("@@", "@#"))), []) + neu
         z[s.index("## Vorwort"):a] = ["## Vorwort", "", "Hier kommt dein Vorwort.", "", "# Teil 1|Geschichten|"] + neu + [""]
         open(buch, "w", encoding="utf-8").write("\n".join(z))
         return print("  Demo-Inhalt ersetzt durch: " + ", ".join(fehlt) + "\n  → ansehen: s schnell, dann p")
     bauen("sicherung")
     if kopf in s:                                   # Block gibt es schon: hinten anhängen
         k = s.index(kopf)
-        ende = next((i for i in range(k + 1, len(s)) if s[i].startswith("#")), len(s))
-        pos = max([i + 1 for i in range(k + 1, ende) if s[i].startswith(("@@", "@#"))] or [k + 1])
+        ende = next((i for i in range(k + 1, len(s)) if s[i].startswith("#") and not s[i].lstrip("# ").startswith("@@")), len(s))
+        pos = max([i + 1 for i in range(k + 1, ende) if s[i].lstrip("# ").startswith(("@@", "@#"))] or [k + 1])
     else:                                           # nach der letzten @@-Zeile, sonst vor den Anhang, sonst ans Ende
         pos = v[-1][0] if v else next((i for i, x in enumerate(s) if x.startswith("# ") and "anhang" in x.lower()), len(s))
         pos += 1 if v and pos < len(s) and s[pos] == ":::" else 0          # nicht in einen ::: nur-uz-Block
@@ -296,7 +297,10 @@ def alle_in_einer_datei():
         if not alle:
             return print("  Noch keine Geschichte – g → n.")
         with open(ALLE, "w", encoding="utf-8") as f:
-            f.write("> Alle Geschichten in einer Datei. Text frei ändern – die Zeilen «@@@ name» nicht ändern.\n"
+            f.write("> Alle Geschichten in einer Datei. Text frei ändern, Steuerzeichen unverändert lassen:\n"
+                    "> @@@ name (Trennzeile, nie ändern) · stand: / stichworte: / quelle: / notiz: (Kopfzeilen) ·\n"
+                    "> # bis #### (Titel) · @#name (Tabelle) · #### @FOTO (Foto) · > (Zitat) · ::: … ::: (Bereiche)\n"
+                    "> Antwort bitte vollständig als Markdown mit allen Steuerzeichen, zum Kopieren.\n"
                     "> Zurück in die Einzeldateien: Menü g → a.\n\n"
                     + "".join(f"@@@ {n}\n{open(alle[n], encoding='utf-8').read().strip()}\n\n" for n in G.reihe(BASE, buchdatei())))
         print("  geschichten-alle.md geschrieben – Einzeldateien sind gesperrt, bis g → a zurückholt.")

@@ -11,7 +11,7 @@ Jede Geschichte ist eine eigene Datei im Ordner geschichten/ des Buchs, z. B. ge
 
     Der Text der Geschichte …
 
-Kopfzeilen (stand, stichworte, quelle) sind freiwillig und werden nicht gedruckt.
+Kopfzeilen (stand, stichworte, quelle, notiz) sind freiwillig und werden nicht gedruckt; notiz darf mehrfach stehen.
 stand: idee · entwurf · ueberarbeiten · fertig  (nur für die Übersicht, wirkt nicht auf den Druck).
 Im Buch bindet eine eigene Zeile «@@schutzschild-hoch» die Geschichte ein (Name = Dateiname ohne .md).
 
@@ -36,8 +36,8 @@ except ImportError:
 ORDNER = "geschichten"
 STAENDE = ("idee", "entwurf", "ueberarbeiten", "fertig")
 STAND_TEXT = {"idee": "Idee", "entwurf": "Entwurf", "ueberarbeiten": "überarbeiten", "fertig": "fertig"}
-KOPF = re.compile(r"^\s*(?:-\s*)?(stand|stichworte|quelle)\s*:\s*(.*?)\s*$", re.I)   # «- » freiwillig
-VERWEIS = re.compile(r"^\s*@@([A-Za-z0-9][A-Za-z0-9._-]*)\s*$")
+KOPF = re.compile(r"^\s*(?:-\s*)?(stand|stichworte|quelle|notiz)\s*:\s*(.*?)\s*$", re.I)   # «- » freiwillig
+VERWEIS = re.compile(r"^\s*(?:#{1,6}\s+)?@@([A-Za-z0-9][A-Za-z0-9._-]*)\s*$")   # auch «##### @@name» (Gliederung im Editor)
 NICHT = {"liesmich", "readme", "uebersicht"}            # Hilfedateien im Ordner sind keine Geschichten
 
 
@@ -164,7 +164,8 @@ def neu(basis, titel):
         name = f"{basis_name}-{n}"; n += 1
     pfad = os.path.join(o, name + ".md")
     with open(pfad, "w", encoding="utf-8") as f:
-        f.write(f"## {titel}\nstand: idee\nstichworte:\nquelle:\n\nHier beginnt die Geschichte …\n")
+        f.write(f"## {titel}\nstand: idee\nstichworte:\nquelle:\nnotiz: stand = idee · entwurf · ueberarbeiten · fertig – "
+                "Kopfzeilen werden nicht gedruckt\n\nHier beginnt die Geschichte …\n")
     return name, pfad
 
 

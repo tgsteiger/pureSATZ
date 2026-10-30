@@ -3,6 +3,12 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.66.0 (Oktober 2026)
+- Geschichten: `##### @@name` gilt wie `@@name` (sichtbar in der Gliederung von ghostwriter); `g` → `b` schreibt so.
+- Neue Kopfzeile `notiz:` (beliebig oft, nie gedruckt); neue Geschichten nennen darin die Stände.
+- geschichten-alle.md: Kopf nennt alle Steuerzeichen und bittet die KI um die Antwort mit allen Steuerzeichen.
+- Hilfe: neuer Abschnitt «Zum Kopieren» ganz oben (Teil/Kapitel, Geschichte, Kopf, Foto, Tabelle, Zitat, nur-uz).
+
 ## 2.65.0 (Oktober 2026)
 - Neu `{barcode-rahmen}` in der Druckdatei: `gold` = Goldrahmen um den Strichcode, `berge` = Goldrahmen, oben als
   Bergkette. tredition (PNG): Striche oben zu Gipfeln geschnitten, unten frei (mit Scanner geprüft) · BoD (eigener Code):

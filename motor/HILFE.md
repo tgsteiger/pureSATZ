@@ -1,5 +1,57 @@
 # Schreiben
 
+## Zum Kopieren
+
+Die häufigsten Bausteine – mit «kopieren» übernehmen und in die Buch-MD oder in eine Geschichte einfügen.
+
+**Teil und Kapitel**
+```
+# Teil 1|Titel des Teils|Untertitel
+
+## Kapitel
+
+### Zwischentitel
+
+#### Kleiner Titel
+```
+
+**Geschichte einbinden** (eigene Zeile; mit `#####` erscheint sie in der Gliederung des Editors)
+```
+##### @@name-der-geschichte
+```
+
+**Kopf einer Geschichte** (wird nicht gedruckt)
+```
+## Titel der Geschichte
+stand: idee
+stichworte:
+quelle:
+notiz: stand = idee · entwurf · ueberarbeiten · fertig
+```
+
+**Foto** (Bild in `fotos/`; die erste Leerzeile beendet das Foto)
+```
+#### @FOTO Sommer
+datei: sommer.jpg
+text: Am See, 1985
+```
+
+**Tabelle** (CSV in `tabellen/`) · **Zitat** · **neue Seite**
+```
+@#name-der-tabelle
+
+> Ein Satz als Zitat mit Verzierung.
+
+---
+```
+
+**Nur in der unzensierten Fassung**
+```
+::: nur-uz
+Dieser Text steht nur in der zweiten Ausgabe.
+:::
+```
+
 ## Die Buchdateien
 
 **Das Buch steht in drei MD-Dateien.** Alles andere macht der Motor.
@@ -244,7 +296,8 @@ Quelle: eigene Praxisstatistik         ← optional: letzte Zeile, klein darunte
 ## Geschichten sammeln (freiwillig)
 
 Statt alles in die eine Buchdatei zu schreiben, kann jede Geschichte eine **eigene Datei** im Ordner
-`geschichten/` sein. Das Buch bindet sie mit einer Zeile `@@name` ein. Ohne `geschichten/` und ohne
+`geschichten/` sein. Das Buch bindet sie mit einer Zeile `@@name` ein (gleich: `##### @@name` – dann zeigt der
+Editor sie in der Gliederung). Ohne `geschichten/` und ohne
 `@@` ist das Buch eine einzige Buchdatei.
 
 ```sh
@@ -264,7 +317,7 @@ quelle: Praxis 2018
 Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {variablen}.
 ```
 
-- Die drei Zeilen unter dem Titel sind freiwillig und werden nicht gedruckt.
+- Die Zeilen unter dem Titel sind freiwillig und werden nicht gedruckt; `notiz:` (beliebig oft) für eigene Bemerkungen.
   `stand`: **idee · entwurf · ueberarbeiten · fertig** – nur für die Übersicht, wirkt nicht auf den Druck.
   `stichworte` kommen automatisch ins Stichwortverzeichnis. `quelle` ist eine Notiz für dich.
 - **Einbinden:** in der Buchdatei eine eigene Zeile `@@schutzschild-hoch` (Name = Dateiname ohne .md).
