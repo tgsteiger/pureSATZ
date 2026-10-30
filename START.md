@@ -112,7 +112,8 @@ sh build.sh final
 ## 4. Gestalten: Ich will …
 
 Die häufigsten Fälle beim Gestalten – nachsehen, wenn etwas nicht so aussieht wie gewünscht.
-Danach mit `sh build.sh schnell` ansehen.
+Danach mit `sh build.sh schnell` ansehen. **Klick auf einen Code = kopiert.** Ganze Bausteine:
+[Zum Kopieren](#Zum-Kopieren) · Suchen: Taste `/`.
 
 | Ich will … | So geht es |
 |---|---|
@@ -123,11 +124,16 @@ Danach mit `sh build.sh schnell` ansehen.
 | ein Zitat **mit Verzierung** | `@ZITAT-ZIER Satz` (kurz `> Satz`). Nur eine Verzierung pro Seite – sonst wird es unruhig. |
 | einen kurzen **Abschluss am Teil-Ende** | `::: mitte` … `:::` |
 | eine **Dankesseite oder ein Nachwort** im Inhaltsverzeichnis | als Kapitel `## Danke`, Text im Blocksatz, zum Schluss `@ZITAT` und `@ZIER 10` |
-| einen **Zwischentitel** ohne Eintrag im Inhaltsverzeichnis | `### Titel` (`## Titel` erscheint im Inhalt) |
+| einen **Zwischentitel** | `### Titel`, kleiner `#### Titel`. Im Inhaltsverzeichnis erscheinen sie mit `{inhalt-tiefe}: 3` bzw. `4` in der Variablen-Datei (Standard: nur `##`) |
 | eine **Randbemerkung** | `~ Satz` (klein, kursiv) |
 | eine **Zeile umbrechen**, ohne neuen Absatz | `\` am Zeilenende (in Variablen: `<br/>`) |
 | Text **nur in einer Fassung** | `::: nur-uz` … `:::` oder `::: nur-normal` … `:::` |
-| ein **Foto** | `#### @FOTO Titel`, darunter `datei: bild.jpg` – eine Leerzeile beendet das Foto |
+| ein **Foto** | `#### @FOTO Titel`, darunter `datei: bild.jpg` – eine Leerzeile beendet das Foto. [→ alle Angaben](#Bilder-und-Fotos) |
+| ein Foto, das der **Text umfliesst** | zusätzlich `fluss: rechts` oder `fluss: links` und `breite: 40` (mm) – die nächsten Absätze fliessen daneben |
+| eine **Geschichte** einbinden | `##### @@name` (Dateiname ohne .md, im Ordner geschichten/) – Menü `g` → `b` macht es selbst. [→ Geschichten](#Geschichten-sammeln) |
+| eine **Tabelle** | `@#name` (CSV im Ordner tabellen/) – Menü `t` → `n` legt sie an. [→ Tabellen](#Tabellen) |
+| eine **Notiz**, die nie gedruckt wird | in einer Geschichte unter dem Titel `notiz: …`; im Buch `::: offen-notiz` … `:::` |
+| den **Strichcode mit Goldrahmen** | in der Druckdatei `{barcode-rahmen}: berge` oder `gold`. [→ Druckangaben](#Plattform-Dateien) |
 | einen **QR-Code** | `@QR https://… \| Text`, zwei nebeneinander mit `@QR-PAAR` |
 | sehen, **ob es passt** | `sh build.sh schnell`, dann das PDF öffnen (der Befehl steht am Ende des Baus) |
 

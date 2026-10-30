@@ -241,6 +241,8 @@ die `{farbe-…}`-Zeilen direkt unter `## Farben`.
 
 ## Bilder und Fotos
 
+[← Gestalten: Ich will …](#Gestalten) · [Zum Kopieren](#Zum-Kopieren)
+
 | Ordner | Was | Format | Pixel (300 dpi: Breite in mm × 12) |
 |---|---|---|---|
 | `fotos/` | Fotos im Text (`#### @FOTO`) | JPG, RGB (nicht CMYK) | ganze Breite A5: mind. 1400 · `breite: 60`: 700 · `fluss`: 500 |
@@ -268,6 +270,8 @@ Fotos mit `fluss:` werden nicht zugeschnitten. Das Original in `fotos/` bleibt i
 
 ## Tabellen
 
+[← Gestalten: Ich will …](#Gestalten) · [Zum Kopieren](#Zum-Kopieren)
+
 Tabellen liegen als **CSV** im Ordner `tabellen/` und werden mit einer eigenen Zeile `@#name` eingebunden.
 Beispiel: `tabellen/muster.csv`, im Demo-Kapitel mit `@#muster` («Eine Tabelle»).
 
@@ -294,6 +298,8 @@ Quelle: eigene Praxisstatistik         ← optional: letzte Zeile, klein darunte
 - `sh build.sh pruefen` meldet fehlende Tabellen (mit Vorschlag bei Tippfehlern) und Zeilen mit zu vielen Werten.
 
 ## Geschichten sammeln (freiwillig)
+
+[← Gestalten: Ich will …](#Gestalten) · [Zum Kopieren](#Zum-Kopieren)
 
 Statt alles in die eine Buchdatei zu schreiben, kann jede Geschichte eine **eigene Datei** im Ordner
 `geschichten/` sein. Das Buch bindet sie mit einer Zeile `@@name` ein (gleich: `##### @@name` – dann zeigt der
@@ -594,6 +600,8 @@ Beispiel Leben123: Normal gedruckt bei tredition (mit Logo und ISBN), Unzensiert
 Wechselst du die Druckerei, änderst du `{druck-datei}` und die Impressum-Zeilen dieser Ausgabe.
 
 ## Plattform-Dateien (druck/)
+
+[← Gestalten: Ich will …](#Gestalten) · [Zum Kopieren](#Zum-Kopieren)
 
 Die Plattform-Datei enthält nur die **Technik** einer Druckerei. Ihre Werte gelten nur für Buchblock und Umschlag.
 Lese-PDF, E-Book, Leseprobe, Korrektur und Mockup bleiben beim `{format}` der Variablen-Datei (Grundformat).

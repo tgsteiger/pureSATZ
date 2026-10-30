@@ -431,6 +431,7 @@ body.nur main section:not(.drucke){{display:none}} section{{border:0;margin:0}}
 .spick{{margin:8px 0 0}} .spicktext{{margin:2px 0 10px 4px;color:var(--leise);font-size:14px}}
 #leer{{display:none;color:var(--leise);padding:20px}} footer{{color:var(--leise);font-size:13px;padding:10px 0}}
 @media (max-width:760px){{nav{{display:none}} main{{padding:8px 10px 60px}}}}
+main :not(pre)>code{{cursor:copy}} main code.kopiert{{background:var(--mark)}}
 </style></head><body>
 <header><h1>pureSATZ Hilfe · {html.escape(titel)} <small>Motor {html.escape(version)}</small></h1>
 <input id="suche" type="search" placeholder="Suchen … (Taste /)" autocomplete="off">
@@ -471,6 +472,14 @@ const t=c.textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Prom
 ()=>{{b.textContent='kopiert ✓';setTimeout(()=>b.textContent='kopieren',1200)}},
 ()=>{{const r=document.createRange();r.selectNodeContents(c);getSelection().removeAllRanges();getSelection().addRange(r)}})}})}}
 knoepfe();
+document.addEventListener('click',e=>{{const c=e.target.closest('main code');      // Klick auf Code im Text = kopieren
+if(c&&!c.closest('pre')&&navigator.clipboard){{navigator.clipboard.writeText(c.textContent).then(()=>{{
+c.classList.add('kopiert');setTimeout(()=>c.classList.remove('kopiert'),900)}});return}}
+const a=e.target.closest('a[href^="#"]');if(!a)return;                             // Link auf Abschnitt per Name
+const ziel=decodeURIComponent(a.getAttribute('href').slice(1)),k=t=>norm2(t).replace(/[^a-z0-9]+/g,'');
+if(!ziel||document.getElementById(ziel))return;
+const s=secs.find(x=>k(x.querySelector('h2').textContent).includes(k(ziel)));if(!s)return;e.preventDefault();
+if(such.value){{such.value='';such.dispatchEvent(new Event('input'))}}s.scrollIntoView();history.replaceState(null,'','#'+s.id)}});
 function haken(){{let h={{}};try{{h=JSON.parse(localStorage.getItem('ps-haken')||'{{}}')}}catch(e){{}}
 document.querySelectorAll('li.haken input').forEach(c=>{{const k=c.parentNode.textContent.trim().slice(0,60);
 if(k in h)c.checked=h[k];c.onchange=()=>{{h[k]=c.checked;try{{localStorage.setItem('ps-haken',JSON.stringify(h))}}catch(e){{}}}}}})}}

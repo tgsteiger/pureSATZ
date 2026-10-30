@@ -127,6 +127,14 @@ Fotos mit «quelle:» erscheinen automatisch im Bildnachweis im Anhang, mit Seit
 
 Noch ein Absatz, damit man den Textfluss gut sieht. Mit «fluss: links» steht das Bild links. Ein Buch lebt von Abwechslung: lange Absätze, kurze Absätze, Bilder, Zitate.
 
+Auch der Strichcode auf der Rückseite darf schön sein: Mit «barcode-rahmen: berge» in der Druckdatei bekommt er einen goldenen Rahmen, oben als Bergkette (mit «gold» ein schlichter Goldrahmen). Er bleibt lesbar. Das Beispiel zeigt eine erfundene Nummer.
+
+#### @FOTO Strichcode mit Goldrahmen
+datei: strichcode-bergkette.png
+text: Strichcode mit Bergkette – barcode-rahmen: berge
+alt: Strichcode mit goldenem Rahmen, oben als Bergkette
+breite: 60
+
 ## Eine Tabelle
 
 Tabellen stehen als CSV-Datei im Ordner tabellen/ (mit LibreOffice bearbeiten, als «Text CSV» speichern). Im Buch genügt eine eigene Zeile mit @# und dem Dateinamen, hier @#muster:
