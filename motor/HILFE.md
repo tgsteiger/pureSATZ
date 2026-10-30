@@ -65,7 +65,7 @@ das PDF ansehen und mit der MD vergleichen – danach das Demo löschen und schr
 | `# Teil 1\|Titel\|Untertitel` (`\|bild.jpg`) | neuer Teil mit Teil-Seite (optional eigenes Bild) |
 | `# \|Anhang\|Untertitel` | Teil-Seite ohne Nummer, z. B. für den Anhang; darunter Kapitel mit `##` (Kopfzeile «Anhang · Kapitel») |
 | `# Titel` | Kapitel oberster Ebene, neue Seite (Anhang, Zeitstrahl, Über den Autor) |
-| `## Kapitel` / `### Zwischentitel` | Kapitel (im Inhalt) / kleiner Titel |
+| `## Kapitel` / `### Zwischentitel` / `#### Titel` | Kapitel (im Inhalt) / Zwischentitel / kleiner Titel. Wie tief ins Inhaltsverzeichnis: `{inhalt-tiefe}: 1–4` (Standard 2 = bis `##`) |
 | `## @BEFEHL` | Befehl als Überschrift (sichtbar in der Navigation des Editors) |
 | `@ZITAT Satz` · `@ZITAT-ZIER Satz` (kurz `> Satz`) · `~ Satz` | Zitat schlicht · Zitat mit Verzierung · Randbemerkung |
 | `- Punkt` · `**fett**` · `[Text](https://…)` | Liste · fett · Link |
@@ -160,7 +160,7 @@ weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen �
 | Technik | `kurz-…`, `datei-…`, `ordner-…` |
 | Weiteres | `stichworte`, `trennstellen` (Welt\|anschauung), `zier`, `zier-hell`, `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund` |
 | Sicherung | `sicherung-lokal`, `sicherung-cloud`, `sicherung-behalten` |
-| Layout | `farbschema`, `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `inhalt-dichte`, `blocksatz` |
+| Layout | `farbschema`, `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `inhalt-dichte`, `inhalt-tiefe`, `blocksatz` |
 
 **Rückenbreite:** steht in der Plattform-Datei (siehe «Plattform-Dateien», Coverrechner).
 

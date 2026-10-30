@@ -116,6 +116,10 @@ nav = []              # (ebene, titel, ziel)
 aktuell = {"name": None, "titel": None, "html": []}
 absatz = []
 kapitelnr = 0
+try:                                               # {inhalt-tiefe}: 1 = # · 2 = bis ## (Standard) · 3 = bis ### · 4 = bis ####
+    TIEFE = min(4, max(1, int((bk.V("inhalt-tiefe", "2") or "2").strip())))
+except ValueError:
+    TIEFE = 2
 teilnr = 0
 seitennr = 0
 
@@ -380,8 +384,22 @@ for zeile in bk.text_zeilen():
         aktuell["html"].append('<section class="teil"><img class="teillotus" src="img/lotus.png" alt=""/>'
                                f'{nr_html}<h1>{esc(titel)}</h1><p class="teilsub">{esc(sub)}</p></section>')
         nav.append((1, bk.teil_eintrag(num, titel, sub), name))
+    elif s.startswith("#### "):
+        flush_absatz()
+        if TIEFE >= 4 and aktuell["name"]:
+            kapitelnr += 1
+            aktuell["html"].append(f'<h4 id="k{kapitelnr}">{esc(s[5:])}</h4>')
+            nav.append((4 if any(n[0] == 1 for n in nav) else 3, s[5:], f"{aktuell['name']}#k{kapitelnr}"))
+        else:
+            aktuell["html"].append(f'<h4>{esc(s[5:])}</h4>')
     elif s.startswith("### "):
-        flush_absatz(); aktuell["html"].append(f'<h3>{esc(s[4:])}</h3>')
+        flush_absatz()
+        if TIEFE >= 3 and aktuell["name"]:
+            kapitelnr += 1
+            aktuell["html"].append(f'<h3 id="k{kapitelnr}">{esc(s[4:])}</h3>')
+            nav.append((3 if any(n[0] == 1 for n in nav) else 2, s[4:], f"{aktuell['name']}#k{kapitelnr}"))
+        else:
+            aktuell["html"].append(f'<h3>{esc(s[4:])}</h3>')
     elif s.startswith("## "):
         flush_absatz()
         if aktuell["name"] is None:
@@ -389,7 +407,8 @@ for zeile in bk.text_zeilen():
         kapitelnr += 1
         anker = f"k{kapitelnr}"
         aktuell["html"].append(f'<h2 id="{anker}">{esc(s[3:])}</h2>')
-        nav.append((2 if any(n[0] == 1 for n in nav) else 1, s[3:], f"{aktuell['name']}#{anker}"))
+        if TIEFE >= 2:
+            nav.append((2 if any(n[0] == 1 for n in nav) else 1, s[3:], f"{aktuell['name']}#{anker}"))
     elif s.startswith("> "):
         flush_absatz()
         aktuell["html"].append(f'{ORN}<p class="zitat">{esc(s[2:])}</p>{ORN}')
@@ -503,8 +522,9 @@ p.uztitel { color: @@haupt@@; font-weight: bold; margin: 0 0 0.4em 0; }
 body { font-family: "Text", serif; line-height: 1.5; color: @@text@@; margin: 0 4%; }
 p { margin: 0 0 0.7em 0; text-align: justify; hyphens: auto; -webkit-hyphens: auto; -epub-hyphens: auto; }
 .impressum p { text-align: left; hyphens: manual; -webkit-hyphens: manual; -epub-hyphens: manual; }
-h1, h2, h3 { font-family: "Titel", sans-serif; font-weight: 500; color: @@haupt@@; }
+h1, h2, h3, h4, h5, h6 { font-family: "Titel", sans-serif; font-weight: 500; color: @@haupt@@; }
 h3 { font-size: 1.1em; margin: 1.4em 0 0.5em 0; page-break-after: avoid; }
+h4 { font-size: 1em; margin: 1.2em 0 0.4em 0; page-break-after: avoid; }
 h2 { font-size: 1.25em; margin: 1.6em 0 0.6em 0; page-break-before: always; page-break-after: avoid; }
 .teil { text-align: center; margin-top: 18%; page-break-after: always; }
 .teillotus { width: 30%; max-width: 160px; opacity: 0.35; }
@@ -569,14 +589,13 @@ def xhtml(titel, inhalt):
 def nav_html():
     out, ebene = ["<ol>"], 1
     for i, (lv, titel, ziel) in enumerate(nav):
-        if lv > ebene:
+        if lv > ebene and i:
             out[-1] = out[-1][:-5] + "<ol>"          # in den vorherigen <li> verschachteln
-            ebene = lv
-        elif lv < ebene:
-            out.append("</ol></li>"); ebene = lv
+            ebene += 1                               # nie mehr als eine Ebene tiefer
+        while lv < ebene:
+            out.append("</ol></li>"); ebene -= 1
         out.append(f'<li><a href="{ziel}">{esc(titel)}</a></li>')
-    if ebene == 2:
-        out.append("</ol></li>")
+    out += ["</ol></li>"] * (ebene - 1)
     out.append("</ol>")
     return "\n".join(out)
 

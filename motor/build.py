@@ -832,6 +832,8 @@ body = ParagraphStyle("body", fontName=schrift("text"), fontSize=TEXT_GROESSE, l
                       allowWidows=0, allowOrphans=0)
 h2 = _stil("h2", L.KAPITEL, keepWithNext=1)
 h3 = _stil("h3", L.ZWISCHENTITEL, keepWithNext=1)
+h4 = _stil("h4", dict(L.ZWISCHENTITEL, groesse=L.ZWISCHENTITEL.get("groesse", 11.5) - 1, zeilenabstand=14,
+                      abstand_vor=12, abstand_nach=4), keepWithNext=1)
 quote = _stil("quote", L.ZITAT, alignment=TA_CENTER, spaceBefore=10, spaceAfter=12, leftIndent=8 * mm,
               rightIndent=8 * mm)
 note = _stil("note", L.NOTIZ, parent=body, leftIndent=6 * mm, rightIndent=6 * mm, alignment=TA_LEFT)
@@ -894,6 +896,12 @@ toc1 = ParagraphStyle("toc1", fontName=schrift("titel"), fontSize=10, leading=14
                       spaceBefore=8 * _D)
 toc2 = ParagraphStyle("toc2", fontName=schrift("text"), fontSize=9.3, leading=12.6 * _D, textColor=INK,
                       leftIndent=5 * mm)
+toc3 = ParagraphStyle("toc3", parent=toc2, fontSize=8.8, leading=11.8 * _D, leftIndent=10 * mm)
+toc4 = ParagraphStyle("toc4", parent=toc3, leftIndent=15 * mm)
+try:                                               # {inhalt-tiefe}: 1 = # · 2 = bis ## (Standard) · 3 = bis ### · 4 = bis ####
+    TIEFE = min(4, max(1, int((V("inhalt-tiefe", "2") or "2").strip())))
+except ValueError:
+    TIEFE = 2
 
 
 # Trennstellen für lange Wörter, die sonst im Blocksatz grosse Lücken reissen.
@@ -1203,11 +1211,14 @@ class Doc(BaseDocTemplate):
         key = f"ziel{self._n}"
         self.canv.bookmarkPage(key)
         # Lesezeichen-Ebene: Kapitel ohne übergeordneten Teil kommen auf Ebene 0
-        olvl = lvl if (lvl == 0 or self._has_parent) else 0
+        olvl = lvl if (lvl == 0 or self._has_parent) else lvl - 1
+        olvl = min(olvl, getattr(self, "_letzte_ebene", -1) + 1)     # Lesezeichen nie eine Ebene überspringen
+        self._letzte_ebene = olvl
         if lvl == 0:
             self._has_parent = True
         self.canv.addOutlineEntry(text, key, level=olvl, closed=False)
-        self.notify("TOCEntry", (lvl, text, self.page, key))
+        if lvl < TIEFE:                                          # {inhalt-tiefe}: was ins Inhaltsverzeichnis kommt
+            self.notify("TOCEntry", (lvl, text, self.page, key))
 
     def handle_documentBegin(self):
         # wird bei jedem Durchlauf von multiBuild neu gesetzt
@@ -1849,10 +1860,19 @@ def _build(out, ausgleich=None):
                       PartMarker(num, title, sub, teilbild), NextPageTemplate("body"), PageBreak()]
             teil_gesehen = True
             first = True
+        elif s.startswith("#### "):
+            flush()
+            p = Paragraph(inline(s[5:]), h4)
+            if TIEFE >= 4:
+                p._toc = (3, s[5:])
+            story.append(p)
         elif s.startswith("### "):
             flush()
             story.append(CondPageBreak(30 * mm))   # Unterüberschrift nie allein unten auf der Seite
-            story.append(Paragraph(inline(s[4:]), h3))
+            p = Paragraph(inline(s[4:]), h3)
+            if TIEFE >= 3:
+                p._toc = (2, s[4:])
+            story.append(p)
         elif s.startswith("## "):
             flush()
             t = s[3:]
@@ -1893,7 +1913,7 @@ def _build(out, ausgleich=None):
         elif s == "@INHALTSVERZEICHNIS":
             if DRUCK and not vorspann["kernsatz"]:
                 story.append(PageBreak())
-            toc = TableOfContents(); toc.levelStyles = [toc1, toc2]; toc.dotsMinLevel = 0
+            toc = TableOfContents(); toc.levelStyles = [toc1, toc2, toc3, toc4]; toc.dotsMinLevel = 0
             story += [Paragraph(E.WORT_INHALT, INHALT_STIL), NextPageTemplate("tocfolge"), toc]
         elif s.startswith("@PORTRAIT "):
             # @PORTRAIT bild.png | Bildtext : rundes Foto mit Ring

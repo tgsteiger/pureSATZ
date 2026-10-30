@@ -3,6 +3,13 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.64.0 (Oktober 2026)
+- Neu `{inhalt-tiefe}: 1–4`: welche Titel ins Inhaltsverzeichnis kommen (PDF und E-Book), eingerückt:
+  1 = nur # · 2 = bis ## (Standard, wie bisher) · 3 = bis ### · 4 = bis ####. Gilt im Buch und in den Geschichten.
+  Neu in der Variablen-Vorlage (neue Bücher, Hallo-Buch). Leben123 unverändert (vergleich.py: alle PDFs gleich).
+- Neu `#### Titel` als kleinster Titel im Text (PDF und E-Book); `#### @FOTO` usw. bleiben Befehle.
+- E-Book: alle Überschriften (h1–h6) in der Überschriftfarbe.
+
 ## 2.63.0 (Oktober 2026)
 - Menü: nach einem Bau (und sync, update, …) bleiben die Meldungen stehen – statt des ganzen Menüs nur
   «Eingabe (Enter = Menü)»; gleich weitertippen geht (auch xdg-open-Zeilen). Neu gebaute Lese-PDFs öffnen sich

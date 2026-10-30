@@ -169,7 +169,9 @@
 {schriftgroesse}:
 {zeilenabstand}:
 {inhalt-dichte}: 1
+{inhalt-tiefe}: 2
 {blocksatz}: ja
 > {schrift-text}, {schrift-titel}: Dateien im Ordner fonts/ oder motor/fonts/, z. B. Lora-Regular.ttf, Lora-Bold.ttf, Lora-Italic.ttf, Lora-BoldItalic.ttf
 > {schriftgroesse}, {zeilenabstand}: in Punkt; leer = passend zum Format
 > {inhalt-dichte}: Zeilenabstand im Inhaltsverzeichnis, 1 = normal, 0.92 = etwas enger (passt z. B. auf eine Seite weniger)
+> {inhalt-tiefe}: welche Titel ins Inhaltsverzeichnis kommen: 1 = nur # · 2 = bis ## (Standard) · 3 = bis ### · 4 = bis #### – im Buch und in den Geschichten
