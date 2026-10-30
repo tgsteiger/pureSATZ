@@ -310,7 +310,8 @@ def zeige():
     version = open(os.path.join(MOTOR, "VERSION"), encoding="utf-8").read().strip()
     links = f" pureSATZ {version} · {os.path.basename(buch)[:-8]}"
     print("\n" + links + f"Klang (!) {'ein' if ton else 'aus'}".rjust(68 - len(links)))
-    spalten = [("Schreiben", [("m", "MD öffnen …"), ("g", "Geschichten …"), ("c", "check / gegenlesen …")]),
+    spalten = [("Schreiben", [("m", "MD öffnen …"), ("g", "Geschichten …"), ("t", "Tabellen …"),
+                             ("c", "check / gegenlesen …")]),
                ("Bauen", [("s", "schnell  (Lese-PDF)"), ("k", "komplett (vor dem Druck)"), ("b", "weitere …")]),
                ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen")]),
                ("Abgleichen", [("sy", "sync   (GitHub)"), ("u", "update" + (" (ul lokal)" if LOKAL else ""))])]
@@ -319,14 +320,15 @@ def zeige():
         for a, b in zip(z1 + [("", "")] * 3, z2 + [("", "")] * 3):
             if a[0] or b[0]:
                 print(f"  {a[0]:<3}{a[1]:<33}{b[0]:<3}{b[1]}".rstrip())
-    print(" ── Weiteres:  n neu · t Terminal · ? Quickies · h hilfe · ! Klang · q beenden")
+    print(" ── Weiteres:  n neu · > Terminal · ? Quickies · h hilfe · ! Klang · q beenden")
     if os.path.exists(ALLE):
         print(SPERRE)
 
 
 def raster(zeilen):
-    for i in range(0, len(zeilen), 4):
-        print(("  " + "".join(f"{k:<3}{t:<16}" for k, t in zeilen[i:i + 4])).rstrip())
+    b = max(16, max(len(t) for _, t in zeilen) + 2)                     # Spalten so breit wie der längste Text
+    for i in range(0, len(zeilen), 4 if b <= 16 else 3):
+        print(("  " + "".join(f"{k:<3}{t:<{b}}" for k, t in zeilen[i:i + (4 if b <= 16 else 3)])).rstrip())
 
 
 def quickies():
@@ -463,8 +465,8 @@ def main():
             k = untermenue("Geschichten …", {"e": ("schreiben …", 0), "n": ("neue Geschichte", 0),
                                              "b": ("fehlende ins Buch", 0),
                                              "a": ("alle zurückholen" if os.path.exists(ALLE) else "alle in 1 Datei", 0),
-                                             "s": ("Sammel-PDF", 0), "ü": ("Übersicht", 0), "t": ("Tabellen …", 0)})
-            if k and k not in ("a", "t") and os.path.exists(ALLE):
+                                             "s": ("Sammel-PDF", 0), "ü": ("Übersicht", 0)})
+            if k and k != "a" and os.path.exists(ALLE):
                 print(SPERRE)
             elif k == "a":
                 alle_in_einer_datei()
@@ -472,8 +474,6 @@ def main():
                 einordnen()
             elif k == "e":
                 geschichte_oeffnen()
-            elif k == "t":
-                tabellen_menue()
             elif k == "n":
                 titel = frage(" Titel: ")
                 vorher = {p for _, p in kuerzel().values()}
@@ -519,6 +519,8 @@ def main():
             print(f"  Klang {'ein' if ton else 'aus'}")
             klang()                                   # Probe beim Einschalten
         elif w == "t":
+            tabellen_menue()
+        elif w == ">":
             terminal()
         elif w == "?":
             quickies()

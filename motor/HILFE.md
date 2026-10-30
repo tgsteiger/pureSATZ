@@ -295,12 +295,13 @@ Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {v
  ── Schreiben ─────────────────────   ── Bauen ─────────────────────────
   m  MD öffnen …                      s  schnell  (Lese-PDF)
   g  Geschichten …                    k  komplett (vor dem Druck)
-  c  check / gegenlesen …             b  weitere …
+  t  Tabellen …                       b  weitere …
+  c  check / gegenlesen …
  ── Ansehen ───────────────────────   ── Abgleichen ────────────────────
   p  PDF öffnen …                     sy sync   (GitHub)
   o  Ordner öffnen …                  u  update (ul lokal)
   a  änderungen
- ── Weiteres:  n neu · t Terminal · ? Quickies · h hilfe · ! Klang · q beenden
+ ── Weiteres:  n neu · > Terminal · ? Quickies · h hilfe · ! Klang · q beenden
 ```
 
 Untermenüs (Enter oder `z` = zurück; «…» = nur was es gibt):
@@ -308,7 +309,8 @@ Untermenüs (Enter oder `z` = zurück; «…» = nur was es gibt):
 | | |
 |---|---|
 | `m` MD öffnen | `b` Buch · `v` Variablen · `u` Umschlag · `s` Stichworte · `h` meine Hilfe · `g` Geschichten … · `t` Tabellen … |
-| `g` Geschichten | `e` schreiben … (Liste mit Kürzel) · `n` neue Geschichte (fragt nach dem Titel, öffnet sie) · `b` fehlende ins Buch · `a` alle in 1 Datei · `t` Tabellen … (`e` bearbeiten · `n` neu · `o` Ordner) · `ü` Übersicht (auch `u`) · `s` Sammel-PDF |
+| `g` Geschichten | `e` schreiben … (Liste mit Kürzel) · `n` neue Geschichte (fragt nach dem Titel, öffnet sie) · `b` fehlende ins Buch · `a` alle in 1 Datei · `ü` Übersicht (auch `u`) · `s` Sammel-PDF |
+| `t` Tabellen | `e` bearbeiten … (Liste mit Kürzel) · `n` neue Tabelle (öffnet die CSV, nennt die Zeile `@#name`) · `o` Ordner |
 | `c` check / gegenlesen | `n` Liste neu (personen-seiten.txt) · `c` check-PDF für eine Person (öffnet sich danach) · `t` Textdatei |
 | `b` weitere | `l` Leseprobe · `k` Korrektur · `p` nur-pdf · `e` nur E-Book · `c` prüfen · `s` Stand merken |
 | `p` PDF öffnen | `n` normal · `u` unzensiert · `l` Leseprobe · `k` Korrektur … |
@@ -324,7 +326,7 @@ Untermenüs (Enter oder `z` = zurück; «…» = nur was es gibt):
   Buchordner, das Menü wartet nicht. Die Zeilen am Schluss eines Baus lassen sich so direkt einfügen.
 - MD, PDF und Ordner öffnen im eigenen Programm, das Menü bleibt bereit. Bauen läuft im Menüfenster;
   am Schluss «Fertig» mit Dauer und Klang. Oben rechts «Klang (!) ein/aus», Taste `!` (beim Einschalten klingt er einmal zur Probe).
-  `t` öffnet ein Terminal im Buchordner, das Menü bleibt offen (praktisch, wenn das Menü per Lotus-Starter läuft).
+  `>` öffnet ein Terminal im Buchordner, das Menü bleibt offen (praktisch, wenn das Menü per Lotus-Starter läuft).
   Klang: `motor/klang.wav`, eigener Klang: `klang.wav` in den Buchordner legen; sonst Piepton.
 - `ul` (update lokal) erscheint nur, wenn neben dem Buch ein Ordner `pureSATZ` liegt; ebenso in `n` neu …:
   `b` neues Buch (setup), `h` Hallo-Buch, `e` einrichten (START-Linux.sh / START-Mac.command / START-Windows.bat).

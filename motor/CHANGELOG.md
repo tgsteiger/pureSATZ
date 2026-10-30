@@ -3,6 +3,10 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.61.1 (Oktober 2026)
+- Menü: `t` Tabellen … jetzt im Hauptmenü unter «Schreiben» (nicht mehr unter `g`); Terminal neu `>`.
+- Untermenüs: Spalten so breit wie der längste Text (lange Einträge kleben nicht mehr zusammen).
+
 ## 2.61.0 (Oktober 2026)
 - Menü `g` → `t` Tabellen …: `e` bearbeiten (Liste mit festem Kürzel, tabellen/kuerzel.txt), `n` neu (öffnet die CSV,
   nennt die Zeile @#name), `o` Ordner. Auch über `m` → `t`; `o` → `t` öffnet tabellen/.
