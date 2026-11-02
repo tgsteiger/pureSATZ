@@ -3,6 +3,15 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.67.5 (November 2026)
+- Mac-Start neu im Terminal: `START-Mac.command` heisst jetzt `START-Mac-imTerminal.sh` (gleicher Inhalt).
+  Terminal öffnen, `sh ` tippen, Datei ins Fenster ziehen, Enter – der Mac sperrt heruntergeladene `.command`-Dateien
+  (auch «Rechtsklick → Öffnen» hilft seit macOS 15 nicht mehr). Alle Texte, Menü `e` und die Webseite angepasst.
+- `start.sh` (Mac): entfernt die Download-Sperre (`xattr … com.apple.quarantine`) in pureSATZ, bevor kopiert wird.
+- `mac-einrichten.sh`: CotEditor nur noch über den App Store (kein Homebrew-Weg); ohne Homebrew kein
+  Ghostscript-Befehl mehr, sondern Hinweis auf die Hilfe. Neu in INSTALLATION.md / Hilfe: «Mac: Zusatzprogramme»
+  (CotEditor, Geany als Alternative, Homebrew, Ghostscript).
+
 ## 2.67.4 (Oktober 2026)
 - Hilfe: neuer Abschnitt «Text hervorheben: fett und kursiv» (was fett/kursiv macht, *Wort* gibt es noch nicht),
   Zeile in «Ich will …», Block bei «Zum Kopieren», alle verlinkt. hilfe.py: Code in Backticks bleibt wörtlich

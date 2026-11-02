@@ -32,7 +32,7 @@ Nutzungsbedingungen: `LIZENZ.md`.
 
 | Linux | Mac | Windows |
 |---|---|---|
-| `sh START-Linux.sh` | `START-Mac.command` (Doppelklick) | `START-Windows.bat` (Doppelklick) |
+| `sh START-Linux.sh` | `sh START-Mac-imTerminal.sh` (im Terminal) | `START-Windows.bat` (Doppelklick) |
 
 Danach:
 
@@ -43,23 +43,22 @@ Buchprojekte/
   Mein-Buch/     dein Buch – hier schreibst und baust du
 ```
 
-Mac: Blockiert der Mac `START-Mac.command`, Rechtsklick → Öffnen, oder Systemeinstellungen → Datenschutz & Sicherheit →
-«Dennoch öffnen». Im Buchordner öffnet `Terminal hier` (Windows, Mac) per Doppelklick das Befehlsfenster genau dort.
+Mac: Terminal öffnen (Cmd+Leertaste, «Terminal», Enter), `sh ` tippen, `START-Mac-imTerminal.sh` ins Fenster ziehen,
+Enter. (Ein Doppelklick geht nicht: der Mac sperrt heruntergeladene Startdateien; der Start hebt die Sperre auf.) Im Buchordner öffnet `Terminal hier` (Windows, Mac) per Doppelklick das Befehlsfenster genau dort.
 Die Skripte dahinter: `bash pc-einrichten/linux-einrichten.sh` · `bash pc-einrichten/mac-einrichten.sh` ·
 `pc-einrichten\win-einrichten.bat` (ohne Angabe: der ganze Ablauf; `--technik` bzw. `--extras` nur diese Teile auf Linux/Mac).
 Die Schritte unten sind dasselbe von Hand.
 
 **Ghostscript (freiwillig):** nur nötig, wenn eine Druckerei CMYK verlangt (z. B. tredition, `{farbmodus}: cmyk`
 in der Druckdatei). Die Einrichte-Skripte fragen danach. Von Hand: Linux `sudo apt install ghostscript` ·
-Mac `brew install ghostscript` (oder MacPorts: `sudo port install ghostscript`) ·
+Mac: siehe «Mac: Zusatzprogramme» unten ·
 Windows `winget install ArtifexSoftware.GhostScript`. Ohne Ghostscript bleiben die Druckdateien RGB.
 
 **Schreibprogramm (Windows, freiwillig):** Die Einrichtung bietet am Schluss **ghostwriter** an (ca. 150 MB,
 neuste portable Version von GitHub, nach `%LOCALAPPDATA%\Programs\ghostwriter`, ohne Administratorrechte),
 mit Eintrag im Startmenü; `.md`-Dateien öffnen dann damit. Von Hand: https://github.com/KDE/ghostwriter/releases/latest
-→ `…_win64_portable.zip` entpacken. Linux: ghostwriter aus der Paketverwaltung. Mac: die Einrichtung bietet **CotEditor** an (mit Homebrew
-`brew install --cask coteditor`, sonst öffnet sich der App Store); `.md` danach mit Rechtsklick → Informationen →
-Öffnen mit: CotEditor → Alle ändern.
+→ `…_win64_portable.zip` entpacken. Linux: ghostwriter aus der Paketverwaltung. Mac: die Einrichtung bietet **CotEditor** an (App Store),
+Alternative Geany – siehe «Mac: Zusatzprogramme» unten.
 
 ---
 
@@ -95,9 +94,23 @@ sh build.sh final       # Druckfassung
 sh update.sh            # neue pureSATZ-Version ins Buch holen
 ```
 
-## Mac (Terminal) – Intel und Apple-Chip, ohne Homebrew
+## Mac: Zusatzprogramme
 
-Homebrew läuft auf Intel-Macs nicht mehr. Darum geht es auf dem Mac ohne Homebrew und ohne `gh`:
+Alles freiwillig – pureSATZ läuft auf dem Mac auch ohne.
+
+- **CotEditor** (empfohlen, Schreibprogramm für die MD-Dateien): im App Store «CotEditor» suchen → **Laden**.
+  `.md` immer damit öffnen: Rechtsklick auf eine `.md` → Informationen → Öffnen mit: CotEditor → **Alle ändern**.
+- **Geany** (Alternative zu CotEditor, kostenlos, auch für Linux und Windows): geany.org → Download → macOS.
+  Blockiert der Mac es beim ersten Start: Systemeinstellungen → Datenschutz & Sicherheit → «Dennoch öffnen».
+- **Homebrew** (nur nötig für Ghostscript): Installationsbefehl von **brew.sh** ins Terminal kopieren, Enter.
+  Fragt nach dem Mac-Passwort (es erscheint nichts beim Tippen), dauert einige Minuten. Auf älteren Intel-Macs
+  läuft Homebrew nur noch eingeschränkt.
+- **Ghostscript** (nur für CMYK-Druck, `{farbmodus}: cmyk`): mit Homebrew `brew install ghostscript`.
+  Ist Homebrew da, fragt die Einrichtung selbst danach. Ohne Ghostscript bleiben die Druckdateien RGB.
+
+## Mac (Terminal) – Intel und Apple-Chip
+
+pureSATZ braucht auf dem Mac weder Homebrew noch `gh`:
 pureSATZ einmal als ZIP oder mit `git clone` holen, dann richtet `pc-einrichten/mac-einrichten.sh` den Rest ein.
 
 ```sh

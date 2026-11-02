@@ -455,7 +455,7 @@ Untermenüs (Enter oder `z` = zurück; «…» = nur was es gibt):
   `$` öffnet ein Terminal im Buchordner, das Menü bleibt offen (praktisch, wenn das Menü per Lotus-Starter läuft).
   Klang: `motor/klang.wav`, eigener Klang: `klang.wav` in den Buchordner legen; sonst Piepton.
 - `ul` (update lokal) erscheint nur, wenn neben dem Buch ein Ordner `pureSATZ` liegt; ebenso in `n` neu …:
-  `b` neues Buch (setup), `h` Hallo-Buch, `e` einrichten (START-Linux.sh / START-Mac.command / START-Windows.bat),
+  `b` neues Buch (setup), `h` Hallo-Buch, `e` einrichten (START-Linux.sh / START-Mac-imTerminal.sh / START-Windows.bat),
   `m` Motor-Selbsttest (test/selbsttest.py, einige Minuten, Ende «SELBSTTEST IN ORDNUNG»).
 - `n` → `v` Verknüpfung (auch `sh menu.sh verknuepfung`): Starter mit Lotus, Doppelklick öffnet das Menü.
   Linux: Startmenü und Schreibtisch (beim ersten Mal Rechtsklick → «Start erlauben»), Windows: Buchordner und

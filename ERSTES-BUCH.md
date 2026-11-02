@@ -7,7 +7,7 @@ Für alle, die ein Buch schreiben möchten, auch ohne Erfahrung mit Linux. Ein T
 (Linux: Strg+Alt+T), dann die Befehle Zeile für Zeile eintippen und mit Enter bestätigen.
 
 ## 1. Einmalig vorbereiten
-**Am einfachsten:** Windows `START-Windows.bat` · Mac `START-Mac.command` doppelklicken · Linux `sh START-Linux.sh` im Ordner
+**Am einfachsten:** Windows `START-Windows.bat` doppelklicken · Mac `sh START-Mac-imTerminal.sh` · Linux `sh START-Linux.sh` im Ordner
 pureSATZ. Der Start erledigt die Schritte 1 und 2 in fünf kurzen Schritten: Technik, Ort (`Buchprojekte`), Hallo-Buch,
 eigenes Buch (Titel, Untertitel, Autor, Format), Extras.
 Von Hand geht es so:

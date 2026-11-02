@@ -563,7 +563,7 @@ def main():
                  "m": lambda: lauf([sys.executable, os.path.join("test", "selbsttest.py")], PURESATZ,
                                    dict(os.environ, SELBSTTEST_OHNE_VENV="1")),
                  "e": lambda: skript("START-Windows" if WIN else "START-Linux", ordner=PURESATZ,
-                                     mac="START-Mac.command")}[k]()
+                                     mac="START-Mac-imTerminal.sh")}[k]()
                 for d in sorted(set(os.listdir(os.path.dirname(BASE))) - vorher):
                     print(f"  Neues Buch: ../{d} – dort sh menu.sh")
         elif w in ("h", "?"):

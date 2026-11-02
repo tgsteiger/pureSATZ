@@ -1,7 +1,7 @@
 #!/bin/bash
 # =====================================================================
 #  pureSATZ einrichten, in fünf Schritten (Linux und Mac).
-#  Aufruf über START-Linux.sh (sh START-Linux.sh) bzw. START-Mac.command (Doppelklick).
+#  Aufruf über START-Linux.sh (sh START-Linux.sh) bzw. START-Mac-imTerminal.sh (Mac: sh START-Mac-imTerminal.sh im Terminal).
 #    1. Technik (Python …)   2. Ort für die Bücher   3. Hallo-Buch
 #    4. Dein eigenes Buch    5. Extras (GitHub freiwillig, Ghostscript empfohlen)
 #  Die Technik und die Extras stehen in linux-einrichten.sh bzw. mac-einrichten.sh.
@@ -11,7 +11,7 @@
 cd "$(dirname "$0")/.." || exit 1                     # Ordner pureSATZ
 HIER="$(pwd)"
 OBEN="$(dirname "$HIER")"
-if [ "$(uname)" = "Darwin" ]; then MAC=1; OS=mac; START="START-Mac.command"; else MAC=""; OS=linux; START="START-Linux.sh"; fi
+if [ "$(uname)" = "Darwin" ]; then MAC=1; OS=mac; START="START-Mac-imTerminal.sh"; else MAC=""; OS=linux; START="START-Linux.sh"; fi
 
 titel() { clear; echo "=============================================================="; echo "  $1"
           echo "=============================================================="; echo; }
@@ -23,6 +23,8 @@ if [ ! -f motor/bauen.py ]; then
     echo "ausgepackten Ordner nochmals starten."
     exit 1
 fi
+# Mac: Download-Sperre (Quarantäne) entfernen – sonst blockiert er die Doppelklick-Dateien in pureSATZ und den Kopien
+[ -n "$MAC" ] && xattr -dr com.apple.quarantine "$HIER" 2>/dev/null
 
 # --- Willkommen -----------------------------------------------------------
 if [ "$1" != "--weiter" ]; then

@@ -1,11 +1,11 @@
 #!/bin/bash
 # =====================================================================
-#  pureSATZ – Mac einrichten. Für Intel-Macs UND Macs mit Apple-Chip (M1, M2, M3 …), ohne Homebrew.
-#  Am einfachsten: im Ordner pureSATZ  START-Mac.command  doppelklicken – führt in fünf Schritten
+#  pureSATZ – Mac einrichten. Für Intel-Macs UND Macs mit Apple-Chip (M1, M2, M3 …), Homebrew nicht nötig.
+#  Am einfachsten: im Terminal  sh START-Mac-imTerminal.sh  (Datei ins Fenster ziehen) – führt in fünf Schritten
 #  durch (Technik, Ort, Hallo-Buch, eigenes Buch, Extras) und ruft dieses Skript auf:
 #    bash pc-einrichten/mac-einrichten.sh --technik   Apple-Werkzeuge (git), Python
 #    bash pc-einrichten/mac-einrichten.sh --extras    GitHub (freiwillig), Ghostscript, CotEditor (empfohlen)
-#  Ohne Angabe startet der ganze Ablauf (wie START-Mac.command).
+#  Ohne Angabe startet der ganze Ablauf (wie START-Mac-imTerminal.sh).
 #  Darf beliebig oft laufen. Hält es an (Apple-Werkzeuge, Python), danach einfach nochmals starten.
 # =====================================================================
 cd "$(dirname "$0")/.." || exit 1          # Ordner pureSATZ
@@ -21,7 +21,7 @@ if [ "$1" = "--technik" ]; then
     if ! xcode-select -p >/dev/null 2>&1; then
         echo "Die Apple-Kommandozeilenwerkzeuge fehlen."
         echo "Gleich öffnet sich ein Fenster: auf «Installieren» klicken."
-        echo "Wenn es fertig ist: START-Mac.command NOCHMALS doppelklicken."
+        echo "Wenn es fertig ist: sh START-Mac-imTerminal.sh NOCHMALS starten."
         xcode-select --install 2>/dev/null
         exit 2
     fi
@@ -34,7 +34,7 @@ if [ "$1" = "--technik" ]; then
         echo "Gleich öffnet sich python.org: den neusten"
         echo "«macOS 64-bit universal2 installer» laden und installieren"
         echo "(läuft auf Intel und Apple-Chip)."
-        echo "Danach Terminal SCHLIESSEN und START-Mac.command nochmals doppelklicken."
+        echo "Danach Terminal SCHLIESSEN, neu öffnen und sh START-Mac-imTerminal.sh nochmals starten."
         open "https://www.python.org/downloads/macos/"
         exit 2
     fi
@@ -136,7 +136,7 @@ elif command -v brew >/dev/null 2>&1 || command -v port >/dev/null 2>&1; then
                && echo "OK  Ghostscript $(gs --version)" ;;
     esac
 else
-    echo "Ghostscript fehlt – installieren mit:  brew install ghostscript"
+    echo "Ghostscript fehlt – nur für CMYK-Druck nötig. Anleitung: hilfe.html → «Mac: Zusatzprogramme»."
 fi
 
 # --- Extra 3: CotEditor (empfohlen, Schreibprogramm für die MD-Dateien) -------
@@ -145,16 +145,13 @@ echo "CotEditor (empfohlen): Schreibprogramm für die MD-Dateien – schlicht, d
 if [ -d /Applications/CotEditor.app ] || [ -d "$HOME/Applications/CotEditor.app" ]; then
     echo "OK  CotEditor vorhanden"
 else
+    echo "(Alternative: Geany – siehe hilfe.html → «Mac: Zusatzprogramme».)"
     read -r -p "CotEditor installieren? [n = nein | Enter = ja]: " CE
     case "$CE" in
         n|nein) ;;
-        *) if command -v brew >/dev/null 2>&1; then
-               brew install --cask coteditor && echo "OK  CotEditor installiert"
-           else
-               open "macappstore://apps.apple.com/app/id1024640650" 2>/dev/null || open "https://coteditor.com"
-               echo "Im App Store bei CotEditor auf «Laden» klicken."
-               read -r -p "Weiter mit Enter … " _
-           fi
+        *) open "macappstore://apps.apple.com/app/id1024640650" 2>/dev/null || open "https://coteditor.com"
+           echo "Im App Store bei CotEditor auf «Laden» klicken."
+           read -r -p "Weiter mit Enter … " _
            echo "    .md immer mit CotEditor: Rechtsklick auf eine .md → Informationen → Öffnen mit: CotEditor → Alle ändern" ;;
     esac
 fi

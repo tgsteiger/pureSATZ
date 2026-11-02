@@ -5,9 +5,8 @@ pureSATZ - Vorlage und Motor für eigene Bücher
    Übersicht: 00-UEBERSICHT.txt im Ordner darüber (z. B. Buchprojekte).
 
 ZUM STARTEN   Windows: START-Windows.bat doppelklicken
-              Mac:     START-Mac.command doppelklicken
-                       (blockiert: Rechtsklick -> Öffnen, oder Systemeinstellungen ->
-                       Datenschutz & Sicherheit -> «Dennoch öffnen»)
+              Mac:     Terminal öffnen (Cmd+Leertaste, «Terminal», Enter), «sh » tippen,
+                       START-Mac-imTerminal.sh ins Fenster ziehen, Enter
               Linux:   Rechtsklick in den Ordner -> «Im Terminal öffnen», dann  sh START-Linux.sh
               Fünf Schritte: Technik (Python) · Ort für die Bücher (Buchprojekte im
               Benutzerordner) · Hallo-Buch · dein eigenes Buch (Titel, Untertitel, Autor,
@@ -27,7 +26,7 @@ HILFE         hilfe.html doppelklicken -> oben «Start». Schritt für Schritt, 
 
 
 Ordner
-  START-Windows.bat, START-Mac.command, START-Linux.sh   der Startknopf, je Betriebssystem einer
+  START-Windows.bat, START-Mac-imTerminal.sh, START-Linux.sh   der Startknopf, je Betriebssystem einer
   setup/          neues Buch anlegen, Motor ins Buch bringen
   pc-einrichten/  Computer einrichten (Linux, Mac, Windows); start.sh = gemeinsamer Ablauf Linux/Mac
   import/         Buch aus LibreOffice/Word anlegen (Testphase)

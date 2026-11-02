@@ -95,10 +95,11 @@ SCHRITTE = {
     ],
     "mac": [
         ("Herunterladen und auspacken", "ZIP laden, Safari packt es selbst aus.", None),
-        ("Starten", "Im Ordner <b>START-Mac.command</b> doppelklicken. Blockiert der Mac es: Rechtsklick → Öffnen, oder "
-         "Systemeinstellungen → Datenschutz &amp; Sicherheit → «Dennoch öffnen». " + START + " Fehlt Python, öffnet "
-         "sich python.org: den «macOS 64-bit universal2 installer» laden, installieren und START-Mac.command nochmals "
-         "doppelklicken.", None),
+        ("Terminal öffnen", "Cmd+Leertaste, «Terminal» tippen, Enter.", None),
+        ("Starten", "<b>sh</b> und ein Leerzeichen tippen, die Datei <b>START-Mac-imTerminal.sh</b> aus dem Ordner ins "
+         "Terminal ziehen, Enter. (Ein Doppelklick geht nicht: der Mac sperrt heruntergeladene Startdateien.) " + START +
+         " Fehlt Python, öffnet sich python.org: den «macOS 64-bit universal2 installer» laden, installieren, Terminal "
+         "neu öffnen und nochmals starten.", None),
         ("Dein Buch", "Schreiben in <b>Mein-Buch-buch.md</b>. Das Menü öffnet ein Doppelklick auf "
          "<b>Mein-Buch Menü.command</b> (Lotus) – ein Buchstabe genügt: <b>s</b> baut, <b>p</b> zeigt das PDF. "
          "Ohne Menü: im Buchordner <b>Terminal hier</b> doppelklicken, dann:", "sh build.sh schnell"),

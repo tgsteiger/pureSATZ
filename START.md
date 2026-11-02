@@ -6,8 +6,8 @@ Einmal von oben nach unten. Die Häkchen kannst du anklicken, der Browser merkt 
 Oben rechts **Linux/Mac** oder **Windows** wählen, dann stimmen alle Befehle.
 
 - [ ] **Starten.** ZIP auspacken (Windows: Rechtsklick → «Alle extrahieren …»), dann im Ordner pureSATZ:
-  Windows `START-Windows.bat` doppelklicken · Mac `START-Mac.command` doppelklicken (blockiert der Mac es: Rechtsklick →
-  Öffnen, oder Systemeinstellungen → Datenschutz & Sicherheit → «Dennoch öffnen») · Linux: Rechtsklick in den Ordner →
+  Windows `START-Windows.bat` doppelklicken · Mac: Terminal öffnen (Cmd+Leertaste, «Terminal», Enter), `sh ` tippen,
+  `START-Mac-imTerminal.sh` ins Fenster ziehen, Enter · Linux: Rechtsklick in den Ordner →
   «Im Terminal öffnen», dann `sh START-Linux.sh` eintippen. Er führt in fünf Schritten durch: Technik (Python), Ort für die Bücher (`Buchprojekte` im Benutzerordner – nicht Downloads, nicht in einer Cloud), Hallo-Buch, dein eigenes Buch (Titel, Untertitel, Autor, Format) und Extras (GitHub, freiwillig). Enter nimmt jeweils den Vorschlag.
 
 Danach sieht es so aus – geschrieben und gebaut wird immer im Ordner deines Buchs, nie in pureSATZ:
@@ -147,7 +147,7 @@ Alle Befehle: Hilfe «Befehle (@)» und «Blöcke (:::)».
 |---|---|
 | Windows: Ordner `pureSATZ-main` steckt in einem zweiten `pureSATZ-main` | Im inneren Ordner `START-Windows.bat` doppelklicken – er kopiert pureSATZ an den richtigen Ort (`Buchprojekte`) und benennt ihn richtig. |
 | Windows: Python nach der Installation «nicht erkannt» | Fenster schliessen, `START-Windows.bat` nochmals doppelklicken. Hilft das nicht: Computer neu starten. |
-| Mac: «START-Mac.command kann nicht geöffnet werden» | Rechtsklick → Öffnen, oder Systemeinstellungen → Datenschutz & Sicherheit → «Dennoch öffnen». Oder im Terminal `sh START-Linux.sh`. |
+| Mac: Doppelklick auf eine Startdatei geht nicht («kann nicht geöffnet werden») | Der Mac sperrt heruntergeladene Dateien. Im Terminal starten: `sh ` tippen, `START-Mac-imTerminal.sh` ins Fenster ziehen, Enter. Danach gehen `Terminal hier` und der Lotus per Doppelklick. |
 | `python3: command not found` / «nicht erkannt» | Punkt «Computer einrichten». Windows: Python von python.org, beim Installieren «Add python.exe to PATH» anhaken. |
 | «Python … ist zu alt» | Neues Python installieren (3.10 oder neuer), Terminal neu öffnen. |
 | Hängt beim ersten Mal / «keine Verbindung» | Der erste Bau lädt Pakete aus dem Internet. Verbindung prüfen, nochmals starten. |
