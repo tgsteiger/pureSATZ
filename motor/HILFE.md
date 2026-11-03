@@ -806,7 +806,7 @@ Danach zum Ausprobieren: `hb` → `p` (Probe) und `hb` → `w` (Wörter).
 ## Hörbuch: Das Menü hb
 
 ```
- Hörbuch … (Stimme: Ollie · Tempo -8% · 128 kbit)
+ pureSATZ 2.69.1 · Mein-Buch › Hörbuch         Ollie · -8% · 128 kbit
  ── Probieren ───────────────────   ── Hörbuch ──────────────────────
   p  Probe hören (probe.txt)         t  Texte neu aus dem Buch
   w  Wörter hören (KLINGEN FALSCH)   a  alles sprechen
@@ -828,7 +828,8 @@ Danach zum Ausprobieren: `hb` → `p` (Probe) und `hb` → `w` (Wörter).
 | `$` | Terminal im Ordner `audio/` – dort `sh hb.sh` zeigt alle Befehle |
 | `o` · `h` · `c` | Ordner `audio/` öffnen · diese Hilfe · Azure-Paket, Schlüssel, ffmpeg prüfen |
 
-Oben steht immer, was gerade gilt: Stimme, Tempo, Qualität (aus `audio.conf`).
+Oben steht, wo du bist (› Hörbuch) und was gerade gilt: Stimme, Tempo, Qualität (aus `audio.conf`).
+Das Menü bleibt offen, bis `z` oder Enter – nach einem Lauf bleiben die Meldungen stehen.
 
 ## Hörbuch: So entsteht es
 

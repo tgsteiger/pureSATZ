@@ -25,6 +25,21 @@ MOTOR = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.dirname(MOTOR)
 WIN, MAC = sys.platform == "win32", sys.platform == "darwin"
 LINUX = sys.platform.startswith("linux")                       # Hörbuch (hb) vorerst nur unter Linux
+FETT = (lambda t: f"\033[1m{t}\033[0m") if not WIN and sys.stdout.isatty() else (lambda t: t)   # Titel fett (Terminal)
+
+
+def kurzname(n, laenge=24):
+    """Buchname für die Kopfzeile, zu lange gekürzt («Mein-sehr-langer-Buchtit…»)."""
+    return n if len(n) <= laenge else n[:laenge - 1] + "…"
+
+
+def kopf(bereich="", rechts=""):
+    """Kopfzeile: «pureSATZ 2.69.0 · Leben123 › Hörbuch          rechts» (Bereich fett)."""
+    buch = next(iter(glob.glob(os.path.join(BASE, "*-buch.md"))), "Buch-buch.md")
+    version = open(os.path.join(MOTOR, "VERSION"), encoding="utf-8").read().strip()
+    links = f" pureSATZ {version} · {kurzname(os.path.basename(buch)[:-8])}" + (f" › {bereich}" if bereich else "")
+    zeile = links.replace(f"› {bereich}", f"› {FETT(bereich)}") if bereich else links
+    return zeile + (rechts.rjust(max(len(rechts) + 3, 68 - len(links))) if rechts else "")
 EINST = os.path.join(BASE, ".menu")
 PURESATZ = os.path.join(os.path.dirname(BASE), "pureSATZ")
 LOKAL = os.path.isdir(os.path.join(PURESATZ, "motor"))
@@ -144,7 +159,7 @@ def pdfs():
 
 def untermenue(titel, eintraege):
     """eintraege: {Taste: (Text, Pfad oder None)} – gibt die gewählte Taste zurück, None = zurück."""
-    print(f"\n {titel}")
+    print(f"\n {FETT(titel)}")
     raster([(k, t) for k, (t, _) in eintraege.items()] + [("z", "zurück")])
     e = frage(" Wahl: ").lower()
     e = "ü" if e == "u" and "ü" in eintraege and "u" not in eintraege else e      # ohne ü-Taste
@@ -267,11 +282,18 @@ def hoerbuch_menue():
     audio = os.path.join(BASE, "audio")
     hb = [sys.executable, os.path.join(MOTOR, "audio", "hoerbuch.py")]
     H.anlegen()                                       # audio/ aus der Vorlage, Bestehendes bleibt
+    while hoerbuch_schritt(H, audio, hb):             # bleibt offen bis z / Enter
+        pass
+
+
+def hoerbuch_schritt(H, audio, hb):
+    """Ein Durchgang im Hörbuch-Menü; False = zurück ins Hauptmenü."""
+    global gelaufen
     c = H.konf()
     st = c.get("AZURE_STIMME", "1")
     st = c.get("AZURE_FAVORIT" + st, st) if st in ("1", "2") else st
     name = "-".join(st.split("-")[2:]).replace("MultilingualNeural", "").replace("Neural", "") or st
-    print(f"\n Hörbuch … (Stimme: {name} · Tempo {c.get('AZURE_RATE', '')} · {c.get('MP3_KBIT', '128')} kbit)")
+    print("\n" + kopf("Hörbuch", f"{name} · {c.get('AZURE_RATE', '')} · {c.get('MP3_KBIT', '128')} kbit"))
     for z in (" ── Probieren ───────────────────   ── Hörbuch ──────────────────────",
               "  p  Probe hören (probe.txt)         t  Texte neu aus dem Buch",
               "  w  Wörter hören (KLINGEN FALSCH)   a  alles sprechen",
@@ -282,6 +304,9 @@ def hoerbuch_menue():
               "  z  zurück"):
         print(z)
     k = frage(" Wahl: ").lower()
+    if k in ("", "z"):
+        return False
+    gelaufen = False
     neu = lambda muster: sorted(glob.glob(os.path.join(audio, muster)), key=os.path.getmtime)
     def abspielen(muster, seit):
         d = [p for p in neu(muster) if os.path.getmtime(p) >= seit - 1]
@@ -328,6 +353,12 @@ def hoerbuch_menue():
             bauen("hilfe")
         import webbrowser
         webbrowser.open("file://" + hilfe + "#Hörbuch-Was-es-braucht")
+    else:
+        print(f"  Unbekannt: {k}")
+    if gelaufen:                                      # Meldungen stehen lassen
+        gelaufen = False
+        return frage(" Enter = Hörbuch-Menü · z = zurück: ").lower() != "z"
+    return True
 
 
 def tabellen_menue():
@@ -393,10 +424,7 @@ def alle_in_einer_datei():
 
 
 def zeige():
-    buch = next(iter(glob.glob(os.path.join(BASE, "*-buch.md"))), "Buch")
-    version = open(os.path.join(MOTOR, "VERSION"), encoding="utf-8").read().strip()
-    links = f" pureSATZ {version} · {os.path.basename(buch)[:-8]}"
-    print("\n" + links + f"Klang (!) {'ein' if ton else 'aus'}".rjust(68 - len(links)))
+    print("\n" + kopf(rechts=f"Klang (!) {'ein' if ton else 'aus'}"))
     spalten = [("Schreiben", [("m", "MD öffnen …"), ("g", "Geschichten …"), ("t", "Tabellen …"),
                              ("c", "check / gegenlesen …")]),
                ("Bauen", [("s", "schnell  (Lese-PDF)"), ("k", "komplett (vor dem Druck)"), ("w", "weitere …")]
