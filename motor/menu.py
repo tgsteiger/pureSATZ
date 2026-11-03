@@ -60,7 +60,7 @@ def kopf(bereich="", rechts=""):
     name = kurzname(os.path.basename(buch)[:-8])
     links = f" pureSATZ {version} · {name}" + (f" › {bereich}" if bereich else "")
     zeile = GOLDFEIN("══") + f" pureSATZ {version} · {HELL(name)}" + (f" › {FETT(bereich)}" if bereich else "")
-    return zeile + rechts.rjust(max(len(rechts) + 3, 68 - len(links))) + " " + GOLDFEIN("══")
+    return zeile + rechts.rjust(max(len(rechts) + 3, 67 - len(links))) + " " + GOLDFEIN("══")   # endet bei Spalte 72
 EINST = os.path.join(BASE, ".menu")
 PURESATZ = os.path.join(os.path.dirname(BASE), "pureSATZ")
 LOKAL = os.path.isdir(os.path.join(PURESATZ, "motor"))
@@ -137,7 +137,7 @@ def bauen(*args):
 def lauf(cmd, ordner=BASE, env=None):
     global gelaufen
     gelaufen, t = True, time.time()
-    breit = min(70, shutil.get_terminal_size((80, 24)).columns - 2)
+    breit = min(71, shutil.get_terminal_size((80, 24)).columns - 2)   # endet bei Spalte 72 wie Menü und Kopfzeile
     linie = lambda vorne, n: " " + GOLDFEIN("── ") + vorne + " " + GOLDFEIN("─" * max(3, breit - n))
     name = "hb " + " ".join(cmd[2:]) if cmd[1:2] and cmd[1].endswith("hoerbuch.py") else zuletzt
     print(linie(FETT(name), len(name) + 4))           # Startlinie: ── sy ─────
