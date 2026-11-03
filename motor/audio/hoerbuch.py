@@ -140,7 +140,10 @@ def schluessel():
     alt, reg = os.environ.get("AZURE_SPEECH_KEY", ""), os.environ.get("AZURE_SPEECH_REGION", "switzerlandnorth")
     print("Azure-Schlüssel " + (f"(jetzt …{alt[-4:]})" if alt else "(noch keiner)") +
           " – portal.azure.com → Speech-Ressource → «Schlüssel und Endpunkt» → Schlüssel 1")
-    k = getpass.getpass("  Schlüssel einfügen (Strg+Shift+V – es erscheint nichts) [Enter = behalten]: ").strip() or alt
+    k = getpass.getpass("  Schlüssel einfügen (Rechtsklick → Einfügen – es erscheint nichts) [Enter = behalten]: ").strip() or alt
+    if k and (len(k) < 32 or not k.isalnum()):                # z. B. falscher Text aus der Zwischenablage
+        print("\033[1;31m✗ Das ist kein Azure-Schlüssel\033[0m (nur Buchstaben und Ziffern, mind. 32) – nichts geändert.")
+        return False
     if not k:
         print("Kein Schlüssel – nichts geändert."); return False
     reg = input(f"  Region [Enter = {reg}]: ").strip() or reg

@@ -801,7 +801,7 @@ Getestet mit «Leben 1.0, 2.0, 3.0» und der Stimme **Ollie** (spricht Deutsch s
 1. portal.azure.com → Konto anlegen → «Speech-Dienst» (Speech service) erstellen: Tarif **F0**, Region z. B.
    `switzerlandnorth`. Unter «Schlüssel und Endpunkt» **Schlüssel 1** kopieren.
 2. `sudo apt install ffmpeg mpv`
-3. Im Buchordner `sh menu.sh` → `hb` → `s`: Schlüssel einfügen (Strg+Shift+V, es erscheint nichts), Region bestätigen.
+3. Im Buchordner `sh menu.sh` → `hb` → `s`: Schlüssel einfügen (Rechtsklick → Einfügen, es erscheint nichts), Region bestätigen.
    Er kommt nur in `~/.bashrc` (Sicherung `~/.bashrc.bak`) – nie in eine Datei im Buch und nie zu GitHub.
 4. `hb` → `c` prüft alles und installiert das Azure-Paket.
 
