@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # Hörbuch: liest mit einer Azure-Stimme vor (pureSATZ, nur Linux, Testphase). Meist über hoerbuch.py / Menü «hb».
-# Aufruf: python3 txt2mp3-azure.py [pdf|md]                 alle, fertige werden übersprungen
+# Aufruf: python3 txt2mp3-azure.py [pdf|md]                 vertonen: was fehlt oder geändert ist (Text neuer als MP3)
 #         python3 txt2mp3-azure.py [pdf|md] liste           Kapitel mit Kürzel und Zeichen anzeigen
 #         python3 txt2mp3-azure.py [pdf|md] 050208,0406     nur diese (Kürzel), immer neu
 #         python3 txt2mp3-azure.py [pdf|md] datei.txt ...   nur diese Dateien, immer neu
 #         … stimme=2 …   einmalig andere Stimme (1, 2 oder ganzer Name), sonst AZURE_STIMME aus audio.conf
-# Ausgabe pro Stimme: audio/mp3-<md|pdf>-azure-<stimme>/  (z. B. mp3-md-azure-ollie)
+#         … tempo=-5% …  einmalig anderes Tempo, sonst AZURE_RATE aus audio.conf
+# Ausgabe pro Stimme, Tempo und kbit: audio/mp3-<md|pdf>-azure-<stimme>-t<tempo>-k<kbit>/  (z. B. mp3-md-azure-ollie-t-8-k192)
 # Jeder Lauf wird in einstellungen.txt angehängt (Zeit, Aufruf, Einstellungen, Aussprache-Liste).
 # Ganzes Buch (ohne Auswahl): ZIP mit Textordner, Aussprache-Liste und audio.conf in audio/
 # Braucht: AZURE_SPEECH_KEY und AZURE_SPEECH_REGION (z.B. in ~/.bashrc)
@@ -47,13 +48,18 @@ for a in list(args):
     if a.startswith("stimme="):
         wahl = a.split("=", 1)[1]
         args.remove(a)
+    elif a.startswith("tempo="):
+        rate = a.split("=", 1)[1].strip()
+        rate = rate if rate.endswith("%") else rate + "%"
+        args.remove(a)
 stimme = conf.get("AZURE_FAVORIT" + wahl, wahl) if wahl in ("1", "2") else wahl   # 1/2 = Favorit
 kurz = "-".join(stimme.split("-")[2:]).replace("MultilingualNeural", "").replace("Neural", "").replace(":", "-").lower()
 quelle = "md"
 if args and args[0] in ("pdf", "md"):
     quelle = args.pop(0)
 txt_dir = os.path.join(DATEN, "txt-" + quelle)
-mp3_dir = os.path.join(DATEN, "mp3-" + quelle + "-azure-" + kurz + ("" if kbit == 128 else "-%d" % kbit))
+tk = "t%s-k%d" % (rate.replace("%", "").lstrip("+"), kbit)          # -8% → t-8 · +5% → t5 · 0% → t0
+mp3_dir = os.path.join(DATEN, "mp3-%s-azure-%s-%s" % (quelle, kurz, tk))
 aussprache = "aussprache-%s.txt" % kurz                    # eigene Liste pro Stimme, sonst die gemeinsame
 if not os.path.exists(os.path.join(DATEN, aussprache)):
     aussprache = conf.get("AUSSPRACHE", "aussprache.txt")
@@ -91,6 +97,22 @@ if args and not nur:
     print("Nichts ausgewählt. Kürzel anzeigen: python3 txt2mp3-azure.py %s liste" % quelle)
     sys.exit(1)
 
+# was zu tun ist: Auswahl immer neu, sonst fehlende MP3 und solche mit neuerem Text
+mp3_von = lambda t: os.path.join(mp3_dir, os.path.splitext(os.path.basename(t))[0] + ".mp3")
+todo = nur or [t for t in alle_dateien
+               if not os.path.exists(mp3_von(t)) or os.path.getmtime(mp3_von(t)) < os.path.getmtime(t)]
+ziel = os.path.relpath(mp3_dir)
+namen = {os.path.splitext(os.path.basename(t))[0] for t in alle_dateien}
+ohne = sorted(n for n in (os.listdir(mp3_dir) if os.path.isdir(mp3_dir) else [])
+              if n.endswith(".mp3") and n[:-4] not in namen)
+if ohne:
+    print("MP3 ohne Text (Kapitel umbenannt oder entfernt?) in %s – von Hand löschen:" % ziel)
+    for n in ohne:
+        print("  " + n)
+if not todo:
+    print("Alles aktuell in %s – nichts zu vertonen." % ziel)
+    sys.exit(0)
+
 # ab hier wird gesprochen
 import azure.cognitiveservices.speech as speechsdk
 key = os.environ.get("AZURE_SPEECH_KEY")
@@ -99,12 +121,12 @@ if not key:
 region = os.environ.get("AZURE_SPEECH_REGION", "switzerlandnorth")
 
 os.makedirs(mp3_dir, exist_ok=True)
-print("Stimme: %s · %s → %s" % (stimme, aussprache, os.path.relpath(mp3_dir)), flush=True)
+print("Stimme: %s · Tempo %s · %s → %s · %d Kapitel" % (stimme, rate, aussprache, ziel, len(todo)), flush=True)
 jetzt = datetime.datetime.now()
 aus_pfad = os.path.join(DATEN, aussprache)
 zipname = ""
-if not nur:                                     # ganzes Buch: verwendete Texte sichern
-    zipname = "%s_%s_%s.zip" % (os.path.basename(txt_dir), kurz, jetzt.strftime("%Y%m%d%H%M%S"))
+if not nur and len(todo) == len(alle_dateien):  # ganzes Buch: verwendete Texte sichern
+    zipname = "%s_%s-%s_%s.zip" % (os.path.basename(txt_dir), kurz, tk, jetzt.strftime("%Y%m%d%H%M%S"))
     with zipfile.ZipFile(os.path.join(DATEN, zipname), "w", zipfile.ZIP_DEFLATED) as z:
         for t in alle_dateien:
             z.write(t, os.path.join(os.path.basename(txt_dir), os.path.basename(t)))
@@ -186,11 +208,9 @@ def sprechen(absaetze, datei, titel=False):
         raise RuntimeError(r.cancellation_details.error_details)
 
 erzeugt = []
-for t in (nur or alle_dateien):
+for t in todo:
     name = os.path.splitext(os.path.basename(t))[0]
-    mp3 = os.path.join(mp3_dir, name + ".mp3")
-    if not nur and os.path.exists(mp3):
-        continue                      # fertige überspringen
+    mp3 = mp3_von(t)
     text = subprocess.run(["bash", os.path.join(DIR, "text-vorbereiten.sh"), t],
                           capture_output=True, text=True, check=True,
                           env=dict(os.environ, AUSSPRACHE_DATEI=aussprache, AUDIO_DIR=DATEN)).stdout
@@ -226,7 +246,6 @@ for t in (nur or alle_dateien):
     for p in teile:
         os.remove(p)
     erzeugt.append(os.path.basename(mp3))
-ziel = os.path.relpath(mp3_dir)
 print("Fertig: %d neue Datei(en) in %s" % (len(erzeugt), ziel))
 for n in erzeugt[:10]:
     print("  mpv %s/%s" % (ziel, n.replace(" ", "\\ ")))

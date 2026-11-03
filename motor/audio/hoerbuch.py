@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-hoerbuch.py – Hörbuch mit einer Azure-Stimme (pureSATZ ab 2.68, nur Linux, Testphase).
+hoerbuch.py – Hörbuch mit einer Azure-Stimme (pureSATZ ab 2.68, vertonen ab 2.69.8, nur Linux, Testphase).
 Im Menü: hb. Im Ordner audio/ des Buchs:  sh hb.sh <befehl>   (ohne Befehl: diese Übersicht)
 """
 KURZ = """Hörbuch – Befehle im Ordner audio/ (sh hb.sh …):
@@ -11,17 +11,18 @@ KURZ = """Hörbuch – Befehle im Ordner audio/ (sh hb.sh …):
     sh hb.sh probe probe-namen.txt    anderer Probetext (eigene Datei im Ordner audio/)
     sh hb.sh woerter                  «## KLINGEN FALSCH» aus aussprache-<stimme>.txt anhören
   Hörbuch
-    sh hb.sh texte                    Texte aus der Buch-MD → txt-md/ (nach Änderungen im Buch)
+    sh hb.sh texte                    Texte aus der Buch-MD → txt-md/ (zeigt, welche sich geändert haben)
+    sh hb.sh vertonen                 MP3 für alles, was fehlt oder geändert ist
+    sh hb.sh vertonen tempo=-5%       dasselbe mit anderem Tempo (eigener Ordner …-t-5-k…)
     sh hb.sh liste                    Kapitel mit Kürzel
-    sh hb.sh alles                    ganzes Hörbuch (fertige werden übersprungen)
-    sh hb.sh 0201,0304                nur diese Kapitel neu     (04 = ganzer Teil 4, stimme=2 = andere Stimme)
+    sh hb.sh 0201,0304                diese Kapitel neu vertonen (04 = ganzer Teil 4, stimme=2, tempo=-5%)
   Sonst
     sh hb.sh schluessel               Azure-Schlüssel eingeben (→ ~/.bashrc)
     sh hb.sh pruefen                  Azure-Paket, Schlüssel, ffmpeg prüfen
   Anhören und nachsehen
-    mpv probe-ollie-de-de-r-8.mp3                 (Name steht nach jedem Lauf da)
-    mpv mp3-md-azure-ollie/02.01*                 ein Kapitel
-    tail -30 mp3-md-azure-ollie/einstellungen.txt letzter Lauf
+    mpv probe-ollie-t-8.mp3                       (Name steht nach jedem Lauf da)
+    mpv mp3-md-azure-ollie-t-8-k128/02.01*        ein Kapitel
+    tail -30 mp3-md-azure-ollie-t-8-k128/einstellungen.txt   letzter Lauf
 Mehr: Hilfe «Hörbuch: Befehle zum Kopieren» (sh menu.sh → hb → h)"""
 import glob
 import os
@@ -69,7 +70,10 @@ def umgebung(var):
 
 
 def texte():
-    """Buch-MD (Geschichten eingesetzt, normale Fassung) → audio/txt-md/, dazu die Ansage als 00.00.00."""
+    """Buch-MD (Geschichten eingesetzt, normale Fassung) → audio/txt-md/, dazu die Ansage als 00.00.00.
+    Nur geänderte Texte werden ersetzt – so erkennt «vertonen» sie am Datum (Text neuer als MP3)."""
+    import filecmp
+    import tempfile
     import manuskript as M
     md, var = buch()
     _, zeilen = M.lies(md)                                  # Text nach BUCHSTART, @@-Geschichten eingesetzt
@@ -78,19 +82,45 @@ def texte():
         f.write("\n".join(z for _, z in zeilen) + "\n")
     ziel = os.path.join(DATEN, "txt-md")
     os.makedirs(ziel, exist_ok=True)
-    for p in glob.glob(os.path.join(ziel, "*.txt")):
-        os.remove(p)
-    platz = ";".join(f"{k}={v}" for k, v in var.items() if v and ";" not in v and "\\" not in v)
-    r = subprocess.run(["bash", os.path.join(DIR, "md2txt.sh")], cwd=DATEN,
-                       env=dict(os.environ, MD=tmp, ZIEL=ziel, PLATZHALTER=platz, VERSION="normal")).returncode
-    ansage = konf().get("AZURE_ANSAGE", "")
-    for k, v in var.items():
-        ansage = ansage.replace("{%s}" % k, v)
-    if r == 0 and ansage.strip():
-        with open(os.path.join(ziel, "00.00.00_Ansage.txt"), "w", encoding="utf-8") as f:
-            f.write(ansage.strip() + "\n")
-        print("  Ansage: 00.00.00_Ansage.txt")
-    return r
+    neu = tempfile.mkdtemp(prefix="_txt-neu-", dir=DATEN)    # zuerst hierhin, dann vergleichen
+    try:
+        platz = ";".join(f"{k}={v}" for k, v in var.items() if v and ";" not in v and "\\" not in v)
+        p = subprocess.run(["bash", os.path.join(DIR, "md2txt.sh")], cwd=DATEN, capture_output=True, text=True,
+                           env=dict(os.environ, MD=tmp, ZIEL=neu, PLATZHALTER=platz, VERSION="normal"))
+        print("".join(z + "\n" for z in p.stdout.splitlines() if not z.startswith("Fertig:")) + p.stderr, end="")
+        if p.returncode:
+            return p.returncode
+        ansage = konf().get("AZURE_ANSAGE", "")
+        for k, v in var.items():
+            ansage = ansage.replace("{%s}" % k, v)
+        if ansage.strip():
+            with open(os.path.join(neu, "00.00.00_Ansage.txt"), "w", encoding="utf-8") as f:
+                f.write(ansage.strip() + "\n")
+        alt = {os.path.basename(x) for x in glob.glob(os.path.join(ziel, "*.txt"))}
+        frisch = sorted(os.path.basename(x) for x in glob.glob(os.path.join(neu, "*.txt")))
+        anders = [n for n in frisch if n not in alt or not filecmp.cmp(os.path.join(neu, n), os.path.join(ziel, n), shallow=False)]
+        weg = sorted(alt - set(frisch))
+        for n in anders:
+            shutil.copy(os.path.join(neu, n), os.path.join(ziel, n))
+        for n in weg:
+            os.remove(os.path.join(ziel, n))
+    finally:
+        shutil.rmtree(neu, ignore_errors=True)
+    if not alt:
+        print(f"Texte: {len(frisch)} Kapitel in txt-md/")
+    elif not anders and not weg:
+        print("Keine Änderung – alle Texte wie vorher.")
+    if alt and anders:
+        print(f"Geändert: {len(anders)} Kapitel")
+        for n in anders[:15]:
+            print("  " + n)
+        if len(anders) > 15:
+            print(f"  … und {len(anders) - 15} weitere")
+    if weg:
+        print("Entfernt (Kapitel umbenannt oder gelöscht): " + ", ".join(weg))
+    if anders:
+        print("Vertonen:  sh hb.sh vertonen   (Menü: hb → v)")
+    return 0
 
 
 def konf():
@@ -180,7 +210,7 @@ def main():
     env = umgebung(var)
     if befehl in ("aussprache", "probe"):
         cmd = [sys.executable, os.path.join(DIR, "probe-azure.py")] + (["aussprache"] if befehl == "aussprache" else []) + rest
-    elif befehl == "alles":
+    elif befehl in ("vertonen", "alles"):                   # alles = alter Name
         cmd = [sys.executable, os.path.join(DIR, "txt2mp3-azure.py"), "md"] + rest
     else:                                                   # liste, Kürzel, stimme=…
         cmd = [sys.executable, os.path.join(DIR, "txt2mp3-azure.py"), "md", befehl] + rest

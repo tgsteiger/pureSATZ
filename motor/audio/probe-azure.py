@@ -4,7 +4,7 @@
 #                    sh hb.sh probe 2 -10%          Stimme 2, Tempo −10 %   ·   alle = alle Stimmen   ·   l = Liste
 #                    sh hb.sh probe probe-namen.txt  anderer Probetext (im Ordner audio/)
 #                    sh hb.sh woerter               «## KLINGEN FALSCH» anhören: Original, dann Aussprache
-# Ergebnis im Ordner audio/: probe-<stimme>-….mp3 bzw. aussprache-<stimme>-….mp3
+# Ergebnis im Ordner audio/: probe-<stimme>-t<tempo>.mp3 bzw. aussprache-<stimme>-t<tempo>.mp3 (z. B. probe-ollie-t-8.mp3)
 import os, re, sys, subprocess, tempfile
 from xml.sax.saxutils import escape
 
@@ -68,7 +68,7 @@ for stimme in auswahl:
     if not os.path.exists(os.path.join(DATEN, aus)):
         aus = conf.get("AUSSPRACHE", "aussprache.txt")
     art = "aussprache" if hoeren else os.path.splitext(os.path.basename(quelle))[0]
-    datei = os.path.join(DATEN, f"{art}-{kurz}{'-' + sprache.lower() if sprache else ''}-r{rate.replace('%', '')}.mp3")
+    datei = os.path.join(DATEN, f"{art}-{kurz}-t{rate.replace('%', '').lstrip('+')}.mp3")   # wie die MP3-Ordner: t-8
     if hoeren:                                         # nur «## KLINGEN FALSCH» (bis zum nächsten ##)
         teile, drin = [], False
         for z in open(os.path.join(DATEN, aus), encoding="utf-8"):

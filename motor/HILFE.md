@@ -439,10 +439,10 @@ Untermenüs («…» = nur was es gibt):
 | `g` Geschichten | `e` schreiben … (Liste mit Kürzel) · `n` neue Geschichte (fragt nach dem Titel, öffnet sie) · `b` fehlende ins Buch · `a` alle in 1 Datei · `ü` Übersicht (auch `u`) · `s` Sammel-PDF |
 | `t` Tabellen | `e` bearbeiten … (Liste mit Kürzel) · `n` neue Tabelle (öffnet die CSV, `@#name` kommt in den Block «## Noch einordnen» im Buch) · `o` Ordner |
 | `c` check / gegenlesen | `n` Liste neu (personen-seiten.txt) · `c` check-PDF für eine Person (öffnet sich danach) · `t` Textdatei |
-| `hb` Hörbuch (Linux) | `p` Probe hören · `w` Wörter hören · `t` Texte neu · `a` alles · `k` Kapitel … · `e` Wörter/Probe/Einstellungen öffnen · `s` Azure-Schlüssel · `$` Terminal in audio/ · `o` Ordner · `h` Hilfe · `c` prüfen – siehe [Hörbuch: Das Menü](#Hörbuch-Das-Menü-hb) |
+| `hb` Hörbuch (Linux) | `p` Probe hören · `w` Wörter hören · `t` Texte aus dem Buch · `v` vertonen · `k` Kapitel vertonen … · `e` Wörter/Probe/Einstellungen öffnen · `s` Azure-Schlüssel · `$` Terminal in audio/ · `o` Ordner · `h` Hilfe · `c` prüfen – siehe [Hörbuch: Das Menü](#Hörbuch-Das-Menü-hb) |
 | `w` weitere | `l` Leseprobe · `k` Korrektur · `p` nur-pdf · `e` nur E-Book · `c` prüfen · `s` Stand merken |
 | `p` PDF öffnen | `n` normal · `u` unzensiert · `l` Leseprobe · `k` Korrektur … |
-| `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten · `t` tabellen · `a` audio … |
+| `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten · `t` tabellen · `a` audio … · `p` Pfad Buchordner kopieren · dazu Taste + `t` = Terminal dort (`bt`, `at` …), + `p` = Pfad kopieren (`ap` …) |
 | `n` neu | `b` neues Buch · `h` Hallo-Buch · `e` einrichten · `m` Motor-Selbsttest · `v` Verknüpfung |
 
 - Geschichten (`g` → `e` oder `m` → `g`): jede hat ein festes Kürzel aus 1–3 Buchstaben, z. B. `h` herz-im-glueck,
@@ -702,6 +702,8 @@ Lese-PDF, E-Book, Leseprobe, Korrektur und Mockup bleiben beim `{format}` der Va
 | `barcode-groesse` | z. B. `40x20` (mm, 16 mm vom Rand seitlich, 8 mm von unten); leer = 60 × 35 mm ab der Ecke frei |
 | `barcode-bild` | PNG aus `bilder/` auf weissem Feld; leer = nichts zeichnen (BoD: Strichcode aus der ISBN) |
 | `barcode-rahmen` | leer = kein Rahmen · `gold` = Goldrahmen · `berge` = Goldrahmen, oben als Bergkette. Mit `barcode-bild` werden die Striche oben zu Gipfeln geschnitten (unten bleiben über 70 % frei, bleibt lesbar); beim eigenen BoD-Strichcode liegt die Bergkette darüber; bei epubli rahmt sie das freie Feld (Lage nach dem ersten Probedruck prüfen). Farbe = Akzentfarbe |
+| `barcode-rahmen-farbe` | leer = `gold` (Akzentfarbe) · `schwarz` |
+| `barcode-rahmen-abstand` | mm weiss zwischen Strichen und Linie, z. B. `1` – dann besteht der Code nur aus schwarzen Strichen auf Weiss (Vorgabe mancher Plattformen, z. B. tredition); leer = 0 |
 | `versatz-vertikal`, `versatz-horizontal` | ganzen Seiteninhalt verschieben, in mm: vertikal + = nach oben, horizontal + = nach aussen (nach Messung am Probeexemplar) |
 
 Zuunterst steht `## Coverrechner (Rohdaten)`: Dort fügst du ein, was der Coverrechner der Plattform ausgibt
@@ -809,11 +811,11 @@ Danach zum Ausprobieren: `hb` → `p` (Probe) und `hb` → `w` (Wörter).
 ## Hörbuch: Das Menü hb
 
 ```
- pureSATZ 2.69.7 · Mein-Buch › Hörbuch            Ollie · -8% · 128 kbit
+ pureSATZ 2.69.8 · Mein-Buch › Hörbuch            Ollie · -8% · 128 kbit
  ── Probieren ─────────────────────   ── Hörbuch ───────────────────────
-  p  Probe hören (probe.txt)          t  Texte neu aus dem Buch
-  w  Wörter hören (KLINGEN FALSCH)    a  alles sprechen
-                                      k  Kapitel … (zeigt die Liste)
+  p  Probe hören (probe.txt)          t  Texte aus dem Buch (zeigt Geänderte)
+  w  Wörter hören (KLINGEN FALSCH)    v  vertonen: was fehlt + geändert
+                                      k  vertonen: Kapitel auswählen …
  ── Bearbeiten ────────────────────   ── Ordner ────────────────────────
   e  Wörter · Probe · Einstellungen   $  Terminal in audio/
   s  Azure-Schlüssel eingeben         o  Ordner audio/ öffnen
@@ -824,9 +826,9 @@ Danach zum Ausprobieren: `hb` → `p` (Probe) und `hb` → `w` (Wörter).
 |---|---|
 | `p` | `audio/probe.txt` vorlesen – fragt Stimme (Enter = eingestellt, `1`/`2` = Favorit, `l` = alle Stimmen) und Tempo, spielt gleich ab |
 | `w` | Wörter unter `## KLINGEN FALSCH` vorlesen: Original, kurze Pause, Aussprache – spielt gleich ab |
-| `t` | Texte neu: Buch → `audio/txt-md/` (alte Texte werden ersetzt, MP3 bleiben) – fragt «Weiter?» |
-| `a` | alles sprechen: nur Kapitel ohne MP3 → Azure → neue MP3 (fertige bleiben) – fragt «Weiter?», Abbruch = nochmals `a` |
-| `k` | zeigt die Kapitel mit Kürzel, dann z. B. `0201,0304` oder `04` (ganzer Teil 4) – MP3 wird ersetzt. Nach `t` so geänderte Kapitel neu sprechen |
+| `t` | Texte aus der Buch-MD → `audio/txt-md/`. Nur geänderte werden ersetzt, die Liste steht danach da. Fragt dann «Jetzt vertonen?» (Enter = ja) |
+| `v` | vertonen: MP3 für Kapitel ohne MP3 **oder** mit geändertem Text (Text neuer als MP3). Fertige bleiben. Fragt das Tempo. Abbruch = nochmals `v` |
+| `k` | Kapitel vertonen: zeigt die Kapitel mit Kürzel, dann z. B. `0603,0605` oder `06` (ganzer Teil 6) und das Tempo – **immer neu**, MP3 wird ersetzt |
 | `e` | öffnet `aussprache-<stimme>.txt`, `probe.txt` oder `audio.conf` im Editor |
 | `s` | Azure-Schlüssel und Region eingeben (→ `~/.bashrc`, gilt sofort) |
 | `$` | Terminal im Ordner `audio/` – dort `sh hb.sh` zeigt alle Befehle |
@@ -836,28 +838,57 @@ Oben steht, wo du bist (› Hörbuch) und was gerade gilt: Stimme, Tempo, Qualit
 Das Menü bleibt offen, bis `z` oder Enter – nach einem Lauf bleiben die Meldungen stehen. Bei jeder Frage
 (Stimme, Tempo, Kürzel, Weiter?) heisst `z` zurück.
 
+`v` oder `k`? **`v`** schaut selbst, was fehlt oder sich geändert hat – der Normalfall. **`k`** macht genau die Kapitel,
+die du nennst, auch wenn sie aktuell sind – zum Vergleichen (anderes Tempo) oder nach einer neuen Aussprache-Regel.
+
 ## Hörbuch: So entsteht es
 
 1. `hb` → `t` – Texte aus der Buch-MD (normale Ausgabe, mit Geschichten `@@`, Ansage am Anfang) → `audio/txt-md/`.
-2. `hb` → `a` – ganzes Hörbuch nach `audio/mp3-md-azure-ollie/`, mit Tracknummer, Titel, Album, Autor und dem
-   Umschlag als Cover (`ausgabe-normal/…_Vorderseite.jpg`, entsteht beim Bau).
+2. Enter (oder `hb` → `v`) – vertont alles nach `audio/mp3-md-azure-ollie-t-8-k128/`, mit Tracknummer, Titel,
+   Album, Autor und dem Umschlag als Cover (`ausgabe-normal/…_Vorderseite.jpg`, entsteht beim Bau).
 3. Anhören, Fehler notieren → Wörter verbessern ([Aussprache verfeinern](#Hörbuch-Aussprache-verfeinern)) →
    betroffene Kapitel mit `hb` → `k` neu.
 
-Buch geändert → zuerst `t`, dann die betroffenen Kapitel mit `k`. Grössere Umstellung (neue Geschichte, andere
-Reihenfolge – die Nummern verschieben sich): MP3-Ordner umbenennen und `a` – sonst bleiben alte Dateien liegen.
+**Der MP3-Ordner sagt, wie vertont wurde:** Stimme, Tempo (`t-8` = −8 %, `t0` = normal, `t5` = +5 %) und Qualität
+(`k128`, `k192`). Ein anderes Tempo oder eine andere Qualität ergibt einen eigenen Ordner – der alte bleibt.
 Aufs Handy: den MP3-Ordner kopieren.
+
+## Hörbuch: Korrektur vertonen
+
+Du hast im Buch etwas korrigiert, z. B. in zwei Kapiteln. So kommen nur diese ins Hörbuch:
+
+1. Buch-MD speichern.
+2. `hb` → `t` → Enter. Danach steht da: «Geändert: 2 Kapitel – 06.03.00_…, 06.05.00_…».
+3. «Jetzt vertonen?» → Enter. Nur diese zwei MP3 werden neu gemacht – mit den Einstellungen aus `audio.conf`
+   (Stimme, Tempo, Pausen, Aussprache), also gleich wie die anderen. Anhören: die `mpv …`-Zeilen stehen da.
+
+Im Terminal (`hb` → `$`): `sh hb.sh texte` und dann `sh hb.sh vertonen`.
+
+Nicht erkannt werden Änderungen an `aussprache-<stimme>.txt` oder an den Pausen in `audio.conf` – die Texte bleiben
+ja gleich. Dann: betroffene Kapitel mit `k` neu, oder alles in einem neuen Ordner (siehe nächster Abschnitt).
+Kapitel umbenannt? `v` meldet «MP3 ohne Text» – die alte Datei von Hand löschen.
+
+## Hörbuch: Anderes Tempo ausprobieren
+
+| Was du willst | Tasten |
+|---|---|
+| 2 Kapitel mit −5 % zum Vergleichen | `hb` → `k` → `0603,0605` → Tempo `-5%` → Ordner `…-t-5-k128/` |
+| ganzes Buch mit −5 % | `hb` → `v` → Tempo `-5%` – der neue Ordner ist leer, also entsteht alles |
+| −5 % als neuer Standard | `hb` → `e` → Einstellungen → `AZURE_RATE="-5%"` |
+
+Vergleichen: gleiche Datei in beiden Ordnern anhören, z. B. `mpv mp3-md-azure-ollie-t-8-k128/06.03*` und
+`mpv mp3-md-azure-ollie-t-5-k128/06.03*`. Der Ordner, der nicht mehr gebraucht wird, kann weg.
 
 ## Hörbuch: Einstellungen (audio.conf)
 
 | Zeile | Wirkung |
 |---|---|
-| `AZURE_STIMME="1"` | `1` = Favorit 1 (Ollie), `2` = Favorit 2 (Florian) oder ganzer Stimmname. Einmalig: `alles stimme=2` |
+| `AZURE_STIMME="1"` | `1` = Favorit 1 (Ollie), `2` = Favorit 2 (Florian) oder ganzer Stimmname. Einmalig: `vertonen stimme=2` |
 | `AZURE_SPRACHE="de-DE"` | fest Deutsch – ohne kippt Ollie bei englischen Wörtern ins Englische |
-| `AZURE_RATE="-8%"` | Tempo, minus = langsamer |
+| `AZURE_RATE="-8%"` | Tempo, minus = langsamer. Einmalig: `vertonen tempo=-5%` (eigener Ordner `…-t-5-…`) |
 | `AZURE_TITELPAUSE="2000ms"` | Pause vor und nach dem Kapitelnamen (dazu `AZURE_PAUSE`, `AZURE_SATZPAUSE`) |
 | `AZURE_ANSAGE="…"` | Ansage am Anfang (`00.00.00_Ansage.mp3`) mit `{titel}`, `{untertitel}`, `{autor}`, `{jahr}`; leer = keine |
-| `MP3_KBIT="128"` | `128` = Test · `192` = für Plattformen: 44,1 kHz, Lautstärke angeglichen, eigener Ordner `…-192` |
+| `MP3_KBIT="128"` | `128` = Test · `192` = für Plattformen: 44,1 kHz, Lautstärke angeglichen, eigener Ordner `…-k192` |
 | `ALBUM`, `ARTIST`, `COVER` | leer = aus dem Buch bzw. Umschlag vorne |
 
 ## Hörbuch: Aussprache verfeinern
@@ -908,7 +939,7 @@ sh hb.sh probe 1 -10%                # Ollie, Tempo −10 %
 sh hb.sh probe alle                  # alle Stimmen nacheinander (eine MP3 pro Stimme)
 sh hb.sh probe probe-namen.txt       # eigener Probetext
 sh hb.sh woerter                     # KLINGEN FALSCH anhören
-mpv probe-ollie-de-de-r-8.mp3        # anhören (der Name steht nach jedem Lauf da)
+mpv probe-ollie-t-8.mp3              # anhören (der Name steht nach jedem Lauf da)
 ls -t *.mp3 | head                   # die neusten Proben
 rm probe-*.mp3 aussprache-*.mp3      # Proben aufräumen
 ```
@@ -916,33 +947,35 @@ rm probe-*.mp3 aussprache-*.mp3      # Proben aufräumen
 **Hörbuch**
 
 ```sh
-sh hb.sh texte                       # Texte neu aus der Buch-MD
+sh hb.sh texte                       # Texte aus der Buch-MD (zeigt Geänderte)
+sh hb.sh vertonen                    # MP3 für alles, was fehlt oder geändert ist
 sh hb.sh liste                       # Kapitel mit Kürzel und Zeichen
-sh hb.sh alles                       # ganzes Hörbuch
-sh hb.sh 000000                      # nur die Ansage
-sh hb.sh 0201,0304                   # diese Kapitel neu
-sh hb.sh 04                          # ganzer Teil 4 neu
-sh hb.sh alles stimme=2              # ganzes Buch einmalig mit Florian
+sh hb.sh 000000                      # nur die Ansage neu
+sh hb.sh 0603,0605                   # diese Kapitel neu vertonen
+sh hb.sh 06                          # ganzer Teil 6 neu
+sh hb.sh 0603,0605 tempo=-5%         # zum Vergleichen mit −5 % (eigener Ordner)
+sh hb.sh vertonen tempo=-5%          # ganzes Buch mit −5 %
+sh hb.sh vertonen stimme=2           # ganzes Buch einmalig mit Florian
 ```
 
 **Nachsehen und anhören**
 
 ```sh
-ls mp3-md-azure-ollie/                         # alle MP3s
-mpv mp3-md-azure-ollie/02.01*                  # ein Kapitel
-mpv mp3-md-azure-ollie/                        # alle nacheinander
-tail -40 mp3-md-azure-ollie/einstellungen.txt  # letzter Lauf: Zeit, Aufruf, Einstellungen, Wörter
+ls mp3-md-azure-ollie-t-8-k128/                         # alle MP3s
+mpv mp3-md-azure-ollie-t-8-k128/02.01*                  # ein Kapitel
+mpv mp3-md-azure-ollie-t-8-k128/                        # alle nacheinander
+tail -40 mp3-md-azure-ollie-t-8-k128/einstellungen.txt  # letzter Lauf: Zeit, Aufruf, Einstellungen, Wörter
 cat txt-md/02.01*                              # was die Stimme bekommt (vor den Aussprache-Regeln)
 grep -n "Zeitstrahl" buch.txt                  # steht etwas im Hörbuch?
 ls *.zip                                       # Sicherungen der ganzen Läufe
-for f in mp3-md-azure-ollie/*.mp3; do ffprobe -v error -show_entries format=duration -of csv=p=0 "$f"; done | awk '{s+=$1} END {printf "%d Dateien, %d:%02d:%02d\n", NR, s/3600, s%3600/60, s%60}'
+for f in mp3-md-azure-ollie-t-8-k128/*.mp3; do ffprobe -v error -show_entries format=duration -of csv=p=0 "$f"; done | awk '{s+=$1} END {printf "%d Dateien, %d:%02d:%02d\n", NR, s/3600, s%3600/60, s%60}'
 ```
 
 **Vergleichen und neu machen**
 
 ```sh
-mv mp3-md-azure-ollie mp3-md-azure-ollie-alt   # alten Stand behalten, dann: sh hb.sh alles
-sed -i 's/^MP3_KBIT=.*/MP3_KBIT="192"/' audio.conf   # Produktion (eigener Ordner …-192)
+mv mp3-md-azure-ollie-t-8-k128 mp3-alt   # alten Stand beiseite, dann: sh hb.sh vertonen
+sed -i 's/^MP3_KBIT=.*/MP3_KBIT="192"/' audio.conf   # Produktion (eigener Ordner …-k192)
 sed -i 's/^AZURE_STIMME=.*/AZURE_STIMME="2"/' audio.conf   # Stimme 2 fest einstellen
 ```
 
@@ -959,10 +992,11 @@ unzensierte Teile (das Hörbuch gibt es nur für die normale Ausgabe). Kontrolle
   Probetexte (kommen zu GitHub, bleiben bei Updates).
 - `hb.sh` – Starter für das Terminal: `sh hb.sh` zeigt alle Befehle.
 - `probe-….mp3`, `aussprache-….mp3` – die letzten Proben (nicht zu GitHub).
-- `txt-md/` – die Texte pro Kapitel (werden mit `t` neu gemacht).
-- `mp3-md-azure-<stimme>/` (bzw. `…-192`) mit `einstellungen.txt`: jeder Lauf wird unten angehängt – Zeit, Aufruf,
-  Einstellungen und die ganze Aussprache-Liste.
-- `txt-md_<stimme>_<zeit>.zip` – bei jedem ganzen Lauf: Texte, Aussprache-Liste und `audio.conf` zur Sicherheit.
+- `txt-md/` – die Texte pro Kapitel (`t` ersetzt nur geänderte; ihr Datum zeigt `v`, was neu muss).
+- `mp3-md-azure-<stimme>-t<tempo>-k<kbit>/` (z. B. `…-ollie-t-8-k128`) mit `einstellungen.txt`: jeder Lauf wird
+  unten angehängt – Zeit, Aufruf, Einstellungen und die ganze Aussprache-Liste.
+- `txt-md_<stimme>-t<tempo>-k<kbit>_<zeit>.zip` – wenn das ganze Buch vertont wird: Texte, Aussprache-Liste und
+  `audio.conf` zur Sicherheit.
 
 MP3, Texte und ZIPs kommen nicht zu GitHub.
 
@@ -980,8 +1014,9 @@ MP3, Texte und ZIPs kommen nicht zu GitHub.
 |---|---|
 | «AZURE_SPEECH_KEY fehlt» | `hb` → `s` (Schlüssel eingeben); im Terminal: neues Terminal öffnen (lädt `~/.bashrc`) |
 | «Azure-Paket fehlt» | `hb` → `c` – installiert es in die `.venv` des Buchs |
-| «Fehler» bei einem Kapitel | nochmals starten – fertige Kapitel werden übersprungen |
-| Kapitel klingt noch alt | im MP3-Ordner liegt die alte Datei: nur dieses Kapitel mit `k` neu sprechen |
+| «Fehler» bei einem Kapitel | nochmals `v` – fertige Kapitel werden übersprungen |
+| Kapitel klingt noch alt | zuerst `t` (Texte), dann `v`. Nur Aussprache geändert? Dann dieses Kapitel mit `k` |
+| «MP3 ohne Text» | Kapitel umbenannt oder entfernt – die genannte alte MP3 von Hand löschen |
 | Wort wird nicht ersetzt | ganzes Wort? Reihenfolge (lange vor kurzen)? Kein `$` oder Punkt am Ende? |
 | Änderung in der Wörter-Datei ist weg | Editor hat überschrieben: Datei schliessen oder «Neu laden» |
 

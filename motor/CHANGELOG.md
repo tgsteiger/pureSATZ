@@ -3,6 +3,24 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.69.9 (November 2026)
+- Menü `o` Ordner: `p` = Pfad des Buchordners kopieren; dazu Taste + `t` = Terminal dort (`bt`, `at` …),
+  Taste + `p` = Pfad kopieren (`ap` …). Zwischenablage: wl-copy, xclip oder xsel (Mac pbcopy, Windows clip).
+- Strichcode (Ausnahme Funktionsstopp, Thomas' go): `{barcode-rahmen-farbe}: gold | schwarz` und
+  `{barcode-rahmen-abstand}: 1` (mm weiss zwischen Strichen und Linie – nur schwarze Striche auf Weiss, z. B. für
+  tredition). Ohne die neuen Zeilen gleiches PDF wie vorher (geprüft).
+
+## 2.69.8 (November 2026)
+- Hörbuch: «vertonen» (`hb` → `v`, `sh hb.sh vertonen`) macht MP3 für Kapitel ohne MP3 oder mit geändertem Text
+  (Text neuer als MP3); ist nichts zu tun: «Alles aktuell». `texte` ersetzt nur geänderte Texte und zeigt sie;
+  danach fragt das Menü «Jetzt vertonen?». `alles` und die Tasten `a`/`m` gehen weiter wie `vertonen`.
+- Hörbuch: MP3-Ordner mit Tempo und Qualität: `mp3-md-azure-ollie-t-8-k128` (`t0` = normal, `t5` = +5 %).
+  Einmalig anderes Tempo: `tempo=-5%` (Menü: `v` und `k` fragen das Tempo) – eigener Ordner zum Vergleichen.
+  Bestehende Ordner von Hand umbenennen (`mv mp3-md-azure-ollie mp3-md-azure-ollie-t-8-k128`).
+- Hörbuch: Meldung «MP3 ohne Text» (Kapitel umbenannt), ZIP nur beim ganzen Buch, Name mit Tempo/kbit;
+  Probe-Dateien `probe-ollie-t-8.mp3`.
+- Hilfe: «Hörbuch: Korrektur vertonen» (Praxisbeispiel) und «Hörbuch: Anderes Tempo ausprobieren»; `v` oder `k`?
+
 ## 2.69.7 (November 2026)
 - Menü: `z` = eine Stufe zurück, im Hauptmenü = beenden (mit Rückfrage). `q` wird nicht mehr angezeigt (geht still weiter).
 - Hörbuch-Menü: kurze Erklärung, was passiert – `p` (Stimme mit Namen der Favoriten, Tempo), `t` und `a` fragen

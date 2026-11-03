@@ -1549,12 +1549,20 @@ def barcode_rahmen(c, x, y, b, h, bild=None, oberhalb=False):
     """{barcode-rahmen}: gold = Goldrahmen · berge = Goldrahmen, oben als Bergkette. Leer = nichts.
     Mit bild (PNG des Strichcodes) wird das Bild eingepasst und seine Striche oben zu Gipfeln geschnitten
     (unten bleiben über 70 % frei); ohne Bild liegt die Bergkette im obersten Fünftel des Felds (epubli druckt
-    den Code später), mit oberhalb=True (eigener Strichcode) 6 mm über dem Feld."""
+    den Code später), mit oberhalb=True (eigener Strichcode) 6 mm über dem Feld.
+    {barcode-rahmen-farbe}: gold | schwarz · {barcode-rahmen-abstand}: mm weiss zwischen Strichen und Linie (2.69.9)."""
     art = V("barcode-rahmen").strip().lower()
     if art not in ("gold", "berge"):
         if art:
             raise SystemExit(f"Variable «barcode-rahmen»: «{art}» – möglich: gold, berge (oder leer)")
         return False
+    fa = V("barcode-rahmen-farbe").strip().lower()
+    if fa not in ("", "gold", "schwarz"):
+        raise SystemExit(f"Variable «barcode-rahmen-farbe»: «{fa}» – möglich: gold, schwarz (oder leer = gold)")
+    try:
+        abstand = float(V("barcode-rahmen-abstand").lower().replace("mm", "").replace(",", ".").strip() or 0) * mm
+    except ValueError:
+        raise SystemExit("Variable «barcode-rahmen-abstand»: Zahl in mm, z. B. 1 (oder leer = 0)")
     m, oben = 1.5 * mm, y + h
     if bild:                                       # Bild wie bisher einpassen, Rahmen eng darum
         from reportlab.lib.utils import ImageReader
@@ -1569,20 +1577,21 @@ def barcode_rahmen(c, x, y, b, h, bild=None, oberhalb=False):
     else:
         grat = [(x - m, oben + (m if bild else 0)), (x + b + m, oben + (m if bild else 0))]
     form = [(x - m, y - m)] + grat + [(x + b + m, y - m)]
+    innen = [(x - m, y - m)] + [(gx, gy - abstand) for gx, gy in grat] + [(x + b + m, y - m)]   # Striche enden darunter
     c.saveState()
     p = c.beginPath(); p.moveTo(*form[0])
     for q in form[1:]: p.lineTo(*q)
     p.close(); c.setFillColor(colors.white); c.drawPath(p, fill=1, stroke=0)
     if bild:                                       # Bild nur innerhalb des Rahmens: oben entstehen die Gipfel
         c.saveState()
-        p = c.beginPath(); p.moveTo(*form[0])
-        for q in form[1:]: p.lineTo(*q)
+        p = c.beginPath(); p.moveTo(*innen[0])
+        for q in innen[1:]: p.lineTo(*q)
         p.close(); c.clipPath(p, stroke=0, fill=0)
         c.drawImage(bild, x, y, b, h, mask="auto")
         c.restoreState()
     p = c.beginPath(); p.moveTo(*form[0])
     for q in form[1:]: p.lineTo(*q)
-    p.close(); c.setStrokeColor(GOLD); c.setLineWidth(0.8); c.setLineJoin(1); c.drawPath(p, fill=0, stroke=1)
+    p.close(); c.setStrokeColor(colors.black if fa == "schwarz" else GOLD); c.setLineWidth(0.8); c.setLineJoin(1); c.drawPath(p, fill=0, stroke=1)
     c.restoreState()
     return True
 

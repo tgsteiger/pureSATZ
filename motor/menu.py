@@ -174,11 +174,16 @@ def pdfs():
     return out
 
 
-def untermenue(titel, eintraege):
-    """eintraege: {Taste: (Text, Pfad oder None)} – gibt die gewählte Taste zurück, None = zurück."""
+def untermenue(titel, eintraege, zusatz=""):
+    """eintraege: {Taste: (Text, Pfad oder None)} – gibt die gewählte Taste zurück, None = zurück.
+    zusatz: z. B. "tp" – dann geht auch Taste + t / p (bt, ap …) und eine Hinweiszeile steht darunter."""
     print(f"\n {FETT(titel)}")
     raster([(k, t) for k, (t, _) in eintraege.items()] + [("z", "zurück")])
+    if zusatz:
+        print("  " + GRAU("dazu: + t = Terminal dort (bt, at …) · + p = Pfad kopieren (bp, ap …)"))
     e = frage(" Wahl: ").lower()
+    if zusatz and len(e) == 2 and e[0] in eintraege and e[1] in zusatz:
+        return e
     if e == "q" and "q" not in eintraege:
         if beenden_frage():
             raise Beenden
@@ -324,8 +329,8 @@ def hoerbuch_schritt(H, audio, hb):
     name = fav.get(st) or kurz(st)
     print("\n" + kopf("Hörbuch", f"{name} · {c.get('AZURE_RATE', '')} · {c.get('MP3_KBIT', '128')} kbit"))
     spalten_zeigen([("Probieren", [("p", "Probe hören (probe.txt)"), ("w", "Wörter hören (KLINGEN FALSCH)")]),
-                    ("Hörbuch", [("t", "Texte neu aus dem Buch"), ("a", "alles sprechen"),
-                                 ("k", "Kapitel … (zeigt die Liste)")]),
+                    ("Hörbuch", [("t", "Texte aus dem Buch (zeigt Geänderte)"), ("v", "vertonen: was fehlt + geändert"),
+                                 ("k", "vertonen: Kapitel auswählen …")]),
                     ("Bearbeiten", [("e", "Wörter · Probe · Einstellungen"), ("s", "Azure-Schlüssel eingeben")]),
                     ("Ordner", [("$", "Terminal in audio/"), ("o", "Ordner audio/ öffnen")])],
                    "h hilfe · c prüfen · z zurück")
@@ -338,6 +343,10 @@ def hoerbuch_schritt(H, audio, hb):
         return True
     gelaufen = False
     neu = lambda muster: sorted(glob.glob(os.path.join(audio, muster)), key=os.path.getmtime)
+    def tempo_frage():                                # Enter = eingestellt · "" · None = zurück
+        print(f" Tempo – Enter = {c.get('AZURE_RATE', '-8%')} (eingestellt) · z. B. -5% · 0% normal · z = zurück")
+        t_ = frage(" Tempo: ").strip()
+        return None if t_.lower() in ("z", "q") else (t_ if not t_ or t_.endswith("%") else t_ + "%")
     def abspielen(muster, seit):
         d = [p for p in neu(muster) if os.path.getmtime(p) >= seit - 1]
         if d and shutil.which("mpv"):
@@ -353,9 +362,8 @@ def hoerbuch_schritt(H, audio, hb):
             s_ = frage(" Stimme: ").strip()
         if s_ in ("z", "q"):
             return True
-        print(f" Tempo – Enter = {c.get('AZURE_RATE', '-8%')} (eingestellt) · z. B. -15% langsamer · 0% normal · z = zurück")
-        t_ = frage(" Tempo: ").strip()
-        if t_ in ("z", "q"):
+        t_ = tempo_frage()
+        if t_ is None:
             return True
         seit = time.time()
         lauf(hb + ["probe"] + [x for x in (s_, t_) if x])
@@ -364,20 +372,30 @@ def hoerbuch_schritt(H, audio, hb):
         seit = time.time()
         lauf(hb + ["woerter"])
         abspielen("aussprache-*.mp3", seit)
-    elif k in ("t", "a", "c"):
-        info = {"t": " Texte neu: Buch → audio/txt-md/ (alte Texte werden ersetzt, MP3 bleiben).",
-                "a": " Alles sprechen: nur Kapitel ohne MP3 → Azure → neue MP3 (fertige bleiben)."}.get(k)
-        if info:
-            print(info)
-            if frage(" Weiter? [n = nein | Enter = ja]: ").lower() in ("n", "nein", "z", "q"):
-                return True
-        lauf(hb + [{"t": "texte", "a": "alles", "c": "pruefen"}[k]])
+    elif k == "t":
+        print(" Texte aus dem Buch → audio/txt-md/ (nur geänderte werden ersetzt, MP3 bleiben).")
+        if frage(" Weiter? [n = nein | Enter = ja]: ").lower() in ("n", "nein", "z", "q"):
+            return True
+        if lauf(hb + ["texte"]) == 0 and frage(f" Jetzt vertonen, was fehlt oder geändert ist (Tempo {c.get('AZURE_RATE', '-8%')})?"
+                 " [n = nein | Enter = ja]: ").lower() not in ("n", "nein", "z", "q"):
+            lauf(hb + ["vertonen"])
+    elif k in ("v", "a", "m"):                        # a, m = alte Tasten
+        print(" Vertonen: MP3 für Kapitel ohne MP3 oder mit geändertem Text (fertige bleiben).")
+        print(" Anderes Tempo = eigener Ordner (z. B. …-t-5-k192) – so kannst du vergleichen.")
+        t_ = tempo_frage()
+        if t_ is not None:
+            lauf(hb + ["vertonen"] + ([f"tempo={t_}"] if t_ else []))
+    elif k == "c":
+        lauf(hb + ["pruefen"])
     elif k == "k":
         lauf(hb + ["liste"])
         gelaufen = False
-        wahl = frage(" Diese Kapitel neu sprechen (MP3 wird ersetzt) – z. B. 0201,0304 · 04 = Teil 4 · z = zurück: ")
+        print(" Kapitel vertonen: nur die gewählten, immer neu (MP3 wird ersetzt) – z. B. zum Vergleichen.")
+        wahl = frage(" Kapitel – z. B. 0603,0605 · 06 = Teil 6 · z = zurück: ").strip()
         if wahl and wahl.lower() not in ("z", "q"):
-            lauf(hb + wahl.split())
+            t_ = tempo_frage()
+            if t_ is not None:
+                lauf(hb + wahl.split() + ([f"tempo={t_}"] if t_ else []))
     elif k == "e":
         datei = {"w": ("Wörter", (glob.glob(os.path.join(audio, f"aussprache-{name.lower()}.txt")) or
                                   sorted(glob.glob(os.path.join(audio, "aussprache-*.txt"))) or [""])[0]),
@@ -531,6 +549,17 @@ def terminal(ordner=BASE):
     print("  Kein Terminal gefunden – Rechtsklick in den Buchordner → «Im Terminal öffnen».")
 
 
+def pfad_kopieren(ordner):
+    """Pfad in die Zwischenablage (Linux: wl-copy, xclip oder xsel · Mac: pbcopy · Windows: clip) und anzeigen."""
+    for cmd in ([["clip"]] if WIN else [["pbcopy"]] if MAC else
+                [["wl-copy"], ["xclip", "-selection", "clipboard"], ["xsel", "-b", "-i"]]):
+        if shutil.which(cmd[0]):
+            subprocess.run(cmd, input=ordner.encode(), stderr=subprocess.DEVNULL)
+            print(f"  Kopiert: {ordner}")
+            return
+    print(f"  {ordner}\n  (zum Kopieren markieren – für Strg+C fehlt xclip: sudo apt install xclip)")
+
+
 def schreibtisch():
     """Schreibtisch-Ordner (Linux: xdg-user-dir, z. B. ~/Schreibtisch; Windows auch mit OneDrive)."""
     try:
@@ -644,10 +673,12 @@ def main():
             elif w == "o":
                 ordner = {k: (t, os.path.join(BASE, d)) for k, t, d in (("b", "Buchordner", ""), ("n", "normal", "ausgabe-normal"),
                           ("u", "unzensiert", "ausgabe-unzensiert"), ("d", "druck", "druck"), ("g", "geschichten", "geschichten"),
-                          ("t", "tabellen", "tabellen"), ("a", "audio (Hörbuch)", "audio"))}
-                k = untermenue("Ordner …", {k: v for k, v in ordner.items() if os.path.isdir(v[1])})
-                if k:
-                    oeffnen(ordner[k][1])
+                          ("t", "tabellen", "tabellen"), ("a", "audio (Hörbuch)", "audio"),
+                          ("p", "Pfad Buchordner kopieren", ""))}
+                k = untermenue("Ordner …", {k: v for k, v in ordner.items() if os.path.isdir(v[1])}, zusatz="tp")
+                k = "bp" if k == "p" else k               # p allein = Pfad des Buchordners
+                if k:                                     # b = öffnen · bt = Terminal · bp = Pfad kopieren
+                    {"t": terminal, "p": pfad_kopieren}.get(k[1:], oeffnen)(ordner[k[0]][1])
             elif w == "g":
                 k = untermenue("Geschichten …", {"e": ("schreiben …", 0), "n": ("neue Geschichte", 0),
                                                  "b": ("fehlende ins Buch", 0),

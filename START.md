@@ -135,7 +135,7 @@ Danach mit `sh build.sh schnell` ansehen. **Klick auf einen Code = kopiert.** Ga
 | eine **Tabelle** | `@#name` (CSV im Ordner tabellen/) – Menü `t` → `n` legt sie an. [→ Tabellen](#Tabellen) |
 | eine **Notiz**, die nie gedruckt wird | in einer Geschichte unter dem Titel `notiz: …`; im Buch `::: offen-notiz` … `:::` |
 | den Druck in **CMYK** (z. B. tredition) | in der Druckdatei `{farbmodus}: cmyk`, dann `sh build.sh final`. [→ RGB oder CMYK](#Farben-fuer-den-Druck) |
-| den **Strichcode mit Goldrahmen** | in der Druckdatei `{barcode-rahmen}: berge` oder `gold`. [→ Druckangaben](#Plattform-Dateien) |
+| den **Strichcode mit Goldrahmen** | in der Druckdatei `{barcode-rahmen}: berge` oder `gold` (dazu evtl. `{barcode-rahmen-abstand}: 1`, `{barcode-rahmen-farbe}: schwarz`). [→ Druckangaben](#Plattform-Dateien) |
 | einen **QR-Code** | `@QR https://… \| Text`, zwei nebeneinander mit `@QR-PAAR` |
 | sehen, **ob es passt** | `sh build.sh schnell`, dann das PDF öffnen (der Befehl steht am Ende des Baus) |
 
