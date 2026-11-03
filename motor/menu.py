@@ -405,8 +405,14 @@ def hoerbuch_schritt(H, audio, hb):
     elif k == "k":
         lauf(hb + ["liste"])
         gelaufen = False
-        print(" Kapitel vertonen: nur die gewählten, immer neu (MP3 wird ersetzt) – z. B. zum Vergleichen.")
-        wahl = frage(" Kapitel – z. B. 0603,0605 · 06 = Teil 6 · z = zurück: ").strip()
+        print(" Kapitel vertonen: nur die gewählten, immer neu (MP3 wird ersetzt).")
+        da = [re.sub(r"\D", "", os.path.basename(p).split("_", 1)[0]) for p in glob.glob(os.path.join(audio, "txt-md", "*.txt"))]
+        while True:                                   # Kürzel gleich prüfen, falsche nochmals fragen
+            wahl = frage(" Kapitel – z. B. 0603,0605 · 06 = Teil 6 · z = zurück: ").strip()
+            falsch = [w for w in wahl.replace(" ", ",").split(",") if w and not any(d.startswith(w.replace(".", "")) for d in da)]
+            if wahl.lower() in ("", "z", "q") or not falsch:
+                break
+            print(" " + ROT("✗ Nicht gefunden: " + ", ".join(falsch)) + GRAU(" – Kürzel aus der Liste oben"))
         if wahl and wahl.lower() not in ("z", "q"):
             t_ = tempo_frage()
             if t_ is not None:
@@ -433,7 +439,7 @@ def hoerbuch_schritt(H, audio, hb):
         import webbrowser
         webbrowser.open("file://" + hilfe + "#Hörbuch-Was-es-braucht")
     else:
-        print(f"  Unbekannt: {k}")
+        print(" " + ROT(f"✗ Unbekannt: {k}") + GRAU(" – h = Hilfe"))
     if gelaufen:                                      # Meldungen stehen lassen
         gelaufen = False
         a = frage(" Enter = Hörbuch-Menü · z = zurück: ").lower()
@@ -783,7 +789,7 @@ def main():
             elif w.split()[0] in BEFEHLE:          # ganzer Befehl: final · leseprobe uz 18,20 · personen Eltern
                 bauen(*e.split())
             else:
-                print(f"  Unbekannt: {e}")
+                print(" " + ROT(f"✗ Unbekannt: {e}") + GRAU(" – : = Befehle · h = Hilfe"))
             neu = {k: p for k, (_, p) in pdfs().items() if os.path.getmtime(p) >= seit - 1} if gelaufen else {}
             for p in ([neu[k] for k in ("n", "u") if k in neu] if len(neu) > 2 else neu.values()):
                 oeffnen(p)                                # neu gebaute Lese-PDFs gleich öffnen
