@@ -31,6 +31,7 @@ HELL = (lambda t: f"\033[1;97m{t}\033[0m") if FARBIG else (lambda t: t)         
 GRAU = (lambda t: f"\033[38;5;244m{t}\033[0m") if FARBIG else (lambda t: t)      # Trennlinien: gedämpft
 GRUEN = (lambda t: f"\033[1;32m{t}\033[0m") if FARBIG else (lambda t: t)        # ✓ nach einem Lauf
 ROT = (lambda t: f"\033[1;31m{t}\033[0m") if FARBIG else (lambda t: t)          # ✗ Fehler
+GOLDFEIN = (lambda t: f"\033[38;5;136m{t}\033[0m") if FARBIG else (lambda t: t)  # Linien um einen Lauf: fein, dunkleres Gold
 zuletzt = ""                                                                   # letzte Eingabe (für die Startlinie)
 
 
@@ -137,7 +138,7 @@ def lauf(cmd, ordner=BASE, env=None):
     global gelaufen
     gelaufen, t = True, time.time()
     breit = min(70, shutil.get_terminal_size((80, 24)).columns - 2)
-    linie = lambda vorne, n: " " + GRAU("── ") + vorne + " " + GRAU("─" * max(3, breit - n))
+    linie = lambda vorne, n: " " + GOLDFEIN("── ") + vorne + " " + GOLDFEIN("─" * max(3, breit - n))
     name = "hb " + " ".join(cmd[2:]) if cmd[1:2] and cmd[1].endswith("hoerbuch.py") else zuletzt
     print(linie(FETT(name), len(name) + 4))           # Startlinie: ── sy ─────
     try:
@@ -146,7 +147,7 @@ def lauf(cmd, ordner=BASE, env=None):
         r = 1
     d = int(time.time() - t)
     zeit = f" · {d // 60} Min. {d % 60} s"
-    text = (GRUEN("✓") + GRAU(" Fertig" + zeit)) if r == 0 else (ROT("✗ Fehler – siehe oben") + GRAU(zeit))
+    text = (GRUEN("✓") + GOLDFEIN(" Fertig" + zeit)) if r == 0 else (ROT("✗ Fehler – siehe oben") + GOLDFEIN(zeit))
     print(linie(text, len(zeit) + (12 if r == 0 else 25)) + "\n")   # Schlusslinie, dann Leerzeile
     klang()
     return r
