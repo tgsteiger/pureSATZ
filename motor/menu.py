@@ -25,7 +25,9 @@ MOTOR = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.dirname(MOTOR)
 WIN, MAC = sys.platform == "win32", sys.platform == "darwin"
 LINUX = sys.platform.startswith("linux")                       # Hörbuch (hb) vorerst nur unter Linux
-FETT = (lambda t: f"\033[1m{t}\033[0m") if not WIN and sys.stdout.isatty() else (lambda t: t)   # Titel fett (Terminal)
+FARBIG = not WIN and sys.stdout.isatty()                           # Farben/fett nur im echten Terminal (Linux/Mac)
+FETT = (lambda t: f"\033[1;38;5;178m{t}\033[0m") if FARBIG else (lambda t: t)   # Bereich / Titel: fett, Gold
+BLAU = (lambda t: f"\033[1;38;5;33m{t}\033[0m") if FARBIG else (lambda t: t)    # Buchname: fett, Blau
 
 
 def kurzname(n, laenge=24):
@@ -37,8 +39,9 @@ def kopf(bereich="", rechts=""):
     """Kopfzeile: «pureSATZ 2.69.0 · Leben123 › Hörbuch          rechts» (Bereich fett)."""
     buch = next(iter(glob.glob(os.path.join(BASE, "*-buch.md"))), "Buch-buch.md")
     version = open(os.path.join(MOTOR, "VERSION"), encoding="utf-8").read().strip()
-    links = f" pureSATZ {version} · {kurzname(os.path.basename(buch)[:-8])}" + (f" › {bereich}" if bereich else "")
-    zeile = links.replace(f"› {bereich}", f"› {FETT(bereich)}") if bereich else links
+    name = kurzname(os.path.basename(buch)[:-8])
+    links = f" pureSATZ {version} · {name}" + (f" › {bereich}" if bereich else "")
+    zeile = f" pureSATZ {version} · {BLAU(name)}" + (f" › {FETT(bereich)}" if bereich else "")
     return zeile + (rechts.rjust(max(len(rechts) + 3, 68 - len(links))) if rechts else "")
 EINST = os.path.join(BASE, ".menu")
 PURESATZ = os.path.join(os.path.dirname(BASE), "pureSATZ")
@@ -282,8 +285,12 @@ def hoerbuch_menue():
     audio = os.path.join(BASE, "audio")
     hb = [sys.executable, os.path.join(MOTOR, "audio", "hoerbuch.py")]
     H.anlegen()                                       # audio/ aus der Vorlage, Bestehendes bleibt
-    while hoerbuch_schritt(H, audio, hb):             # bleibt offen bis z / Enter
-        pass
+    while True:                                       # bleibt offen bis z / Enter
+        try:
+            if not hoerbuch_schritt(H, audio, hb):
+                return
+        except KeyboardInterrupt:                     # Strg+C bei einer Frage: zurück ins Hörbuch-Menü
+            print("\n  abgebrochen")
 
 
 def hoerbuch_schritt(H, audio, hb):
@@ -301,10 +308,10 @@ def hoerbuch_schritt(H, audio, hb):
               " ── Bearbeiten ──────────────────   ── Sonst ────────────────────────",
               "  e  Wörter · Probe · Einstellungen  $  Terminal im Ordner audio/",
               "  s  Azure-Schlüssel eingeben        o  Ordner audio/   h  Hilfe   c  prüfen",
-              "  z  zurück"):
+              "  z  zurück   (Strg+C bricht einen Lauf ab, das Menü bleibt)"):
         print(z)
     k = frage(" Wahl: ").lower()
-    if k in ("", "z"):
+    if k in ("", "z", "q"):
         return False
     gelaufen = False
     neu = lambda muster: sorted(glob.glob(os.path.join(audio, muster)), key=os.path.getmtime)
@@ -313,11 +320,16 @@ def hoerbuch_schritt(H, audio, hb):
         if d and shutil.which("mpv"):
             subprocess.Popen(["mpv", "--force-window=yes", d[-1]], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if k == "p":
-        s_ = frage(" Stimme [Enter = eingestellt | 1 2 … | l = Liste | alle]: ").strip()
+        s_ = frage(" Stimme [Enter = eingestellt | 1 2 … | l = Liste | alle | z = zurück]: ").strip()
         if s_ == "l":
             lauf(hb + ["probe", "l"])
-            s_ = frage(" Stimme [Enter = eingestellt]: ").strip()
-        t_ = frage(f" Tempo [Enter = {c.get('AZURE_RATE', '-8%')} | z. B. -10% 0%]: ").strip()
+            gelaufen = False
+            s_ = frage(" Stimme [Enter = eingestellt | z = zurück]: ").strip()
+        if s_ in ("z", "q"):
+            return True
+        t_ = frage(f" Tempo [Enter = {c.get('AZURE_RATE', '-8%')} | z. B. -10% 0% | z = zurück]: ").strip()
+        if t_ in ("z", "q"):
+            return True
         seit = time.time()
         lauf(hb + ["probe"] + [x for x in (s_, t_) if x])
         abspielen("*.mp3", seit)
@@ -329,8 +341,9 @@ def hoerbuch_schritt(H, audio, hb):
         lauf(hb + [{"t": "texte", "a": "alles", "c": "pruefen"}[k]])
     elif k == "k":
         lauf(hb + ["liste"])
-        wahl = frage(" Kürzel (z. B. 0201,0304 · 04 = Teil 4 · Enter = zurück): ")
-        if wahl:
+        gelaufen = False
+        wahl = frage(" Kürzel (z. B. 0201,0304 · 04 = Teil 4 · Enter oder z = zurück): ")
+        if wahl and wahl.lower() not in ("z", "q"):
             lauf(hb + wahl.split())
     elif k == "e":
         datei = {"w": ("Wörter", (glob.glob(os.path.join(audio, f"aussprache-{name.lower()}.txt")) or
