@@ -3,6 +3,10 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.68.1 (November 2026)
+- Hörbuch: Platzhalter wie beim Bau – fehlt `{untertitel}`, gilt `{untertitel-normal}` (Ansage, `{zeitstrahl-titel}` im Text).
+  Fehlt das Azure-Paket, kurze Meldung «im Menü hb → c» statt Abbruch mit Fehlertext.
+
 ## 2.68.0 (November 2026)
 - **Hörbuch (nur Linux, Testphase):** neu `motor/audio/` – eine MP3 pro Kapitel mit einer Azure-Stimme (Ollie),
   übernommen aus Leben123. Menü `hb` (Texte, Wörter anhören, alles, Kapitel, Liste, Einstellungen, prüfen) oder

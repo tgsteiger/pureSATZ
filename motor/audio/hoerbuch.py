@@ -46,6 +46,9 @@ def buch():
     vd = md[:-len("-buch.md")] + "-variablen.md"
     var = M.lies_variablen(vd)[0] if os.path.exists(vd) else {}
     var.update({k: v for k, v in M.lies(md)[0].items() if k not in var})
+    for k, v in list(var.items()):                          # wie der Bau: {untertitel} = {untertitel-normal}
+        if k.endswith("-normal") and not var.get(k[:-7]):
+            var[k[:-7]] = v
     return md, var
 
 
@@ -131,6 +134,11 @@ def main():
         print("Noch keine Texte – zuerst:  texte")
         if texte():
             return 1
+    if befehl != "liste":
+        try:
+            import azure.cognitiveservices.speech  # noqa: F401
+        except ImportError:
+            sys.exit("Azure-Paket fehlt – im Menü hb → c (prüfen) installieren.")
     _, var = buch()
     env = umgebung(var)
     if befehl in ("aussprache", "probe"):
