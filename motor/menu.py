@@ -54,13 +54,13 @@ def kurzname(n, laenge=24):
 
 
 def kopf(bereich="", rechts=""):
-    """Kopfzeile: «pureSATZ 2.69.0 · Leben123 › Hörbuch          rechts» (Bereich fett)."""
+    """Kopfzeile: «══ pureSATZ 2.69.0 · Leben123 › Hörbuch          rechts ══» (Bereich fett, ══ gold = hier beginnt das Menü)."""
     buch = next(iter(glob.glob(os.path.join(BASE, "*-buch.md"))), "Buch-buch.md")
     version = open(os.path.join(MOTOR, "VERSION"), encoding="utf-8").read().strip()
     name = kurzname(os.path.basename(buch)[:-8])
     links = f" pureSATZ {version} · {name}" + (f" › {bereich}" if bereich else "")
-    zeile = f" pureSATZ {version} · {HELL(name)}" + (f" › {FETT(bereich)}" if bereich else "")
-    return zeile + (rechts.rjust(max(len(rechts) + 3, 71 - len(links))) if rechts else "")
+    zeile = GOLDFEIN("══") + f" pureSATZ {version} · {HELL(name)}" + (f" › {FETT(bereich)}" if bereich else "")
+    return zeile + rechts.rjust(max(len(rechts) + 3, 68 - len(links))) + " " + GOLDFEIN("══")
 EINST = os.path.join(BASE, ".menu")
 PURESATZ = os.path.join(os.path.dirname(BASE), "pureSATZ")
 LOKAL = os.path.isdir(os.path.join(PURESATZ, "motor"))
