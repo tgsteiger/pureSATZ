@@ -29,6 +29,9 @@ FARBIG = not WIN and sys.stdout.isatty()                           # Farben/fett
 FETT = (lambda t: f"\033[1;38;5;178m{t}\033[0m") if FARBIG else (lambda t: t)   # Bereich / Titel: fett, Gold
 HELL = (lambda t: f"\033[1;97m{t}\033[0m") if FARBIG else (lambda t: t)          # Buchname: fett, weiss
 GRAU = (lambda t: f"\033[38;5;244m{t}\033[0m") if FARBIG else (lambda t: t)      # Trennlinien: gedämpft
+GRUEN = (lambda t: f"\033[1;32m{t}\033[0m") if FARBIG else (lambda t: t)        # ✓ nach einem Lauf
+ROT = (lambda t: f"\033[1;31m{t}\033[0m") if FARBIG else (lambda t: t)          # ✗ Fehler
+zuletzt = ""                                                                   # letzte Eingabe (für die Startlinie)
 
 
 class Beenden(Exception):
@@ -87,11 +90,17 @@ def einstellungen(speichern=False):
 
 def frage(text, merken=False):
     """Eingabe; nur Befehle im Hauptmenü kommen in den Verlauf (↑)."""
+    global zuletzt
     n = readline.get_current_history_length() if readline else 0
+    if FARBIG:                                        # › gold, «Eingabe»/«Wahl» gold; \001 \002 = für readline unsichtbar
+        g = lambda t: f"\001\033[1;38;5;178m\002{t}\001\033[0m\002"
+        wort = next((w for w in ("Eingabe", "Wahl") if text.startswith(" " + w)), "")
+        text = " " + g("›") + " " + (g(wort) + text[len(wort) + 1:] if wort else text[1:])
     try:
         e = input(text).strip()
     except EOFError:
         return "q"
+    zuletzt = e or zuletzt
     if readline:
         neu = readline.get_current_history_length() > n
         merken = merken and e.lower() not in ("", "q") and (n == 0 or readline.get_history_item(n) != e)
@@ -127,12 +136,18 @@ def bauen(*args):
 def lauf(cmd, ordner=BASE, env=None):
     global gelaufen
     gelaufen, t = True, time.time()
+    breit = min(70, shutil.get_terminal_size((80, 24)).columns - 2)
+    linie = lambda vorne, n: " " + GRAU("── ") + vorne + " " + GRAU("─" * max(3, breit - n))
+    name = "hb " + " ".join(cmd[2:]) if cmd[1:2] and cmd[1].endswith("hoerbuch.py") else zuletzt
+    print(linie(FETT(name), len(name) + 4))           # Startlinie: ── sy ─────
     try:
         r = subprocess.run(cmd, cwd=ordner, env=env).returncode
     except KeyboardInterrupt:                   # Ctrl+C bricht nur den Befehl ab, nicht das Menü
         r = 1
     d = int(time.time() - t)
-    print(("\nFertig" if r == 0 else "\nFehler – siehe Meldungen oben") + f" ({d // 60} Min. {d % 60} s)")
+    zeit = f" · {d // 60} Min. {d % 60} s"
+    text = (GRUEN("✓") + GRAU(" Fertig" + zeit)) if r == 0 else (ROT("✗ Fehler – siehe oben") + GRAU(zeit))
+    print(linie(text, len(zeit) + (12 if r == 0 else 25)) + "\n")   # Schlusslinie, dann Leerzeile
     klang()
     return r
 
@@ -783,7 +798,12 @@ def main():
 
 
 if __name__ == "__main__":
+    if FARBIG:
+        sys.stdout.write("\033]12;#d7af5f\007")         # Cursor gold (Terminator, GNOME, xterm; sonst ohne Wirkung)
     try:
         main()
     except KeyboardInterrupt:
         print()
+    finally:
+        if FARBIG:
+            sys.stdout.write("\033]112\007")            # Cursorfarbe zurück

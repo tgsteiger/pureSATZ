@@ -3,6 +3,11 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.69.10 (November 2026)
+- Menü: jede Eingabe mit goldenem `›` («Eingabe» und «Wahl» gold), Cursor gold (wo das Terminal es kann).
+  Jeder Lauf zwischen zwei grauen Linien: oben der Befehl (`── sy ───`), unten `✓ Fertig · Zeit` bzw. rot
+  `✗ Fehler – siehe oben`, danach eine Leerzeile.
+
 ## 2.69.9 (November 2026)
 - Menü `o` Ordner: `p` = Pfad des Buchordners kopieren; dazu Taste + `t` = Terminal dort (`bt`, `at` …),
   Taste + `p` = Pfad kopieren (`ap` …). Zwischenablage: wl-copy, xclip oder xsel (Mac pbcopy, Windows clip).
