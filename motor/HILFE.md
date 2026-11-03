@@ -806,14 +806,15 @@ Danach zum Ausprobieren: `hb` → `p` (Probe) und `hb` → `w` (Wörter).
 ## Hörbuch: Das Menü hb
 
 ```
- pureSATZ 2.69.2 · Mein-Buch › Hörbuch         Ollie · -8% · 128 kbit
- ── Probieren ───────────────────   ── Hörbuch ──────────────────────
-  p  Probe hören (probe.txt)         t  Texte neu aus dem Buch
-  w  Wörter hören (KLINGEN FALSCH)   a  alles sprechen
-                                     k  Kapitel … (zeigt die Liste)
- ── Bearbeiten ──────────────────   ── Sonst ────────────────────────
-  e  Wörter · Probe · Einstellungen  $  Terminal im Ordner audio/
-  s  Azure-Schlüssel eingeben        o  Ordner audio/   h  Hilfe   c  prüfen
+ pureSATZ 2.69.4 · Mein-Buch › Hörbuch            Ollie · -8% · 128 kbit
+ ── Probieren ─────────────────────   ── Hörbuch ───────────────────────
+  p  Probe hören (probe.txt)          t  Texte neu aus dem Buch
+  w  Wörter hören (KLINGEN FALSCH)    a  alles sprechen
+                                      k  Kapitel … (zeigt die Liste)
+ ── Bearbeiten ────────────────────   ── Ordner ────────────────────────
+  e  Wörter · Probe · Einstellungen   $  Terminal in audio/
+  s  Azure-Schlüssel eingeben         o  Ordner audio/ öffnen
+ ── Weiteres:  h hilfe · c prüfen · z zurück · Strg+C bricht einen Lauf ab
 ```
 
 | Taste | Was passiert |

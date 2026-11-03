@@ -27,7 +27,7 @@ WIN, MAC = sys.platform == "win32", sys.platform == "darwin"
 LINUX = sys.platform.startswith("linux")                       # Hörbuch (hb) vorerst nur unter Linux
 FARBIG = not WIN and sys.stdout.isatty()                           # Farben/fett nur im echten Terminal (Linux/Mac)
 FETT = (lambda t: f"\033[1;38;5;178m{t}\033[0m") if FARBIG else (lambda t: t)   # Bereich / Titel: fett, Gold
-BLAU = (lambda t: f"\033[1;38;5;33m{t}\033[0m") if FARBIG else (lambda t: t)    # Buchname: fett, Blau
+HELL = (lambda t: f"\033[1;97m{t}\033[0m") if FARBIG else (lambda t: t)          # Buchname: fett, weiss
 
 
 def kurzname(n, laenge=24):
@@ -41,8 +41,8 @@ def kopf(bereich="", rechts=""):
     version = open(os.path.join(MOTOR, "VERSION"), encoding="utf-8").read().strip()
     name = kurzname(os.path.basename(buch)[:-8])
     links = f" pureSATZ {version} · {name}" + (f" › {bereich}" if bereich else "")
-    zeile = f" pureSATZ {version} · {BLAU(name)}" + (f" › {FETT(bereich)}" if bereich else "")
-    return zeile + (rechts.rjust(max(len(rechts) + 3, 68 - len(links))) if rechts else "")
+    zeile = f" pureSATZ {version} · {HELL(name)}" + (f" › {FETT(bereich)}" if bereich else "")
+    return zeile + (rechts.rjust(max(len(rechts) + 3, 71 - len(links))) if rechts else "")
 EINST = os.path.join(BASE, ".menu")
 PURESATZ = os.path.join(os.path.dirname(BASE), "pureSATZ")
 LOKAL = os.path.isdir(os.path.join(PURESATZ, "motor"))
@@ -301,15 +301,12 @@ def hoerbuch_schritt(H, audio, hb):
     st = c.get("AZURE_FAVORIT" + st, st) if st in ("1", "2") else st
     name = "-".join(st.split("-")[2:]).replace("MultilingualNeural", "").replace("Neural", "") or st
     print("\n" + kopf("Hörbuch", f"{name} · {c.get('AZURE_RATE', '')} · {c.get('MP3_KBIT', '128')} kbit"))
-    for z in (" ── Probieren ───────────────────   ── Hörbuch ──────────────────────",
-              "  p  Probe hören (probe.txt)         t  Texte neu aus dem Buch",
-              "  w  Wörter hören (KLINGEN FALSCH)   a  alles sprechen",
-              "                                     k  Kapitel … (zeigt die Liste)",
-              " ── Bearbeiten ──────────────────   ── Sonst ────────────────────────",
-              "  e  Wörter · Probe · Einstellungen  $  Terminal im Ordner audio/",
-              "  s  Azure-Schlüssel eingeben        o  Ordner audio/   h  Hilfe   c  prüfen",
-              "  z  zurück   (Strg+C bricht einen Lauf ab, das Menü bleibt)"):
-        print(z)
+    spalten_zeigen([("Probieren", [("p", "Probe hören (probe.txt)"), ("w", "Wörter hören (KLINGEN FALSCH)")]),
+                    ("Hörbuch", [("t", "Texte neu aus dem Buch"), ("a", "alles sprechen"),
+                                 ("k", "Kapitel … (zeigt die Liste)")]),
+                    ("Bearbeiten", [("e", "Wörter · Probe · Einstellungen"), ("s", "Azure-Schlüssel eingeben")]),
+                    ("Ordner", [("$", "Terminal in audio/"), ("o", "Ordner audio/ öffnen")])],
+                   "h hilfe · c prüfen · z zurück · Strg+C bricht einen Lauf ab")
     k = frage(" Wahl: ").lower()
     if k in ("", "z", "q"):
         return False
@@ -444,14 +441,19 @@ def zeige():
                 + ([("hb", "Hörbuch …")] if LINUX else [])),
                ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen")]),
                ("Abgleichen", [("sy", "sync   (GitHub)"), ("u", "update" + (" (ul lokal)" if LOKAL else ""))])]
+    spalten_zeigen(spalten, "n neu · $ Terminal · : Befehle · h hilfe · ! Klang · q beenden")
+    if os.path.exists(ALLE):
+        print(SPERRE)
+
+
+def spalten_zeigen(spalten, weiteres):
+    """Vier Gruppen in zwei Spalten (Haupt- und Hörbuch-Menü gleich) und die Zeile «── Weiteres: …»."""
     for (t1, z1), (t2, z2) in (spalten[:2], spalten[2:]):
         print(f" ── {t1} " + "─" * (30 - len(t1)) + f"   ── {t2} " + "─" * (30 - len(t2)))
         for a, b in zip(z1 + [("", "")] * 3, z2 + [("", "")] * 3):
             if a[0] or b[0]:
                 print(f"  {a[0]:<3}{a[1]:<33}{b[0]:<3}{b[1]}".rstrip())
-    print(" ── Weiteres:  n neu · $ Terminal · : Befehle · h hilfe · ! Klang · q beenden")
-    if os.path.exists(ALLE):
-        print(SPERRE)
+    print(f" ── Weiteres:  {weiteres}")
 
 
 def raster(zeilen):
