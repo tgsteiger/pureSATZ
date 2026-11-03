@@ -33,6 +33,7 @@ GRUEN = (lambda t: f"\033[1;32m{t}\033[0m") if FARBIG else (lambda t: t)        
 ROT = (lambda t: f"\033[1;31m{t}\033[0m") if FARBIG else (lambda t: t)          # ✗ Fehler
 GOLDFEIN = (lambda t: f"\033[38;5;136m{t}\033[0m") if FARBIG else (lambda t: t)  # Linien um einen Lauf: fein, dunkleres Gold
 zuletzt = ""                                                                   # letzte Eingabe (für die Startlinie)
+RAND = 71                                                                      # rechter Rand von Kopfzeile, Linien, «Weiteres»
 
 
 class Beenden(Exception):
@@ -60,7 +61,7 @@ def kopf(bereich="", rechts=""):
     name = kurzname(os.path.basename(buch)[:-8])
     links = f" pureSATZ {version} · {name}" + (f" › {bereich}" if bereich else "")
     zeile = GOLDFEIN("══") + f" pureSATZ {version} · {HELL(name)}" + (f" › {FETT(bereich)}" if bereich else "")
-    return zeile + rechts.rjust(max(len(rechts) + 3, 67 - len(links))) + " " + GOLDFEIN("══")   # endet bei Spalte 72
+    return zeile + rechts.rjust(max(len(rechts) + 3, 66 - len(links))) + " " + GOLDFEIN("══")   # endet bei Spalte 71 (RAND)
 EINST = os.path.join(BASE, ".menu")
 PURESATZ = os.path.join(os.path.dirname(BASE), "pureSATZ")
 LOKAL = os.path.isdir(os.path.join(PURESATZ, "motor"))
@@ -137,7 +138,7 @@ def bauen(*args):
 def lauf(cmd, ordner=BASE, env=None):
     global gelaufen
     gelaufen, t = True, time.time()
-    breit = min(71, shutil.get_terminal_size((80, 24)).columns - 2)   # endet bei Spalte 72 wie Menü und Kopfzeile
+    breit = min(RAND - 1, shutil.get_terminal_size((80, 24)).columns - 2)   # endet bei Spalte 71 wie Menü und Kopfzeile
     linie = lambda vorne, n: " " + GOLDFEIN("── ") + vorne + " " + GOLDFEIN("─" * max(3, breit - n))
     name = "hb " + " ".join(cmd[2:]) if cmd[1:2] and cmd[1].endswith("hoerbuch.py") else zuletzt
     print(linie(FETT(name), len(name) + 4))           # Startlinie: ── sy ─────
@@ -528,14 +529,20 @@ def zeige():
 def spalten_zeigen(spalten, weiteres):
     """Vier Gruppen in zwei Spalten (Haupt- und Hörbuch-Menü gleich) und die Zeile «── Weiteres: …»."""
     taste = lambda k: FETT(k) + " " * (3 - len(k))                 # Taste gold, danach auf 3 Zeichen aufgefüllt
-    linie = lambda t: GRAU("── ") + t + " " + GRAU("─" * (30 - len(t)))
+    linie = lambda t, n=30: GRAU("── ") + t + " " + GRAU("─" * (n - len(t)))
     for (t1, z1), (t2, z2) in (spalten[:2], spalten[2:]):
-        print(f" {linie(t1)}   {linie(t2)}")
+        print(f" {linie(t1)}   {linie(t2, 29)}")                  # rechte Linie endet bei RAND
         for a, b in zip(z1 + [("", "")] * 3, z2 + [("", "")] * 3):
             if a[0] or b[0]:
                 print((f"  {taste(a[0])}{a[1]:<33}" + (f"{taste(b[0])}{b[1]}" if b[0] else "")).rstrip())
-    teile = [(FETT(t.split(" ", 1)[0]) + " " + t.split(" ", 1)[1]) if " " in t else t for t in weiteres.split(" · ")]
-    print(f" {GRAU('──')} Weiteres:  " + " · ".join(teile))
+    zeile, laenge = f" {GRAU('──')} Weiteres:  ", 15                 # umbrechen bei RAND, eingerückt unter den ersten Befehl
+    for i, t in enumerate(weiteres.split(" · ")):
+        teil = (FETT(t.split(" ", 1)[0]) + " " + t.split(" ", 1)[1]) if " " in t else t
+        if i and laenge + 3 + len(t) > RAND:
+            print(zeile); zeile, laenge = " " * 15 + teil, 15 + len(t)
+        else:
+            zeile, laenge = zeile + (" · " if i else "") + teil, laenge + (3 if i else 0) + len(t)
+    print(zeile)
 
 
 def raster(zeilen):
