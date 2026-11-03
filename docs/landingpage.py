@@ -158,7 +158,7 @@ def seite(version):
     return f"""<!doctype html>
 <html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>pureSATZ – in fünf Minuten zu deinem ersten Buch</title>
-<meta name="description" content="pureSATZ macht aus Markdown ein druckfertiges Buch mit Umschlag und E-Book für epubli, tredition, BoD, KDP und andere – dazu Leseprobe, Korrektur-PDF, Probedruck-Booklet und Änderungs-PDF. Linux, Mac und Windows, kostenlos für eigene Bücher.">
+<meta name="description" content="pureSATZ macht aus Markdown ein druckfertiges Buch mit Umschlag und E-Book für epubli, tredition, BoD, KDP und andere – dazu Leseprobe, Korrektur-PDF, Probedruck-Booklet, Änderungs-PDF und (Linux) Hörbuch. Linux, Mac und Windows, kostenlos für eigene Bücher.">
 <style>
 @font-face{{font-family:Poppins;src:url(fonts/Poppins-Regular.ttf)}}
 @font-face{{font-family:Poppins;font-weight:500;src:url(fonts/Poppins-Medium.ttf)}}
@@ -209,7 +209,7 @@ summary{{font:500 16px Poppins,system-ui,sans-serif;color:var(--haupt);cursor:po
 
 <div class="held"><div>
 <h1>In fünf Minuten zu deinem ersten Buch.</h1>
-<p class="unter"><b>Du schreibst in einfachen Textdateien (Markdown) – pureSATZ macht daraus ein druckfertiges Buch:</b> Buchblock und Umschlag für epubli, tredition, BoD, KDP oder zum Selberdrucken, dazu E-Book, Leseprobe, Korrekturfassung, Probedruck-Booklet, Änderungs-PDF und Werbebilder. Alles aus denselben Dateien.</p>
+<p class="unter"><b>Du schreibst in einfachen Textdateien (Markdown) – pureSATZ macht daraus ein druckfertiges Buch:</b> Buchblock und Umschlag für epubli, tredition, BoD, KDP oder zum Selberdrucken, dazu E-Book, Leseprobe, Korrekturfassung, Probedruck-Booklet, Änderungs-PDF und Werbebilder – unter Linux auch ein Hörbuch. Alles aus denselben Dateien.</p>
 <p class="unter"><b>Andere Programme setzen ein Buch. pureSATZ begleitet dich den ganzen Weg</b> – vom ersten Satz bis zum Hochladen bei der Druckerei. Auf Linux, Mac und Windows.</p>
 <a class="knopf voll" href="{ZIP}">⬇ pureSATZ herunterladen (ZIP)</a><a class="knopf rand" href="{REPO}">Auf GitHub ansehen</a>
 <p class="klein">Version {html.escape(version)} · kostenlos für eigene Bücher · ohne Konto, ohne Cloud</p>

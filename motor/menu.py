@@ -2,7 +2,7 @@
 """
 menu.py – Menü mit den häufigsten Befehlen (ab 2.50, Buchstaben 2.51). Aufruf im Buchordner: sh menu.sh (Windows: menu.bat)
 
-Ein Buchstabe pro Befehl, m / g / t / c / w / p / o / n mit Untermenü; Geschichten mit festem Kürzel (g → e). ↑ ↓ = letzte Eingaben, Enter = zurück, q = beenden.
+Ein Buchstabe pro Befehl, m / g / t / c / w / p / o / n mit Untermenü; Geschichten mit festem Kürzel (g → e). ↑ ↓ = letzte Eingaben, z = zurück (im Hauptmenü: beenden).
 Ganze Befehle gehen auch: final · leseprobe uz 18,20 · personen Eltern.
 MD, PDF und Ordner öffnen im eigenen Programm (das Menü wartet nicht), Bauen läuft hier im Fenster.
 Klang (!) und Verlauf stehen in .menu (kommt nicht zu GitHub). Klang: motor/klang.wav (oder klang.wav im Buchordner), sonst Piepton.
@@ -32,11 +32,11 @@ GRAU = (lambda t: f"\033[38;5;244m{t}\033[0m") if FARBIG else (lambda t: t)     
 
 
 class Beenden(Exception):
-    """q in einem Untermenü: Menü ganz beenden (nach Rückfrage)."""
+    """z im Hauptmenü (oder q, Strg+C): Menü ganz beenden (nach Rückfrage)."""
 
 
 def beenden_frage():
-    """Vor dem Beenden fragen; Enter = nein (ein versehentliches q schadet nicht)."""
+    """Vor dem Beenden fragen; Enter = nein (ein z zu viel schadet nicht)."""
     try:
         a = frage(" Menü beenden? [j = ja | Enter = nein]: ").lower()
     except KeyboardInterrupt:
@@ -177,7 +177,7 @@ def pdfs():
 def untermenue(titel, eintraege):
     """eintraege: {Taste: (Text, Pfad oder None)} – gibt die gewählte Taste zurück, None = zurück."""
     print(f"\n {FETT(titel)}")
-    raster([(k, t) for k, (t, _) in eintraege.items()] + [("z", "zurück"), ("q", "beenden")])
+    raster([(k, t) for k, (t, _) in eintraege.items()] + [("z", "zurück")])
     e = frage(" Wahl: ").lower()
     if e == "q" and "q" not in eintraege:
         if beenden_frage():
@@ -318,15 +318,17 @@ def hoerbuch_schritt(H, audio, hb):
     global gelaufen
     c = H.konf()
     st = c.get("AZURE_STIMME", "1")
-    st = c.get("AZURE_FAVORIT" + st, st) if st in ("1", "2") else st
-    name = "-".join(st.split("-")[2:]).replace("MultilingualNeural", "").replace("Neural", "") or st
+    kurz = lambda s: "-".join(s.split("-")[2:]).replace("MultilingualNeural", "").replace("Neural", "") or s
+    fav = {n: kurz(c.get("AZURE_FAVORIT" + n, "")) for n in ("1", "2")}
+    andere = "1" if st == "2" else "2"                # die andere Favoritin zum Umschalten
+    name = fav.get(st) or kurz(st)
     print("\n" + kopf("Hörbuch", f"{name} · {c.get('AZURE_RATE', '')} · {c.get('MP3_KBIT', '128')} kbit"))
     spalten_zeigen([("Probieren", [("p", "Probe hören (probe.txt)"), ("w", "Wörter hören (KLINGEN FALSCH)")]),
                     ("Hörbuch", [("t", "Texte neu aus dem Buch"), ("a", "alles sprechen"),
                                  ("k", "Kapitel … (zeigt die Liste)")]),
                     ("Bearbeiten", [("e", "Wörter · Probe · Einstellungen"), ("s", "Azure-Schlüssel eingeben")]),
                     ("Ordner", [("$", "Terminal in audio/"), ("o", "Ordner audio/ öffnen")])],
-                   "h hilfe · c prüfen · z zurück · q beenden")
+                   "h hilfe · c prüfen · z zurück")
     k = frage(" Wahl: ").lower()
     if k in ("", "z"):
         return False
@@ -341,14 +343,18 @@ def hoerbuch_schritt(H, audio, hb):
         if d and shutil.which("mpv"):
             subprocess.Popen(["mpv", "--force-window=yes", d[-1]], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if k == "p":
-        s_ = frage(" Stimme [Enter = eingestellt | 1 2 … | l = Liste | alle | z = zurück]: ").strip()
+        print(" Probe: liest audio/probe.txt vor und spielt sie ab (neue Datei probe-….mp3).")
+        print(f" Stimme – Enter = {name} (eingestellt) · {andere} = {fav[andere]} · l = alle Stimmen zeigen · z = zurück")
+        s_ = frage(" Stimme: ").strip()
         if s_ == "l":
             lauf(hb + ["probe", "l"])
             gelaufen = False
-            s_ = frage(" Stimme [Enter = eingestellt | z = zurück]: ").strip()
+            print(f" Stimme – Nummer aus der Liste · Enter = {name} (eingestellt) · z = zurück")
+            s_ = frage(" Stimme: ").strip()
         if s_ in ("z", "q"):
             return True
-        t_ = frage(f" Tempo [Enter = {c.get('AZURE_RATE', '-8%')} | z. B. -10% 0% | z = zurück]: ").strip()
+        print(f" Tempo – Enter = {c.get('AZURE_RATE', '-8%')} (eingestellt) · z. B. -15% langsamer · 0% normal · z = zurück")
+        t_ = frage(" Tempo: ").strip()
         if t_ in ("z", "q"):
             return True
         seit = time.time()
@@ -359,11 +365,17 @@ def hoerbuch_schritt(H, audio, hb):
         lauf(hb + ["woerter"])
         abspielen("aussprache-*.mp3", seit)
     elif k in ("t", "a", "c"):
+        info = {"t": " Texte neu: Buch → audio/txt-md/ (alte Texte werden ersetzt, MP3 bleiben).",
+                "a": " Alles sprechen: nur Kapitel ohne MP3 → Azure → neue MP3 (fertige bleiben)."}.get(k)
+        if info:
+            print(info)
+            if frage(" Weiter? [n = nein | Enter = ja]: ").lower() in ("n", "nein", "z", "q"):
+                return True
         lauf(hb + [{"t": "texte", "a": "alles", "c": "pruefen"}[k]])
     elif k == "k":
         lauf(hb + ["liste"])
         gelaufen = False
-        wahl = frage(" Kürzel (z. B. 0201,0304 · 04 = Teil 4 · Enter oder z = zurück): ")
+        wahl = frage(" Diese Kapitel neu sprechen (MP3 wird ersetzt) – z. B. 0201,0304 · 04 = Teil 4 · z = zurück: ")
         if wahl and wahl.lower() not in ("z", "q"):
             lauf(hb + wahl.split())
     elif k == "e":
@@ -391,7 +403,7 @@ def hoerbuch_schritt(H, audio, hb):
         print(f"  Unbekannt: {k}")
     if gelaufen:                                      # Meldungen stehen lassen
         gelaufen = False
-        a = frage(" Enter = Hörbuch-Menü · z = zurück · q = beenden: ").lower()
+        a = frage(" Enter = Hörbuch-Menü · z = zurück: ").lower()
         if a == "q" and beenden_frage():
             raise Beenden
         return a != "z"
@@ -468,7 +480,7 @@ def zeige():
                 + ([("hb", "Hörbuch …")] if LINUX else [])),
                ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen")]),
                ("Abgleichen", [("sy", "sync   (GitHub)"), ("u", "update" + (" (ul lokal)" if LOKAL else ""))])]
-    spalten_zeigen(spalten, "n neu · $ Terminal · : Befehle · h hilfe · ! Klang · q beenden")
+    spalten_zeigen(spalten, "n neu · $ Terminal · : Befehle · h hilfe · ! Klang · z beenden")
     if os.path.exists(ALLE):
         print(SPERRE)
 
@@ -503,7 +515,8 @@ def befehle():
     for befehl, text in liste:
         print(f"  {befehl:<{breit}}{text if len(text) <= rest else text[:rest - 1] + '…'}")
     print(" Ganze Hilfe: h (hilfe.html im Browser)")
-    return frage(" Eingabe (Enter = zurück): ", merken=True)
+    e = frage(" Eingabe (z = zurück): ", merken=True)
+    return "" if e.lower() == "z" else e             # z hier = zurück, nicht beenden
 
 
 def terminal(ordner=BASE):
@@ -587,9 +600,9 @@ def main():
                 print(" Wahl oder Befehl (z. B. final · ↑ = letzte):")
                 e = frage(" Eingabe: ", merken=True)
             w = e.lower()
-            if w in ("", "z"):
+            if not w:
                 continue
-            if w == "q":
+            if w in ("z", "q"):                       # Hauptmenü: z = beenden (q geht still weiter)
                 if beenden_frage():
                     break
                 continue

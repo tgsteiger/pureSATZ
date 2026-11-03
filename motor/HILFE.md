@@ -425,11 +425,11 @@ Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {v
   p  PDF öffnen …                     sy sync   (GitHub)
   o  Ordner öffnen …                  u  update (ul lokal)
   a  änderungen
- ── Weiteres:  n neu · $ Terminal · : Befehle · h hilfe · ! Klang · q beenden
+ ── Weiteres:  n neu · $ Terminal · : Befehle · h hilfe · ! Klang · z beenden
 ```
 
-Überall gleich: `z` oder Enter = zurück · `q` = Menü beenden (fragt «Menü beenden? [j = ja | Enter = nein]») ·
-Strg+C bei einer Frage = wie `q`, während eines Laufs = nur den Lauf abbrechen.
+`z` = eine Stufe zurück; im Hauptmenü fragt `z` «Menü beenden? [j = ja | Enter = nein]» ·
+Strg+C bei einer Frage = beenden (mit Rückfrage), während eines Laufs = nur den Lauf abbrechen.
 
 Untermenüs («…» = nur was es gibt):
 
@@ -809,7 +809,7 @@ Danach zum Ausprobieren: `hb` → `p` (Probe) und `hb` → `w` (Wörter).
 ## Hörbuch: Das Menü hb
 
 ```
- pureSATZ 2.69.6 · Mein-Buch › Hörbuch            Ollie · -8% · 128 kbit
+ pureSATZ 2.69.7 · Mein-Buch › Hörbuch            Ollie · -8% · 128 kbit
  ── Probieren ─────────────────────   ── Hörbuch ───────────────────────
   p  Probe hören (probe.txt)          t  Texte neu aus dem Buch
   w  Wörter hören (KLINGEN FALSCH)    a  alles sprechen
@@ -817,16 +817,16 @@ Danach zum Ausprobieren: `hb` → `p` (Probe) und `hb` → `w` (Wörter).
  ── Bearbeiten ────────────────────   ── Ordner ────────────────────────
   e  Wörter · Probe · Einstellungen   $  Terminal in audio/
   s  Azure-Schlüssel eingeben         o  Ordner audio/ öffnen
- ── Weiteres:  h hilfe · c prüfen · z zurück · q beenden
+ ── Weiteres:  h hilfe · c prüfen · z zurück
 ```
 
 | Taste | Was passiert |
 |---|---|
-| `p` | `audio/probe.txt` vorlesen – fragt Stimme (Enter = eingestellt, `l` = Liste, `alle`) und Tempo, spielt gleich ab |
+| `p` | `audio/probe.txt` vorlesen – fragt Stimme (Enter = eingestellt, `1`/`2` = Favorit, `l` = alle Stimmen) und Tempo, spielt gleich ab |
 | `w` | Wörter unter `## KLINGEN FALSCH` vorlesen: Original, kurze Pause, Aussprache – spielt gleich ab |
-| `t` | Texte aus der Buch-MD neu machen (nach jeder Änderung im Buch) |
-| `a` | ganzes Hörbuch – fertige Kapitel werden übersprungen, Abbruch = nochmals `a` |
-| `k` | zeigt die Kapitel mit Kürzel, dann z. B. `0201,0304` (immer neu) oder `04` (ganzer Teil 4) |
+| `t` | Texte neu: Buch → `audio/txt-md/` (alte Texte werden ersetzt, MP3 bleiben) – fragt «Weiter?» |
+| `a` | alles sprechen: nur Kapitel ohne MP3 → Azure → neue MP3 (fertige bleiben) – fragt «Weiter?», Abbruch = nochmals `a` |
+| `k` | zeigt die Kapitel mit Kürzel, dann z. B. `0201,0304` oder `04` (ganzer Teil 4) – MP3 wird ersetzt. Nach `t` so geänderte Kapitel neu sprechen |
 | `e` | öffnet `aussprache-<stimme>.txt`, `probe.txt` oder `audio.conf` im Editor |
 | `s` | Azure-Schlüssel und Region eingeben (→ `~/.bashrc`, gilt sofort) |
 | `$` | Terminal im Ordner `audio/` – dort `sh hb.sh` zeigt alle Befehle |
@@ -834,7 +834,7 @@ Danach zum Ausprobieren: `hb` → `p` (Probe) und `hb` → `w` (Wörter).
 
 Oben steht, wo du bist (› Hörbuch) und was gerade gilt: Stimme, Tempo, Qualität (aus `audio.conf`).
 Das Menü bleibt offen, bis `z` oder Enter – nach einem Lauf bleiben die Meldungen stehen. Bei jeder Frage
-(Stimme, Tempo, Kürzel) heisst `z` zurück; `q` beendet das ganze Menü (mit Rückfrage).
+(Stimme, Tempo, Kürzel, Weiter?) heisst `z` zurück.
 
 ## Hörbuch: So entsteht es
 
