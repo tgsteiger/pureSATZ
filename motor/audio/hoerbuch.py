@@ -1,19 +1,28 @@
 #!/usr/bin/env python3
 """
 hoerbuch.py – Hörbuch mit einer Azure-Stimme (pureSATZ ab 2.68, nur Linux, Testphase).
-
-Im Buchordner (oder im Menü: hb):
-    python3 motor/audio/hoerbuch.py texte          Texte aus der Buch-MD (mit Geschichten, Ansage) → audio/txt-md/
-    python3 motor/audio/hoerbuch.py liste          Kapitel mit Kürzel und Zeichen (ohne Azure)
-    python3 motor/audio/hoerbuch.py alles          ganzes Hörbuch (fertige Kapitel werden übersprungen)
-    python3 motor/audio/hoerbuch.py 0201,0304      nur diese Kapitel, immer neu   (… stimme=2 = einmalig andere Stimme)
-    python3 motor/audio/hoerbuch.py aussprache     Wörter aus «## KLINGEN FALSCH» anhören (Original, dann Aussprache)
-    python3 motor/audio/hoerbuch.py probe          Probetext mit der eingestellten Stimme
-    python3 motor/audio/hoerbuch.py pruefen        prüft Azure-Paket, Schlüssel, ffmpeg
-
-Alle Einstellungen und Wörter liegen im Buch unter audio/ (audio.conf, aussprache-<stimme>.txt); beim ersten
-Aufruf werden sie aus motor/audio/vorlage/ angelegt. Braucht ein kostenloses Azure-Konto (Hilfe «Hörbuch»).
+Im Menü: hb. Im Ordner audio/ des Buchs:  sh hb.sh <befehl>   (ohne Befehl: diese Übersicht)
 """
+KURZ = """Hörbuch – Befehle im Ordner audio/ (sh hb.sh …):
+
+  Probieren
+    sh hb.sh probe                    probe.txt mit der eingestellten Stimme
+    sh hb.sh probe 2 -10%             Stimme 2, Tempo −10 %      (l = Stimmen-Liste, alle = alle Stimmen)
+    sh hb.sh probe probe-namen.txt    anderer Probetext (eigene Datei im Ordner audio/)
+    sh hb.sh woerter                  «## KLINGEN FALSCH» aus aussprache-<stimme>.txt anhören
+  Hörbuch
+    sh hb.sh texte                    Texte aus der Buch-MD → txt-md/ (nach Änderungen im Buch)
+    sh hb.sh liste                    Kapitel mit Kürzel
+    sh hb.sh alles                    ganzes Hörbuch (fertige werden übersprungen)
+    sh hb.sh 0201,0304                nur diese Kapitel neu     (04 = ganzer Teil 4, stimme=2 = andere Stimme)
+  Sonst
+    sh hb.sh schluessel               Azure-Schlüssel eingeben (→ ~/.bashrc)
+    sh hb.sh pruefen                  Azure-Paket, Schlüssel, ffmpeg prüfen
+  Anhören und nachsehen
+    mpv probe-ollie-de-de-r-8.mp3                 (Name steht nach jedem Lauf da)
+    mpv mp3-md-azure-ollie/02.01*                 ein Kapitel
+    tail -30 mp3-md-azure-ollie/einstellungen.txt letzter Lauf
+Mehr: Hilfe «Hörbuch: Befehle zum Kopieren» (sh menu.sh → hb → h)"""
 import glob
 import os
 import shutil
@@ -94,6 +103,30 @@ def konf():
     return conf
 
 
+def schluessel():
+    """Azure-Schlüssel und Region abfragen und in ~/.bashrc eintragen (alte Zeilen ersetzt, Sicherung .bashrc.bak)."""
+    import getpass
+    rc = os.path.expanduser("~/.bashrc")
+    alt, reg = os.environ.get("AZURE_SPEECH_KEY", ""), os.environ.get("AZURE_SPEECH_REGION", "switzerlandnorth")
+    print("Azure-Schlüssel " + (f"(jetzt …{alt[-4:]})" if alt else "(noch keiner)") +
+          " – portal.azure.com → Speech-Ressource → «Schlüssel und Endpunkt» → Schlüssel 1")
+    k = getpass.getpass("  Schlüssel einfügen (Strg+Shift+V – es erscheint nichts) [Enter = behalten]: ").strip() or alt
+    if not k:
+        print("Kein Schlüssel – nichts geändert."); return False
+    reg = input(f"  Region [Enter = {reg}]: ").strip() or reg
+    zeilen = open(rc, encoding="utf-8").read().splitlines() if os.path.exists(rc) else []
+    if zeilen:
+        shutil.copy(rc, rc + ".bak")
+    zeilen = [z for z in zeilen if not z.strip().startswith(("export AZURE_SPEECH_KEY=", "export AZURE_SPEECH_REGION="))]
+    zeilen += [f"export AZURE_SPEECH_KEY='{k}'", f"export AZURE_SPEECH_REGION='{reg}'"]
+    with open(rc, "w", encoding="utf-8") as f:
+        f.write("\n".join(zeilen) + "\n")
+    os.environ["AZURE_SPEECH_KEY"], os.environ["AZURE_SPEECH_REGION"] = k, reg
+    print(f"OK  Schlüssel …{k[-4:]} · Region {reg} in ~/.bashrc (Sicherung ~/.bashrc.bak). Gilt ab sofort im Menü")
+    print("    und in jedem neuen Terminal. Nie in eine Datei im Buch oder zu GitHub geben.")
+    return True
+
+
 def pruefen():
     ok = True
     try:
@@ -113,8 +146,8 @@ def pruefen():
     if os.environ.get("AZURE_SPEECH_KEY"):
         print(f"OK  Azure-Schlüssel (Region {os.environ.get('AZURE_SPEECH_REGION', 'switzerlandnorth')})")
     else:
-        ok = False
-        print("Fehlt: AZURE_SPEECH_KEY – siehe Hilfe «Hörbuch: Einrichten», danach neues Terminal öffnen.")
+        print("Fehlt: AZURE_SPEECH_KEY")
+        ok = schluessel() and ok
     return ok
 
 
@@ -125,11 +158,15 @@ def main():
     a = sys.argv[1:] or ["hilfe"]
     befehl, rest = a[0], a[1:]
     if befehl in ("hilfe", "-h", "--help"):
-        print(__doc__); return 0
+        print(KURZ); return 0
+    if befehl == "schluessel":
+        return 0 if schluessel() else 1
     if befehl == "pruefen":
         return 0 if pruefen() else 1
     if befehl == "texte":
         return texte()
+    if befehl == "woerter":
+        befehl = "aussprache"
     if not glob.glob(os.path.join(DATEN, "txt-md", "*.txt")) and befehl not in ("aussprache", "probe"):
         print("Noch keine Texte – zuerst:  texte")
         if texte():
@@ -147,7 +184,7 @@ def main():
         cmd = [sys.executable, os.path.join(DIR, "txt2mp3-azure.py"), "md"] + rest
     else:                                                   # liste, Kürzel, stimme=…
         cmd = [sys.executable, os.path.join(DIR, "txt2mp3-azure.py"), "md", befehl] + rest
-    return subprocess.run(cmd, cwd=BASE, env=env).returncode
+    return subprocess.run(cmd, cwd=DATEN, env=env).returncode       # Pfade in Meldungen ab audio/
 
 
 if __name__ == "__main__":

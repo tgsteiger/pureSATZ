@@ -1,21 +1,18 @@
 #!/usr/bin/env python3
-# Hörproben mit Azure – Favoriten, Sprache und Tempo aus audio.conf (klingt wie der richtige Lauf)
-# Aufruf: python3 probe-azure.py              eingestellte Stimme (AZURE_STIMME)
-#         python3 probe-azure.py liste        Stimmen mit Nummer
-#         python3 probe-azure.py 3            Stimme Nr. 3   ·   alle = alle Stimmen
-#         python3 probe-azure.py 2 -10%       mit anderem Tempo (sonst AZURE_RATE)
-#         python3 probe-azure.py aussprache   liest «## KLINGEN FALSCH» aus aussprache-<stimme>.txt: Original, dann Aussprache
-# Ergebnis: probe-… bzw. aussprache-<stimme>-…-r<tempo>.mp3 hier im Ordner, anhören mit mpv
-# TEXT läuft durch dieselben Regeln wie das Buch (aussprache-<stimme>.txt, text-vorbereiten.sh).
+# Hörproben mit Azure – Favoriten, Sprache, Tempo und Aussprache wie das Buch (pureSATZ, über hoerbuch.py / Menü hb)
+# Im Ordner audio/:  sh hb.sh probe                 probe.txt mit der eingestellten Stimme
+#                    sh hb.sh probe 2 -10%          Stimme 2, Tempo −10 %   ·   alle = alle Stimmen   ·   l = Liste
+#                    sh hb.sh probe probe-namen.txt  anderer Probetext (im Ordner audio/)
+#                    sh hb.sh woerter               «## KLINGEN FALSCH» anhören: Original, dann Aussprache
+# Ergebnis im Ordner audio/: probe-<stimme>-….mp3 bzw. aussprache-<stimme>-….mp3
 import os, re, sys, subprocess, tempfile
 from xml.sax.saxutils import escape
 
 DIR = os.path.dirname(os.path.abspath(__file__))              # Skripte (motor/audio)
 DATEN = os.environ.get("AUDIO_DIR") or DIR                     # Buch: audio/
 
-# Probetext – nach Belieben ändern
-TEXT = ("Mein erstes Buch, gelesen von einer KI-Stimme. Im Jahr 1974 kam ich in Bern zur Welt. "
-        "Teil 2. Learning by Doing, Extra Power und ein Velo.")
+# Probetext, falls audio/probe.txt fehlt (eigene Texte gehören in audio/probe.txt – bleiben bei Updates)
+TEXT = "Mein erstes Buch, gelesen von einer KI-Stimme. Im Jahr 1974 kam ich in Bern zur Welt."
 
 conf = {}
 with open(os.path.join(DATEN, "audio.conf"), encoding="utf-8") as f:
@@ -35,13 +32,13 @@ STIMMEN = list(dict.fromkeys([
 ]))
 
 args = sys.argv[1:]
-hoeren = "aussprache" in args
-if hoeren:
-    args.remove("aussprache")
+hoeren = any(a in ("aussprache", "woerter") for a in args)
+quelle = next((a for a in args if a.endswith(".txt")), "probe.txt")
+args = [a for a in args if a not in ("aussprache", "woerter") and not a.endswith(".txt")]
 if args and args[0] in ("liste", "l"):
     for i, s in enumerate(STIMMEN, 1):
         print(f"{i}  {s}" + ("   (Favorit %d)" % i if i <= 2 else ""))
-    print("Aufruf: python3 probe-azure.py [NUMMER|alle] [TEMPO, z. B. -10%]")
+    print("Aufruf: sh hb.sh probe [NUMMER|alle] [TEMPO, z. B. -10%] [probe-xy.txt]")
     sys.exit(0)
 
 wahl = conf.get("AZURE_STIMME", "1")
@@ -53,7 +50,7 @@ elif wahl.isdigit():
     auswahl = [STIMMEN[int(wahl) - 1]]
 else:
     auswahl = [wahl]                                   # ganzer Name aus audio.conf
-rate = args[0] if args else conf.get("AZURE_RATE", "-15%")
+rate = next((a for a in args if re.match(r"^[+-]?\d+%$", a)), conf.get("AZURE_RATE", "-8%"))
 sprache = conf.get("AZURE_SPRACHE", "")
 
 import azure.cognitiveservices.speech as speechsdk
@@ -70,7 +67,7 @@ for stimme in auswahl:
     aus = f"aussprache-{kurz}.txt"                     # wie txt2mp3-azure.py
     if not os.path.exists(os.path.join(DATEN, aus)):
         aus = conf.get("AUSSPRACHE", "aussprache.txt")
-    art = "aussprache" if hoeren else "probe"
+    art = "aussprache" if hoeren else os.path.splitext(os.path.basename(quelle))[0]
     datei = os.path.join(DATEN, f"{art}-{kurz}{'-' + sprache.lower() if sprache else ''}-r{rate.replace('%', '')}.mp3")
     if hoeren:                                         # nur «## KLINGEN FALSCH» (bis zum nächsten ##)
         teile, drin = [], False
@@ -84,13 +81,20 @@ for stimme in auswahl:
         if not teile:
             print(f"Nichts zu hören: in {aus} fehlt «## KLINGEN FALSCH» oder ist leer."); continue
         text = "".join(teile)
-    else:                                              # TEXT mit den Regeln des Buchs
-        with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as t:
-            t.write(TEXT + "\n")
-        text = escape(" ".join(subprocess.run(["bash", os.path.join(DIR, "text-vorbereiten.sh"), t.name],
-                                              capture_output=True, text=True, check=True,
-                                              env=dict(os.environ, AUSSPRACHE_DATEI=aus, AUDIO_DIR=DATEN)).stdout.split()))
-        os.remove(t.name)
+    else:                                              # Probetext mit den Regeln des Buchs (# = aus, Leerzeile = Absatz)
+        pfad = quelle if os.path.isabs(quelle) else os.path.join(DATEN, quelle)
+        if not os.path.exists(pfad):
+            if quelle != "probe.txt":
+                sys.exit(f"Nicht gefunden: {quelle} (im Ordner audio/)")
+            with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as t:
+                t.write(TEXT + "\n")
+            pfad = t.name
+        zeilen = subprocess.run(["bash", os.path.join(DIR, "text-vorbereiten.sh"), pfad],
+                                capture_output=True, text=True, check=True,
+                                env=dict(os.environ, AUSSPRACHE_DATEI=aus, AUDIO_DIR=DATEN)).stdout.splitlines()
+        text = ('<break time="%s"/>' % conf.get("AZURE_PAUSE", "1200ms")).join(escape(z.strip()) for z in zeilen if z.strip())
+        if not text:
+            print(f"Nichts zu hören: {quelle} ist leer (oder alles mit # auskommentiert)."); continue
     inhalt = f'<prosody rate="{rate}">{text}</prosody>'
     if sprache:
         inhalt = f'<lang xml:lang="{sprache}">{inhalt}</lang>'
@@ -101,5 +105,6 @@ for stimme in auswahl:
     r = synth.speak_ssml_async(ssml).get()
     if r.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
         print(f"Fertig: {os.path.relpath(datei)}  ({stimme}, Tempo {rate}, {aus})")
+        print(f"  mpv {os.path.relpath(datei)}")
     else:
         print(f"Fehler bei {stimme}:", r.cancellation_details.error_details)

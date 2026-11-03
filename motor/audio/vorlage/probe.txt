@@ -1,0 +1,20 @@
+# Probetext fürs Hörbuch – Zeilen mit # werden nicht gelesen (so lässt sich ein Satz ein- und ausschalten).
+# Zwischen zwei Absätzen eine Leerzeile. Hören: im Menü hb → p, oder im Ordner audio/:  sh hb.sh probe
+# Es gelten dieselben Regeln wie im Buch (aussprache-<stimme>.txt). Weitere Probetexte einfach daneben legen,
+# z. B. probe-namen.txt, und hören mit:  sh hb.sh probe probe-namen.txt
+
+Teil 1. Leben 1.0
+
+Ich, Thomas Gsteiger, kam am ersten Sonntag im Jahr 1974 in Bern zur Welt, am Dreikönigstag. Juhui, das Leben 1.0 hatte begonnen.
+
+Mit dem Bike fuhr ich die Grundig Swiss Bike Tour, später auch Radquer. In der Pfadi lernte ich Murphy kennen.
+
+Jahreszahlen: 1974, 1900, 1905, 2000, 2008, 2010, 2026 und 2027.
+
+Ein Gedankenstrich – mitten im Satz – macht eine kleine Pause.
+
+Sie sagte: «Alles war weiss.» Dann war es still.
+
+Wie sollte ich all das lösen? Ich wusste es nicht! Und doch … es ging weiter.
+
+Learning by Doing, Extra Power und eine E-Mail über www.thomasgsteiger.ch.

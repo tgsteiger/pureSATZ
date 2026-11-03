@@ -3,6 +3,16 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.69.0 (November 2026)
+- Hörbuch: Menü `hb` neu geordnet (Probieren · Hörbuch · Bearbeiten · Sonst), oben Stimme, Tempo, Qualität.
+  Neu `p` Probe (fragt Stimme/Tempo, spielt ab), `w` Wörter, `e` Wörter/Probe/Einstellungen öffnen, `s` Azure-Schlüssel
+  eingeben (→ `~/.bashrc`, Sicherung `.bashrc.bak`, gilt sofort), `$` Terminal in `audio/`, `o` Ordner, `h` Hilfe.
+- Eigene Probetexte im Buch: `audio/probe.txt` (Zeilen mit `#` = aus, Leerzeile = Absatz, gleiche Regeln wie das Buch),
+  weitere `probe-….txt` daneben (`sh hb.sh probe probe-namen.txt`). Bleiben bei Updates erhalten.
+- `audio/hb.sh`: Starter fürs Terminal (`sh hb.sh` zeigt alle Befehle, nimmt das Python der `.venv`).
+- Vorlage `aussprache-ollie.txt` mit getesteten Beispielen; Hauptmenü `o` → `a` audio; Meldungen mit Pfaden ab `audio/`.
+- Hilfe: «Hörbuch: Das Menü hb», «Hörbuch: Befehle zum Kopieren», Einrichten über `hb` → `s`.
+
 ## 2.68.1 (November 2026)
 - Hörbuch: Platzhalter wie beim Bau – fehlt `{untertitel}`, gilt `{untertitel-normal}` (Ansage, `{zeitstrahl-titel}` im Text).
   Fehlt das Azure-Paket, kurze Meldung «im Menü hb → c» statt Abbruch mit Fehlertext.

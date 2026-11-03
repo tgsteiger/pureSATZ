@@ -261,31 +261,73 @@ def einordnen(extra=None):
 
 
 def hoerbuch_menue():
-    """hb: Hörbuch mit Azure (motor/audio/hoerbuch.py, nur Linux). Einstellungen und Wörter in audio/."""
+    """hb: Hörbuch mit Azure (motor/audio/hoerbuch.py, nur Linux). Einstellungen, Wörter, Probetexte in audio/."""
+    sys.path.insert(0, os.path.join(MOTOR, "audio"))
+    import hoerbuch as H
+    audio = os.path.join(BASE, "audio")
     hb = [sys.executable, os.path.join(MOTOR, "audio", "hoerbuch.py")]
-    if not os.path.isdir(os.path.join(BASE, "audio")):           # beim ersten Mal audio/ aus der Vorlage anlegen
-        subprocess.run(hb + ["hilfe"], stdout=subprocess.DEVNULL)
-    k = untermenue("Hörbuch …", {"t": ("Texte neu", 0), "p": ("Wörter anhören", 0), "a": ("alles sprechen", 0),
-                                 "k": ("Kapitel …", 0), "l": ("Liste", 0), "w": ("Wörter bearbeiten", 0),
-                                 "e": ("Einstellungen", 0), "o": ("Ordner", 0), "c": ("prüfen", 0)})
-    if k in ("t", "p", "a", "l", "c"):
-        lauf(hb + [{"t": "texte", "p": "aussprache", "a": "alles", "l": "liste", "c": "pruefen"}[k]])
-        neu = sorted(glob.glob(os.path.join(BASE, "audio", "aussprache-*.mp3")), key=os.path.getmtime)
-        if k == "p" and neu:
-            subprocess.Popen(["mpv", "--force-window=yes", neu[-1]], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    H.anlegen()                                       # audio/ aus der Vorlage, Bestehendes bleibt
+    c = H.konf()
+    st = c.get("AZURE_STIMME", "1")
+    st = c.get("AZURE_FAVORIT" + st, st) if st in ("1", "2") else st
+    name = "-".join(st.split("-")[2:]).replace("MultilingualNeural", "").replace("Neural", "") or st
+    print(f"\n Hörbuch … (Stimme: {name} · Tempo {c.get('AZURE_RATE', '')} · {c.get('MP3_KBIT', '128')} kbit)")
+    for z in (" ── Probieren ───────────────────   ── Hörbuch ──────────────────────",
+              "  p  Probe hören (probe.txt)         t  Texte neu aus dem Buch",
+              "  w  Wörter hören (KLINGEN FALSCH)   a  alles sprechen",
+              "                                     k  Kapitel … (zeigt die Liste)",
+              " ── Bearbeiten ──────────────────   ── Sonst ────────────────────────",
+              "  e  Wörter · Probe · Einstellungen  $  Terminal im Ordner audio/",
+              "  s  Azure-Schlüssel eingeben        o  Ordner audio/   h  Hilfe   c  prüfen",
+              "  z  zurück"):
+        print(z)
+    k = frage(" Wahl: ").lower()
+    neu = lambda muster: sorted(glob.glob(os.path.join(audio, muster)), key=os.path.getmtime)
+    def abspielen(muster, seit):
+        d = [p for p in neu(muster) if os.path.getmtime(p) >= seit - 1]
+        if d and shutil.which("mpv"):
+            subprocess.Popen(["mpv", "--force-window=yes", d[-1]], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if k == "p":
+        s_ = frage(" Stimme [Enter = eingestellt | 1 2 … | l = Liste | alle]: ").strip()
+        if s_ == "l":
+            lauf(hb + ["probe", "l"])
+            s_ = frage(" Stimme [Enter = eingestellt]: ").strip()
+        t_ = frage(f" Tempo [Enter = {c.get('AZURE_RATE', '-8%')} | z. B. -10% 0%]: ").strip()
+        seit = time.time()
+        lauf(hb + ["probe"] + [x for x in (s_, t_) if x])
+        abspielen("*.mp3", seit)
+    elif k == "w":
+        seit = time.time()
+        lauf(hb + ["woerter"])
+        abspielen("aussprache-*.mp3", seit)
+    elif k in ("t", "a", "c"):
+        lauf(hb + [{"t": "texte", "a": "alles", "c": "pruefen"}[k]])
     elif k == "k":
         lauf(hb + ["liste"])
-        wahl = frage(" Kürzel (z. B. 0201,0304 – Enter = zurück): ")
+        wahl = frage(" Kürzel (z. B. 0201,0304 · 04 = Teil 4 · Enter = zurück): ")
         if wahl:
             lauf(hb + wahl.split())
-    elif k == "w":
-        wort = sorted(glob.glob(os.path.join(BASE, "audio", "aussprache-*.txt")))
-        if wort:
-            oeffnen(wort[0])
     elif k == "e":
-        oeffnen(os.path.join(BASE, "audio", "audio.conf"))
+        datei = {"w": ("Wörter", (glob.glob(os.path.join(audio, f"aussprache-{name.lower()}.txt")) or
+                                  sorted(glob.glob(os.path.join(audio, "aussprache-*.txt"))) or [""])[0]),
+                 "p": ("Probe (probe.txt)", os.path.join(audio, "probe.txt")),
+                 "e": ("Einstellungen (audio.conf)", os.path.join(audio, "audio.conf"))}
+        e = untermenue("öffnen …", datei)
+        if e:
+            oeffnen(datei[e][1])
+    elif k == "s":
+        H.schluessel()                                # im Menü sofort gültig (os.environ)
+    elif k == "$":
+        terminal(audio)
+        print("  Terminal im Ordner audio/ – dort:  sh hb.sh   (zeigt alle Befehle)")
     elif k == "o":
-        oeffnen(os.path.join(BASE, "audio"))
+        oeffnen(audio)
+    elif k == "h":
+        hilfe = os.path.join(BASE, "hilfe.html")
+        if not os.path.exists(hilfe):
+            bauen("hilfe")
+        import webbrowser
+        webbrowser.open("file://" + hilfe + "#Hörbuch-Was-es-braucht")
 
 
 def tabellen_menue():
@@ -391,15 +433,15 @@ def befehle():
     return frage(" Eingabe (Enter = zurück): ", merken=True)
 
 
-def terminal():
-    """Neues Terminal im Buchordner öffnen; das Menü wartet nicht."""
+def terminal(ordner=BASE):
+    """Neues Terminal im Buchordner (oder einem Unterordner) öffnen; das Menü wartet nicht."""
     if WIN:
-        return subprocess.Popen(["cmd"], cwd=BASE, creationflags=subprocess.CREATE_NEW_CONSOLE)
+        return subprocess.Popen(["cmd"], cwd=ordner, creationflags=subprocess.CREATE_NEW_CONSOLE)
     if MAC:
-        return subprocess.Popen(["open", "-a", "Terminal", BASE])
+        return subprocess.Popen(["open", "-a", "Terminal", ordner])
     for t in ("x-terminal-emulator", "gnome-terminal", "konsole", "xfce4-terminal", "xterm"):
         if shutil.which(t):
-            return subprocess.Popen([t], cwd=BASE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            return subprocess.Popen([t], cwd=ordner, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     print("  Kein Terminal gefunden – Rechtsklick in den Buchordner → «Im Terminal öffnen».")
 
 
@@ -513,7 +555,7 @@ def main():
         elif w == "o":
             ordner = {k: (t, os.path.join(BASE, d)) for k, t, d in (("b", "Buchordner", ""), ("n", "normal", "ausgabe-normal"),
                       ("u", "unzensiert", "ausgabe-unzensiert"), ("d", "druck", "druck"), ("g", "geschichten", "geschichten"),
-                      ("t", "tabellen", "tabellen"))}
+                      ("t", "tabellen", "tabellen"), ("a", "audio (Hörbuch)", "audio"))}
             k = untermenue("Ordner …", {k: v for k, v in ordner.items() if os.path.isdir(v[1])})
             if k:
                 oeffnen(ordner[k][1])

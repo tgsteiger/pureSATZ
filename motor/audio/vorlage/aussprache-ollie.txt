@@ -1,10 +1,17 @@
 # Original = Aussprache   (ganze Wörter, gross/klein egal)
 # jahreszahlen: aus
-# Hören: im Menü hb → p (oder: python3 motor/audio/hoerbuch.py aussprache) – liest nur «KLINGEN FALSCH» vor
+# Hören: im Menü hb → w, oder im Ordner audio/:  sh hb.sh woerter   – liest nur «KLINGEN FALSCH» vor
 # Klingt es gut: Zeile nach «KLINGEN GUT» verschieben (nicht kopieren). Im Buch gelten beide Teile.
 # Reihenfolge: lange/besondere Regeln VOR kurzen/allgemeinen (z. B. «Sitting in the Power» vor «Power»).
+# Varianten vergleichen: mehrere Zeilen mit demselben Original untereinander, anhören, die beste behalten.
 ## KLINGEN FALSCH
+Learning by Doing = Lörning bai Duuing
+KI = Ka-I
+E-Mail = I-Meil
 ## KLINGEN GUT
+# Beispiele aus «Leben 1.0, 2.0, 3.0», mit Ollie getestet
+www.thomasgsteiger.ch = w w w, Punkt, thomas gsteiger, Punkt, c h
+Trance Healing = Tränss Hieling
 Teil 1 = Erster Teil
 Teil 2 = Zweiter Teil
 Teil 3 = Dritter Teil
@@ -14,3 +21,13 @@ Teil 6 = Sechster Teil
 Teil 7 = Siebter Teil
 Teil 8 = Achter Teil
 Teil 9 = Neunter Teil
+Channeln = Tschenneln
+googelte = guugelte
+Mallorca = Majorka
+Ayurveda = Ajurweeda
+Française = Fran-sääs
+Chalet = Scha-le
+Power = Pauer
+7x7 = Sieben mal Sieben
+8ung = Achtung
+IT = Ei-Tii

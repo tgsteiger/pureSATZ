@@ -436,10 +436,10 @@ Untermenüs (Enter oder `z` = zurück; «…» = nur was es gibt):
 | `g` Geschichten | `e` schreiben … (Liste mit Kürzel) · `n` neue Geschichte (fragt nach dem Titel, öffnet sie) · `b` fehlende ins Buch · `a` alle in 1 Datei · `ü` Übersicht (auch `u`) · `s` Sammel-PDF |
 | `t` Tabellen | `e` bearbeiten … (Liste mit Kürzel) · `n` neue Tabelle (öffnet die CSV, `@#name` kommt in den Block «## Noch einordnen» im Buch) · `o` Ordner |
 | `c` check / gegenlesen | `n` Liste neu (personen-seiten.txt) · `c` check-PDF für eine Person (öffnet sich danach) · `t` Textdatei |
-| `hb` Hörbuch (Linux) | `t` Texte neu · `p` Wörter anhören · `a` alles sprechen · `k` Kapitel … · `l` Liste · `w` Wörter bearbeiten · `e` Einstellungen · `o` Ordner · `c` prüfen – siehe [Hörbuch](#Hörbuch-Was-es-braucht) |
+| `hb` Hörbuch (Linux) | `p` Probe hören · `w` Wörter hören · `t` Texte neu · `a` alles · `k` Kapitel … · `e` Wörter/Probe/Einstellungen öffnen · `s` Azure-Schlüssel · `$` Terminal in audio/ · `o` Ordner · `h` Hilfe · `c` prüfen – siehe [Hörbuch: Das Menü](#Hörbuch-Das-Menü-hb) |
 | `w` weitere | `l` Leseprobe · `k` Korrektur · `p` nur-pdf · `e` nur E-Book · `c` prüfen · `s` Stand merken |
 | `p` PDF öffnen | `n` normal · `u` unzensiert · `l` Leseprobe · `k` Korrektur … |
-| `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten · `t` tabellen … |
+| `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten · `t` tabellen · `a` audio … |
 | `n` neu | `b` neues Buch · `h` Hallo-Buch · `e` einrichten · `m` Motor-Selbsttest · `v` Verknüpfung |
 
 - Geschichten (`g` → `e` oder `m` → `g`): jede hat ein festes Kürzel aus 1–3 Buchstaben, z. B. `h` herz-im-glueck,
@@ -794,33 +794,53 @@ Getestet mit «Leben 1.0, 2.0, 3.0» und der Stimme **Ollie** (spricht Deutsch s
 ## Hörbuch: Einrichten (einmalig)
 
 1. portal.azure.com → Konto anlegen → «Speech-Dienst» (Speech service) erstellen: Tarif **F0**, Region z. B.
-   `switzerlandnorth`. Unter «Schlüssel und Endpunkt» Schlüssel 1 kopieren.
-2. Schlüssel nur in `~/.bashrc` – nie in eine Datei im Buch und nie zu GitHub:
+   `switzerlandnorth`. Unter «Schlüssel und Endpunkt» **Schlüssel 1** kopieren.
+2. `sudo apt install ffmpeg mpv`
+3. Im Buchordner `sh menu.sh` → `hb` → `s`: Schlüssel einfügen (Strg+Shift+V, es erscheint nichts), Region bestätigen.
+   Er kommt nur in `~/.bashrc` (Sicherung `~/.bashrc.bak`) – nie in eine Datei im Buch und nie zu GitHub.
+4. `hb` → `c` prüft alles und installiert das Azure-Paket.
 
-```sh
-echo 'export AZURE_SPEECH_KEY=dein-schlüssel' >> ~/.bashrc
-echo 'export AZURE_SPEECH_REGION=switzerlandnorth' >> ~/.bashrc
-sudo apt install ffmpeg mpv
+Beim ersten `hb` entsteht der Ordner `audio/` mit `audio.conf`, `aussprache-ollie.txt`, `probe.txt` und `hb.sh`.
+Danach zum Ausprobieren: `hb` → `p` (Probe) und `hb` → `w` (Wörter).
+
+## Hörbuch: Das Menü hb
+
+```
+ Hörbuch … (Stimme: Ollie · Tempo -8% · 128 kbit)
+ ── Probieren ───────────────────   ── Hörbuch ──────────────────────
+  p  Probe hören (probe.txt)         t  Texte neu aus dem Buch
+  w  Wörter hören (KLINGEN FALSCH)   a  alles sprechen
+                                     k  Kapitel … (zeigt die Liste)
+ ── Bearbeiten ──────────────────   ── Sonst ────────────────────────
+  e  Wörter · Probe · Einstellungen  $  Terminal im Ordner audio/
+  s  Azure-Schlüssel eingeben        o  Ordner audio/   h  Hilfe   c  prüfen
 ```
 
-3. Neues Terminal öffnen, im Buchordner `sh menu.sh` → `hb` → `c` (prüft und installiert das Azure-Paket).
-   Beim ersten Mal entsteht der Ordner `audio/` mit `audio.conf` und `aussprache-ollie.txt`.
+| Taste | Was passiert |
+|---|---|
+| `p` | `audio/probe.txt` vorlesen – fragt Stimme (Enter = eingestellt, `l` = Liste, `alle`) und Tempo, spielt gleich ab |
+| `w` | Wörter unter `## KLINGEN FALSCH` vorlesen: Original, kurze Pause, Aussprache – spielt gleich ab |
+| `t` | Texte aus der Buch-MD neu machen (nach jeder Änderung im Buch) |
+| `a` | ganzes Hörbuch – fertige Kapitel werden übersprungen, Abbruch = nochmals `a` |
+| `k` | zeigt die Kapitel mit Kürzel, dann z. B. `0201,0304` (immer neu) oder `04` (ganzer Teil 4) |
+| `e` | öffnet `aussprache-<stimme>.txt`, `probe.txt` oder `audio.conf` im Editor |
+| `s` | Azure-Schlüssel und Region eingeben (→ `~/.bashrc`, gilt sofort) |
+| `$` | Terminal im Ordner `audio/` – dort `sh hb.sh` zeigt alle Befehle |
+| `o` · `h` · `c` | Ordner `audio/` öffnen · diese Hilfe · Azure-Paket, Schlüssel, ffmpeg prüfen |
+
+Oben steht immer, was gerade gilt: Stimme, Tempo, Qualität (aus `audio.conf`).
 
 ## Hörbuch: So entsteht es
 
-Im Menü `hb` (oder `python3 motor/audio/hoerbuch.py …` im Buchordner):
+1. `hb` → `t` – Texte aus der Buch-MD (normale Ausgabe, mit Geschichten `@@`, Ansage am Anfang) → `audio/txt-md/`.
+2. `hb` → `a` – ganzes Hörbuch nach `audio/mp3-md-azure-ollie/`, mit Tracknummer, Titel, Album, Autor und dem
+   Umschlag als Cover (`ausgabe-normal/…_Vorderseite.jpg`, entsteht beim Bau).
+3. Anhören, Fehler notieren → Wörter verbessern ([Aussprache verfeinern](#Hörbuch-Aussprache-verfeinern)) →
+   betroffene Kapitel mit `hb` → `k` neu.
 
-| Taste | Befehl | Was |
-|---|---|---|
-| `t` | `texte` | Texte aus der Buch-MD (normale Ausgabe, mit Geschichten `@@`, Ansage am Anfang) → `audio/txt-md/` |
-| `l` | `liste` | Kapitel mit Kürzel und Zeichen (ohne Azure) |
-| `a` | `alles` | ganzes Hörbuch – fertige Kapitel werden übersprungen, Abbruch = nochmals starten |
-| `k` | `0201,0304` | nur diese Kapitel, immer neu (Kürzel als Anfang: `04` = ganzer Teil 4) |
-| `p` | `aussprache` | Wörter anhören (siehe «Aussprache verfeinern») |
-
-Buch geändert → zuerst `t`, dann die betroffenen Kapitel mit `k` (oder für alles den MP3-Ordner umbenennen und `a`).
-Ergebnis: `audio/mp3-md-azure-ollie/` – mit Tracknummer, Titel, Album, Autor und dem Umschlag als Cover
-(`ausgabe-normal/…_Vorderseite.jpg`, entsteht beim Bau). Aufs Handy: den Ordner kopieren.
+Buch geändert → zuerst `t`, dann die betroffenen Kapitel mit `k`. Grössere Umstellung (neue Geschichte, andere
+Reihenfolge – die Nummern verschieben sich): MP3-Ordner umbenennen und `a` – sonst bleiben alte Dateien liegen.
+Aufs Handy: den MP3-Ordner kopieren.
 
 ## Hörbuch: Einstellungen (audio.conf)
 
@@ -830,7 +850,7 @@ Ergebnis: `audio/mp3-md-azure-ollie/` – mit Tracknummer, Titel, Album, Autor u
 | `AZURE_SPRACHE="de-DE"` | fest Deutsch – ohne kippt Ollie bei englischen Wörtern ins Englische |
 | `AZURE_RATE="-8%"` | Tempo, minus = langsamer |
 | `AZURE_TITELPAUSE="2000ms"` | Pause vor und nach dem Kapitelnamen (dazu `AZURE_PAUSE`, `AZURE_SATZPAUSE`) |
-| `AZURE_ANSAGE="…"` | Ansage am Anfang (`00.00.00_Ansage.mp3`) mit `{titel}`, `{untertitel}`, `{autor}`; leer = keine |
+| `AZURE_ANSAGE="…"` | Ansage am Anfang (`00.00.00_Ansage.mp3`) mit `{titel}`, `{untertitel}`, `{autor}`, `{jahr}`; leer = keine |
 | `MP3_KBIT="128"` | `128` = Test · `192` = für Plattformen: 44,1 kHz, Lautstärke angeglichen, eigener Ordner `…-192` |
 | `ALBUM`, `ARTIST`, `COVER` | leer = aus dem Buch bzw. Umschlag vorne |
 
@@ -838,8 +858,8 @@ Ergebnis: `audio/mp3-md-azure-ollie/` – mit Tracknummer, Titel, Album, Autor u
 
 Jede Stimme hat ihre Liste: `audio/aussprache-ollie.txt`, eine Zeile `Original = Aussprache`.
 
-1. Neue Wörter unter `## KLINGEN FALSCH` eintragen – gern mehrere Varianten untereinander.
-2. `hb` → `p`: liest nur diesen Bereich vor (Original, kurze Pause, Aussprache) und spielt es ab.
+1. Neue Wörter unter `## KLINGEN FALSCH` eintragen – gern mehrere Varianten untereinander (`hb` → `e` → `w`).
+2. `hb` → `w`: liest nur diesen Bereich vor (Original, kurze Pause, Aussprache) und spielt es ab.
 3. Die beste Variante nach `## KLINGEN GUT` verschieben, die anderen löschen. Im Buch gelten beide Bereiche.
 
 Regeln:
@@ -861,8 +881,64 @@ Was bei Ollie Korrektur brauchte (Beispiele aus «Leben 1.0, 2.0, 3.0»):
 | Zahl mit Buchstaben | `7x7 = Sieben mal Sieben` · `8ung = Achtung` |
 | Namen, spanisch | `Guayaquil = Guajakiil` · `Krishna Das = Krischna Daas` |
 
+Ganze Sätze im Zusammenhang prüfen: in `audio/probe.txt` schreiben (`#` = Zeile aus, Leerzeile = Absatz), dann
+`hb` → `p`. Mehrere Probetexte: daneben `probe-namen.txt` usw., hören mit `sh hb.sh probe probe-namen.txt`.
+
 Bewährt: zuerst alle Fremdwörter, Abkürzungen und Adressen im Buch zusammentragen (eine KI kann die Buch-MD
 durchsuchen), mit `p` anhören, dann das ganze Buch einmal hören und den Rest notieren.
+
+## Hörbuch: Befehle zum Kopieren
+
+Ohne Menü: `hb` → `$` öffnet ein Terminal im Ordner `audio/` (oder Rechtsklick auf `audio/` → «Im Terminal öffnen»).
+Alle Zeilen gelten dort. `sh hb.sh` allein zeigt die Übersicht.
+
+**Probieren**
+
+```sh
+sh hb.sh probe                       # probe.txt, eingestellte Stimme
+sh hb.sh probe l                     # Stimmen mit Nummer
+sh hb.sh probe 2                     # mit Stimme 2 (Florian)
+sh hb.sh probe 1 -10%                # Ollie, Tempo −10 %
+sh hb.sh probe alle                  # alle Stimmen nacheinander (eine MP3 pro Stimme)
+sh hb.sh probe probe-namen.txt       # eigener Probetext
+sh hb.sh woerter                     # KLINGEN FALSCH anhören
+mpv probe-ollie-de-de-r-8.mp3        # anhören (der Name steht nach jedem Lauf da)
+ls -t *.mp3 | head                   # die neusten Proben
+rm probe-*.mp3 aussprache-*.mp3      # Proben aufräumen
+```
+
+**Hörbuch**
+
+```sh
+sh hb.sh texte                       # Texte neu aus der Buch-MD
+sh hb.sh liste                       # Kapitel mit Kürzel und Zeichen
+sh hb.sh alles                       # ganzes Hörbuch
+sh hb.sh 000000                      # nur die Ansage
+sh hb.sh 0201,0304                   # diese Kapitel neu
+sh hb.sh 04                          # ganzer Teil 4 neu
+sh hb.sh alles stimme=2              # ganzes Buch einmalig mit Florian
+```
+
+**Nachsehen und anhören**
+
+```sh
+ls mp3-md-azure-ollie/                         # alle MP3s
+mpv mp3-md-azure-ollie/02.01*                  # ein Kapitel
+mpv mp3-md-azure-ollie/                        # alle nacheinander
+tail -40 mp3-md-azure-ollie/einstellungen.txt  # letzter Lauf: Zeit, Aufruf, Einstellungen, Wörter
+cat txt-md/02.01*                              # was die Stimme bekommt (vor den Aussprache-Regeln)
+grep -n "Zeitstrahl" buch.txt                  # steht etwas im Hörbuch?
+ls *.zip                                       # Sicherungen der ganzen Läufe
+for f in mp3-md-azure-ollie/*.mp3; do ffprobe -v error -show_entries format=duration -of csv=p=0 "$f"; done | awk '{s+=$1} END {printf "%d Dateien, %d:%02d:%02d\n", NR, s/3600, s%3600/60, s%60}'
+```
+
+**Vergleichen und neu machen**
+
+```sh
+mv mp3-md-azure-ollie mp3-md-azure-ollie-alt   # alten Stand behalten, dann: sh hb.sh alles
+sed -i 's/^MP3_KBIT=.*/MP3_KBIT="192"/' audio.conf   # Produktion (eigener Ordner …-192)
+sed -i 's/^AZURE_STIMME=.*/AZURE_STIMME="2"/' audio.conf   # Stimme 2 fest einstellen
+```
 
 ## Hörbuch: Was vorgelesen wird
 
@@ -873,7 +949,10 @@ unzensierte Teile (das Hörbuch gibt es nur für die normale Ausgabe). Kontrolle
 
 ## Hörbuch: Was im Ordner audio liegt
 
-- `audio.conf`, `aussprache-<stimme>.txt` – deine Einstellungen und Wörter (kommen zu GitHub).
+- `audio.conf`, `aussprache-<stimme>.txt`, `probe.txt` (und eigene `probe-….txt`) – deine Einstellungen, Wörter und
+  Probetexte (kommen zu GitHub, bleiben bei Updates).
+- `hb.sh` – Starter für das Terminal: `sh hb.sh` zeigt alle Befehle.
+- `probe-….mp3`, `aussprache-….mp3` – die letzten Proben (nicht zu GitHub).
 - `txt-md/` – die Texte pro Kapitel (werden mit `t` neu gemacht).
 - `mp3-md-azure-<stimme>/` (bzw. `…-192`) mit `einstellungen.txt`: jeder Lauf wird unten angehängt – Zeit, Aufruf,
   Einstellungen und die ganze Aussprache-Liste.
@@ -893,7 +972,8 @@ MP3, Texte und ZIPs kommen nicht zu GitHub.
 
 | Meldung | Was tun |
 |---|---|
-| «AZURE_SPEECH_KEY fehlt» | neues Terminal öffnen (lädt `~/.bashrc`), dann nochmals |
+| «AZURE_SPEECH_KEY fehlt» | `hb` → `s` (Schlüssel eingeben); im Terminal: neues Terminal öffnen (lädt `~/.bashrc`) |
+| «Azure-Paket fehlt» | `hb` → `c` – installiert es in die `.venv` des Buchs |
 | «Fehler» bei einem Kapitel | nochmals starten – fertige Kapitel werden übersprungen |
 | Kapitel klingt noch alt | im MP3-Ordner liegt die alte Datei: nur dieses Kapitel mit `k` neu sprechen |
 | Wort wird nicht ersetzt | ganzes Wort? Reihenfolge (lange vor kurzen)? Kein `$` oder Punkt am Ende? |
