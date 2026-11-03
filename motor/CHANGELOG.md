@@ -3,6 +3,16 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.68.0 (November 2026)
+- **Hörbuch (nur Linux, Testphase):** neu `motor/audio/` – eine MP3 pro Kapitel mit einer Azure-Stimme (Ollie),
+  übernommen aus Leben123. Menü `hb` (Texte, Wörter anhören, alles, Kapitel, Liste, Einstellungen, prüfen) oder
+  `python3 motor/audio/hoerbuch.py …`. Texte aus der Buch-MD mit eingesetzten Geschichten (`@@`), normale Ausgabe.
+  Ansage am Anfang (`AZURE_ANSAGE`), Tracknummer, Cover (Umschlag vorne), Titelpause, `MP3_KBIT` 128 (Test) oder
+  192 (Produktion: 44,1 kHz, Lautstärke angeglichen, eigener Ordner). Aussprache pro Stimme in
+  `audio/aussprache-<stimme>.txt` mit «KLINGEN FALSCH / KLINGEN GUT»; `einstellungen.txt` mit Verlauf, ZIP pro ganzem Lauf.
+  `audio/` entsteht beim ersten Aufruf aus `motor/audio/vorlage/`. Hilfe: neue Gruppe «Hörbuch». Bau unverändert.
+- `.gitignore`: MP3s, Texte und Hilfsdateien unter `audio/` kommen nicht zu GitHub (update ergänzt es).
+
 ## 2.67.5 (November 2026)
 - Mac-Start neu im Terminal: `START-Mac.command` heisst jetzt `START-Mac-imTerminal.sh` (gleicher Inhalt).
   Terminal öffnen, `sh ` tippen, Datei ins Fenster ziehen, Enter – der Mac sperrt heruntergeladene `.command`-Dateien

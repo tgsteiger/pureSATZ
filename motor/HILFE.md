@@ -420,7 +420,7 @@ Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {v
   m  MD öffnen …                      s  schnell  (Lese-PDF)
   g  Geschichten …                    k  komplett (vor dem Druck)
   t  Tabellen …                       w  weitere …
-  c  check / gegenlesen …
+  c  check / gegenlesen …             hb Hörbuch …   (nur Linux)
  ── Ansehen ───────────────────────   ── Abgleichen ────────────────────
   p  PDF öffnen …                     sy sync   (GitHub)
   o  Ordner öffnen …                  u  update (ul lokal)
@@ -436,6 +436,7 @@ Untermenüs (Enter oder `z` = zurück; «…» = nur was es gibt):
 | `g` Geschichten | `e` schreiben … (Liste mit Kürzel) · `n` neue Geschichte (fragt nach dem Titel, öffnet sie) · `b` fehlende ins Buch · `a` alle in 1 Datei · `ü` Übersicht (auch `u`) · `s` Sammel-PDF |
 | `t` Tabellen | `e` bearbeiten … (Liste mit Kürzel) · `n` neue Tabelle (öffnet die CSV, `@#name` kommt in den Block «## Noch einordnen» im Buch) · `o` Ordner |
 | `c` check / gegenlesen | `n` Liste neu (personen-seiten.txt) · `c` check-PDF für eine Person (öffnet sich danach) · `t` Textdatei |
+| `hb` Hörbuch (Linux) | `t` Texte neu · `p` Wörter anhören · `a` alles sprechen · `k` Kapitel … · `l` Liste · `w` Wörter bearbeiten · `e` Einstellungen · `o` Ordner · `c` prüfen – siehe [Hörbuch](#Hörbuch-Was-es-braucht) |
 | `w` weitere | `l` Leseprobe · `k` Korrektur · `p` nur-pdf · `e` nur E-Book · `c` prüfen · `s` Stand merken |
 | `p` PDF öffnen | `n` normal · `u` unzensiert · `l` Leseprobe · `k` Korrektur … |
 | `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten · `t` tabellen … |
@@ -777,6 +778,126 @@ Das E-Book ist für alle Shops dasselbe – nur der Druck ist plattformabhängig
 - **Bildschirm-PDF** `<datei>.pdf` für den Copyshop (Klebebindung, Spiralbindung) oder zum Verschicken.
 - **Korrektur-PDF** `<datei>_Korrektur.pdf` (`sh build.sh korrektur`): A4 mit Zeilennummern und Rand fürs Lektorat.
 - Feine Farben im Schwarz-weiss-Druck zu hell: `bildschirm-dunkler: ja` (siehe «Schwarz-weiss drucken»).
+
+# Hörbuch (Linux, Testphase)
+
+## Hörbuch: Was es braucht
+
+Aus dem Buch ein Hörbuch machen: eine MP3 pro Kapitel, vorgelesen von einer KI-Stimme von Microsoft Azure.
+Getestet mit «Leben 1.0, 2.0, 3.0» und der Stimme **Ollie** (spricht Deutsch sehr angenehm). Vorerst **nur Linux**.
+
+- Ein **kostenloses Azure-Konto** (Tarif F0: 0,5 Mio. Zeichen pro Monat gratis – ein Buch hat etwa 80'000;
+  darüber blockiert Azure, es entstehen keine Kosten).
+- ffmpeg (Pflicht) und mpv (zum Anhören), das Azure-Paket für Python – `hb` → `c` prüft alles.
+- Einmalig etwa 30 Minuten zum Einrichten.
+
+## Hörbuch: Einrichten (einmalig)
+
+1. portal.azure.com → Konto anlegen → «Speech-Dienst» (Speech service) erstellen: Tarif **F0**, Region z. B.
+   `switzerlandnorth`. Unter «Schlüssel und Endpunkt» Schlüssel 1 kopieren.
+2. Schlüssel nur in `~/.bashrc` – nie in eine Datei im Buch und nie zu GitHub:
+
+```sh
+echo 'export AZURE_SPEECH_KEY=dein-schlüssel' >> ~/.bashrc
+echo 'export AZURE_SPEECH_REGION=switzerlandnorth' >> ~/.bashrc
+sudo apt install ffmpeg mpv
+```
+
+3. Neues Terminal öffnen, im Buchordner `sh menu.sh` → `hb` → `c` (prüft und installiert das Azure-Paket).
+   Beim ersten Mal entsteht der Ordner `audio/` mit `audio.conf` und `aussprache-ollie.txt`.
+
+## Hörbuch: So entsteht es
+
+Im Menü `hb` (oder `python3 motor/audio/hoerbuch.py …` im Buchordner):
+
+| Taste | Befehl | Was |
+|---|---|---|
+| `t` | `texte` | Texte aus der Buch-MD (normale Ausgabe, mit Geschichten `@@`, Ansage am Anfang) → `audio/txt-md/` |
+| `l` | `liste` | Kapitel mit Kürzel und Zeichen (ohne Azure) |
+| `a` | `alles` | ganzes Hörbuch – fertige Kapitel werden übersprungen, Abbruch = nochmals starten |
+| `k` | `0201,0304` | nur diese Kapitel, immer neu (Kürzel als Anfang: `04` = ganzer Teil 4) |
+| `p` | `aussprache` | Wörter anhören (siehe «Aussprache verfeinern») |
+
+Buch geändert → zuerst `t`, dann die betroffenen Kapitel mit `k` (oder für alles den MP3-Ordner umbenennen und `a`).
+Ergebnis: `audio/mp3-md-azure-ollie/` – mit Tracknummer, Titel, Album, Autor und dem Umschlag als Cover
+(`ausgabe-normal/…_Vorderseite.jpg`, entsteht beim Bau). Aufs Handy: den Ordner kopieren.
+
+## Hörbuch: Einstellungen (audio.conf)
+
+| Zeile | Wirkung |
+|---|---|
+| `AZURE_STIMME="1"` | `1` = Favorit 1 (Ollie), `2` = Favorit 2 (Florian) oder ganzer Stimmname. Einmalig: `alles stimme=2` |
+| `AZURE_SPRACHE="de-DE"` | fest Deutsch – ohne kippt Ollie bei englischen Wörtern ins Englische |
+| `AZURE_RATE="-8%"` | Tempo, minus = langsamer |
+| `AZURE_TITELPAUSE="2000ms"` | Pause vor und nach dem Kapitelnamen (dazu `AZURE_PAUSE`, `AZURE_SATZPAUSE`) |
+| `AZURE_ANSAGE="…"` | Ansage am Anfang (`00.00.00_Ansage.mp3`) mit `{titel}`, `{untertitel}`, `{autor}`; leer = keine |
+| `MP3_KBIT="128"` | `128` = Test · `192` = für Plattformen: 44,1 kHz, Lautstärke angeglichen, eigener Ordner `…-192` |
+| `ALBUM`, `ARTIST`, `COVER` | leer = aus dem Buch bzw. Umschlag vorne |
+
+## Hörbuch: Aussprache verfeinern
+
+Jede Stimme hat ihre Liste: `audio/aussprache-ollie.txt`, eine Zeile `Original = Aussprache`.
+
+1. Neue Wörter unter `## KLINGEN FALSCH` eintragen – gern mehrere Varianten untereinander.
+2. `hb` → `p`: liest nur diesen Bereich vor (Original, kurze Pause, Aussprache) und spielt es ab.
+3. Die beste Variante nach `## KLINGEN GUT` verschieben, die anderen löschen. Im Buch gelten beide Bereiche.
+
+Regeln:
+
+- Nur ganze Wörter, gross/klein egal. «Velo» gilt nicht für «Velofahrer» – eigene Zeile.
+- **Lange vor kurzen:** `Sitting in the Power` vor `Power`, `www.…ch` vor `…ch` – sonst findet die lange nichts mehr.
+- Ein Punkt am Ende des Originals greift nicht (`Dipl.`) – mit dem nächsten Wort schreiben: `Dipl. Techniker = …`.
+- `# jahreszahlen: aus` oben: die Stimme spricht Jahreszahlen selbst (Ollie kann es).
+
+Was bei Ollie Korrektur brauchte (Beispiele aus «Leben 1.0, 2.0, 3.0»):
+
+| Art | Beispiel |
+|---|---|
+| «Teil 2.» liest er als «zweiter» | `Teil 2 = Zweiter Teil` (steht schon in der Vorlage) |
+| englisch | `Power = Pauer` · `Trance Healing = Tränss Hieling` · `Channeln = Tschenneln` |
+| französisch | `Impératif = Äähnperatiff` · `Chalet = Scha-le` · `Française = Fran-sääs` |
+| Abkürzungen | `IT = Ei-Tii` · `RAV = R.A.V` |
+| Web-Adressen | `www.thomasgsteiger.ch = w w w, Punkt, thomas gsteiger, Punkt, c h` |
+| Zahl mit Buchstaben | `7x7 = Sieben mal Sieben` · `8ung = Achtung` |
+| Namen, spanisch | `Guayaquil = Guajakiil` · `Krishna Das = Krischna Daas` |
+
+Bewährt: zuerst alle Fremdwörter, Abkürzungen und Adressen im Buch zusammentragen (eine KI kann die Buch-MD
+durchsuchen), mit `p` anhören, dann das ganze Buch einmal hören und den Rest notieren.
+
+## Hörbuch: Was vorgelesen wird
+
+Vorgelesen: Widmung, Kernsatz, Text, Geschichten (`@@`), Zitate, Tabellen Zeile für Zeile, Zeitstrahl,
+Fotos als «Bild: Titel. Text.». Nicht: @TITEL, @IMPRESSUM, @HINWEIS, Inhaltsverzeichnis, übrige @-Befehle,
+unzensierte Teile (das Hörbuch gibt es nur für die normale Ausgabe). Kontrolle: `audio/buch.txt` (vorgelesen),
+`audio/buch-entfernt.txt` (weggelassen).
+
+## Hörbuch: Was im Ordner audio liegt
+
+- `audio.conf`, `aussprache-<stimme>.txt` – deine Einstellungen und Wörter (kommen zu GitHub).
+- `txt-md/` – die Texte pro Kapitel (werden mit `t` neu gemacht).
+- `mp3-md-azure-<stimme>/` (bzw. `…-192`) mit `einstellungen.txt`: jeder Lauf wird unten angehängt – Zeit, Aufruf,
+  Einstellungen und die ganze Aussprache-Liste.
+- `txt-md_<stimme>_<zeit>.zip` – bei jedem ganzen Lauf: Texte, Aussprache-Liste und `audio.conf` zur Sicherheit.
+
+MP3, Texte und ZIPs kommen nicht zu GitHub.
+
+## Hörbuch: Kosten, Rechte, Verkauf
+
+- F0 gratis bis 0,5 Mio. Zeichen pro Monat; Verbrauch: Azure-Portal → Speech-Ressource → Metriken.
+  Die höhere Qualität (192) kostet nicht mehr – abgerechnet wird nach Zeichen.
+- Für dich, Familie und Freunde: frei.
+- **Verkauf:** `MP3_KBIT="192"`, die KI-Stimme angeben (Ansage), vorher die Azure-Bedingungen und die Regeln der
+  Plattform prüfen – manche nehmen keine KI-Stimmen an. Die meisten wollen eine MP3 pro Kapitel (so wie hier).
+
+## Hörbuch: Wenn etwas klemmt
+
+| Meldung | Was tun |
+|---|---|
+| «AZURE_SPEECH_KEY fehlt» | neues Terminal öffnen (lädt `~/.bashrc`), dann nochmals |
+| «Fehler» bei einem Kapitel | nochmals starten – fertige Kapitel werden übersprungen |
+| Kapitel klingt noch alt | im MP3-Ordner liegt die alte Datei: nur dieses Kapitel mit `k` neu sprechen |
+| Wort wird nicht ersetzt | ganzes Wort? Reihenfolge (lange vor kurzen)? Kein `$` oder Punkt am Ende? |
+| Änderung in der Wörter-Datei ist weg | Editor hat überschrieben: Datei schliessen oder «Neu laden» |
 
 # Sichern und mehrere Computer
 

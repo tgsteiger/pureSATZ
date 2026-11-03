@@ -25,3 +25,9 @@ _geschichten-sammlung.md
 hilfe.html
 # Menü: Ton und letzte Befehle (sh menu.sh)
 .menu
+# Hörbuch (hb): erzeugte Texte und MP3s
+audio/mp3-*/
+audio/txt-*/
+audio/buch*.txt
+audio/_buch-hoerbuch.md
+audio/*.mp3

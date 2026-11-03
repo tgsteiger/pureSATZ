@@ -49,6 +49,9 @@ Die Skripte dahinter: `bash pc-einrichten/linux-einrichten.sh` · `bash pc-einri
 `pc-einrichten\win-einrichten.bat` (ohne Angabe: der ganze Ablauf; `--technik` bzw. `--extras` nur diese Teile auf Linux/Mac).
 Die Schritte unten sind dasselbe von Hand.
 
+**Hörbuch (nur Linux, freiwillig):** braucht ein kostenloses Azure-Konto, `sudo apt install ffmpeg mpv` und den
+Schlüssel in `~/.bashrc` – alles in der Hilfe «Hörbuch: Einrichten». Im Menü `hb`.
+
 **Ghostscript (freiwillig):** nur nötig, wenn eine Druckerei CMYK verlangt (z. B. tredition, `{farbmodus}: cmyk`
 in der Druckdatei). Die Einrichte-Skripte fragen danach. Von Hand: Linux `sudo apt install ghostscript` ·
 Mac: siehe «Mac: Zusatzprogramme» unten ·

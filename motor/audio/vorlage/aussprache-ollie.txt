@@ -1,0 +1,16 @@
+# Original = Aussprache   (ganze Wörter, gross/klein egal)
+# jahreszahlen: aus
+# Hören: im Menü hb → p (oder: python3 motor/audio/hoerbuch.py aussprache) – liest nur «KLINGEN FALSCH» vor
+# Klingt es gut: Zeile nach «KLINGEN GUT» verschieben (nicht kopieren). Im Buch gelten beide Teile.
+# Reihenfolge: lange/besondere Regeln VOR kurzen/allgemeinen (z. B. «Sitting in the Power» vor «Power»).
+## KLINGEN FALSCH
+## KLINGEN GUT
+Teil 1 = Erster Teil
+Teil 2 = Zweiter Teil
+Teil 3 = Dritter Teil
+Teil 4 = Vierter Teil
+Teil 5 = Fünfter Teil
+Teil 6 = Sechster Teil
+Teil 7 = Siebter Teil
+Teil 8 = Achter Teil
+Teil 9 = Neunter Teil

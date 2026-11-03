@@ -134,6 +134,8 @@ KACHELN = [
      "ZIP-Sicherung, auf Wunsch GitHub."),
     ("Fahrplan bis zum Buch", "Vom Manuskript über Lektorat und zwei Probedrucke bis zur Freigabe: Schritte zum Abhaken, "
      "mit Daten passend zu deinem Wunschtermin."),
+    ("Hörbuch (Linux, Testphase)", "Eine MP3 pro Kapitel, gelesen von einer KI-Stimme von Microsoft Azure – mit Cover, "
+     "Tracknummer und eigener Aussprache-Liste. Braucht ein kostenloses Azure-Konto."),
 ]
 
 

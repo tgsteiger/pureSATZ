@@ -24,6 +24,7 @@ except ImportError:
 MOTOR = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.dirname(MOTOR)
 WIN, MAC = sys.platform == "win32", sys.platform == "darwin"
+LINUX = sys.platform.startswith("linux")                       # Hörbuch (hb) vorerst nur unter Linux
 EINST = os.path.join(BASE, ".menu")
 PURESATZ = os.path.join(os.path.dirname(BASE), "pureSATZ")
 LOKAL = os.path.isdir(os.path.join(PURESATZ, "motor"))
@@ -259,6 +260,34 @@ def einordnen(extra=None):
     print(f"  Ins Buch (ab Zeile {pos + 2}, «{kopf}»): " + ", ".join(fehlt) + "\n  → ansehen: s schnell, dann p")
 
 
+def hoerbuch_menue():
+    """hb: Hörbuch mit Azure (motor/audio/hoerbuch.py, nur Linux). Einstellungen und Wörter in audio/."""
+    hb = [sys.executable, os.path.join(MOTOR, "audio", "hoerbuch.py")]
+    if not os.path.isdir(os.path.join(BASE, "audio")):           # beim ersten Mal audio/ aus der Vorlage anlegen
+        subprocess.run(hb + ["hilfe"], stdout=subprocess.DEVNULL)
+    k = untermenue("Hörbuch …", {"t": ("Texte neu", 0), "p": ("Wörter anhören", 0), "a": ("alles sprechen", 0),
+                                 "k": ("Kapitel …", 0), "l": ("Liste", 0), "w": ("Wörter bearbeiten", 0),
+                                 "e": ("Einstellungen", 0), "o": ("Ordner", 0), "c": ("prüfen", 0)})
+    if k in ("t", "p", "a", "l", "c"):
+        lauf(hb + [{"t": "texte", "p": "aussprache", "a": "alles", "l": "liste", "c": "pruefen"}[k]])
+        neu = sorted(glob.glob(os.path.join(BASE, "audio", "aussprache-*.mp3")), key=os.path.getmtime)
+        if k == "p" and neu:
+            subprocess.Popen(["mpv", "--force-window=yes", neu[-1]], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    elif k == "k":
+        lauf(hb + ["liste"])
+        wahl = frage(" Kürzel (z. B. 0201,0304 – Enter = zurück): ")
+        if wahl:
+            lauf(hb + wahl.split())
+    elif k == "w":
+        wort = sorted(glob.glob(os.path.join(BASE, "audio", "aussprache-*.txt")))
+        if wort:
+            oeffnen(wort[0])
+    elif k == "e":
+        oeffnen(os.path.join(BASE, "audio", "audio.conf"))
+    elif k == "o":
+        oeffnen(os.path.join(BASE, "audio"))
+
+
 def tabellen_menue():
     """g → t / m → t: Tabellen bearbeiten, neu anlegen, Ordner – wie bei den Geschichten."""
     ordner = os.path.join(BASE, "tabellen")
@@ -328,7 +357,8 @@ def zeige():
     print("\n" + links + f"Klang (!) {'ein' if ton else 'aus'}".rjust(68 - len(links)))
     spalten = [("Schreiben", [("m", "MD öffnen …"), ("g", "Geschichten …"), ("t", "Tabellen …"),
                              ("c", "check / gegenlesen …")]),
-               ("Bauen", [("s", "schnell  (Lese-PDF)"), ("k", "komplett (vor dem Druck)"), ("w", "weitere …")]),
+               ("Bauen", [("s", "schnell  (Lese-PDF)"), ("k", "komplett (vor dem Druck)"), ("w", "weitere …")]
+                + ([("hb", "Hörbuch …")] if LINUX else [])),
                ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen")]),
                ("Abgleichen", [("sy", "sync   (GitHub)"), ("u", "update" + (" (ul lokal)" if LOKAL else ""))])]
     for (t1, z1), (t2, z2) in (spalten[:2], spalten[2:]):
@@ -532,6 +562,8 @@ def main():
                        if os.path.getmtime(p) >= seit - 1]
                 for p in neu:
                     oeffnen(p)
+        elif w == "hb" and LINUX:
+            hoerbuch_menue()
         elif w == "sy":
             skript("sync")
         elif w in ("u", "ul"):

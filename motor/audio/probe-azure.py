@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+# Hörproben mit Azure – Favoriten, Sprache und Tempo aus audio.conf (klingt wie der richtige Lauf)
+# Aufruf: python3 probe-azure.py              eingestellte Stimme (AZURE_STIMME)
+#         python3 probe-azure.py liste        Stimmen mit Nummer
+#         python3 probe-azure.py 3            Stimme Nr. 3   ·   alle = alle Stimmen
+#         python3 probe-azure.py 2 -10%       mit anderem Tempo (sonst AZURE_RATE)
+#         python3 probe-azure.py aussprache   liest «## KLINGEN FALSCH» aus aussprache-<stimme>.txt: Original, dann Aussprache
+# Ergebnis: probe-… bzw. aussprache-<stimme>-…-r<tempo>.mp3 hier im Ordner, anhören mit mpv
+# TEXT läuft durch dieselben Regeln wie das Buch (aussprache-<stimme>.txt, text-vorbereiten.sh).
+import os, re, sys, subprocess, tempfile
+from xml.sax.saxutils import escape
+
+DIR = os.path.dirname(os.path.abspath(__file__))              # Skripte (motor/audio)
+DATEN = os.environ.get("AUDIO_DIR") or DIR                     # Buch: audio/
+
+# Probetext – nach Belieben ändern
+TEXT = ("Mein erstes Buch, gelesen von einer KI-Stimme. Im Jahr 1974 kam ich in Bern zur Welt. "
+        "Teil 2. Learning by Doing, Extra Power und ein Velo.")
+
+conf = {}
+with open(os.path.join(DATEN, "audio.conf"), encoding="utf-8") as f:
+    for zeile in f:
+        m = re.match(r'^([A-Z0-9_]+)="([^"]*)"', zeile.strip()) 
+        if m:
+            conf[m.group(1)] = m.group(2)
+
+STIMMEN = list(dict.fromkeys([
+    conf.get("AZURE_FAVORIT1", "en-GB-OllieMultilingualNeural"),
+    conf.get("AZURE_FAVORIT2", "de-DE-FlorianMultilingualNeural"),
+    "de-DE-Florian:DragonHDLatestNeural",
+    "de-DE-ConradNeural",
+    "de-DE-ChristophNeural",
+    "de-CH-JanNeural",
+    "de-CH-LeniNeural",
+]))
+
+args = sys.argv[1:]
+hoeren = "aussprache" in args
+if hoeren:
+    args.remove("aussprache")
+if args and args[0] in ("liste", "l"):
+    for i, s in enumerate(STIMMEN, 1):
+        print(f"{i}  {s}" + ("   (Favorit %d)" % i if i <= 2 else ""))
+    print("Aufruf: python3 probe-azure.py [NUMMER|alle] [TEMPO, z. B. -10%]")
+    sys.exit(0)
+
+wahl = conf.get("AZURE_STIMME", "1")
+if args and (args[0] == "alle" or args[0].isdigit()):
+    wahl = args.pop(0)
+if wahl == "alle":
+    auswahl = STIMMEN
+elif wahl.isdigit():
+    auswahl = [STIMMEN[int(wahl) - 1]]
+else:
+    auswahl = [wahl]                                   # ganzer Name aus audio.conf
+rate = args[0] if args else conf.get("AZURE_RATE", "-15%")
+sprache = conf.get("AZURE_SPRACHE", "")
+
+import azure.cognitiveservices.speech as speechsdk
+key = os.environ.get("AZURE_SPEECH_KEY")
+if not key:
+    print("AZURE_SPEECH_KEY fehlt (export in ~/.bashrc?)"); sys.exit(1)
+speech_config = speechsdk.SpeechConfig(
+    subscription=key, region=os.environ.get("AZURE_SPEECH_REGION", "switzerlandnorth"))
+speech_config.set_speech_synthesis_output_format(
+    speechsdk.SpeechSynthesisOutputFormat.Audio24Khz96KBitRateMonoMp3)
+
+for stimme in auswahl:
+    kurz = "-".join(stimme.split("-")[2:]).replace("MultilingualNeural", "").replace("Neural", "").replace(":", "-").lower()
+    aus = f"aussprache-{kurz}.txt"                     # wie txt2mp3-azure.py
+    if not os.path.exists(os.path.join(DATEN, aus)):
+        aus = conf.get("AUSSPRACHE", "aussprache.txt")
+    art = "aussprache" if hoeren else "probe"
+    datei = os.path.join(DATEN, f"{art}-{kurz}{'-' + sprache.lower() if sprache else ''}-r{rate.replace('%', '')}.mp3")
+    if hoeren:                                         # nur «## KLINGEN FALSCH» (bis zum nächsten ##)
+        teile, drin = [], False
+        for z in open(os.path.join(DATEN, aus), encoding="utf-8"):
+            if z.startswith("##"):
+                drin = "falsch" in z.lower()
+                continue
+            if drin and "=" in z and not z.lstrip().startswith("#"):
+                o, e = (x.strip() for x in z.split("=", 1))
+                teile.append(f'{escape(o)}<break time="600ms"/>{escape(e)}<break time="1500ms"/>')
+        if not teile:
+            print(f"Nichts zu hören: in {aus} fehlt «## KLINGEN FALSCH» oder ist leer."); continue
+        text = "".join(teile)
+    else:                                              # TEXT mit den Regeln des Buchs
+        with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as t:
+            t.write(TEXT + "\n")
+        text = escape(" ".join(subprocess.run(["bash", os.path.join(DIR, "text-vorbereiten.sh"), t.name],
+                                              capture_output=True, text=True, check=True,
+                                              env=dict(os.environ, AUSSPRACHE_DATEI=aus, AUDIO_DIR=DATEN)).stdout.split()))
+        os.remove(t.name)
+    inhalt = f'<prosody rate="{rate}">{text}</prosody>'
+    if sprache:
+        inhalt = f'<lang xml:lang="{sprache}">{inhalt}</lang>'
+    ssml = ('<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="de-DE">'
+            f'<voice name="{stimme}">{inhalt}</voice></speak>')
+    synth = speechsdk.SpeechSynthesizer(speech_config=speech_config,
+                                        audio_config=speechsdk.audio.AudioOutputConfig(filename=datei))
+    r = synth.speak_ssml_async(ssml).get()
+    if r.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
+        print(f"Fertig: {os.path.relpath(datei)}  ({stimme}, Tempo {rate}, {aus})")
+    else:
+        print(f"Fehler bei {stimme}:", r.cancellation_details.error_details)

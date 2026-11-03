@@ -41,7 +41,7 @@ HILFSDATEIEN = ("update.sh", "update.bat", "sync.sh", "sync.bat", "build.sh", "b
                 "cleanup.sh", "cleanup.bat", "sicherung.sh", "sicherung.bat", "neu.sh", "neu.bat", "menu.sh", "menu.bat")
 # Erzeugte Dateien, die nicht zu GitHub gehören (werden in .gitignore ergänzt, falls sie fehlen)
 IGNORIEREN = ("geschichten-uebersicht.html", "geschichten/UEBERSICHT.md", "_geschichten-sammlung.md", "hilfe.html",
-              ".menu")
+              ".menu", "audio/mp3-*/", "audio/txt-*/", "audio/buch*.txt", "audio/_buch-hoerbuch.md", "audio/*.mp3")
 
 
 def version(ordner):

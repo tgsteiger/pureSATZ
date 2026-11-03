@@ -112,6 +112,8 @@ WAS DER MOTOR MACHT (zur Info)
   sh build.sh personen   Personen mit Seiten → personen-seiten.txt · sh build.sh personen Name   Check-PDF zum Gegenlesen
   sh build.sh stand "Name"   Stand festhalten · sh build.sh aenderungen [3 | 22.10.]   letzte Änderungen / seit Stand 3 / seit Datum
   sh build.sh hilfe      hilfe.html erzeugen und öffnen (ganze Anleitung mit Suche; Quelle motor/HILFE.md)
+  Hörbuch (nur Linux, Azure): Menü hb · python3 motor/audio/hoerbuch.py texte | liste | alles | 0201 | aussprache
+                         Wörter in audio/aussprache-<stimme>.txt: «Original = Aussprache», lange Regeln vor kurzen.
 
 SO ARBEITEST DU
 - Schreibe in der Sprache, Rechtschreibung und im Ton des Buchs (in der Schweiz: ss statt ß).
