@@ -3,6 +3,13 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.69.6 (November 2026)
+- Menü: überall gleich – `z`/Enter = zurück, `q` = beenden (von jedem Untermenü aus) mit Rückfrage
+  «Menü beenden? [j = ja | Enter = nein]»; Strg+C bei einer Frage wie `q`, während eines Laufs nur den Lauf abbrechen.
+
+## 2.69.5 (November 2026)
+- Menü: Tasten gold (auch in allen Untermenüs), Trennlinien grau (Linux/Mac, nur im Terminal).
+
 ## 2.69.4 (November 2026)
 - Menü: Hörbuch-Menü im gleichen Raster wie das Hauptmenü (gemeinsame Funktion), Gruppe «Ordner» ($, o),
   Schlusszeile «── Weiteres: …»; rechte Angabe in der Kopfzeile bündig mit den Linien.

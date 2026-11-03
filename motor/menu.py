@@ -28,6 +28,20 @@ LINUX = sys.platform.startswith("linux")                       # Hörbuch (hb) v
 FARBIG = not WIN and sys.stdout.isatty()                           # Farben/fett nur im echten Terminal (Linux/Mac)
 FETT = (lambda t: f"\033[1;38;5;178m{t}\033[0m") if FARBIG else (lambda t: t)   # Bereich / Titel: fett, Gold
 HELL = (lambda t: f"\033[1;97m{t}\033[0m") if FARBIG else (lambda t: t)          # Buchname: fett, weiss
+GRAU = (lambda t: f"\033[38;5;244m{t}\033[0m") if FARBIG else (lambda t: t)      # Trennlinien: gedämpft
+
+
+class Beenden(Exception):
+    """q in einem Untermenü: Menü ganz beenden (nach Rückfrage)."""
+
+
+def beenden_frage():
+    """Vor dem Beenden fragen; Enter = nein (ein versehentliches q schadet nicht)."""
+    try:
+        a = frage(" Menü beenden? [j = ja | Enter = nein]: ").lower()
+    except KeyboardInterrupt:
+        return True
+    return a in ("j", "ja", "q")                      # «q» kommt auch bei Eingabe-Ende (EOF)
 
 
 def kurzname(n, laenge=24):
@@ -163,8 +177,12 @@ def pdfs():
 def untermenue(titel, eintraege):
     """eintraege: {Taste: (Text, Pfad oder None)} – gibt die gewählte Taste zurück, None = zurück."""
     print(f"\n {FETT(titel)}")
-    raster([(k, t) for k, (t, _) in eintraege.items()] + [("z", "zurück")])
+    raster([(k, t) for k, (t, _) in eintraege.items()] + [("z", "zurück"), ("q", "beenden")])
     e = frage(" Wahl: ").lower()
+    if e == "q" and "q" not in eintraege:
+        if beenden_frage():
+            raise Beenden
+        return None
     e = "ü" if e == "u" and "ü" in eintraege and "u" not in eintraege else e      # ohne ü-Taste
     return e if e in eintraege else None
 
@@ -289,8 +307,10 @@ def hoerbuch_menue():
         try:
             if not hoerbuch_schritt(H, audio, hb):
                 return
-        except KeyboardInterrupt:                     # Strg+C bei einer Frage: zurück ins Hörbuch-Menü
-            print("\n  abgebrochen")
+        except KeyboardInterrupt:                     # Strg+C bei einer Frage: wie q
+            print()
+            if beenden_frage():
+                raise Beenden
 
 
 def hoerbuch_schritt(H, audio, hb):
@@ -306,10 +326,14 @@ def hoerbuch_schritt(H, audio, hb):
                                  ("k", "Kapitel … (zeigt die Liste)")]),
                     ("Bearbeiten", [("e", "Wörter · Probe · Einstellungen"), ("s", "Azure-Schlüssel eingeben")]),
                     ("Ordner", [("$", "Terminal in audio/"), ("o", "Ordner audio/ öffnen")])],
-                   "h hilfe · c prüfen · z zurück · Strg+C bricht einen Lauf ab")
+                   "h hilfe · c prüfen · z zurück · q beenden")
     k = frage(" Wahl: ").lower()
-    if k in ("", "z", "q"):
+    if k in ("", "z"):
         return False
+    if k == "q":
+        if beenden_frage():
+            raise Beenden
+        return True
     gelaufen = False
     neu = lambda muster: sorted(glob.glob(os.path.join(audio, muster)), key=os.path.getmtime)
     def abspielen(muster, seit):
@@ -367,7 +391,10 @@ def hoerbuch_schritt(H, audio, hb):
         print(f"  Unbekannt: {k}")
     if gelaufen:                                      # Meldungen stehen lassen
         gelaufen = False
-        return frage(" Enter = Hörbuch-Menü · z = zurück: ").lower() != "z"
+        a = frage(" Enter = Hörbuch-Menü · z = zurück · q = beenden: ").lower()
+        if a == "q" and beenden_frage():
+            raise Beenden
+        return a != "z"
     return True
 
 
@@ -448,18 +475,21 @@ def zeige():
 
 def spalten_zeigen(spalten, weiteres):
     """Vier Gruppen in zwei Spalten (Haupt- und Hörbuch-Menü gleich) und die Zeile «── Weiteres: …»."""
+    taste = lambda k: FETT(k) + " " * (3 - len(k))                 # Taste gold, danach auf 3 Zeichen aufgefüllt
+    linie = lambda t: GRAU("── ") + t + " " + GRAU("─" * (30 - len(t)))
     for (t1, z1), (t2, z2) in (spalten[:2], spalten[2:]):
-        print(f" ── {t1} " + "─" * (30 - len(t1)) + f"   ── {t2} " + "─" * (30 - len(t2)))
+        print(f" {linie(t1)}   {linie(t2)}")
         for a, b in zip(z1 + [("", "")] * 3, z2 + [("", "")] * 3):
             if a[0] or b[0]:
-                print(f"  {a[0]:<3}{a[1]:<33}{b[0]:<3}{b[1]}".rstrip())
-    print(f" ── Weiteres:  {weiteres}")
+                print((f"  {taste(a[0])}{a[1]:<33}" + (f"{taste(b[0])}{b[1]}" if b[0] else "")).rstrip())
+    teile = [(FETT(t.split(" ", 1)[0]) + " " + t.split(" ", 1)[1]) if " " in t else t for t in weiteres.split(" · ")]
+    print(f" {GRAU('──')} Weiteres:  " + " · ".join(teile))
 
 
 def raster(zeilen):
     b = max(16, max(len(t) for _, t in zeilen) + 2)                     # Spalten so breit wie der längste Text
     for i in range(0, len(zeilen), 4 if b <= 16 else 3):
-        print(("  " + "".join(f"{k:<3}{t:<{b}}" for k, t in zeilen[i:i + (4 if b <= 16 else 3)])).rstrip())
+        print(("  " + "".join(FETT(k) + " " * (3 - len(k)) + f"{t:<{b}}" for k, t in zeilen[i:i + (4 if b <= 16 else 3)])).rstrip())
 
 
 def befehle():
@@ -544,158 +574,167 @@ def main():
     einstellungen()
     naechste = ""
     while True:
-        if naechste:                                  # Eingabe aus «: Befehle»
-            e, naechste = naechste, ""
-        elif gelaufen:                                # Meldungen stehen lassen, kein neues Menü
-            gelaufen = False
-            e = frage(" Eingabe (Enter = Menü): ", merken=True)
-            if not e:
-                continue
-        else:
-            zeige()
-            print(" Wahl oder Befehl (z. B. final · ↑ = letzte):")
-            e = frage(" Eingabe: ", merken=True)
-        w = e.lower()
-        if w in ("", "z"):
-            continue
-        if w == "q":
-            break
-        seit = time.time()
-        if w == "s":
-            bauen("schnell")
-        elif w == "k":
-            bauen("komplett")
-        elif w == "w":
-            k = untermenue("weitere …", {"l": ("Leseprobe", 0), "k": ("Korrektur", 0), "p": ("nur-pdf", 0),
-                                         "e": ("nur E-Book", 0), "c": ("prüfen", 0), "s": ("Stand merken", 0)})
-            if k == "s":
-                name = frage(" Name des Stands: ")
-                bauen("stand", *([name] if name else []))
-            elif k:
-                bauen({"l": "leseprobe", "k": "korrektur", "p": "nur-pdf", "e": "nur-ebook", "c": "pruefen"}[k])
-        elif w == "m":
-            md = {k: (t, next(iter(sorted(glob.glob(os.path.join(BASE, m)))), None)) for k, (t, m) in MD.items()}
-            if os.path.isdir(os.path.join(BASE, "geschichten")):
-                md["g"] = ("Geschichten …", "g")
-            md["t"] = ("Tabellen …", "t")
-            k = untermenue("MD öffnen …", {k: v for k, v in md.items() if v[1]})
-            if k == "g":
-                geschichte_oeffnen()
-            elif k == "t":
-                tabellen_menue()
-            elif k:
-                oeffnen(md[k][1])
-        elif w == "p":
-            liste = pdfs()
-            if not liste:
-                print("  Noch kein PDF – zuerst bauen (s).")
-            elif len(liste) == 1:
-                oeffnen(next(iter(liste.values()))[1])
+        try:
+            if naechste:                                  # Eingabe aus «: Befehle»
+                e, naechste = naechste, ""
+            elif gelaufen:                                # Meldungen stehen lassen, kein neues Menü
+                gelaufen = False
+                e = frage(" Eingabe (Enter = Menü): ", merken=True)
+                if not e:
+                    continue
             else:
-                k = untermenue("PDF …", liste)
-                if k:
-                    oeffnen(liste[k][1])
-        elif w == "o":
-            ordner = {k: (t, os.path.join(BASE, d)) for k, t, d in (("b", "Buchordner", ""), ("n", "normal", "ausgabe-normal"),
-                      ("u", "unzensiert", "ausgabe-unzensiert"), ("d", "druck", "druck"), ("g", "geschichten", "geschichten"),
-                      ("t", "tabellen", "tabellen"), ("a", "audio (Hörbuch)", "audio"))}
-            k = untermenue("Ordner …", {k: v for k, v in ordner.items() if os.path.isdir(v[1])})
-            if k:
-                oeffnen(ordner[k][1])
-        elif w == "g":
-            k = untermenue("Geschichten …", {"e": ("schreiben …", 0), "n": ("neue Geschichte", 0),
-                                             "b": ("fehlende ins Buch", 0),
-                                             "a": ("alle zurückholen" if os.path.exists(ALLE) else "alle in 1 Datei", 0),
-                                             "s": ("Sammel-PDF", 0), "ü": ("Übersicht", 0)})
-            if k and k != "a" and os.path.exists(ALLE):
-                print(SPERRE)
-            elif k == "a":
-                alle_in_einer_datei()
-            elif k == "b":
-                einordnen()
-            elif k == "e":
-                geschichte_oeffnen()
-            elif k == "n":
-                titel = frage(" Titel: ")
-                vorher = {p for _, p in kuerzel().values()}
-                if titel and skript("neu", titel) == 0:
-                    for kz, (n, p) in kuerzel().items():
-                        if p not in vorher:
-                            print(f"  Kürzel {kz}: {n}  → ins Buch: g → b")
-                            oeffnen(p)
-            elif k == "ü":
-                if skript("neu") == 0:
-                    oeffnen(os.path.join(BASE, "geschichten-uebersicht.html"))
-            elif k == "s":
-                bauen("geschichten")
-        elif w == "c":
-            k = untermenue("check / gegenlesen …", {"n": ("Liste neu", 0), "c": ("check-PDF …", 0), "t": ("Textdatei", 0)})
-            if k == "n":
-                bauen("personen")
-            elif k == "t":
-                oeffnen(os.path.join(BASE, "personen-seiten.txt"))
-            elif k == "c":
-                name, seit = frage(" Name: "), time.time()
-                if name and bauen("personen", name) == 0:
-                    for p in glob.glob(os.path.join(BASE, "ausgabe-*", f"check_{name}_*.pdf")):
-                        if os.path.getmtime(p) >= seit - 1:
-                            oeffnen(p)
-        elif w == "a":
+                zeige()
+                print(" Wahl oder Befehl (z. B. final · ↑ = letzte):")
+                e = frage(" Eingabe: ", merken=True)
+            w = e.lower()
+            if w in ("", "z"):
+                continue
+            if w == "q":
+                if beenden_frage():
+                    break
+                continue
             seit = time.time()
-            if bauen("aenderungen") == 0:
-                neu = [p for p in glob.glob(os.path.join(BASE, "ausgabe-*", "*_Aenderungen.pdf"))
-                       if os.path.getmtime(p) >= seit - 1]
-                for p in neu:
-                    oeffnen(p)
-        elif w == "hb" and LINUX:
-            hoerbuch_menue()
-        elif w == "sy":
-            skript("sync")
-        elif w in ("u", "ul"):
-            if skript("update", *(["lokal"] if w == "ul" else [])) == 0:
-                einstellungen(speichern=True)
-                if WIN:                                                  # neues Menü laden
-                    sys.exit(subprocess.call([sys.executable, os.path.abspath(__file__)]))
-                os.execv(sys.executable, [sys.executable, os.path.abspath(__file__)])
-        elif w == "!":
-            ton = not ton
-            print(f"  Klang {'ein' if ton else 'aus'}")
-            klang()                                   # Probe beim Einschalten
-        elif w == "t":
-            tabellen_menue()
-        elif w == "$":
-            terminal()
-        elif w == ":":
-            naechste = befehle()
-        elif w == "n":
-            neu = {"b": ("neues Buch", 0), "h": ("Hallo-Buch", 0), "e": ("einrichten", 0),
-                   "m": ("Motor-Selbsttest", 0)} if LOKAL else {}
-            k = untermenue("neu …", {**neu, "v": ("Verknüpfung", 0)})
-            if k == "v":
-                verknuepfung()
-            elif k:
-                vorher = set(os.listdir(os.path.dirname(BASE)))
-                {"b": lambda: skript(os.path.join("setup", "setup"), ordner=PURESATZ),
-                 "h": lambda: skript("hallo", ordner=PURESATZ),
-                 "m": lambda: lauf([sys.executable, os.path.join("test", "selbsttest.py")], PURESATZ,
-                                   dict(os.environ, SELBSTTEST_OHNE_VENV="1")),
-                 "e": lambda: skript("START-Windows" if WIN else "START-Linux", ordner=PURESATZ,
-                                     mac="START-Mac-imTerminal.sh")}[k]()
-                for d in sorted(set(os.listdir(os.path.dirname(BASE))) - vorher):
-                    print(f"  Neues Buch: ../{d} – dort sh menu.sh")
-        elif w in ("h", "?"):
-            bauen("hilfe")
-        elif w.split()[0] in ("xdg-open", "open", "start"):   # wie im Terminal: Datei öffnen, ohne zu warten
-            for teil in shlex.split(e, posix=not WIN)[1:]:
-                oeffnen(os.path.join(BASE, os.path.expanduser(teil.strip('"'))))
-        elif w.split()[0] in BEFEHLE:          # ganzer Befehl: final · leseprobe uz 18,20 · personen Eltern
-            bauen(*e.split())
-        else:
-            print(f"  Unbekannt: {e}")
-        neu = {k: p for k, (_, p) in pdfs().items() if os.path.getmtime(p) >= seit - 1} if gelaufen else {}
-        for p in ([neu[k] for k in ("n", "u") if k in neu] if len(neu) > 2 else neu.values()):
-            oeffnen(p)                                # neu gebaute Lese-PDFs gleich öffnen
-        einstellungen(speichern=True)
+            if w == "s":
+                bauen("schnell")
+            elif w == "k":
+                bauen("komplett")
+            elif w == "w":
+                k = untermenue("weitere …", {"l": ("Leseprobe", 0), "k": ("Korrektur", 0), "p": ("nur-pdf", 0),
+                                             "e": ("nur E-Book", 0), "c": ("prüfen", 0), "s": ("Stand merken", 0)})
+                if k == "s":
+                    name = frage(" Name des Stands: ")
+                    bauen("stand", *([name] if name else []))
+                elif k:
+                    bauen({"l": "leseprobe", "k": "korrektur", "p": "nur-pdf", "e": "nur-ebook", "c": "pruefen"}[k])
+            elif w == "m":
+                md = {k: (t, next(iter(sorted(glob.glob(os.path.join(BASE, m)))), None)) for k, (t, m) in MD.items()}
+                if os.path.isdir(os.path.join(BASE, "geschichten")):
+                    md["g"] = ("Geschichten …", "g")
+                md["t"] = ("Tabellen …", "t")
+                k = untermenue("MD öffnen …", {k: v for k, v in md.items() if v[1]})
+                if k == "g":
+                    geschichte_oeffnen()
+                elif k == "t":
+                    tabellen_menue()
+                elif k:
+                    oeffnen(md[k][1])
+            elif w == "p":
+                liste = pdfs()
+                if not liste:
+                    print("  Noch kein PDF – zuerst bauen (s).")
+                elif len(liste) == 1:
+                    oeffnen(next(iter(liste.values()))[1])
+                else:
+                    k = untermenue("PDF …", liste)
+                    if k:
+                        oeffnen(liste[k][1])
+            elif w == "o":
+                ordner = {k: (t, os.path.join(BASE, d)) for k, t, d in (("b", "Buchordner", ""), ("n", "normal", "ausgabe-normal"),
+                          ("u", "unzensiert", "ausgabe-unzensiert"), ("d", "druck", "druck"), ("g", "geschichten", "geschichten"),
+                          ("t", "tabellen", "tabellen"), ("a", "audio (Hörbuch)", "audio"))}
+                k = untermenue("Ordner …", {k: v for k, v in ordner.items() if os.path.isdir(v[1])})
+                if k:
+                    oeffnen(ordner[k][1])
+            elif w == "g":
+                k = untermenue("Geschichten …", {"e": ("schreiben …", 0), "n": ("neue Geschichte", 0),
+                                                 "b": ("fehlende ins Buch", 0),
+                                                 "a": ("alle zurückholen" if os.path.exists(ALLE) else "alle in 1 Datei", 0),
+                                                 "s": ("Sammel-PDF", 0), "ü": ("Übersicht", 0)})
+                if k and k != "a" and os.path.exists(ALLE):
+                    print(SPERRE)
+                elif k == "a":
+                    alle_in_einer_datei()
+                elif k == "b":
+                    einordnen()
+                elif k == "e":
+                    geschichte_oeffnen()
+                elif k == "n":
+                    titel = frage(" Titel: ")
+                    vorher = {p for _, p in kuerzel().values()}
+                    if titel and skript("neu", titel) == 0:
+                        for kz, (n, p) in kuerzel().items():
+                            if p not in vorher:
+                                print(f"  Kürzel {kz}: {n}  → ins Buch: g → b")
+                                oeffnen(p)
+                elif k == "ü":
+                    if skript("neu") == 0:
+                        oeffnen(os.path.join(BASE, "geschichten-uebersicht.html"))
+                elif k == "s":
+                    bauen("geschichten")
+            elif w == "c":
+                k = untermenue("check / gegenlesen …", {"n": ("Liste neu", 0), "c": ("check-PDF …", 0), "t": ("Textdatei", 0)})
+                if k == "n":
+                    bauen("personen")
+                elif k == "t":
+                    oeffnen(os.path.join(BASE, "personen-seiten.txt"))
+                elif k == "c":
+                    name, seit = frage(" Name: "), time.time()
+                    if name and bauen("personen", name) == 0:
+                        for p in glob.glob(os.path.join(BASE, "ausgabe-*", f"check_{name}_*.pdf")):
+                            if os.path.getmtime(p) >= seit - 1:
+                                oeffnen(p)
+            elif w == "a":
+                seit = time.time()
+                if bauen("aenderungen") == 0:
+                    neu = [p for p in glob.glob(os.path.join(BASE, "ausgabe-*", "*_Aenderungen.pdf"))
+                           if os.path.getmtime(p) >= seit - 1]
+                    for p in neu:
+                        oeffnen(p)
+            elif w == "hb" and LINUX:
+                hoerbuch_menue()
+            elif w == "sy":
+                skript("sync")
+            elif w in ("u", "ul"):
+                if skript("update", *(["lokal"] if w == "ul" else [])) == 0:
+                    einstellungen(speichern=True)
+                    if WIN:                                                  # neues Menü laden
+                        sys.exit(subprocess.call([sys.executable, os.path.abspath(__file__)]))
+                    os.execv(sys.executable, [sys.executable, os.path.abspath(__file__)])
+            elif w == "!":
+                ton = not ton
+                print(f"  Klang {'ein' if ton else 'aus'}")
+                klang()                                   # Probe beim Einschalten
+            elif w == "t":
+                tabellen_menue()
+            elif w == "$":
+                terminal()
+            elif w == ":":
+                naechste = befehle()
+            elif w == "n":
+                neu = {"b": ("neues Buch", 0), "h": ("Hallo-Buch", 0), "e": ("einrichten", 0),
+                       "m": ("Motor-Selbsttest", 0)} if LOKAL else {}
+                k = untermenue("neu …", {**neu, "v": ("Verknüpfung", 0)})
+                if k == "v":
+                    verknuepfung()
+                elif k:
+                    vorher = set(os.listdir(os.path.dirname(BASE)))
+                    {"b": lambda: skript(os.path.join("setup", "setup"), ordner=PURESATZ),
+                     "h": lambda: skript("hallo", ordner=PURESATZ),
+                     "m": lambda: lauf([sys.executable, os.path.join("test", "selbsttest.py")], PURESATZ,
+                                       dict(os.environ, SELBSTTEST_OHNE_VENV="1")),
+                     "e": lambda: skript("START-Windows" if WIN else "START-Linux", ordner=PURESATZ,
+                                         mac="START-Mac-imTerminal.sh")}[k]()
+                    for d in sorted(set(os.listdir(os.path.dirname(BASE))) - vorher):
+                        print(f"  Neues Buch: ../{d} – dort sh menu.sh")
+            elif w in ("h", "?"):
+                bauen("hilfe")
+            elif w.split()[0] in ("xdg-open", "open", "start"):   # wie im Terminal: Datei öffnen, ohne zu warten
+                for teil in shlex.split(e, posix=not WIN)[1:]:
+                    oeffnen(os.path.join(BASE, os.path.expanduser(teil.strip('"'))))
+            elif w.split()[0] in BEFEHLE:          # ganzer Befehl: final · leseprobe uz 18,20 · personen Eltern
+                bauen(*e.split())
+            else:
+                print(f"  Unbekannt: {e}")
+            neu = {k: p for k, (_, p) in pdfs().items() if os.path.getmtime(p) >= seit - 1} if gelaufen else {}
+            for p in ([neu[k] for k in ("n", "u") if k in neu] if len(neu) > 2 else neu.values()):
+                oeffnen(p)                                # neu gebaute Lese-PDFs gleich öffnen
+            einstellungen(speichern=True)
+        except Beenden:
+            break
+        except KeyboardInterrupt:                     # Strg+C bei einer Frage: wie q
+            print()
+            if beenden_frage():
+                break
     einstellungen(speichern=True)
 
 

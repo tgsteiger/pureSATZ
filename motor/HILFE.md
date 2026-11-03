@@ -428,7 +428,10 @@ Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {v
  ── Weiteres:  n neu · $ Terminal · : Befehle · h hilfe · ! Klang · q beenden
 ```
 
-Untermenüs (Enter oder `z` = zurück; «…» = nur was es gibt):
+Überall gleich: `z` oder Enter = zurück · `q` = Menü beenden (fragt «Menü beenden? [j = ja | Enter = nein]») ·
+Strg+C bei einer Frage = wie `q`, während eines Laufs = nur den Lauf abbrechen.
+
+Untermenüs («…» = nur was es gibt):
 
 | | |
 |---|---|
@@ -806,7 +809,7 @@ Danach zum Ausprobieren: `hb` → `p` (Probe) und `hb` → `w` (Wörter).
 ## Hörbuch: Das Menü hb
 
 ```
- pureSATZ 2.69.4 · Mein-Buch › Hörbuch            Ollie · -8% · 128 kbit
+ pureSATZ 2.69.6 · Mein-Buch › Hörbuch            Ollie · -8% · 128 kbit
  ── Probieren ─────────────────────   ── Hörbuch ───────────────────────
   p  Probe hören (probe.txt)          t  Texte neu aus dem Buch
   w  Wörter hören (KLINGEN FALSCH)    a  alles sprechen
@@ -814,7 +817,7 @@ Danach zum Ausprobieren: `hb` → `p` (Probe) und `hb` → `w` (Wörter).
  ── Bearbeiten ────────────────────   ── Ordner ────────────────────────
   e  Wörter · Probe · Einstellungen   $  Terminal in audio/
   s  Azure-Schlüssel eingeben         o  Ordner audio/ öffnen
- ── Weiteres:  h hilfe · c prüfen · z zurück · Strg+C bricht einen Lauf ab
+ ── Weiteres:  h hilfe · c prüfen · z zurück · q beenden
 ```
 
 | Taste | Was passiert |
@@ -831,7 +834,7 @@ Danach zum Ausprobieren: `hb` → `p` (Probe) und `hb` → `w` (Wörter).
 
 Oben steht, wo du bist (› Hörbuch) und was gerade gilt: Stimme, Tempo, Qualität (aus `audio.conf`).
 Das Menü bleibt offen, bis `z` oder Enter – nach einem Lauf bleiben die Meldungen stehen. Bei jeder Frage
-(Stimme, Tempo, Kürzel) heisst `z` zurück; `Strg+C` bricht einen laufenden Vorgang ab, das Menü bleibt.
+(Stimme, Tempo, Kürzel) heisst `z` zurück; `q` beendet das ganze Menü (mit Rückfrage).
 
 ## Hörbuch: So entsteht es
 
