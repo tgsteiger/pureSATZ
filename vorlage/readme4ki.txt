@@ -11,7 +11,7 @@ DATEIEN (nur diese darfst du ändern)
   @@NAME@@-variablen.md   Werte: Titel, Autor, Format, Impressum, Ausgaben (ISBN, Preis), Shop-Texte, Farben …
   @@NAME@@-umschlag.md    Vorderseite, Buchrücken, Rückseite
   stichworte-@@NAME@@.txt Stichwortverzeichnis: ein Stichwort pro Zeile, Varianten mit |, # = Kommentar
-  stichworte-vorschlag.txt Vorschläge (sh build.sh stichworte): [ ] durch [+] ersetzen = übernehmen
+  stichworte-vorschlag.txt Vorschläge (sh build.sh stichworte): [ ] durch [+] oder [x] ersetzen = übernehmen
   geschichten/*.md        einzelne Geschichten (falls es den Ordner gibt), siehe GESCHICHTEN unten
   tabellen/*.csv          Tabellen (falls es den Ordner gibt), siehe TABELLEN unten
   druck/*.md              Plattform-Dateien: Technik einer Druckerei (Rücken, Beschnitt, Papier, Strichcode), siehe DRUCK unten

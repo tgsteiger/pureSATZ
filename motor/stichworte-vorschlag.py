@@ -5,10 +5,10 @@ stichworte-vorschlag.py – Stichwortverzeichnis: Vorschläge machen und überne
 Aufruf (im Buchordner):
     sh build.sh stichworte              prüft (stichworte: ja? @STICHWORTE im Buch? Stichwortdatei?)
                                         und schreibt stichworte-vorschlag.txt (Begriffe mit Häufigkeit)
-    sh build.sh stichworte uebernehmen  alle mit [+] markierten Vorschläge unten an stichworte-<name>.txt anhängen
+    sh build.sh stichworte uebernehmen  alle mit [+] oder [x] markierten Vorschläge unten an stichworte-<name>.txt anhängen
 
-In stichworte-vorschlag.txt:  [ ] = Vorschlag · [+] = übernehmen · [x] = steht schon in der Stichwortdatei.
-Markierte [+] bleiben beim nächsten Vorschlag erhalten. Vor dem Übernehmen wird die Stichwortdatei nach
+In stichworte-vorschlag.txt:  [ ] = Vorschlag · [+] oder [x] = übernehmen (was schon in der Stichwortdatei steht,
+zeigt [x] und wird nie doppelt angehängt). Markierte [+] bleiben beim nächsten Vorschlag erhalten. Vor dem Übernehmen wird die Stichwortdatei nach
 md-history/ gesichert. Danach in stichworte-<name>.txt Varianten mit | ergänzen und neu bauen.
 """
 import os
@@ -60,10 +60,10 @@ def vorhandene():
 
 
 def markiert():
-    """Begriffe, die in der alten stichworte-vorschlag.txt mit [+] markiert sind."""
+    """Begriffe, die in stichworte-vorschlag.txt mit [+] oder [x] (auch [X]) markiert sind (2.69.18: beide)."""
     if not os.path.exists(AUS):
         return []
-    m = [re.match(r"\[\+\]\s*(.+?)(?:\s+\(\d+\))?\s*$", z) for z in open(AUS, encoding="utf-8").read().splitlines()]
+    m = [re.match(r"\[[+xX]\]\s*(.+?)(?:\s+\(\d+\))?\s*$", z) for z in open(AUS, encoding="utf-8").read().splitlines()]
     return [x.group(1) for x in m if x]
 
 
@@ -100,15 +100,15 @@ def vorschlagen():
     paare = re.findall(r"\b([A-ZÄÖÜ][\wäöüß\-]+ [A-ZÄÖÜ][\wäöüß\-]+)\b", t)
     zaehl = Counter(w for w in woerter if w not in STOPP)
     zaehl2 = Counter(p for p in paare if not set(p.split()) & STOPP)
-    da = vorhandene()
-    plus = set(markiert())
+    da = {w.lower() for w in vorhandene()}       # gross/klein egal, wie beim Übernehmen
+    plus = {w for w in markiert() if w.lower() not in da}
 
     def zeichen(w):
-        return "[x]" if w in da else ("[+]" if w in plus else "[ ]")
+        return "[x]" if w.lower() in da else ("[+]" if w in plus else "[ ]")
     with open(AUS, "w", encoding="utf-8") as f:
         f.write("# Vorschläge fürs Stichwortverzeichnis (Häufigkeit im Text)\n")
-        f.write(f"# [ ] = Vorschlag · [+] = übernehmen · [x] = steht schon in {ziel()}\n")
-        f.write("# Gewünschte Begriffe: [ ] durch [+] ersetzen, speichern, dann: sh build.sh stichworte uebernehmen\n")
+        f.write(f"# [ ] = Vorschlag · [+] oder [x] = übernehmen · [x] = steht schon in {ziel()}\n")
+        f.write("# Gewünschte Begriffe: [ ] durch [+] oder [x] ersetzen, speichern, dann: sh build.sh stichworte uebernehmen\n")
         f.write("\n# Namen und Begriffe aus zwei Wörtern\n")
         for p, n in zaehl2.most_common():
             if n >= 2:
@@ -118,25 +118,22 @@ def vorschlagen():
             if n >= 2:
                 f.write(f"{zeichen(w)} {w}  ({n})\n")
     print(f"\nVorschläge gespeichert: {os.path.basename(AUS)}"
-          f"{f' ({len(plus - da)} mit [+] markiert)' if plus - da else ''}")
-    print("Nächster Schritt: gewünschte Begriffe mit [+] markieren, dann: sh build.sh stichworte uebernehmen")
+          f"{f' ({len(plus)} zum Übernehmen markiert)' if plus else ''}")
+    print("Nächster Schritt: gewünschte Begriffe mit [+] oder [x] markieren, dann: sh build.sh stichworte uebernehmen")
 
 
 def uebernehmen():
     if not os.path.exists(AUS):
         sys.exit("Noch keine stichworte-vorschlag.txt – zuerst: sh build.sh stichworte")
     da = {w.lower() for w in vorhandene()}
-    neu, doppelt = [], 0
-    for w in markiert():
-        if w.lower() in da or w.lower() in (x.lower() for x in neu):
-            doppelt += 1
-        else:
+    neu = []
+    for w in markiert():                         # was schon drin ist, still überspringen
+        if w.lower() not in da and w.lower() not in (x.lower() for x in neu):
             neu.append(w)
     datei = ziel()
     pfad = os.path.join(BASE, datei)
     if not neu:
-        print(f"Nichts zu übernehmen – keine neuen Begriffe mit [+] in stichworte-vorschlag.txt"
-              f"{f' ({doppelt} stehen schon in {datei})' if doppelt else ''}.")
+        print(f"Nichts zu übernehmen – alle mit [+] oder [x] markierten Begriffe stehen schon in {datei}.")
         return
     if os.path.exists(pfad):                     # zuerst sichern
         from datetime import datetime
@@ -154,8 +151,7 @@ def uebernehmen():
         f.write(alt.rstrip("\n") + f"\n\n# --- übernommen {date.today():%d.%m.%Y}\n" + "\n".join(neu) + "\n")
     zeilen = open(AUS, encoding="utf-8").read().replace("[+]", "[x]")      # Vorschlagsliste nachführen
     open(AUS, "w", encoding="utf-8").write(zeilen)
-    print(f"{len(neu)} Stichwort(e) übernommen nach {datei}"
-          f"{f' ({doppelt} standen schon drin)' if doppelt else ''}:")
+    print(f"{len(neu)} Stichwort(e) übernommen nach {datei}:")
     print("  " + " · ".join(neu))
     print()
     pruefen()

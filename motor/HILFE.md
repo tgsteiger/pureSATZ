@@ -374,8 +374,8 @@ und die Liste `stichworte-<buch>.txt`. Neue Bücher (auch das Hallo-Buch) haben 
 
 ```sh
 sh build.sh stichworte              # 1. prüft die drei Dinge, schreibt stichworte-vorschlag.txt
-                                    # 2. in stichworte-vorschlag.txt: [ ] durch [+] ersetzen, speichern
-sh build.sh stichworte uebernehmen  # 3. alle [+] unten an stichworte-<buch>.txt anhängen
+                                    # 2. in stichworte-vorschlag.txt: [ ] durch [+] oder [x] ersetzen
+sh build.sh stichworte uebernehmen  # 3. alle markierten unten an stichworte-<buch>.txt anhängen
 sh build.sh schnell                 # 4. bauen – das Verzeichnis steht am Schluss
 ```
 
@@ -397,6 +397,7 @@ Gott -> Quelle                     Verweis «Gott, siehe Quelle» (ohne Seitenza
 ```
 
 - Übernehmen hängt nur an, doppelte lässt es weg, und sichert die Liste vorher nach `md-history/`.
+  Markieren mit `[+]` oder `[x]` – beides geht; was schon in der Liste steht, wird nie doppelt angehängt.
   In der Vorschlagsliste wird aus `[+]` ein `[x]`. Markierte `[+]` bleiben, wenn du die Vorschläge neu machst.
 - Stichwörter aus Geschichten (`stichworte:` im Kopf) kommen automatisch dazu.
 - `stichworte-vorschlag.txt` ist nur ein Hilfsblatt: `sh cleanup.sh` löscht es, die Stichwortdatei bleibt immer.

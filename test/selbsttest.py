@@ -60,19 +60,22 @@ def main():
     for art in (["komplett"], ["schnell"]):              # komplett = final + Leseprobe + Korrektur (2.20.1)
         lauf([py, os.path.join("motor", "bauen.py")] + art, buch)
     lauf([py, os.path.join("motor", "sicherung.py"), "lokal"], buch)
-    # Stichworte (2.69.17): Vorschläge, einen mit [+] markieren, übernehmen -> steht in stichworte-Testbuch.txt
+    # Stichworte (2.69.17): Vorschläge, einen mit [+] und einen mit [x] markieren (2.69.18), übernehmen -> beide drin
     lauf([py, os.path.join("motor", "bauen.py"), "stichworte"], buch)
     vs = os.path.join(buch, "stichworte-vorschlag.txt")
     zeilen = open(vs, encoding="utf-8").read().split("\n")
-    k = next((i for i, z in enumerate(zeilen) if z.startswith("[ ] ")), None)
-    if k is None:
-        sys.exit("FEHLER: stichworte-vorschlag.txt ohne Vorschlag «[ ] …»")
-    wort = zeilen[k][4:].rsplit("  (", 1)[0]
-    zeilen[k] = "[+]" + zeilen[k][3:]
+    frei = [i for i, z in enumerate(zeilen) if z.startswith("[ ] ")][:2]
+    if len(frei) < 2:
+        sys.exit("FEHLER: stichworte-vorschlag.txt mit weniger als 2 Vorschlägen «[ ] …»")
+    woerter = [zeilen[k][4:].rsplit("  (", 1)[0] for k in frei]
+    for k, zeichen in zip(frei, ("[+]", "[x]")):
+        zeilen[k] = zeichen + zeilen[k][3:]
     open(vs, "w", encoding="utf-8").write("\n".join(zeilen))
     lauf([py, os.path.join("motor", "bauen.py"), "stichworte", "uebernehmen"], buch)
-    if wort not in open(os.path.join(buch, "stichworte-Testbuch.txt"), encoding="utf-8").read().split("\n"):
-        sys.exit(f"FEHLER: «{wort}» nicht nach stichworte-Testbuch.txt übernommen")
+    liste = open(os.path.join(buch, "stichworte-Testbuch.txt"), encoding="utf-8").read().split("\n")
+    for wort in woerter:
+        if liste.count(wort) != 1:
+            sys.exit(f"FEHLER: «{wort}» nicht genau einmal in stichworte-Testbuch.txt")
     # Druckangaben (2.19): Muster aus druck/, Testlauf BoD nur für die normale Fassung -> ausgabe-test/
     bd = os.path.join(buch, "druck", "bod-a5-hardcover.md")             # 2.22: Versatz mittesten
     with open(bd, encoding="utf-8") as f_:

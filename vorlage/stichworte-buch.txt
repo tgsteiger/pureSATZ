@@ -3,7 +3,7 @@
 #   Quelle = göttlichen Quelle | Urquelle   Eintrag links vom =, gesucht wird nur rechts
 #   Gott -> Quelle                          Verweis «Gott, siehe Quelle» (ohne Seitenzahl)
 # Zeilen mit # werden ignoriert. Nach Änderungen: sh build.sh nur-pdf
-# Vorschläge:  sh build.sh stichworte  -> stichworte-vorschlag.txt, dort [ ] durch [+] ersetzen,
+# Vorschläge:  sh build.sh stichworte  -> stichworte-vorschlag.txt, dort [ ] durch [+] oder [x] ersetzen,
 #              dann  sh build.sh stichworte uebernehmen  (hängt sie hier unten an). Menü: w -> i
 # Ein-/ausschalten: «stichworte: ja/nein» in der Variablen-Datei.
 
