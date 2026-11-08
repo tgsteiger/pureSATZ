@@ -495,7 +495,8 @@ Untermenüs («…» = nur was es gibt):
 - Nach einem Bau bleiben die Meldungen stehen: statt des Menüs nur «Eingabe (Enter = Menü)». Neu gebaute
   Lese-PDFs öffnen sich gleich (bei komplett nur normal und unzensiert).
 - MD, PDF und Ordner öffnen im eigenen Programm, das Menü bleibt bereit. Bauen läuft im Menüfenster;
-  am Schluss «Fertig» mit Dauer und Klang. Oben rechts «Klang (!) ein/aus», Taste `!` (beim Einschalten klingt er einmal zur Probe).
+  am Schluss «Fertig» mit Dauer und Klang. Oben links der Buchname als goldenes Schild (auch im Fenster-/Tab-Titel),
+  damit man bei mehreren Büchern sofort sieht, wo man ist. Oben rechts «Klang (!) ein/aus», Taste `!` (beim Einschalten klingt er einmal zur Probe).
   `$` öffnet ein Terminal im Buchordner, das Menü bleibt offen (praktisch, wenn das Menü per Lotus-Starter läuft).
   Klang: `motor/klang.wav`, eigener Klang: `klang.wav` in den Buchordner legen; sonst Piepton.
 - `ul` (update lokal) erscheint nur, wenn neben dem Buch ein Ordner `pureSATZ` liegt; ebenso in `n` neu …:
@@ -852,7 +853,7 @@ Danach zum Ausprobieren: `hb` → `p` (Probe) und `hb` → `w` (Wörter).
 ## Hörbuch: Das Menü hb
 
 ```
- pureSATZ 2.69.8 · Mein-Buch › Hörbuch            Ollie · -8% · 128 kbit
+ Mein-Buch · pureSATZ 2.69.19 › Hörbuch          Ollie · -8% · 128 kbit
  ── Probieren ─────────────────────   ── Hörbuch ───────────────────────
   p  Probe hören (probe.txt)          t  Texte aus dem Buch (zeigt Geänderte)
   w  Wörter hören (KLINGEN FALSCH)    v  vertonen: was fehlt + geändert

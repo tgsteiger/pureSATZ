@@ -32,6 +32,7 @@ GRAU = (lambda t: f"\033[38;5;244m{t}\033[0m") if FARBIG else (lambda t: t)     
 GRUEN = (lambda t: f"\033[1;32m{t}\033[0m") if FARBIG else (lambda t: t)        # ✓ nach einem Lauf
 ROT = (lambda t: f"\033[1;31m{t}\033[0m") if FARBIG else (lambda t: t)          # ✗ Fehler
 GOLDFEIN = (lambda t: f"\033[38;5;136m{t}\033[0m") if FARBIG else (lambda t: t)  # Linien um einen Lauf: fein, dunkleres Gold
+SCHILD = (lambda t: f"\033[1;38;5;234;48;5;178m {t} \033[0m") if FARBIG else (lambda t: t)   # Buchname: goldenes Schild (2.69.19)
 zuletzt = ""                                                                   # letzte Eingabe (für die Startlinie)
 RAND = 71                                                                      # rechter Rand von Kopfzeile, Linien, «Weiteres»
 
@@ -54,14 +55,30 @@ def kurzname(n, laenge=24):
     return n if len(n) <= laenge else n[:laenge - 1] + "…"
 
 
+def fenstertitel(text):
+    """Titel des Terminalfensters/Tabs = Buchname (2.69.19), damit man bei mehreren Büchern das richtige findet."""
+    try:
+        if WIN:
+            import ctypes
+            ctypes.windll.kernel32.SetConsoleTitleW(text)
+        elif sys.stdout.isatty():
+            sys.stdout.write(f"\033]0;{text}\007"); sys.stdout.flush()
+    except Exception:
+        pass
+
+
 def kopf(bereich="", rechts=""):
-    """Kopfzeile: «══ pureSATZ 2.69.0 · Leben123 › Hörbuch          rechts ══» (Bereich fett, ══ gold = hier beginnt das Menü)."""
+    """Kopfzeile: «══ [Leben123] · pureSATZ 2.69.19 › Hörbuch     rechts ══» (Buchname als goldenes Schild, Version grau,
+    Bereich fett, ══ gold = hier beginnt das Menü)."""
     buch = next(iter(glob.glob(os.path.join(BASE, "*-buch.md"))), "Buch-buch.md")
     version = open(os.path.join(MOTOR, "VERSION"), encoding="utf-8").read().strip()
     name = kurzname(os.path.basename(buch)[:-8])
-    links = f" pureSATZ {version} · {name}" + (f" › {bereich}" if bereich else "")
-    zeile = GOLDFEIN("══") + f" pureSATZ {version} · {HELL(name)}" + (f" › {FETT(bereich)}" if bereich else "")
-    return zeile + rechts.rjust(max(len(rechts) + 3, 66 - len(links))) + " " + GOLDFEIN("══")   # endet bei Spalte 71 (RAND)
+    fenstertitel(f"{name} – pureSATZ")
+    links = f" {SCHILD(name)} · pureSATZ {version}" + (f" › {bereich}" if bereich else "")
+    links = links.replace(SCHILD(name), f" {name} " if FARBIG else name)      # sichtbare Länge (ohne Farbcodes)
+    zeile = (GOLDFEIN("══") + f" {SCHILD(name)} " + GRAU(f"· pureSATZ {version}")
+             + (f" › {FETT(bereich)}" if bereich else ""))
+    return zeile + rechts.rjust(max(len(rechts) + 2, 66 - len(links))) + " " + GOLDFEIN("══")   # endet bei Spalte 71 (RAND)
 EINST = os.path.join(BASE, ".menu")
 PURESATZ = os.path.join(os.path.dirname(BASE), "pureSATZ")
 LOKAL = os.path.isdir(os.path.join(PURESATZ, "motor"))

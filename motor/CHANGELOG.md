@@ -3,6 +3,10 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.69.19 (November 2026)
+- Menü: Buchname vorne als goldenes Schild, «· pureSATZ 2.69.19» grau dahinter – bei mehreren Büchern sieht man sofort,
+  in welchem man ist. Fenster-/Tab-Titel des Terminals = «Buchname – pureSATZ» (Linux, Mac, Windows).
+
 ## 2.69.18 (November 2026)
 - Stichworte übernehmen: `[x]` (auch `[X]`) zählt wie `[+]` – was schon in der Stichwortdatei steht, wird weiterhin
   nie doppelt angehängt (gross/klein egal: «FOTO» zeigt [x], wenn «Foto» schon drin ist). Hilfe, Vorschlagsliste, stichworte-buch.txt und readme4ki.txt nachgeführt; Selbsttest prüft beides.
