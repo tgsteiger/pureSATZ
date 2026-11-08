@@ -3,6 +3,10 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.69.20 (November 2026)
+- Hilfe, Tipps aus der Praxis → Gestalten: Inhaltsverzeichnis eine Seite zu lang? `{inhalt-dichte}: 0.95`
+  (nur das Inhaltsverzeichnis wird enger), weniger Zeilen mit `{inhalt-tiefe}: 1`.
+
 ## 2.69.19 (November 2026)
 - Menü: Buchname vorne als goldenes Schild, «· pureSATZ 2.69.19» grau dahinter – bei mehreren Büchern sieht man sofort,
   in welchem man ist. Fenster-/Tab-Titel des Terminals = «Buchname – pureSATZ» (Linux, Mac, Windows).

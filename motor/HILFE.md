@@ -652,6 +652,9 @@ Fehlt etwas, nennt die Übersicht den Befehl dazu (z. B. `sh build.sh leseprobe`
 - Eine Dankesseite oder ein Nachwort wirkt als normales Kapitel ruhiger und steht im Inhaltsverzeichnis:
   `## Danke`, Text im Blocksatz, zum Schluss `@ZITAT Gruss<br/>Name` und `@ZIER 10`.
 - Nur eine Verzierung pro Seite – sonst wird es unruhig.
+- Inhaltsverzeichnis eine Seite zu lang (wegen einer Zeile)? In der Variablen-Datei `{inhalt-dichte}: 0.95`
+  (enger: 0.92; normal: 1). Wirkt nur aufs Inhaltsverzeichnis, alle Seiten darin gleich – der Buchtext bleibt.
+  Weniger Zeilen: `{inhalt-tiefe}: 1` (nur `#`-Kapitel).
 
 **Probedruck und Farben**
 - Farben am Bildschirm nur grob beurteilen. Was zählt, ist der Probedruck auf dem echten Papier (matt/glänzend, weiss/creme).
