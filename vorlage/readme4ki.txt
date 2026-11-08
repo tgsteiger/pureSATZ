@@ -11,6 +11,7 @@ DATEIEN (nur diese darfst du ändern)
   @@NAME@@-variablen.md   Werte: Titel, Autor, Format, Impressum, Ausgaben (ISBN, Preis), Shop-Texte, Farben …
   @@NAME@@-umschlag.md    Vorderseite, Buchrücken, Rückseite
   stichworte-@@NAME@@.txt Stichwortverzeichnis: ein Stichwort pro Zeile, Varianten mit |, # = Kommentar
+  stichworte-vorschlag.txt Vorschläge (sh build.sh stichworte): [ ] durch [+] ersetzen = übernehmen
   geschichten/*.md        einzelne Geschichten (falls es den Ordner gibt), siehe GESCHICHTEN unten
   tabellen/*.csv          Tabellen (falls es den Ordner gibt), siehe TABELLEN unten
   druck/*.md              Plattform-Dateien: Technik einer Druckerei (Rücken, Beschnitt, Papier, Strichcode), siehe DRUCK unten
@@ -109,6 +110,7 @@ WAS DER MOTOR MACHT (zur Info)
   sh sicherung.sh        ZIP-Sicherung
   sh update.sh           Motor-Update von GitHub (ersetzt nur motor/; «pruefen» = nur nachsehen)
                          Bei Fragen zu Fehlern im Motor: nicht motor/ ändern, sondern sh update.sh empfehlen.
+  sh build.sh stichworte   Vorschläge → stichworte-vorschlag.txt · sh build.sh stichworte uebernehmen   alle [+] übernehmen
   sh build.sh personen   Personen mit Seiten → personen-seiten.txt · sh build.sh personen Name   Check-PDF zum Gegenlesen
   sh build.sh stand "Name"   Stand festhalten · sh build.sh aenderungen [3 | 22.10.]   letzte Änderungen / seit Stand 3 / seit Datum
   sh build.sh hilfe      hilfe.html erzeugen und öffnen (ganze Anleitung mit Suche; Quelle motor/HILFE.md)

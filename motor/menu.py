@@ -66,7 +66,7 @@ EINST = os.path.join(BASE, ".menu")
 PURESATZ = os.path.join(os.path.dirname(BASE), "pureSATZ")
 LOKAL = os.path.isdir(os.path.join(PURESATZ, "motor"))
 BEFEHLE = ("schnell", "komplett", "final", "entwurf", "leseprobe", "korrektur", "nur-pdf", "nur-druck", "nur-ebook",
-           "pruefen", "personen", "stand", "aenderungen", "änderungen", "geschichten", "hilfe", "mockup", "sicherung")
+           "pruefen", "personen", "stichworte", "stand", "aenderungen", "änderungen", "geschichten", "hilfe", "mockup", "sicherung")
 MD = {"b": ("Buch", "*-buch.md"), "v": ("Variablen", "*-variablen.md"), "u": ("Umschlag", "*-umschlag.md"),
       "s": ("Stichworte", "stichworte-*.txt"), "h": ("meine Hilfe", "meine-hilfe.md")}
 WEG = ("check_", "_Buchblock", "_Cover", "_Umschlag", "_booklet", "_Inhalt", "_Aenderungen", "_Leseprobe", "_Korrektur",
@@ -207,6 +207,19 @@ def untermenue(titel, eintraege, zusatz=""):
         return None
     e = "ü" if e == "u" and "ü" in eintraege and "u" not in eintraege else e      # ohne ü-Taste
     return e if e in eintraege else None
+
+
+def stichworte_menue():
+    """w → i: Vorschläge machen (und öffnen), mit [+] markierte übernehmen, Stichwortdatei öffnen."""
+    k = untermenue("Stichworte …", {"v": ("Vorschläge", 0), "u": ("übernehmen [+]", 0), "o": ("Stichwortdatei öffnen", 0)})
+    if k == "v":
+        if bauen("stichworte") == 0:
+            oeffnen(os.path.join(BASE, "stichworte-vorschlag.txt"))
+    elif k == "u":
+        bauen("stichworte", "uebernehmen")
+    elif k == "o":
+        oeffnen(next((p for p in sorted(glob.glob(os.path.join(BASE, "stichworte*.txt")))
+                      if not p.endswith("stichworte-vorschlag.txt")), None))
 
 
 def kuerzel(alle=None, datei=None):
@@ -671,14 +684,18 @@ def main():
                 bauen("komplett")
             elif w == "w":
                 k = untermenue("weitere …", {"l": ("Leseprobe", 0), "k": ("Korrektur", 0), "p": ("nur-pdf", 0),
-                                             "e": ("nur E-Book", 0), "c": ("prüfen", 0), "s": ("Stand merken", 0)})
+                                             "e": ("nur E-Book", 0), "c": ("prüfen", 0), "s": ("Stand merken", 0),
+                                             "i": ("Stichworte …", 0)})
                 if k == "s":
                     name = frage(" Name des Stands: ")
                     bauen("stand", *([name] if name else []))
+                elif k == "i":
+                    stichworte_menue()
                 elif k:
                     bauen({"l": "leseprobe", "k": "korrektur", "p": "nur-pdf", "e": "nur-ebook", "c": "pruefen"}[k])
             elif w == "m":
-                md = {k: (t, next(iter(sorted(glob.glob(os.path.join(BASE, m)))), None)) for k, (t, m) in MD.items()}
+                md = {k: (t, next((p for p in sorted(glob.glob(os.path.join(BASE, m)))
+                                      if not p.endswith("stichworte-vorschlag.txt")), None)) for k, (t, m) in MD.items()}
                 if os.path.isdir(os.path.join(BASE, "geschichten")):
                     md["g"] = ("Geschichten …", "g")
                 md["t"] = ("Tabellen …", "t")

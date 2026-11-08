@@ -3,6 +3,17 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.69.17 (November 2026)
+- Stichwortverzeichnis im Motor: `sh build.sh stichworte` prüft `{stichworte}: ja`, die Zeile `@STICHWORTE` in der
+  Buchdatei und die Stichwortdatei, dann Vorschläge → `stichworte-vorschlag.txt`. Dort `[ ]` durch `[+]` ersetzen,
+  `sh build.sh stichworte uebernehmen` hängt sie an `stichworte-<buch>.txt` an (vorher nach md-history/ gesichert,
+  doppelte weggelassen, aus `[+]` wird `[x]`). Markierte `[+]` bleiben beim neuen Vorschlag.
+  Menü `w` → `i` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` öffnen). Hilfe: neues Kapitel
+  «Stichwortverzeichnis» mit Beispiel; Spickzettel, build.sh, stichworte-buch.txt und readme4ki.txt nachgeführt.
+- Menü `m` → `s` öffnet nie mehr `stichworte-vorschlag.txt` statt der Stichwortdatei.
+- Booklet mit pypdf 7: Fehler «DeprecationError … replace_contents» behoben (Seiten über PdfWriter, gleiche PDFs).
+  Neue Python-Umgebungen: `pypdf<8`.
+
 ## 2.69.16 (November 2026)
 - Hörbuch `s`: Hinweis «Rechtsklick → Einfügen» (Strg+Shift+V öffnet bei manchen eine Zwischenablage-Übersicht);
   kein Azure-Schlüssel (nicht nur Buchstaben/Ziffern oder unter 32 Zeichen) → rot, nichts geändert.

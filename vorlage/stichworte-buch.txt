@@ -3,7 +3,8 @@
 #   Quelle = göttlichen Quelle | Urquelle   Eintrag links vom =, gesucht wird nur rechts
 #   Gott -> Quelle                          Verweis «Gott, siehe Quelle» (ohne Seitenzahl)
 # Zeilen mit # werden ignoriert. Nach Änderungen: sh build.sh nur-pdf
-# Vorschläge erzeugen:  python3 motor/stichworte-vorschlag.py  -> stichworte-vorschlag.txt
+# Vorschläge:  sh build.sh stichworte  -> stichworte-vorschlag.txt, dort [ ] durch [+] ersetzen,
+#              dann  sh build.sh stichworte uebernehmen  (hängt sie hier unten an). Menü: w -> i
 # Ein-/ausschalten: «stichworte: ja/nein» in der Variablen-Datei.
 
 # --- Beispiele aus dem Demo-Kapitel (löschen, sobald das eigene Buch steht)

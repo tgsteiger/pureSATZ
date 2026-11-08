@@ -20,6 +20,8 @@ Booklets zum Selberdrucken entstehen automatisch: im «final» der Probedruck au
     python motor/bauen.py pruefen         nur die MD prüfen
     python motor/bauen.py personen        Personen in den Lese-PDFs finden → personen-seiten.txt (Seiten, Zeilen)
     python motor/bauen.py personen Thomas   check_Thomas_Gegenlesen.pdf aus den fertigen Lese-PDFs
+    python motor/bauen.py stichworte      prüfen und Vorschläge → stichworte-vorschlag.txt ([+] = übernehmen)
+    python motor/bauen.py stichworte uebernehmen   mit [+] markierte Vorschläge an stichworte-<name>.txt anhängen
     python motor/bauen.py stand "Name"    jetzigen Stand festhalten (staende/) · ohne Name: alle Stände zeigen
     python motor/bauen.py aenderungen ["Name" ["Name2"]]   was sich seit dem (letzten) Stand geändert hat → …_Aenderungen.pdf
     python motor/bauen.py geschichten [uz]   Sammel-PDF aller Geschichten aus geschichten/ (normal; mit uz auch unzensiert)
@@ -703,6 +705,11 @@ def main():
         roh = sys.argv[1:]
         i = next(k for k, x in enumerate(roh) if x.lower() == art)
         personen.befehl(BASE, bk, roh[i + 1:])
+        return
+    if art == "stichworte":                 # Stichwortverzeichnis: Vorschläge, Übernahme (stichworte-vorschlag.py)
+        import runpy
+        sys.argv = [sys.argv[0]] + args[args.index(art) + 1:]
+        runpy.run_path(os.path.join(MOTOR, "stichworte-vorschlag.py"), run_name="__main__")
         return
     if art in ("stand", "aenderungen", "änderungen"):    # Stände festhalten und vergleichen (staende.py)
         import staende

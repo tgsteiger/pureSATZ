@@ -106,7 +106,7 @@ Dieser Text steht nur in der zweiten Ausgabe.
 | `<buch>-variablen.md` | `# VARIABLEN` (Buch, Impressum, Ausgaben mit ISBN und Preis, Shop), `# TECHNIK` (Dateien, Sicherung), `# LAYOUT` (Farben, Schriften) |
 | `<buch>-buch.md` | das Buch: `## @TITEL`, `## @IMPRESSUM`, `## @HINWEIS`, `## @WIDMUNG`, `## @KERNSATZ`, `## @INHALTSVERZEICHNIS`, Kapitel und Teile |
 | `<buch>-umschlag.md` | `## Vorderseite`, `## Buchrücken`, `## Rückseite`, darunter `feld: text` (`-druck`, `-bildschirm`, `-ebook`, `-uz` am Namen = nur dort), `> Erklärung` |
-| `stichworte-<buch>.txt` | Stichwortverzeichnis: eine Zeile pro Stichwort, Varianten mit `\|`, `#` = Kommentar |
+| `stichworte-<buch>.txt` | Stichwortverzeichnis: eine Zeile pro Stichwort, Varianten mit `\|`, `#` = Kommentar – siehe [Stichwortverzeichnis](#Stichwortverzeichnis) |
 | `druck/<datei>.md` | Plattform-Datei: Technik einer Druckerei (Rücken, Beschnitt, Strichcode) |
 | `fotos/`, `bilder/` | Fotos und Bilder (Porträt, eigene Verzierung) |
 | `readme4ki.txt` | kurze Anleitung für eine andere KI (siehe unten) |
@@ -362,6 +362,45 @@ Quelle: eigene Praxisstatistik         ← optional: letzte Zeile, klein darunte
 - Nur in einer Ausgabe: `::: nur-uz` / `@#name` / `:::`.
 - `sh build.sh pruefen` meldet fehlende Tabellen (mit Vorschlag bei Tippfehlern) und Zeilen mit zu vielen Werten.
 
+## Stichwortverzeichnis
+
+[← Gestalten: Ich will …](#Gestalten) · [Zum Kopieren](#Zum-Kopieren)
+
+Das Verzeichnis am Schluss des Buchs listet Begriffe mit ihren Seiten. Es braucht drei Dinge:
+`{stichworte}: ja` in der Variablen-Datei, eine eigene Zeile `@STICHWORTE` in der Buchdatei (meist vor `@RUECKSEITE`)
+und die Liste `stichworte-<buch>.txt`. Neue Bücher (auch das Hallo-Buch) haben alles schon, mit Beispielen aus dem Demo.
+
+**In 4 Schritten** (Menü: `w` → `i` Stichworte …):
+
+```sh
+sh build.sh stichworte              # 1. prüft die drei Dinge, schreibt stichworte-vorschlag.txt
+                                    # 2. in stichworte-vorschlag.txt: [ ] durch [+] ersetzen, speichern
+sh build.sh stichworte uebernehmen  # 3. alle [+] unten an stichworte-<buch>.txt anhängen
+sh build.sh schnell                 # 4. bauen – das Verzeichnis steht am Schluss
+```
+
+**stichworte-vorschlag.txt** – Begriffe aus dem Text, die mindestens zweimal vorkommen, mit Häufigkeit:
+
+```text
+[x] Emotionscode  (14)      steht schon in stichworte-<buch>.txt
+[+] Bern  (9)               wird übernommen
+[ ] Morgen  (7)             nur ein Vorschlag
+```
+
+**stichworte-<buch>.txt** – eine Zeile pro Stichwort, danach nach Wunsch verfeinern:
+
+```text
+Seele | Seelen | seelisch          die erste Schreibweise steht im Verzeichnis, gesucht werden alle
+Quelle = göttliche Quelle | Urquelle   Eintrag links vom =, gesucht wird nur rechts
+Gott -> Quelle                     Verweis «Gott, siehe Quelle» (ohne Seitenzahl)
+# Kommentar                        wird nicht gelesen
+```
+
+- Übernehmen hängt nur an, doppelte lässt es weg, und sichert die Liste vorher nach `md-history/`.
+  In der Vorschlagsliste wird aus `[+]` ein `[x]`. Markierte `[+]` bleiben, wenn du die Vorschläge neu machst.
+- Stichwörter aus Geschichten (`stichworte:` im Kopf) kommen automatisch dazu.
+- `stichworte-vorschlag.txt` ist nur ein Hilfsblatt: `sh cleanup.sh` löscht es, die Stichwortdatei bleibt immer.
+
 ## Geschichten sammeln (freiwillig)
 
 [← Gestalten: Ich will …](#Gestalten) · [Zum Kopieren](#Zum-Kopieren)
@@ -440,7 +479,7 @@ Untermenüs («…» = nur was es gibt):
 | `t` Tabellen | `e` bearbeiten … (Liste mit Kürzel) · `n` neue Tabelle (öffnet die CSV, `@#name` kommt in den Block «## Noch einordnen» im Buch) · `o` Ordner |
 | `c` check / gegenlesen | `n` Liste neu (personen-seiten.txt) · `c` check-PDF für eine Person (öffnet sich danach) · `t` Textdatei |
 | `hb` Hörbuch (Linux) | `p` Probe hören · `w` Wörter hören · `t` Texte aus dem Buch · `v` vertonen · `k` Kapitel vertonen … · `e` Wörter/Probe/Einstellungen öffnen · `s` Azure-Schlüssel · `$` Terminal in audio/ · `o` Ordner · `h` Hilfe · `c` prüfen – siehe [Hörbuch: Das Menü](#Hörbuch-Das-Menü-hb) |
-| `w` weitere | `l` Leseprobe · `k` Korrektur · `p` nur-pdf · `e` nur E-Book · `c` prüfen · `s` Stand merken |
+| `w` weitere | `l` Leseprobe · `k` Korrektur · `p` nur-pdf · `e` nur E-Book · `c` prüfen · `s` Stand merken · `i` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` Stichwortdatei öffnen) |
 | `p` PDF öffnen | `n` normal · `u` unzensiert · `l` Leseprobe · `k` Korrektur … |
 | `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten · `t` tabellen · `a` audio … · `p` Pfad Buchordner kopieren · dazu Taste + `t` = Terminal dort (`bt`, `at` …), + `p` = Pfad kopieren (`ap` …) |
 | `n` neu | `b` neues Buch · `h` Hallo-Buch · `e` einrichten · `m` Motor-Selbsttest · `v` Verknüpfung |
@@ -495,7 +534,8 @@ sh sicherung.sh             # ganzes Buch als ZIP sichern (lokal und/oder cloud)
 sh cleanup.sh               # aufräumen: Altes löschen / entfernen (delete), fragt zuerst; md-history/ bleibt
 sh cleanup.sh ausgaben      # dazu auch die Ausgabeordner löschen (macht sh build.sh final jederzeit neu)
 python3 motor/manuskript.py # Liste aller @-Befehle
-python3 motor/stichworte-vorschlag.py   # Vorschläge fürs Stichwortverzeichnis
+sh build.sh stichworte      # Stichwortverzeichnis prüfen, Vorschläge → stichworte-vorschlag.txt ([+] = übernehmen)
+sh build.sh stichworte uebernehmen   # alle [+] an stichworte-<buch>.txt anhängen (vorher gesichert)
 ```
 
 **final oder komplett?**

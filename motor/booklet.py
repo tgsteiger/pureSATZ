@@ -59,7 +59,8 @@ def erstelle(eingaben, ziel, beschnitt_mm=0.0, leer_am_ende=False, leise=False):
         mm_rand = beschnitt_mm
         if isinstance(pfad, tuple):              # (datei, beschnitt in mm) je Datei
             pfad, mm_rand = pfad
-        for p in PdfReader(str(pfad)).pages:
+        # 2.69.17: Seiten über einen PdfWriter holen (pypdf 7 erlaubt Änderungen an Lese-Seiten nicht mehr)
+        for p in PdfWriter(clone_from=str(pfad)).pages:
             if mm_rand:
                 b = mm_rand * MM
                 box = p.mediabox

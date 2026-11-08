@@ -17,7 +17,7 @@ except ImportError:
 
 MOTOR = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.dirname(MOTOR)
-PAKETE = ["reportlab==5.0.1", "pillow", "pypdf", "pypdfium2"]
+PAKETE = ["reportlab==5.0.1", "pillow", "pypdf<8", "pypdfium2"]     # pypdf 5–7 geprüft (2.69.17)
 
 
 def venv_python(base=BASE):
