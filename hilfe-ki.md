@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.72.1
+# pureSATZ Hilfe · pureSATZ · Motor 2.72.2
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -742,7 +742,9 @@ Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {v
  ── Weiteres:  n neu · $ Terminal · : Befehle · h hilfe · ! Klang · z beenden
 ```
 
-`z` = eine Stufe zurück; im Hauptmenü fragt `z` «Menü beenden? [j = ja | Enter = nein]» · Strg+C bei einer Frage = beenden (mit Rückfrage), während eines Laufs = nur den Lauf abbrechen.
+Ja/Nein-Fragen: `[J/n]` = Enter heisst ja, `[j/N]` = Enter heisst nein (der Grossbuchstabe gilt bei Enter).
+
+`z` = eine Stufe zurück; im Hauptmenü fragt `z` «Menü beenden? [j/N]» · Strg+C bei einer Frage = beenden (mit Rückfrage), während eines Laufs = nur den Lauf abbrechen.
 
 Untermenüs («…» = nur was es gibt):
 
@@ -1230,7 +1232,7 @@ In `audio.conf`: `PAKET_KBIT` (96 = für Sprache gut, etwa die Hälfte von 192),
 ## Hörbuch: Wenn etwas klemmt
 
 Meldung | Was tun
-«AZURE_SPEECH_KEY fehlt» | `hb` → `s` (Schlüssel eingeben); im Terminal: neues Terminal öffnen (lädt `~/.bashrc`)
+«AZURE_SPEECH_KEY fehlt» | `hb` → `s` (Schlüssel eingeben). Danach gilt er sofort, auch in offenen Menüs und Terminals. Prüfen: `grep -c AZURE_SPEECH ~/.bashrc` (2 = gut)
 «Azure-Paket fehlt» | `hb` → `c` – installiert es in die `.venv` des Buchs
 «Fehler» bei einem Kapitel | nochmals `v` – fertige Kapitel werden übersprungen
 Kapitel klingt noch alt | zuerst `t` (Texte), dann `v`. Nur Aussprache geändert? Dann dieses Kapitel mit `k`

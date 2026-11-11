@@ -3,6 +3,12 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.72.2 (November 2026)
+- Ja/Nein-Fragen einheitlich wie in Termux: `[J/n]` = Enter heisst ja, `[j/N]` = Enter heisst nein (Löschen, Menü
+  beenden, Demo ersetzen, zweite Ausgabe). Menü, Update, Aufräumen, Hörbuch, Setup, Hallo-Buch. j, ja, y, n, nein gelten.
+- Hörbuch: Azure-Schlüssel wird aus ~/.bashrc geholt, wenn Menü oder Terminal schon vor dem Eintragen liefen –
+  keine Meldung «AZURE_SPEECH_KEY fehlt» mehr, kein Neustart nötig.
+
 ## 2.72.1 (November 2026)
 - Hörbuch in einem: `sh hb.sh komplett` = texte → vertonen → paket → hoerprobe, hält beim ersten Fehler an,
   spielt am Schluss die Hörprobe (mpv). `tempo=-5%` geht auch. Im Menü hb → a, im Buchordner `sh build.sh hoerbuch`.

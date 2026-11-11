@@ -32,6 +32,7 @@ KURZ = """Hörbuch – Befehle im Ordner audio/ (sh hb.sh …):
 Mehr: Hilfe «Hörbuch: Befehle zum Kopieren» (sh menu.sh → hb → h)"""
 import glob
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -175,7 +176,11 @@ def pruefen():
     except ImportError:
         ok = False
         print("Fehlt: Azure-Paket.")
-        if input("  Jetzt installieren? [n = nein | Enter = ja]: ").strip().lower() not in ("n", "nein"):
+        try:
+            antwort = input("  Jetzt installieren? [J/n]: ").strip().lower()
+        except EOFError:
+            antwort = "n"
+        if antwort not in ("n", "nein"):
             ok = subprocess.run([sys.executable, "-m", "pip", "install", "azure-cognitiveservices-speech"]).returncode == 0
     for prog in ("ffmpeg", "mpv"):
         if shutil.which(prog):
@@ -217,10 +222,22 @@ def komplett(rest):
     return 0
 
 
+def bashrc_schluessel():
+    """Schlüssel aus ~/.bashrc holen, falls Menü oder Terminal vor dem Eintragen gestartet wurden (sonst «fehlt»)."""
+    rc = os.path.expanduser("~/.bashrc")
+    if os.environ.get("AZURE_SPEECH_KEY") or not os.path.exists(rc):
+        return
+    for z in open(rc, encoding="utf-8", errors="replace"):            # die letzte Zeile gilt (wie in der Shell)
+        m = re.match(r"\s*export\s+(AZURE_SPEECH_(?:KEY|REGION))=['\"]?([^'\"\s]+)", z)
+        if m:
+            os.environ[m.group(1)] = m.group(2)
+
+
 def main():
     if not sys.platform.startswith("linux"):
         sys.exit("Das Hörbuch gibt es vorerst nur unter Linux.")
     anlegen()
+    bashrc_schluessel()
     a = sys.argv[1:] or ["hilfe"]
     befehl, rest = a[0], a[1:]
     if befehl in ("hilfe", "-h", "--help"):

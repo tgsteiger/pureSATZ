@@ -44,7 +44,7 @@ class Beenden(Exception):
 def beenden_frage():
     """Vor dem Beenden fragen; Enter = nein (ein z zu viel schadet nicht)."""
     try:
-        a = frage(" Menü beenden? [j = ja | Enter = nein]: ").lower()
+        a = frage(" Menü beenden? [j/N]: ").lower()
     except KeyboardInterrupt:
         return True
     return a in ("j", "ja", "q")                      # «q» kommt auch bei Eingabe-Ende (EOF)
@@ -319,7 +319,7 @@ def einordnen(extra=None):
     neu = sum((["", x] for x in fehlt), [])
     demo = not extra and DEMO in "\n".join(z) and "## Vorwort" in s and any(x.startswith("# ") and "anhang" in x.lower() for x in s)
     if demo and frage(" Das Buch enthält noch den Demo-Inhalt. Durch deine Geschichten ersetzen? "
-                      "[j = ja | Enter = nein] ").lower() == "j":
+                      "[j/N]: ").lower() in ("j", "ja", "y"):
         bauen("sicherung")
         if "## Ein Teil mit eigenem Bild" in s:                  # Beispielkapitel im Anhang
             b = s.index("## Ein Teil mit eigenem Bild")
@@ -423,10 +423,10 @@ def hoerbuch_schritt(H, audio, hb):
         abspielen("aussprache-*.mp3", seit)
     elif k == "t":
         print(" Texte aus dem Buch → audio/txt-md/ (nur geänderte werden ersetzt, MP3 bleiben).")
-        if frage(" Weiter? [n = nein | Enter = ja]: ").lower() in ("n", "nein", "z", "q"):
+        if frage(" Weiter? [J/n]: ").lower() in ("n", "nein", "z", "q"):
             return True
         if lauf(hb + ["texte"]) == 0 and frage(f" Jetzt vertonen, was fehlt oder geändert ist (Tempo {c.get('AZURE_RATE', '-8%')})?"
-                 " [n = nein | Enter = ja]: ").lower() not in ("n", "nein", "z", "q"):
+                 " [J/n]: ").lower() not in ("n", "nein", "z", "q"):
             lauf(hb + ["vertonen"])
     elif k == "a":
         print(" Alles in einem: Texte aus dem Buch → vertonen (was fehlt + geändert) → Paket → Hörprobe.")
@@ -443,7 +443,7 @@ def hoerbuch_schritt(H, audio, hb):
     elif k == "f":
         print(" Paket: Kapitel-MP3s (Mono, PAKET_KBIT), M4B mit Kapiteln, Playlist, Cover → audio/verkauf/…zip")
         print(" Vorher: Texte aktuell (t) und alles vertont (v). Die Original-MP3s bleiben unverändert.")
-        if frage(" Weiter? [n = nein | Enter = ja]: ").lower() not in ("n", "nein", "z", "q"):
+        if frage(" Weiter? [J/n]: ").lower() not in ("n", "nein", "z", "q"):
             lauf(hb + ["paket"])
     elif k == "r":
         seit = time.time()
@@ -653,7 +653,7 @@ def schreibtisch():
 def verknuepfung():
     """Starter mit Lotus, der dieses Menü öffnet: Linux .desktop (Startmenü), Windows .lnk, Mac .command."""
     name = os.path.basename(next(iter(glob.glob(os.path.join(BASE, "*-buch.md"))), "Buch-buch.md"))[:-8]
-    orte = [BASE] + ([schreibtisch()] if frage(" Auch auf den Schreibtisch? [n = nein | Enter = ja]: ").lower() != "n"
+    orte = [BASE] + ([schreibtisch()] if frage(" Auch auf den Schreibtisch? [J/n]: ").lower() not in ("n", "nein")
                      else [])
     png, ico = (os.path.join(MOTOR, "bilder", f) for f in ("lotus.png", "lotus.ico"))
     if not WIN and not MAC:                    # Linux: Startmenü statt Buchordner (dort startet .desktop nicht)

@@ -46,7 +46,7 @@ FRAGEN = [
     ("NAME", "Technischer Buchname (Ordner und Dateinamen, ohne Leerzeichen)", None),
     ("FORMAT", "Format: a5 · taschenbuch · sachbuch · a4 · quadrat", "a5"),
     ("BINDUNG", "Bindung: hardcover · softcover", "hardcover"),
-    ("ZWEITE_AUSGABE", "Zweite Ausgabe anlegen (z. B. Director's Cut, Unzensiert)? ja/nein", "nein"),
+    ("ZWEITE_AUSGABE", "Zweite Ausgabe anlegen (z. B. Director's Cut, Unzensiert)? [j/N]", "nein"),
     ("ZWEITE_NAME", "Name der zweiten Ausgabe", "Director's Cut"),
     ("ORT", "Ort", "Bern"),
     ("JAHR", "Erscheinungsjahr", str(date.today().year)),
@@ -78,7 +78,7 @@ def lese_werte(pfad):
 
 def frage(text, vorgabe):
     try:
-        a = input(f"{text}" + (f" [Enter = {vorgabe}]" if vorgabe else "") + ": ").strip()
+        a = input(f"{text}" + (f" [Enter = {vorgabe}]" if vorgabe and not text.endswith("]") else "") + ": ").strip()
     except EOFError:
         a = ""
     return a or (vorgabe or "")
@@ -271,7 +271,7 @@ def main():
         else:
             print("Dein Buch: nur Titel, Untertitel, Autor und Format.")
         print("Alles Weitere später in <Buch>-variablen.md.\n")
-        if not ja(frage("Dein Buch anlegen? [n = später | Enter = ja]", "") or "ja"):
+        if not ja(frage("Dein Buch anlegen (n = später)? [J/n]", "") or "ja"):
             print("Später im Ordner pureSATZ: " + ("setup\\setup.bat" if os.name == "nt" else "sh setup/setup.sh"))
             return
         print()
@@ -301,7 +301,7 @@ def main():
     print(f"  {'Buchordner':15} {ordner}")
     if kurz:
         print(f"  Website, Adresse, Jahr, zweite Ausgabe: später in {w['NAME']}-variablen.md")
-    if sys.stdin.isatty() and not ja(frage("\nSo anlegen? [n = nein | Enter = ja]", "") or "ja"):
+    if sys.stdin.isatty() and not ja(frage("\nSo anlegen? [J/n]", "") or "ja"):
         print("Abgebrochen."); return
     if kette:
         print("\nDein Buch wird angelegt (beim ersten Mal etwa eine Minute) …", flush=True)

@@ -155,7 +155,7 @@ def main():
         if nur_pruefen:
             print(f"\n> Update verfügbar: {alt} -> {neu}\n$ sh update.sh   (einspielen)")
             return
-        if not ohne_frage and not (sys.stdin.isatty() and frage(f"\nMotor jetzt auf {neu} aktualisieren? [ja]/nein: ")):
+        if not ohne_frage and not (sys.stdin.isatty() and frage(f"\nMotor jetzt auf {neu} aktualisieren? [J/n]: ")):
             print("Nichts geändert.")
             return
 

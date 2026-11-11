@@ -29,7 +29,7 @@ NAME = "Hallo-Buch"
 
 def ja_frage(text):
     try:
-        return input(text).strip().lower() in ("", "j", "ja")
+        return input(text).strip().lower() in ("", "j", "ja", "y", "yes")
     except EOFError:
         return False
 
@@ -47,7 +47,7 @@ def main():
         print("""Ein Beispielbuch: Kapitel, Fotos, Tabellen, Umschlag.
 Erstes Mal ca. 1 Minute (Internet). Darf später weg.
 """)
-        if not ja_frage("Hallo-Buch anlegen? [n = nein | Enter = ja]: "):
+        if not ja_frage("Hallo-Buch anlegen? [J/n]: "):
             print("Übersprungen.")
             return
         print()
@@ -106,7 +106,7 @@ Ausprobieren:  {NAME}-buch.md im Ordner {NAME} öffnen, einen Satz ändern, spei
 Eigenes Buch:  im Ordner pureSATZ  {neu}
 Hallo-Buch wegwerfen: den Ordner {NAME} löschen. Ganze Hilfe: hilfe.html""")
     if sys.stdin.isatty() and "--nicht-oeffnen" not in sys.argv:    # nächster Schritt: das eigene Buch
-        if ja_frage("\nJetzt dein eigenes Buch anlegen? [n = nein | Enter = ja]: "):
+        if ja_frage("\nJetzt dein eigenes Buch anlegen? [J/n]: "):
             subprocess.run([sys.executable, os.path.join(SETUP, "setup.py")], cwd=HIER)
 
 

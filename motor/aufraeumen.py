@@ -99,7 +99,7 @@ def main():
     print("Bleibt immer: md-history/, staende/, MD-Dateien, stichworte-*.txt, fotos/, bilder/, motor/, .venv/"
           + ("" if mit_ausgaben else ", Ausgabeordner"))
     try:
-        antwort = input("\nDiese Dateien und Ordner löschen? ja/nein [nein]: ").strip().lower()
+        antwort = input("\nDiese Dateien und Ordner löschen? [j/N]: ").strip().lower()
     except EOFError:
         antwort = ""
     if antwort not in ("ja", "j", "yes", "y"):
