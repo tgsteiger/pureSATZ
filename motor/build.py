@@ -1053,7 +1053,19 @@ class Register(SimpleIndex):
                 neu.append([gruppe])
             else:
                 neu.append([zellen[i]]); i += 1
-        self._flowable = Table(neu, colWidths=[availWidth], style=self.tableStyle)
+        stil = self.tableStyle
+        if V("stichworte-gruppen", "fortlaufend").strip().lower() == "zusammen":
+            # {stichworte-gruppen}: zusammen = nie ein einzelnes Wort eines Buchstabens allein oben oder unten auf der Seite
+            # (Gruppen bis 3 Wörter bleiben ganz beisammen, längere werden höchstens 2 + 2 getrennt)
+            anf = [k for k, r in enumerate(neu) if isinstance(r[0], list)] + [len(neu)]
+            cmds = list(self.tableStyle.getCommands())
+            for a, b in zip(anf, anf[1:]):
+                if b - a <= 3:
+                    cmds += [("NOSPLIT", (0, a), (0, b - 1))] if b - a > 1 else []
+                else:
+                    cmds += [("NOSPLIT", (0, a), (0, a + 1)), ("NOSPLIT", (0, b - 2), (0, b - 1))]
+            stil = TableStyle(cmds)
+        self._flowable = Table(neu, colWidths=[availWidth], style=stil)
 
 
 import reportlab.platypus.tableofcontents as _toc_modul

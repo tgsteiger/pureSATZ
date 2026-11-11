@@ -3,6 +3,13 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.71.0 (November 2026)
+- Stichwortverzeichnis: `{stichworte-gruppen}: zusammen | fortlaufend` (Variablen-Datei, `## Weiteres`).
+  zusammen = nie ein einzelnes Wort eines Buchstabens allein oben oder unten auf der Seite: Gruppen bis 3 Wörter
+  bleiben ganz beisammen, längere werden höchstens 2 + 2 getrennt. fortlaufend = wie bisher (Standard).
+  Ganze Gruppen immer zusammen wurde verworfen (Lücken, in Leben123 eine Seite mehr, «Z» allein auf der letzten Seite).
+  Ohne die neue Zeile bleiben alle PDFs gleich. Hilfe und Vorlage nachgeführt, Selbsttest in Ordnung.
+
 ## 2.70.1 (November 2026)
 - Fehler aus 2.70.0 behoben: Bücher mit `::: zusammen`-Block (z. B. Hallo-Buch) brachen ab
   («'bool' object is not callable»). Selbsttest wieder in Ordnung.

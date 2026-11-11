@@ -270,7 +270,7 @@ Tipp: Fett sparsam einsetzen. Eine Leerzeile vor einem kurzen Satz betont oft sc
 | Shop | `shop-beschreibung`, `shop-schlagwoerter`, `shop-kategorie`, `shop-link`, `sprache` (Standard `de`, steht in den Shop-Angaben) |
 | Leseprobe | `leseprobe`, `leseprobe-seiten`, `leseprobe-seiten-uz`, `leseprobe-text` |
 | Technik | `kurz-normal` / `-uz` (Kürzel vorne an den Druckdateien, z. B. L123), `datei-normal` / `-uz` (Name der Lese-PDFs und E-Books), `ordner-normal` / `-uz` (Ausgabeordner) |
-| Weiteres | `stichworte`, `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt\|anschauung), `zier`, `zier-hell`, `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund` |
+| Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt\|anschauung), `zier`, `zier-hell`, `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund` |
 | Sicherung | `sicherung-lokal`, `sicherung-cloud`, `sicherung-behalten` |
 | Layout | `farbschema`, `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `blocksatz` · Inhaltsverzeichnis: `inhalt-tiefe`, `inhalt-dichte`, `inhalt-teile`, `inhalt-punkte`, `inhalt-schrift` |
 
@@ -400,6 +400,9 @@ Gott -> Quelle                     Verweis «Gott, siehe Quelle» (ohne Seitenza
   Markieren mit `[+]` oder `[x]` – beides geht; was schon in der Liste steht, wird nie doppelt angehängt.
   In der Vorschlagsliste wird aus `[+]` ein `[x]`. Markierte `[+]` bleiben, wenn du die Vorschläge neu machst.
 - Stichwörter aus Geschichten (`stichworte:` im Kopf) kommen automatisch dazu.
+- Ein einzelnes Wort allein oben auf der nächsten Seite? `{stichworte-gruppen}: zusammen` in der Variablen-Datei:
+  Gruppen bis 3 Wörter bleiben beisammen, längere werden höchstens 2 + 2 getrennt (Standard: `fortlaufend`).
+  Oft hilft auch, ein Stichwort wegzulassen, das kaum jemand sucht (Wohnort, Hauptthema des Buchs).
 - `stichworte-vorschlag.txt` ist nur ein Hilfsblatt: `sh cleanup.sh` löscht es, die Stichwortdatei bleibt immer.
 
 ## Geschichten sammeln (freiwillig)

@@ -112,6 +112,7 @@
 
 ## Weiteres
 {stichworte}: ja
+{stichworte-gruppen}: fortlaufend
 {bilderverzeichnis}: nein
 {tabellenverzeichnis}: nein
 {trennstellen}: Welt|anschauung, Gedanken|karussell
@@ -121,6 +122,7 @@
 {bildschirm-dunkler}: nein
 {mockup-hintergrund}: #E9EEF4, #C9D3DF
 > {stichworte}: Stichwortverzeichnis aus stichworte-<name>.txt: ja | nein
+> {stichworte-gruppen}: zusammen = nie ein einzelnes Wort eines Buchstabens allein oben oder unten auf der Seite · fortlaufend = die Einträge laufen einfach weiter (Standard)
 > {bilderverzeichnis}, {tabellenverzeichnis}: ja = eigene Seite mit allen Fotos bzw. Tabellen und Seitenzahl, vor dem Stichwortverzeichnis (anderer Ort: Zeile @BILDERVERZEICHNIS / @TABELLENVERZEICHNIS)
 > {trennstellen}: | = hier darf ein langes Wort getrennt werden
 > {zier}: eigenes Bild der Verzierung im Ordner bilder/, leer = Standard
