@@ -378,8 +378,9 @@ def hoerbuch_schritt(H, audio, hb):
     spalten_zeigen([("Probieren", [("p", "Probe hören (probe.txt)"), ("w", "Wörter hören (KLINGEN FALSCH)")]),
                     ("Hörbuch", [("t", "Texte aus dem Buch (zeigt Geänderte)"), ("v", "vertonen: was fehlt + geändert"),
                                  ("k", "vertonen: Kapitel auswählen …")]),
-                    ("Bearbeiten", [("e", "Wörter · Probe · Einstellungen"), ("s", "Azure-Schlüssel eingeben")]),
-                    ("Ordner", [("$", "Terminal in audio/"), ("o", "Ordner audio/ öffnen")])],
+                    ("Weitergeben", [("f", "fertiges Paket: ZIP mit M4B"), ("r", "Hörprobe (verkauf/)")]),
+                    ("Bearbeiten · Ordner", [("e", "Wörter · Probe · Einstellungen"), ("s", "Azure-Schlüssel eingeben"),
+                                             ("$", "Terminal in audio/"), ("o", "Ordner audio/ öffnen")])],
                    "h hilfe · c prüfen · z zurück")
     k = frage(" Wahl: ").lower()
     if k in ("", "z"):
@@ -432,6 +433,15 @@ def hoerbuch_schritt(H, audio, hb):
         t_ = tempo_frage()
         if t_ is not None:
             lauf(hb + ["vertonen"] + ([f"tempo={t_}"] if t_ else []))
+    elif k == "f":
+        print(" Paket: Kapitel-MP3s (Mono, PAKET_KBIT), M4B mit Kapiteln, Playlist, Cover → audio/verkauf/…zip")
+        print(" Vorher: Texte aktuell (t) und alles vertont (v). Die Original-MP3s bleiben unverändert.")
+        if frage(" Weiter? [n = nein | Enter = ja]: ").lower() not in ("n", "nein", "z", "q"):
+            lauf(hb + ["paket"])
+    elif k == "r":
+        seit = time.time()
+        if lauf(hb + ["hoerprobe"]) == 0:
+            abspielen("verkauf/hoerprobe.mp3", seit)
     elif k == "c":
         lauf(hb + ["pruefen"])
     elif k == "k":

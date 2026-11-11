@@ -16,6 +16,10 @@ KURZ = """Hörbuch – Befehle im Ordner audio/ (sh hb.sh …):
     sh hb.sh vertonen tempo=-5%       dasselbe mit anderem Tempo (eigener Ordner …-t-5-k…)
     sh hb.sh liste                    Kapitel mit Kürzel
     sh hb.sh 0201,0304                diese Kapitel neu vertonen (04 = ganzer Teil 4, stimme=2, tempo=-5%)
+  Weitergeben (→ audio/verkauf/)
+    sh hb.sh paket                    ZIP: Kapitel-MP3s (Mono, PAKET_KBIT), M4B mit Kapiteln, Playlist, Cover, LIESMICH
+    sh hb.sh hoerprobe                Ansage + erste Minuten eines Kapitels (HOERPROBE in audio.conf)
+    sh hb.sh hoerprobe 0201 2         Kapitel 02.01, 2 Minuten
   Sonst
     sh hb.sh schluessel               Azure-Schlüssel eingeben (→ ~/.bashrc)
     sh hb.sh pruefen                  Azure-Paket, Schlüssel, ffmpeg prüfen
@@ -66,7 +70,7 @@ def umgebung(var):
     """Angaben fürs Vorlesen: Titel, Autor, Cover (Umschlag vorne, falls gebaut)."""
     cover = sorted(glob.glob(os.path.join(BASE, "ausgabe-normal", "*_Vorderseite.jpg")), key=os.path.getmtime)
     return dict(os.environ, AUDIO_DIR=DATEN, HB_TITEL=var.get("titel", ""), HB_AUTOR=var.get("autor", ""),
-                HB_COVER=cover[-1] if cover else "")
+                HB_JAHR=var.get("jahr", ""), HB_COVER=cover[-1] if cover else "")
 
 
 def texte():
@@ -90,12 +94,13 @@ def texte():
         print("".join(z + "\n" for z in p.stdout.splitlines() if not z.startswith("Fertig:")) + p.stderr, end="")
         if p.returncode:
             return p.returncode
-        ansage = konf().get("AZURE_ANSAGE", "")
-        for k, v in var.items():
-            ansage = ansage.replace("{%s}" % k, v)
-        if ansage.strip():
-            with open(os.path.join(neu, "00.00.00_Ansage.txt"), "w", encoding="utf-8") as f:
-                f.write(ansage.strip() + "\n")
+        for schl, datei in (("AZURE_ANSAGE", "00.00.00_Ansage.txt"), ("AZURE_ABSPANN", "99.00.00_Abspann.txt")):
+            ansage = konf().get(schl, "")                  # Ansage am Anfang, Abspann am Schluss (leer = keiner)
+            for k, v in var.items():
+                ansage = ansage.replace("{%s}" % k, v)
+            if ansage.strip():
+                with open(os.path.join(neu, datei), "w", encoding="utf-8") as f:
+                    f.write(ansage.strip() + "\n")
         alt = {os.path.basename(x) for x in glob.glob(os.path.join(ziel, "*.txt"))}
         frisch = sorted(os.path.basename(x) for x in glob.glob(os.path.join(neu, "*.txt")))
         anders = [n for n in frisch if n not in alt or not filecmp.cmp(os.path.join(neu, n), os.path.join(ziel, n), shallow=False)]
@@ -198,6 +203,10 @@ def main():
         return 0 if pruefen() else 1
     if befehl == "texte":
         return texte()
+    if befehl in ("paket", "hoerprobe"):                   # braucht kein Azure, nur ffmpeg und fertige MP3s
+        _, var = buch()
+        return subprocess.run([sys.executable, os.path.join(DIR, "paket.py"), befehl] + rest, cwd=DATEN,
+                              env=umgebung(var)).returncode
     if befehl == "woerter":
         befehl = "aussprache"
     if not glob.glob(os.path.join(DATEN, "txt-md", "*.txt")) and befehl not in ("aussprache", "probe"):

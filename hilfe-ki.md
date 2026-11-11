@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.71.2
+# pureSATZ Hilfe · pureSATZ · Motor 2.72.0
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -1002,9 +1002,11 @@ Beim ersten `hb` entsteht der Ordner `audio/` mit `audio.conf`, `aussprache-olli
   p  Probe hören (probe.txt)          t  Texte aus dem Buch (zeigt Geänderte)
   w  Wörter hören (KLINGEN FALSCH)    v  vertonen: was fehlt + geändert
                                       k  vertonen: Kapitel auswählen …
- ── Bearbeiten ────────────────────   ── Ordner ────────────────────────
-  e  Wörter · Probe · Einstellungen   $  Terminal in audio/
-  s  Azure-Schlüssel eingeben         o  Ordner audio/ öffnen
+ ── Weitergeben ───────────────────   ── Bearbeiten · Ordner ──────────
+  f  fertiges Paket: ZIP mit M4B      e  Wörter · Probe · Einstellungen
+  r  Hörprobe (verkauf/)              s  Azure-Schlüssel eingeben
+                                      $  Terminal in audio/
+                                      o  Ordner audio/ öffnen
  ── Weiteres:  h hilfe · c prüfen · z zurück
 ```
 
@@ -1014,6 +1016,8 @@ Taste | Was passiert
 `t` | Texte aus der Buch-MD → `audio/txt-md/`. Nur geänderte werden ersetzt, die Liste steht danach da. Fragt dann «Jetzt vertonen?» (Enter = ja)
 `v` | vertonen: MP3 für Kapitel ohne MP3 oder mit geändertem Text (Text neuer als MP3). Fertige bleiben. Fragt das Tempo. Abbruch = nochmals `v`
 `k` | Kapitel vertonen: zeigt die Kapitel mit Kürzel, dann z. B. `0603,0605` oder `06` (ganzer Teil 6) und das Tempo – immer neu, MP3 wird ersetzt
+`f` | Paket zum Weitergeben → `audio/verkauf/<Buch>-Hoerbuch_<Zeit>.zip` (siehe «Hörbuch: Weitergeben»)
+`r` | Hörprobe → `audio/verkauf/hoerprobe.mp3`, spielt gleich ab
 `e` | öffnet `aussprache-<stimme>.txt`, `probe.txt` oder `audio.conf` im Editor
 `s` | Azure-Schlüssel und Region eingeben (→ `~/.bashrc`, gilt sofort)
 `$` | Terminal im Ordner `audio/` – dort `sh hb.sh` zeigt alle Befehle
@@ -1161,6 +1165,20 @@ Vorgelesen: Widmung, Kernsatz, Text, Geschichten (`@@`), Zitate, Tabellen Zeile 
 - `txt-md_<stimme>-t<tempo>-k<kbit>_<zeit>.zip` – wenn das ganze Buch vertont wird: Texte, Aussprache-Liste und `audio.conf` zur Sicherheit.
 
 MP3, Texte und ZIPs kommen nicht zu GitHub.
+
+## Hörbuch: Weitergeben (Paket und Hörprobe)
+
+Für den eigenen Shop, als Geschenk oder zum Download. Zuerst Texte aktuell (`t`) und alles vertont (`v`) – die Original-MP3s bleiben unverändert.
+
+```
+sh hb.sh paket               # → audio/verkauf/<Buch>-Hoerbuch_<Zeit>.zip
+sh hb.sh hoerprobe           # → audio/verkauf/hoerprobe.mp3 (Ansage + erste Minuten, ausgeblendet)
+sh hb.sh hoerprobe 0201 2    # anderes Kapitel, 2 Minuten
+```
+
+Im ZIP: `MP3/01 Ansage.mp3` … (jedes Kapitel, Mono, `PAKET_KBIT`, mit Titel, Tracknummer, Album, Autor, Genre «Hörbuch» und Cover) · eine M4B mit Kapitelmarken (das ganze Hörbuch in einer Datei, für Handy und Hörbuch-Apps) · `playlist.m3u` · `cover.jpg` · `LIESMICH.txt` (mit Hinweis «Gelesen von einer KI-Stimme»).
+
+In `audio.conf`: `PAKET_KBIT` (96 = für Sprache gut, etwa die Hälfte von 192), `HOERPROBE` (Kürzel und Minuten, z. B. `0002 3` = Vorwort), `COVER_QUADRAT` (quadratisches Bild in `audio/`; leer = Umschlag vorne), `AZURE_ABSPANN` (wird bei `t` als letztes Kapitel `99.00.00_Abspann` angelegt).
 
 ## Hörbuch: Kosten, Rechte, Verkauf
 
