@@ -3,6 +3,14 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.72.1 (November 2026)
+- Hörbuch in einem: `sh hb.sh komplett` = texte → vertonen → paket → hoerprobe, hält beim ersten Fehler an,
+  spielt am Schluss die Hörprobe (mpv). `tempo=-5%` geht auch. Im Menü hb → a, im Buchordner `sh build.sh hoerbuch`.
+- Hilfe: neuer Abschnitt «Hörbuch: Ablauf» (0 einmalig, 1 schreiben, 2 erstellen, 3 anhören/weitergeben), Befehle
+  zum Kopieren und Spickzettel ergänzt. Alte stille Taste a (vertonen) ist jetzt «alles».
+- paket: bricht ab, wenn zu einem Text in txt-md/ die MP3 fehlt; MP3s ohne Text (alte Kapitel) kommen nicht ins
+  Paket; Hinweis, wenn ein Text neuer ist als seine MP3.
+
 ## 2.72.0 (November 2026)
 - Hörbuch weitergeben (motor/audio/paket.py): `sh hb.sh paket` (Menü hb → f) macht in audio/verkauf/ ein ZIP mit
   Kapitel-MP3s (Mono, PAKET_KBIT, Standard 96 kbit, alle Tags + kleines Cover, Titel aus txt-md/), einer M4B mit

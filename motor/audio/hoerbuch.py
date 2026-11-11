@@ -5,6 +5,8 @@ Im Menü: hb. Im Ordner audio/ des Buchs:  sh hb.sh <befehl>   (ohne Befehl: die
 """
 KURZ = """Hörbuch – Befehle im Ordner audio/ (sh hb.sh …):
 
+  Alles in einem
+    sh hb.sh komplett                 texte → vertonen → paket → hoerprobe (tempo=-5% geht auch)
   Probieren
     sh hb.sh probe                    probe.txt mit der eingestellten Stimme
     sh hb.sh probe 2 -10%             Stimme 2, Tempo −10 %      (l = Stimmen-Liste, alle = alle Stimmen)
@@ -189,6 +191,32 @@ def pruefen():
     return ok
 
 
+def komplett(rest):
+    """Ganzer Ablauf; hält beim ersten Fehler an. Am Schluss die Hörprobe abspielen (mpv, falls da)."""
+    try:
+        import azure.cognitiveservices.speech  # noqa: F401
+    except ImportError:
+        sys.exit("Azure-Paket fehlt – im Menü hb → c (prüfen) installieren.")
+    _, var = buch()
+    env = umgebung(var)
+    schritte = [("1/4 Texte", None),
+                ("2/4 Vertonen", [os.path.join(DIR, "txt2mp3-azure.py"), "md"] + rest),
+                ("3/4 Paket", [os.path.join(DIR, "paket.py"), "paket"]),
+                ("4/4 Hörprobe", [os.path.join(DIR, "paket.py"), "hoerprobe"])]
+    for name, cmd in schritte:
+        print(f"\n── {name} ──")
+        rc = texte() if cmd is None else subprocess.run([sys.executable] + cmd, cwd=DATEN, env=env).returncode
+        if rc:
+            print(f"Abgebrochen bei «{name[4:]}» – Meldung oben. Danach wieder:  sh hb.sh komplett")
+            return rc
+    probe = os.path.join(DATEN, "verkauf", "hoerprobe.mp3")
+    if shutil.which("mpv") and os.path.exists(probe) and sys.stdin.isatty():
+        print("Hörprobe läuft (mpv-Fenster)")
+        subprocess.Popen(["mpv", "--force-window=yes", probe], stdin=subprocess.DEVNULL,
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    return 0
+
+
 def main():
     if not sys.platform.startswith("linux"):
         sys.exit("Das Hörbuch gibt es vorerst nur unter Linux.")
@@ -203,6 +231,8 @@ def main():
         return 0 if pruefen() else 1
     if befehl == "texte":
         return texte()
+    if befehl == "komplett":                                # Ablauf in einem: texte → vertonen → paket → hoerprobe
+        return komplett(rest)
     if befehl in ("paket", "hoerprobe"):                   # braucht kein Azure, nur ffmpeg und fertige MP3s
         _, var = buch()
         return subprocess.run([sys.executable, os.path.join(DIR, "paket.py"), befehl] + rest, cwd=DATEN,

@@ -90,6 +90,18 @@ def paket(arg=None):
     a, bild = angaben(conf), cover(konf())
     kbit = conf.get("PAKET_KBIT", "96")
     mp3s = sorted(glob.glob(os.path.join(src, "*.mp3")))
+    texte = sorted(glob.glob(os.path.join(DATEN, "txt-md", "*.txt")))
+    if texte:                                              # nur Kapitel, die es im Buch noch gibt – und alle davon
+        stamm = lambda f: os.path.splitext(os.path.basename(f))[0]
+        da = {stamm(f): f for f in mp3s}
+        fehlt = [stamm(t) for t in texte if stamm(t) not in da]
+        if fehlt:
+            sys.exit(f"Noch nicht vertont ({len(fehlt)}): " + ", ".join(fehlt[:5]) + (" …" if len(fehlt) > 5 else "") +
+                     " – zuerst vertonen (hb → v).")
+        alt = [stamm(t) for t in texte if os.path.getmtime(t) > os.path.getmtime(da[stamm(t)])]
+        if alt:
+            print(f"Achtung: {len(alt)} Text(e) neuer als die MP3 (z. B. {alt[0]}) – vertonen (hb → v) bringt sie nach.")
+        mp3s = [da[stamm(t)] for t in texte]
     n = len(mp3s)
     tmp = tempfile.mkdtemp(prefix="_paket-", dir=DATEN)
     try:

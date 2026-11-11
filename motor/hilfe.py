@@ -49,6 +49,7 @@ SPICKZETTEL = [
     ("sh build.sh personen Thomas", "check_Thomas_Gegenlesen.pdf: seine Seiten zum Gegenlesen (aus den fertigen Lese-PDFs)"),
     ("sh build.sh stichworte", "Stichwortverzeichnis prüfen und Vorschläge → stichworte-vorschlag.txt ([+] = übernehmen)"),
     ("sh build.sh stichworte uebernehmen", "Mit [+] markierte Vorschläge an stichworte-<buch>.txt anhängen"),
+    ("sh build.sh hoerbuch", "Hörbuch in einem: Texte → vertonen → Paket → Hörprobe (Linux, Azure-Schlüssel nötig)"),
     ("sh update.sh", "Neuen Motor von GitHub holen (lokal: sh update.sh lokal)"),
     ("sh sicherung.sh", "Ganzes Buch als ZIP sichern (alte Fassungen einzelner Dateien: Ordner md-history/)"),
     ("sh cleanup.sh", "Aufräumen: alte Motoren und Zwischenspeicher löschen, entfernen (delete) – fragt zuerst, "

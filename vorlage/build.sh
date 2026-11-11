@@ -12,6 +12,7 @@
 #   sh build.sh stichworte       Stichwortverzeichnis prüfen, Vorschläge · stichworte uebernehmen  alle [+] übernehmen
 #   sh build.sh stand "Name"  Stand festhalten · sh build.sh aenderungen  was seither geändert ist (PDF)
 #   sh build.sh korrektur       Korrekturfassung: A4, Zeilennummern, Rand für Notizen
+#   sh build.sh hoerbuch        Hörbuch in einem: Texte → vertonen → Paket → Hörprobe (audio/verkauf/)
 #   sh build.sh nur-druck [final] / nur-ebook [final] / pruefen / sicherung (nur MD nach md-history/)
 # Ganzes Buch als ZIP sichern: sh sicherung.sh
 # Beim ersten Mal wird die Python-Umgebung .venv eingerichtet (braucht Internet).

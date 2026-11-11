@@ -376,7 +376,8 @@ def hoerbuch_schritt(H, audio, hb):
     name = fav.get(st) or kurz(st)
     print("\n" + kopf("Hörbuch", f"{name} · {c.get('AZURE_RATE', '')} · {c.get('MP3_KBIT', '128')} kbit"))
     spalten_zeigen([("Probieren", [("p", "Probe hören (probe.txt)"), ("w", "Wörter hören (KLINGEN FALSCH)")]),
-                    ("Hörbuch", [("t", "Texte aus dem Buch (zeigt Geänderte)"), ("v", "vertonen: was fehlt + geändert"),
+                    ("Hörbuch", [("a", "alles: Texte → vertonen → Paket → Hörprobe"),
+                                 ("t", "Texte aus dem Buch (zeigt Geänderte)"), ("v", "vertonen: was fehlt + geändert"),
                                  ("k", "vertonen: Kapitel auswählen …")]),
                     ("Weitergeben", [("f", "fertiges Paket: ZIP mit M4B"), ("r", "Hörprobe (verkauf/)")]),
                     ("Bearbeiten · Ordner", [("e", "Wörter · Probe · Einstellungen"), ("s", "Azure-Schlüssel eingeben"),
@@ -427,7 +428,13 @@ def hoerbuch_schritt(H, audio, hb):
         if lauf(hb + ["texte"]) == 0 and frage(f" Jetzt vertonen, was fehlt oder geändert ist (Tempo {c.get('AZURE_RATE', '-8%')})?"
                  " [n = nein | Enter = ja]: ").lower() not in ("n", "nein", "z", "q"):
             lauf(hb + ["vertonen"])
-    elif k in ("v", "a", "m"):                        # a, m = alte Tasten
+    elif k == "a":
+        print(" Alles in einem: Texte aus dem Buch → vertonen (was fehlt + geändert) → Paket → Hörprobe.")
+        print(" Hält beim ersten Fehler an. Am Schluss spielt die Hörprobe. Ergebnis: audio/verkauf/")
+        t_ = tempo_frage()
+        if t_ is not None:
+            lauf(hb + ["komplett"] + ([f"tempo={t_}"] if t_ else []))
+    elif k in ("v", "m"):                             # m = alte Taste
         print(" Vertonen: MP3 für Kapitel ohne MP3 oder mit geändertem Text (fertige bleiben).")
         print(" Anderes Tempo = eigener Ordner (z. B. …-t-5-k192) – so kannst du vergleichen.")
         t_ = tempo_frage()

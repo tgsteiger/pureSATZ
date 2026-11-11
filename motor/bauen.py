@@ -721,6 +721,10 @@ def main():
         mockups(); ausgabe_uebersicht(art, final); return
     if art == "hilfe":
         hilfe(oeffnen=True); return
+    if art in ("hoerbuch", "hörbuch"):     # Hörbuch in einem: texte → vertonen → paket → hoerprobe (audio/hoerbuch.py)
+        roh = sys.argv[1:]
+        i = next(k for k, x in enumerate(roh) if x.lower() == art)
+        sys.exit(subprocess.run([sys.executable, os.path.join(MOTOR, "audio", "hoerbuch.py"), "komplett"] + roh[i + 1:]).returncode)
     if art == "geschichten":
         start = time.time()
         sicherung()

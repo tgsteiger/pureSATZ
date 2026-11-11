@@ -837,6 +837,33 @@ Das E-Book ist für alle Shops dasselbe – nur der Druck ist plattformabhängig
 
 # Hörbuch (Linux, Testphase)
 
+## Hörbuch: Ablauf
+
+**0 · Einmalig** – Azure-Schlüssel eingeben (`hb` → `s`) und prüfen (`hb` → `c`), siehe «Einrichten».
+Für den Verkauf das Hörbuch mit dem bezahlten Azure-Tarif erstellen (siehe «Kosten, Rechte, Verkauf»).
+
+**1 · Buch schreiben oder ändern** – wie immer in der Buch-MD.
+
+**2 · Hörbuch erstellen** – alles in einem (Texte → vertonen → Paket → Hörprobe):
+
+```
+sh menu.sh → hb → a               # Menü
+sh build.sh hoerbuch              # Terminal im Buchordner
+cd audio && sh hb.sh komplett     # Terminal im Ordner audio/
+```
+
+Einzeln, Schritt für Schritt: `t` Texte → `v` vertonen → `f` Paket → `r` Hörprobe.
+
+**3 · Anhören und weitergeben** – die Hörprobe spielt am Schluss von selbst:
+
+```
+mpv audio/verkauf/hoerprobe.mp3            # Hörprobe
+ls audio/verkauf/                          # <Buch>-Hoerbuch_<Zeit>.zip: für Shop, Geschenk, Handy (M4B)
+```
+
+Nach einer Änderung im Buch einfach Schritt 2 wiederholen: Nur Geänderte werden neu vertont.
+Bei einem Fehler hält der Ablauf an – die Meldung lesen, beheben, Schritt 2 nochmals.
+
 ## Hörbuch: Was es braucht
 
 Aus dem Buch ein Hörbuch machen: eine MP3 pro Kapitel, vorgelesen von einer KI-Stimme von Microsoft Azure.
@@ -864,8 +891,9 @@ Danach zum Ausprobieren: `hb` → `p` (Probe) und `hb` → `w` (Wörter).
 ```
  Mein-Buch · pureSATZ 2.69.19 › Hörbuch          Ollie · -8% · 128 kbit
  ── Probieren ─────────────────────   ── Hörbuch ───────────────────────
-  p  Probe hören (probe.txt)          t  Texte aus dem Buch (zeigt Geänderte)
-  w  Wörter hören (KLINGEN FALSCH)    v  vertonen: was fehlt + geändert
+  p  Probe hören (probe.txt)          a  alles: Texte → vertonen → Paket → Hörprobe
+  w  Wörter hören (KLINGEN FALSCH)    t  Texte aus dem Buch (zeigt Geänderte)
+                                      v  vertonen: was fehlt + geändert
                                       k  vertonen: Kapitel auswählen …
  ── Weitergeben ───────────────────   ── Bearbeiten · Ordner ──────────
   f  fertiges Paket: ZIP mit M4B      e  Wörter · Probe · Einstellungen
@@ -879,6 +907,7 @@ Danach zum Ausprobieren: `hb` → `p` (Probe) und `hb` → `w` (Wörter).
 |---|---|
 | `p` | `audio/probe.txt` vorlesen – fragt Stimme (Enter = eingestellt, `1`/`2` = Favorit, `l` = alle Stimmen) und Tempo, spielt gleich ab |
 | `w` | Wörter unter `## KLINGEN FALSCH` vorlesen: Original, kurze Pause, Aussprache – spielt gleich ab |
+| `a` | **alles in einem:** Texte → vertonen → Paket → Hörprobe. Fragt das Tempo, hält beim ersten Fehler an, spielt am Schluss die Hörprobe |
 | `t` | Texte aus der Buch-MD → `audio/txt-md/`. Nur geänderte werden ersetzt, die Liste steht danach da. Fragt dann «Jetzt vertonen?» (Enter = ja) |
 | `v` | vertonen: MP3 für Kapitel ohne MP3 **oder** mit geändertem Text (Text neuer als MP3). Fertige bleiben. Fragt das Tempo. Abbruch = nochmals `v` |
 | `k` | Kapitel vertonen: zeigt die Kapitel mit Kürzel, dann z. B. `0603,0605` oder `06` (ganzer Teil 6) und das Tempo – **immer neu**, MP3 wird ersetzt |
@@ -984,6 +1013,14 @@ durchsuchen), mit `p` anhören, dann das ganze Buch einmal hören und den Rest n
 Ohne Menü: `hb` → `$` öffnet ein Terminal im Ordner `audio/` (oder Rechtsklick auf `audio/` → «Im Terminal öffnen»).
 Alle Zeilen gelten dort. `sh hb.sh` allein zeigt die Übersicht.
 
+**Alles in einem**
+
+```sh
+sh hb.sh komplett                    # texte → vertonen → paket → hoerprobe
+sh hb.sh komplett tempo=-5%          # dasselbe mit anderem Tempo
+cd .. && sh build.sh hoerbuch        # dasselbe vom Buchordner aus
+```
+
 **Probieren**
 
 ```sh
@@ -1058,7 +1095,8 @@ MP3, Texte und ZIPs kommen nicht zu GitHub.
 ## Hörbuch: Weitergeben (Paket und Hörprobe)
 
 Für den eigenen Shop, als Geschenk oder zum Download. Zuerst Texte aktuell (`t`) und alles vertont (`v`) –
-die Original-MP3s bleiben unverändert.
+oder gleich alles mit `hb` → `a`. Die Original-MP3s bleiben unverändert. Fehlt zu einem Text die MP3, bricht
+`paket` ab («zuerst vertonen»); MP3s ohne Text (alte Kapitel) kommen nicht ins Paket.
 
 ```
 sh hb.sh paket               # → audio/verkauf/<Buch>-Hoerbuch_<Zeit>.zip
