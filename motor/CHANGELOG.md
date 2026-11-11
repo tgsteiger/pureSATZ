@@ -3,6 +3,15 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.70.0 (November 2026)
+- Inhaltsverzeichnis: neuer Abschnitt `### Inhaltsverzeichnis` unter `## Schrift` in der Variablen-Datei (Vorlage) mit
+  `{inhalt-tiefe}`, `{inhalt-dichte}` und neu:
+  `{inhalt-teile}: zusammen | fortlaufend` – zusammen = ein Teil (#) mit seinen Kapiteln wird nie auf zwei Seiten
+  getrennt (statt ein, zwei Zeilen allein auf der letzten Seite); fortlaufend = wie bisher (Standard).
+  `{inhalt-punkte}: ja | nein` – Punktlinie bis zur Seitenzahl (Standard ja).
+  `{inhalt-schrift}: 9.3` – Grösse der Kapitel in Punkt, Teile und Unterkapitel im gleichen Verhältnis.
+  Ohne die neuen Zeilen bleiben alle PDFs gleich (Leben123 normal + Unzensiert pixelgleich geprüft). Hilfe nachgeführt.
+
 ## 2.69.20 (November 2026)
 - Hilfe, Tipps aus der Praxis → Gestalten: Inhaltsverzeichnis eine Seite zu lang? `{inhalt-dichte}: 0.95`
   (nur das Inhaltsverzeichnis wird enger), weniger Zeilen mit `{inhalt-tiefe}: 1`.

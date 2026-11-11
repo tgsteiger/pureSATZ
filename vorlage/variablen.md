@@ -171,10 +171,18 @@
 {schrift-titel}: Poppins
 {schriftgroesse}:
 {zeilenabstand}:
-{inhalt-dichte}: 1
-{inhalt-tiefe}: 2
 {blocksatz}: ja
 > {schrift-text}, {schrift-titel}: Dateien im Ordner fonts/ oder motor/fonts/, z. B. Lora-Regular.ttf, Lora-Bold.ttf, Lora-Italic.ttf, Lora-BoldItalic.ttf
 > {schriftgroesse}, {zeilenabstand}: in Punkt; leer = passend zum Format
-> {inhalt-dichte}: Zeilenabstand im Inhaltsverzeichnis, 1 = normal, 0.92 = etwas enger (passt z. B. auf eine Seite weniger)
+
+### Inhaltsverzeichnis
+{inhalt-tiefe}: 2
+{inhalt-dichte}: 1
+{inhalt-teile}: fortlaufend
+{inhalt-punkte}: ja
+{inhalt-schrift}:
 > {inhalt-tiefe}: welche Titel ins Inhaltsverzeichnis kommen: 1 = nur # · 2 = bis ## (Standard) · 3 = bis ### · 4 = bis #### – im Buch und in den Geschichten
+> {inhalt-dichte}: Zeilenabstand, 1 = normal, 0.95 = etwas enger (passt z. B. auf eine Seite weniger)
+> {inhalt-teile}: zusammen = ein Teil mit seinen Kapiteln bleibt auf einer Seite · fortlaufend = die Einträge laufen einfach weiter (Standard)
+> {inhalt-punkte}: ja = Punktlinie bis zur Seitenzahl (Standard) · nein = ohne
+> {inhalt-schrift}: Grösse der Kapitel in Punkt, leer = 9.3; Teile und Unterkapitel passen sich an

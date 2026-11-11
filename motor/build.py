@@ -961,16 +961,36 @@ class Liste:
 small = ParagraphStyle("small", parent=body, fontSize=8.8, leading=12.5, textColor=SOFT,
                        alignment=TA_LEFT)
 _D = float(V("inhalt-dichte", "1") or 1)          # {inhalt-dichte}: 0.92 = Inhaltsverzeichnis etwas enger
-toc1 = ParagraphStyle("toc1", fontName=schrift("titel"), fontSize=10, leading=14 * _D, textColor=DEEP,
+_G = float(V("inhalt-schrift", "9.3") or 9.3) / 9.3   # {inhalt-schrift}: Grösse der Kapitel (##) in Punkt, Rest im Verhältnis
+toc1 = ParagraphStyle("toc1", fontName=schrift("titel"), fontSize=10 * _G, leading=14 * _D * _G, textColor=DEEP,
                       spaceBefore=8 * _D)
-toc2 = ParagraphStyle("toc2", fontName=schrift("text"), fontSize=9.3, leading=12.6 * _D, textColor=INK,
+toc2 = ParagraphStyle("toc2", fontName=schrift("text"), fontSize=9.3 * _G, leading=12.6 * _D * _G, textColor=INK,
                       leftIndent=5 * mm)
-toc3 = ParagraphStyle("toc3", parent=toc2, fontSize=8.8, leading=11.8 * _D, leftIndent=10 * mm)
+toc3 = ParagraphStyle("toc3", parent=toc2, fontSize=8.8 * _G, leading=11.8 * _D * _G, leftIndent=10 * mm)
 toc4 = ParagraphStyle("toc4", parent=toc3, leftIndent=15 * mm)
 try:                                               # {inhalt-tiefe}: 1 = # · 2 = bis ## (Standard) · 3 = bis ### · 4 = bis ####
     TIEFE = min(4, max(1, int((V("inhalt-tiefe", "2") or "2").strip())))
 except ValueError:
     TIEFE = 2
+
+
+class Inhaltsverzeichnis(TableOfContents):
+    """{inhalt-teile}: zusammen = ein Teil (#) mit seinen Kapiteln wird nie auf zwei Seiten getrennt."""
+    def wrap(self, availWidth, availHeight):
+        if not hasattr(self, "_grund"):
+            self._grund = self.tableStyle.getCommands()
+        cmds, zeile, start = [], 0, None
+        for level, *_ in self._lastEntries:
+            vor = 1 if self.getLevelStyle(level).spaceBefore else 0
+            if level == 0:
+                if start is not None and zeile - 1 > start:
+                    cmds.append(("NOSPLIT", (0, start), (0, zeile - 1)))
+                start = zeile + vor
+            zeile += vor + 1
+        if start is not None and zeile - 1 > start:
+            cmds.append(("NOSPLIT", (0, start), (0, zeile - 1)))
+        self.tableStyle = TableStyle(self._grund + cmds)
+        return super().wrap(availWidth, availHeight)
 
 
 # Trennstellen für lange Wörter, die sonst im Blocksatz grosse Lücken reissen.
@@ -2047,7 +2067,10 @@ def _build(out, ausgleich=None):
         elif s == "@INHALTSVERZEICHNIS":
             if DRUCK and not vorspann["kernsatz"]:
                 story.append(PageBreak())
-            toc = TableOfContents(); toc.levelStyles = [toc1, toc2, toc3, toc4]; toc.dotsMinLevel = 0
+            zusammen = V("inhalt-teile", "fortlaufend").strip().lower() == "zusammen"
+            toc = Inhaltsverzeichnis() if zusammen else TableOfContents()
+            toc.levelStyles = [toc1, toc2, toc3, toc4]
+            toc.dotsMinLevel = 0 if ja("inhalt-punkte") else -1     # {inhalt-punkte}: nein = ohne Punktlinie
             story += [Paragraph(E.WORT_INHALT, INHALT_STIL), NextPageTemplate("tocfolge"), toc]
         elif s.startswith("@PORTRAIT "):
             # @PORTRAIT bild.png | Bildtext : rundes Foto mit Ring

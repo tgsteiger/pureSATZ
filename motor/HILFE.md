@@ -272,7 +272,7 @@ Tipp: Fett sparsam einsetzen. Eine Leerzeile vor einem kurzen Satz betont oft sc
 | Technik | `kurz-normal` / `-uz` (Kürzel vorne an den Druckdateien, z. B. L123), `datei-normal` / `-uz` (Name der Lese-PDFs und E-Books), `ordner-normal` / `-uz` (Ausgabeordner) |
 | Weiteres | `stichworte`, `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt\|anschauung), `zier`, `zier-hell`, `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund` |
 | Sicherung | `sicherung-lokal`, `sicherung-cloud`, `sicherung-behalten` |
-| Layout | `farbschema`, `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `inhalt-dichte`, `inhalt-tiefe`, `blocksatz` |
+| Layout | `farbschema`, `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `blocksatz` · Inhaltsverzeichnis: `inhalt-tiefe`, `inhalt-dichte`, `inhalt-teile`, `inhalt-punkte`, `inhalt-schrift` |
 
 **Rückenbreite:** steht in der Plattform-Datei (siehe «Plattform-Dateien», Coverrechner).
 
@@ -652,9 +652,12 @@ Fehlt etwas, nennt die Übersicht den Befehl dazu (z. B. `sh build.sh leseprobe`
 - Eine Dankesseite oder ein Nachwort wirkt als normales Kapitel ruhiger und steht im Inhaltsverzeichnis:
   `## Danke`, Text im Blocksatz, zum Schluss `@ZITAT Gruss<br/>Name` und `@ZIER 10`.
 - Nur eine Verzierung pro Seite – sonst wird es unruhig.
-- Inhaltsverzeichnis eine Seite zu lang (wegen einer Zeile)? In der Variablen-Datei `{inhalt-dichte}: 0.95`
-  (enger: 0.92; normal: 1). Wirkt nur aufs Inhaltsverzeichnis, alle Seiten darin gleich – der Buchtext bleibt.
-  Weniger Zeilen: `{inhalt-tiefe}: 1` (nur `#`-Kapitel).
+- Inhaltsverzeichnis mit nur ein, zwei Zeilen auf der letzten Seite? In der Variablen-Datei unter
+  `### Inhaltsverzeichnis`: `{inhalt-teile}: zusammen` – ein Teil mit seinen Kapiteln wird nie getrennt, die Seiten
+  füllen sich gleichmässiger (Standard: `fortlaufend`). Oder eine Seite weniger: `{inhalt-dichte}: 0.95`
+  (enger: 0.92; normal: 1) – wirkt nur aufs Inhaltsverzeichnis, der Buchtext bleibt. Weniger Zeilen: `{inhalt-tiefe}: 1`.
+- Aussehen des Inhaltsverzeichnisses: `{inhalt-punkte}: nein` = ohne Punktlinie, nur die Seitenzahl rechts ·
+  `{inhalt-schrift}: 10` = Kapitel in 10 Punkt (Standard 9.3), Teile und Unterkapitel passen sich an.
 
 **Probedruck und Farben**
 - Farben am Bildschirm nur grob beurteilen. Was zählt, ist der Probedruck auf dem echten Papier (matt/glänzend, weiss/creme).
