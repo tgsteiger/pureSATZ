@@ -22,8 +22,10 @@ KURZ = """Hörbuch – Befehle im Ordner audio/ (sh hb.sh …):
     sh hb.sh paket                    ZIP: Kapitel-MP3s (Mono, PAKET_KBIT), M4B mit Kapiteln, Playlist, Cover, LIESMICH
     sh hb.sh hoerprobe                Ansage + erste Minuten eines Kapitels (HOERPROBE in audio.conf)
     sh hb.sh hoerprobe 0201 2         Kapitel 02.01, 2 Minuten
+    sh hb.sh hoerprobe vergleich      dieselbe Stelle als 96, 128 und 192 kbit – zum Entscheiden
   Sonst
-    sh hb.sh schluessel               Azure-Schlüssel eingeben (→ ~/.bashrc)
+    sh hb.sh schluessel               Azure-Schlüssel eingeben (→ ~/.bashrc), F0 gratis oder S0 bezahlt
+    sh hb.sh stufe                    Azure umschalten: F0 gratis ↔ S0 bezahlt (AZURE_STUFE in audio.conf)
     sh hb.sh pruefen                  Azure-Paket, Schlüssel, ffmpeg prüfen
   Anhören und nachsehen
     mpv probe-ollie-t-8.mp3                       (Name steht nach jedem Lauf da)
@@ -141,29 +143,43 @@ def konf():
     return conf
 
 
-def schluessel():
+def schluessel(stufe_wahl=None):
     """Azure-Schlüssel und Region abfragen und in ~/.bashrc eintragen (alte Zeilen ersetzt, Sicherung .bashrc.bak)."""
     import getpass
     rc = os.path.expanduser("~/.bashrc")
-    alt, reg = os.environ.get("AZURE_SPEECH_KEY", ""), os.environ.get("AZURE_SPEECH_REGION", "switzerlandnorth")
-    print("Azure-Schlüssel " + (f"(jetzt …{alt[-4:]})" if alt else "(noch keiner)") +
+    welcher = {"F0": "1", "S0": "2"}.get(stufe_wahl, "")
+    if not welcher:
+        print("Welcher Schlüssel?  1 = F0 gratis (zum Testen)  ·  2 = S0 bezahlt (für den Verkauf)")
+        try:
+            welcher = input("  Stufe [Enter = 1]: ").strip()
+        except EOFError:
+            welcher = ""
+    name = "AZURE_SPEECH_KEY_S0" if welcher in ("2", "s0", "S0") else "AZURE_SPEECH_KEY"
+    alt, reg = os.environ.get(name, ""), os.environ.get("AZURE_SPEECH_REGION", "switzerlandnorth")
+    print(("S0-" if name.endswith("S0") else "F0-") + "Schlüssel " + (f"(jetzt …{alt[-4:]})" if alt else "(noch keiner)") +
           " – portal.azure.com → Speech-Ressource → «Schlüssel und Endpunkt» → Schlüssel 1")
-    k = getpass.getpass("  Schlüssel einfügen (Rechtsklick → Einfügen – es erscheint nichts) [Enter = behalten]: ").strip() or alt
+    try:
+        k = getpass.getpass("  Schlüssel einfügen (Rechtsklick → Einfügen – es erscheint nichts) [Enter = behalten]: ").strip() or alt
+    except EOFError:
+        print(); return False
     if k and (len(k) < 32 or not k.isalnum()):                # z. B. falscher Text aus der Zwischenablage
         print("\033[1;31m✗ Das ist kein Azure-Schlüssel\033[0m (nur Buchstaben und Ziffern, mind. 32) – nichts geändert.")
         return False
     if not k:
         print("Kein Schlüssel – nichts geändert."); return False
-    reg = input(f"  Region [Enter = {reg}]: ").strip() or reg
+    try:
+        reg = input(f"  Region [Enter = {reg}]: ").strip() or reg
+    except EOFError:
+        pass
     zeilen = open(rc, encoding="utf-8").read().splitlines() if os.path.exists(rc) else []
     if zeilen:
         shutil.copy(rc, rc + ".bak")
-    zeilen = [z for z in zeilen if not z.strip().startswith(("export AZURE_SPEECH_KEY=", "export AZURE_SPEECH_REGION="))]
-    zeilen += [f"export AZURE_SPEECH_KEY='{k}'", f"export AZURE_SPEECH_REGION='{reg}'"]
+    zeilen = [z for z in zeilen if not z.strip().startswith((f"export {name}=", "export AZURE_SPEECH_REGION="))]
+    zeilen += [f"export {name}='{k}'", f"export AZURE_SPEECH_REGION='{reg}'"]
     with open(rc, "w", encoding="utf-8") as f:
         f.write("\n".join(zeilen) + "\n")
-    os.environ["AZURE_SPEECH_KEY"], os.environ["AZURE_SPEECH_REGION"] = k, reg
-    print(f"OK  Schlüssel …{k[-4:]} · Region {reg} in ~/.bashrc (Sicherung ~/.bashrc.bak). Gilt ab sofort im Menü")
+    os.environ[name], os.environ["AZURE_SPEECH_REGION"] = k, reg
+    print(f"OK  {name} …{k[-4:]} · Region {reg} in ~/.bashrc (Sicherung ~/.bashrc.bak). Gilt ab sofort im Menü")
     print("    und in jedem neuen Terminal. Nie in eine Datei im Buch oder zu GitHub geben.")
     return True
 
@@ -188,12 +204,65 @@ def pruefen():
         else:
             ok = ok and prog == "mpv"                       # mpv nur zum Anhören
             print(f"Fehlt: {prog} – installieren mit:  sudo apt install {prog}")
-    if os.environ.get("AZURE_SPEECH_KEY"):
-        print(f"OK  Azure-Schlüssel (Region {os.environ.get('AZURE_SPEECH_REGION', 'switzerlandnorth')})")
-    else:
-        print("Fehlt: AZURE_SPEECH_KEY")
-        ok = schluessel() and ok
+    st = stufe_jetzt()
+    for name, s in (("AZURE_SPEECH_KEY", "F0"), ("AZURE_SPEECH_KEY_S0", "S0")):
+        aktiv = "  ← eingestellt" if s == st else ""
+        if os.environ.get(name):
+            print(f"OK  {s}-Schlüssel …{os.environ[name][-4:]} (Region {os.environ.get('AZURE_SPEECH_REGION', 'switzerlandnorth')}){aktiv}")
+        else:
+            print(f"{'Fehlt' if aktiv else '–  '}: {s}-Schlüssel ({name}){aktiv}")
+    if not os.environ.get("AZURE_SPEECH_KEY_S0" if st == "S0" else "AZURE_SPEECH_KEY"):
+        ok = schluessel(st) and ok
     return ok
+
+
+def stufe_jetzt():
+    return "S0" if konf().get("AZURE_STUFE", "F0").upper() == "S0" else "F0"
+
+
+def stufe(rest):
+    """AZURE_STUFE in audio.conf umschalten (F0 ↔ S0) oder setzen (stufe s0)."""
+    bashrc_schluessel()                                     # auch im Menü-Prozess: ist der S0-Schlüssel da?
+    neu = rest[0].upper() if rest and rest[0].upper() in ("F0", "S0") else ("F0" if stufe_jetzt() == "S0" else "S0")
+    p = os.path.join(DATEN, "audio.conf")
+    zeilen = open(p, encoding="utf-8").read().splitlines()
+    zeile = f'AZURE_STUFE="{neu}"         # F0 = gratis (Test) · S0 = bezahlt (Verkauf) – umschalten: hb → x'
+    i = next((i for i, z in enumerate(zeilen) if z.startswith("AZURE_STUFE=")), None)
+    if i is None:
+        zeilen.append(zeile)
+    else:
+        zeilen[i] = zeile
+    open(p, "w", encoding="utf-8").write("\n".join(zeilen) + "\n")
+    print(f"Azure: {neu} – " + ("bezahlt, für den Verkauf" if neu == "S0" else "gratis, zum Testen"))
+    if neu == "S0" and not os.environ.get("AZURE_SPEECH_KEY_S0"):
+        print("  Noch kein S0-Schlüssel – eingeben mit hb → s → 2")
+    return 0
+
+
+def stufe_schluessel():
+    """Den Schlüssel der eingestellten Stufe als AZURE_SPEECH_KEY weitergeben (gilt für alle Azure-Aufrufe)."""
+    st = stufe_jetzt()
+    os.environ["AZURE_STUFE"] = st
+    if st == "S0":
+        if not os.environ.get("AZURE_SPEECH_KEY_S0"):
+            sys.exit("S0 eingestellt, aber kein S0-Schlüssel – hb → s → 2 (oder hb → x zurück auf F0).")
+        os.environ["AZURE_SPEECH_KEY"] = os.environ["AZURE_SPEECH_KEY_S0"]
+
+
+def kosten_frage():
+    """Bei S0: Höchstkosten fürs ganze Buch zeigen und fragen. True = weiter."""
+    if stufe_jetzt() != "S0":
+        return True
+    zeichen = sum(len(open(f, encoding="utf-8").read()) for f in glob.glob(os.path.join(DATEN, "txt-md", "*.txt")))
+    preis = float(konf().get("AZURE_PREIS_S0", "15") or 15)
+    print(f"Azure S0 (bezahlt): ganzes Buch {zeichen:,} Zeichen ≈ höchstens USD {zeichen / 1e6 * preis:.2f}".replace(",", "'") +
+          f"  ({preis:g} USD pro Mio. Zeichen; vertont wird nur, was fehlt oder geändert ist)")
+    if not sys.stdin.isatty():
+        return True
+    try:
+        return input("  Weiter? [J/n]: ").strip().lower() not in ("n", "nein", "z", "q")
+    except EOFError:
+        return False
 
 
 def komplett(rest):
@@ -202,6 +271,7 @@ def komplett(rest):
         import azure.cognitiveservices.speech  # noqa: F401
     except ImportError:
         sys.exit("Azure-Paket fehlt – im Menü hb → c (prüfen) installieren.")
+    stufe_schluessel()
     _, var = buch()
     env = umgebung(var)
     schritte = [("1/4 Texte", None),
@@ -210,6 +280,8 @@ def komplett(rest):
                 ("4/4 Hörprobe", [os.path.join(DIR, "paket.py"), "hoerprobe"])]
     for name, cmd in schritte:
         print(f"\n── {name} ──")
+        if name.startswith("2/4") and not kosten_frage():
+            print("Abgebrochen – nichts vertont."); return 1
         rc = texte() if cmd is None else subprocess.run([sys.executable] + cmd, cwd=DATEN, env=env).returncode
         if rc:
             print(f"Abgebrochen bei «{name[4:]}» – Meldung oben. Danach wieder:  sh hb.sh komplett")
@@ -225,10 +297,10 @@ def komplett(rest):
 def bashrc_schluessel():
     """Schlüssel aus ~/.bashrc holen, falls Menü oder Terminal vor dem Eintragen gestartet wurden (sonst «fehlt»)."""
     rc = os.path.expanduser("~/.bashrc")
-    if os.environ.get("AZURE_SPEECH_KEY") or not os.path.exists(rc):
+    if not os.path.exists(rc):
         return
     for z in open(rc, encoding="utf-8", errors="replace"):            # die letzte Zeile gilt (wie in der Shell)
-        m = re.match(r"\s*export\s+(AZURE_SPEECH_(?:KEY|REGION))=['\"]?([^'\"\s]+)", z)
+        m = re.match(r"\s*export\s+(AZURE_SPEECH_(?:KEY|KEY_S0|REGION))=['\"]?([^'\"\s]+)", z)
         if m:
             os.environ[m.group(1)] = m.group(2)
 
@@ -248,6 +320,8 @@ def main():
         return 0 if pruefen() else 1
     if befehl == "texte":
         return texte()
+    if befehl == "stufe":
+        return stufe(rest)
     if befehl == "komplett":                                # Ablauf in einem: texte → vertonen → paket → hoerprobe
         return komplett(rest)
     if befehl in ("paket", "hoerprobe"):                   # braucht kein Azure, nur ffmpeg und fertige MP3s
@@ -265,6 +339,9 @@ def main():
             import azure.cognitiveservices.speech  # noqa: F401
         except ImportError:
             sys.exit("Azure-Paket fehlt – im Menü hb → c (prüfen) installieren.")
+        stufe_schluessel()
+    if befehl in ("vertonen", "alles") and not kosten_frage():
+        print("Abgebrochen – nichts vertont."); return 1
     _, var = buch()
     env = umgebung(var)
     if befehl in ("aussprache", "probe"):

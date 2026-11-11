@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.72.2
+# pureSATZ Hilfe · pureSATZ · Motor 2.72.3
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -754,7 +754,7 @@ Untermenüs («…» = nur was es gibt):
 `t` Tabellen | `e` bearbeiten … (Liste mit Kürzel) · `n` neue Tabelle (öffnet die CSV, `@#name` kommt in den Block «## Noch einordnen» im Buch) · `o` Ordner
 `c` check / gegenlesen | `n` Liste neu (personen-seiten.txt) · `c` check-PDF für eine Person (öffnet sich danach) · `t` Textdatei
 `hb` Hörbuch (Linux) | `p` Probe hören · `w` Wörter hören · `t` Texte aus dem Buch · `v` vertonen · `k` Kapitel vertonen … · `e` Wörter/Probe/Einstellungen öffnen · `s` Azure-Schlüssel · `$` Terminal in audio/ · `o` Ordner · `h` Hilfe · `c` prüfen – siehe Hörbuch: Das Menü
-`w` weitere | `l` Leseprobe · `k` Korrektur · `p` nur-pdf · `e` nur E-Book · `c` prüfen · `s` Stand merken · `i` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` Stichwortdatei öffnen)
+`w` weitere | `l` Leseprobe · `k` Korrektur · `p` nur-pdf · `e` nur E-Book · `c` prüfen · `s` Stand merken · `i` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` Stichwortdatei öffnen) · `a` aufräumen (wie `sh cleanup.sh`, fragt `[j/N]`)
 `p` PDF öffnen | `n` normal · `u` unzensiert · `l` Leseprobe · `k` Korrektur …
 `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten · `t` tabellen · `a` audio … · `p` Pfad Buchordner kopieren · dazu Taste + `t` = Terminal dort (`bt`, `at` …), + `p` = Pfad kopieren (`ap` …)
 `n` neu | `b` neues Buch · `h` Hallo-Buch · `e` einrichten · `m` Motor-Selbsttest · `v` Verknüpfung
@@ -987,7 +987,7 @@ Das E-Book ist für alle Shops dasselbe – nur der Druck ist plattformabhängig
 
 ## Hörbuch: Ablauf
 
-0 · Einmalig – Azure-Schlüssel eingeben (`hb` → `s`) und prüfen (`hb` → `c`), siehe «Einrichten». Für den Verkauf das Hörbuch mit dem bezahlten Azure-Tarif erstellen (siehe «Kosten, Rechte, Verkauf»).
+0 · Einmalig – Azure-Schlüssel eingeben (`hb` → `s`) und prüfen (`hb` → `c`), siehe «Einrichten». Für den Verkauf das Hörbuch mit dem bezahlten Azure-Tarif erstellen: zweiter Schlüssel (`hb` → `s` → `2`), dann `hb` → `x` auf S0 (siehe «Azure gratis oder bezahlt»).
 
 1 · Buch schreiben oder ändern – wie immer in der Buch-MD.
 
@@ -1024,13 +1024,14 @@ Aus dem Buch ein Hörbuch machen: eine MP3 pro Kapitel, vorgelesen von einer KI-
 - `sudo apt install ffmpeg mpv`
 - Im Buchordner `sh menu.sh` → `hb` → `s`: Schlüssel einfügen (Rechtsklick → Einfügen, es erscheint nichts), Region bestätigen. Er kommt nur in `~/.bashrc` (Sicherung `~/.bashrc.bak`) – nie in eine Datei im Buch und nie zu GitHub.
 - `hb` → `c` prüft alles und installiert das Azure-Paket.
+- Für den Verkauf (später): eine zweite Speech-Ressource mit Tarif S0 anlegen, deren Schlüssel mit `hb` → `s` → `2` eingeben. Umschalten mit `hb` → `x` (siehe «Azure gratis oder bezahlt»).
 
 Beim ersten `hb` entsteht der Ordner `audio/` mit `audio.conf`, `aussprache-ollie.txt`, `probe.txt` und `hb.sh`. Danach zum Ausprobieren: `hb` → `p` (Probe) und `hb` → `w` (Wörter).
 
 ## Hörbuch: Das Menü hb
 
 ```
- Mein-Buch · pureSATZ 2.69.19 › Hörbuch          Ollie · -8% · 128 kbit
+ Mein-Buch · pureSATZ 2.72.3 › Hörbuch      Ollie · -8% · 128 kbit · F0
  ── Probieren ─────────────────────   ── Hörbuch ───────────────────────
   p  Probe hören (probe.txt)          a  alles: Texte → vertonen → Paket → Hörprobe
   w  Wörter hören (KLINGEN FALSCH)    t  Texte aus dem Buch (zeigt Geänderte)
@@ -1039,6 +1040,7 @@ Beim ersten `hb` entsteht der Ordner `audio/` mit `audio.conf`, `aussprache-olli
  ── Weitergeben ───────────────────   ── Bearbeiten · Ordner ──────────
   f  fertiges Paket: ZIP mit M4B      e  Wörter · Probe · Einstellungen
   r  Hörprobe (verkauf/)              s  Azure-Schlüssel eingeben
+                                      x  Azure: F0 gratis ↔ S0 bezahlt
                                       $  Terminal in audio/
                                       o  Ordner audio/ öffnen
  ── Weiteres:  h hilfe · c prüfen · z zurück
@@ -1052,9 +1054,10 @@ Taste | Was passiert
 `v` | vertonen: MP3 für Kapitel ohne MP3 oder mit geändertem Text (Text neuer als MP3). Fertige bleiben. Fragt das Tempo. Abbruch = nochmals `v`
 `k` | Kapitel vertonen: zeigt die Kapitel mit Kürzel, dann z. B. `0603,0605` oder `06` (ganzer Teil 6) und das Tempo – immer neu, MP3 wird ersetzt
 `f` | Paket zum Weitergeben → `audio/verkauf/<Buch>-Hoerbuch_<Zeit>.zip` (siehe «Hörbuch: Weitergeben»)
-`r` | Hörprobe → `audio/verkauf/hoerprobe.mp3`, spielt gleich ab
+`r` | Hörprobe → `audio/verkauf/hoerprobe.mp3`, spielt gleich ab. `v` = Vergleich: dieselbe Stelle als 96, 128 und 192 kbit
 `e` | öffnet `aussprache-<stimme>.txt`, `probe.txt` oder `audio.conf` im Editor
-`s` | Azure-Schlüssel und Region eingeben (→ `~/.bashrc`, gilt sofort)
+`s` | Azure-Schlüssel und Region eingeben (→ `~/.bashrc`, gilt sofort): `1` = F0 gratis, `2` = S0 bezahlt
+`x` | Azure umschalten: F0 gratis ↔ S0 bezahlt. Oben im Menü und in jeder Lauf-Linie steht, was gilt
 `$` | Terminal im Ordner `audio/` – dort `sh hb.sh` zeigt alle Befehle
 `o` · `h` · `c` | Ordner `audio/` öffnen · diese Hilfe · Azure-Paket, Schlüssel, ffmpeg prüfen
 
@@ -1101,6 +1104,8 @@ Zeile | Wirkung
 `AZURE_ANSAGE="…"` | Ansage am Anfang (`00.00.00_Ansage.mp3`) mit `{titel}`, `{untertitel}`, `{autor}`, `{jahr}`; leer = keine
 `MP3_KBIT="128"` | `128` = Test · `192` = für Plattformen: 44,1 kHz, Lautstärke angeglichen, eigener Ordner `…-k192`
 `ALBUM`, `ARTIST`, `COVER` | leer = aus dem Buch bzw. Umschlag vorne
+`AZURE_STUFE="F0"` | `F0` = gratis (Test) · `S0` = bezahlt (Verkauf). Umschalten: `hb` → `x`
+`AZURE_PREIS_S0="15"` | USD pro Mio. Zeichen – nur für die Kostenanzeige bei S0 (Preis im Azure-Portal prüfen)
 
 ## Hörbuch: Aussprache verfeinern
 
@@ -1171,6 +1176,7 @@ sh hb.sh 06                          # ganzer Teil 6 neu
 sh hb.sh 0603,0605 tempo=-5%         # zum Vergleichen mit −5 % (eigener Ordner)
 sh hb.sh vertonen tempo=-5%          # ganzes Buch mit −5 %
 sh hb.sh vertonen stimme=2           # ganzes Buch einmalig mit Florian
+sh hb.sh stufe                       # Azure umschalten: F0 gratis ↔ S0 bezahlt (stufe s0 / stufe f0)
 ```
 
 Nachsehen und anhören
@@ -1217,11 +1223,24 @@ Für den eigenen Shop, als Geschenk oder zum Download. Zuerst Texte aktuell (`t`
 sh hb.sh paket               # → audio/verkauf/<Buch>-Hoerbuch_<Zeit>.zip
 sh hb.sh hoerprobe           # → audio/verkauf/hoerprobe.mp3 (Ansage + erste Minuten, ausgeblendet)
 sh hb.sh hoerprobe 0201 2    # anderes Kapitel, 2 Minuten
+sh hb.sh hoerprobe vergleich # hoerprobe-96 / -128 / -192.mp3: dieselbe Stelle zum Vergleichen
 ```
 
-Im ZIP: `MP3/01 Ansage.mp3` … (jedes Kapitel, Mono, `PAKET_KBIT`, mit Titel, Tracknummer, Album, Autor, Genre «Hörbuch» und Cover) · eine M4B mit Kapitelmarken (das ganze Hörbuch in einer Datei, für Handy und Hörbuch-Apps) · `playlist.m3u` · `cover.jpg` · `LIESMICH.txt` (mit Hinweis «Gelesen von einer KI-Stimme»).
+Im ZIP: `MP3/01 Ansage.mp3` … (jedes Kapitel, Mono, `PAKET_KBIT`, mit Titel, Tracknummer, Album, Autor, Genre «Hörbuch» und Cover) · eine M4B (AAC 96 kbit) mit Kapitelmarken (das ganze Hörbuch in einer Datei, für Handy und Hörbuch-Apps) · `playlist.m3u` · `cover.jpg` · `LIESMICH.txt` (mit Hinweis «Gelesen von einer KI-Stimme»).
 
-In `audio.conf`: `PAKET_KBIT` (96 = für Sprache gut, etwa die Hälfte von 192), `HOERPROBE` (Kürzel und Minuten, z. B. `0002 3` = Vorwort), `COVER_QUADRAT` (quadratisches Bild in `audio/`; leer = Umschlag vorne), `AZURE_ABSPANN` (wird bei `t` als letztes Kapitel `99.00.00_Abspann` angelegt).
+In `audio.conf`: `PAKET_KBIT` (128 = Hörbuch-Standard, 96 = kleiner; zum Entscheiden `hb` → `r` → `v`), `HOERPROBE` (Kürzel und Minuten, z. B. `0002 3` = Vorwort), `COVER_QUADRAT` (quadratisches Bild in `audio/`; leer = Umschlag vorne), `AZURE_ABSPANN` (wird bei `t` als letztes Kapitel `99.00.00_Abspann` angelegt).
+
+Qualität: Mit `MP3_KBIT="192"` liefert Azure verlustfrei (WAV 48 kHz), pureSATZ gleicht die Lautstärke an und macht erst am Schluss MP3 – das ist der Master. Das Paket rechnet daraus `PAKET_KBIT`. 128 im Master ist nur zum Testen.
+
+## Hörbuch: Azure gratis oder bezahlt
+
+Der Klang ist gleich. F0 = gratis, 0,5 Mio. Zeichen pro Monat, zum Testen. S0 = bezahlt (rund 15 USD pro Mio. Zeichen, ein Buch mit 80'000 Zeichen also etwa 1–2 Franken), für die Verkaufsfassung.
+
+- Im Azure-Portal eine zweite Speech-Ressource mit Tarif S0 anlegen (gleiche Region), Schlüssel 1 kopieren.
+- `hb` → `s` → `2`: als S0-Schlüssel eingeben (kommt als `AZURE_SPEECH_KEY_S0` in `~/.bashrc`).
+- `hb` → `x`: umschalten. Oben im Menü steht `F0` oder `S0`, ebenso in jeder Lauf-Linie und in `einstellungen.txt`.
+
+Bei S0 zeigen `v` und `a` vor dem Vertonen die Höchstkosten fürs ganze Buch und fragen `[J/n]`. Nach dem Verkaufslauf mit `x` zurück auf F0 – so kostet das Probieren nichts.
 
 ## Hörbuch: Kosten, Rechte, Verkauf
 
@@ -1232,7 +1251,8 @@ In `audio.conf`: `PAKET_KBIT` (96 = für Sprache gut, etwa die Hälfte von 192),
 ## Hörbuch: Wenn etwas klemmt
 
 Meldung | Was tun
-«AZURE_SPEECH_KEY fehlt» | `hb` → `s` (Schlüssel eingeben). Danach gilt er sofort, auch in offenen Menüs und Terminals. Prüfen: `grep -c AZURE_SPEECH ~/.bashrc` (2 = gut)
+«S0 eingestellt, aber kein S0-Schlüssel» | `hb` → `s` → `2` (Schlüssel eingeben) oder `hb` → `x` zurück auf F0
+«AZURE_SPEECH_KEY fehlt» | `hb` → `s` (Schlüssel eingeben). Danach gilt er sofort, auch in offenen Menüs und Terminals. Prüfen: `grep -c AZURE_SPEECH ~/.bashrc` (2 = gut, mit S0-Schlüssel 3)
 «Azure-Paket fehlt» | `hb` → `c` – installiert es in die `.venv` des Buchs
 «Fehler» bei einem Kapitel | nochmals `v` – fertige Kapitel werden übersprungen
 Kapitel klingt noch alt | zuerst `t` (Texte), dann `v`. Nur Aussprache geändert? Dann dieses Kapitel mit `k`

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 paket.py – Hörbuch weitergeben (pureSATZ ab 2.72): Paket und Hörprobe in audio/verkauf/.
-Aufruf über hoerbuch.py:  sh hb.sh paket [mp3-ordner]  ·  sh hb.sh hoerprobe [kapitel] [minuten]
+Aufruf über hoerbuch.py:  sh hb.sh paket [mp3-ordner]  ·  sh hb.sh hoerprobe [vergleich] [kapitel] [minuten]
 
 Paket = ZIP mit Kapitel-MP3s (Mono, PAKET_KBIT, alle Tags + Cover), playlist.m3u, einer M4B mit Kapitelmarken,
 cover.jpg und LIESMICH.txt. Die Original-MP3s bleiben unverändert.
@@ -88,7 +88,7 @@ def bild_args(bild, nr):
 def paket(arg=None):
     conf, src = konf(), quelle(arg)
     a, bild = angaben(conf), cover(konf())
-    kbit = conf.get("PAKET_KBIT", "96")
+    kbit = conf.get("PAKET_KBIT", "128")
     mp3s = sorted(glob.glob(os.path.join(src, "*.mp3")))
     texte = sorted(glob.glob(os.path.join(DATEN, "txt-md", "*.txt")))
     if texte:                                              # nur Kapitel, die es im Buch noch gibt – und alle davon
@@ -140,7 +140,7 @@ def paket(arg=None):
         print("  M4B mit Kapitelmarken …")
         ffmpeg("-f", "concat", "-safe", "0", "-i", liste, "-i", meta, *(["-i", bild] if bild else []),
                "-map", "0:a", *(["-map", "2:v", "-c:v", "mjpeg", "-disposition:v", "attached_pic"] if bild else []),
-               "-map_metadata", "1", "-map_chapters", "1", "-c:a", "aac", "-b:a", "64k", "-ac", "1", "-f", "mp4", m4b)
+               "-map_metadata", "1", "-map_chapters", "1", "-c:a", "aac", "-b:a", "96k", "-ac", "1", "-f", "mp4", m4b)
         if bild:
             shutil.copy(bild, os.path.join(tmp, "cover.jpg"))
         lang = f"{int(t0 // 3600)} Std. {int(t0 % 3600 // 60)} Min."
@@ -166,6 +166,8 @@ def paket(arg=None):
 
 def hoerprobe(rest):
     conf = konf()
+    vergleich = bool(rest) and rest[0] == "vergleich"         # dieselbe Stelle als 96, 128, 192 kbit
+    rest = rest[1:] if vergleich else rest
     w = (rest[0] if rest else conf.get("HOERPROBE", "0002 3").split()[0]).replace(".", "")
     minuten = float(rest[1] if len(rest) > 1 else (conf.get("HOERPROBE", "0002 3").split() + ["3"])[1])
     src = quelle(None)
@@ -176,20 +178,27 @@ def hoerprobe(rest):
     ansage = glob.glob(os.path.join(src, "00.00.00_*.mp3"))
     a, bild = angaben(conf), cover(conf)
     os.makedirs(ZIEL, exist_ok=True)
-    ziel = os.path.join(ZIEL, "hoerprobe.mp3")
     s = minuten * 60
     eingaenge = ([("-i", ansage[0])] if ansage else []) + [("-t", str(s), "-i", kap[0])]
     flach = [x for e in eingaenge for x in e]
     k = len(eingaenge)
     filt = (f"[{k - 1}:a]afade=t=out:st={max(0, s - 4)}:d=4[b];" +
             ("[0:a][b]concat=n=2:v=0:a=1[a]" if ansage else "[b]anull[a]"))
-    ffmpeg(*flach, *(["-i", bild] if bild else []), "-filter_complex", filt, "-map", "[a]",
-           *(["-map", f"{k}:v", "-c:v", "mjpeg", "-disposition:v", "attached_pic"] if bild else []),
-           "-ac", "1", "-b:a", "128k", "-id3v2_version", "3", "-metadata", f"title=Hörprobe: {titel(kap[0])}",
-           "-metadata", f"album={a['album']}", "-metadata", f"artist={a['artist']}",
-           "-metadata", "comment=Gelesen von einer KI-Stimme", ziel)
-    print(f"Fertig: verkauf/hoerprobe.mp3 – {'Ansage + ' if ansage else ''}{titel(kap[0])}, "
-          f"{dauer(ziel) / 60:.1f} Min.   Anhören:  mpv verkauf/hoerprobe.mp3")
+    for kb in (("96", "128", "192") if vergleich else ("128",)):
+        name = f"hoerprobe-{kb}.mp3" if vergleich else "hoerprobe.mp3"
+        ziel = os.path.join(ZIEL, name)
+        ffmpeg(*flach, *(["-i", bild] if bild else []), "-filter_complex", filt, "-map", "[a]",
+               *(["-map", f"{k}:v", "-c:v", "mjpeg", "-disposition:v", "attached_pic"] if bild else []),
+               "-ac", "1", "-b:a", f"{kb}k", "-id3v2_version", "3", "-metadata", f"title=Hörprobe: {titel(kap[0])}",
+               "-metadata", f"album={a['album']}", "-metadata", f"artist={a['artist']}",
+               "-metadata", "comment=Gelesen von einer KI-Stimme", ziel)
+        print(f"Fertig: verkauf/{name} – {'Ansage + ' if ansage else ''}{titel(kap[0])}, {dauer(ziel) / 60:.1f} Min., "
+              f"{os.path.getsize(ziel) / 1e6:.1f} MB   Anhören:  mpv verkauf/{name}")
+    if vergleich:
+        m = re.search(r"-k(\d+)$", src)
+        if m and int(m.group(1)) < 192:
+            print(f"Hinweis: Quelle ist {os.path.basename(src)} (Test) – aussagekräftig erst mit MP3_KBIT=\"192\" vertont.")
+        print("Vergleichen: gleiche Stelle nacheinander hören, am besten mit Kopfhörern. Gewählt → PAKET_KBIT in audio.conf.")
     return 0
 
 

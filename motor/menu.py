@@ -152,12 +152,32 @@ def bauen(*args):
     return lauf([sys.executable, os.path.join(MOTOR, "bauen.py")] + [a for a in args if a != "entwurf"])
 
 
-def lauf(cmd, ordner=BASE, env=None):
+def hb_stimme(args):
+    """Für die Startlinie eines Hörbuch-Laufs: « · Ollie · F0» (nur wo Azure spricht)."""
+    if not args or args[0] in ("texte", "paket", "hoerprobe", "liste", "pruefen", "schluessel", "stufe", "hilfe"):
+        return ""
+    try:
+        import hoerbuch as H
+        c = H.konf()
+    except Exception:
+        return ""
+    st = c.get("AZURE_STIMME", "1")
+    for a in args[1:]:
+        if a.startswith("stimme="):
+            st = a[7:]
+        elif args[0] == "probe" and (a in ("1", "2") or a.count("-") >= 2) and not a.endswith("%"):
+            st = a
+    voll = c.get("AZURE_FAVORIT" + st, st) if st in ("1", "2") else st
+    kurz = "-".join(voll.split("-")[2:]).replace("MultilingualNeural", "").replace("Neural", "") or voll
+    return f" · {kurz} · {H.stufe_jetzt()}"
+
+
+def lauf(cmd, ordner=BASE, env=None, titel=None):
     global gelaufen
     gelaufen, t = True, time.time()
     breit = min(RAND - 1, shutil.get_terminal_size((80, 24)).columns - 2)   # endet bei Spalte 71 wie Menü und Kopfzeile
     linie = lambda vorne, n: " " + GOLDFEIN("── ") + vorne + " " + GOLDFEIN("─" * max(3, breit - n))
-    name = "hb " + " ".join(cmd[2:]) if cmd[1:2] and cmd[1].endswith("hoerbuch.py") else zuletzt
+    name = "hb " + " ".join(cmd[2:]) + hb_stimme(cmd[2:]) if cmd[1:2] and cmd[1].endswith("hoerbuch.py") else titel or zuletzt
     print(linie(FETT(name), len(name) + 4))           # Startlinie: ── sy ─────
     try:
         r = subprocess.run(cmd, cwd=ordner, env=env).returncode
@@ -374,13 +394,14 @@ def hoerbuch_schritt(H, audio, hb):
     fav = {n: kurz(c.get("AZURE_FAVORIT" + n, "")) for n in ("1", "2")}
     andere = "1" if st == "2" else "2"                # die andere Favoritin zum Umschalten
     name = fav.get(st) or kurz(st)
-    print("\n" + kopf("Hörbuch", f"{name} · {c.get('AZURE_RATE', '')} · {c.get('MP3_KBIT', '128')} kbit"))
+    print("\n" + kopf("Hörbuch", f"{name} · {c.get('AZURE_RATE', '')} · {c.get('MP3_KBIT', '128')} kbit · {H.stufe_jetzt()}"))
     spalten_zeigen([("Probieren", [("p", "Probe hören (probe.txt)"), ("w", "Wörter hören (KLINGEN FALSCH)")]),
                     ("Hörbuch", [("a", "alles: Texte → vertonen → Paket → Hörprobe"),
                                  ("t", "Texte aus dem Buch (zeigt Geänderte)"), ("v", "vertonen: was fehlt + geändert"),
                                  ("k", "vertonen: Kapitel auswählen …")]),
                     ("Weitergeben", [("f", "fertiges Paket: ZIP mit M4B"), ("r", "Hörprobe (verkauf/)")]),
                     ("Bearbeiten · Ordner", [("e", "Wörter · Probe · Einstellungen"), ("s", "Azure-Schlüssel eingeben"),
+                                             ("x", "Azure: F0 gratis ↔ S0 bezahlt"),
                                              ("$", "Terminal in audio/"), ("o", "Ordner audio/ öffnen")])],
                    "h hilfe · c prüfen · z zurück")
     k = frage(" Wahl: ").lower()
@@ -446,9 +467,14 @@ def hoerbuch_schritt(H, audio, hb):
         if frage(" Weiter? [J/n]: ").lower() not in ("n", "nein", "z", "q"):
             lauf(hb + ["paket"])
     elif k == "r":
+        v = frage(" Enter = Hörprobe · v = Vergleich 96 · 128 · 192 kbit · z = zurück: ").lower()
+        if v in ("z", "q"):
+            return True
         seit = time.time()
-        if lauf(hb + ["hoerprobe"]) == 0:
+        if lauf(hb + ["hoerprobe"] + (["vergleich"] if v == "v" else [])) == 0 and v != "v":
             abspielen("verkauf/hoerprobe.mp3", seit)
+    elif k == "x":
+        H.stufe([])
     elif k == "c":
         lauf(hb + ["pruefen"])
     elif k == "k":
@@ -719,12 +745,14 @@ def main():
             elif w == "w":
                 k = untermenue("weitere …", {"l": ("Leseprobe", 0), "k": ("Korrektur", 0), "p": ("nur-pdf", 0),
                                              "e": ("nur E-Book", 0), "c": ("prüfen", 0), "s": ("Stand merken", 0),
-                                             "i": ("Stichworte …", 0)})
+                                             "i": ("Stichworte …", 0), "a": ("aufräumen …", 0)})
                 if k == "s":
                     name = frage(" Name des Stands: ")
                     bauen("stand", *([name] if name else []))
                 elif k == "i":
                     stichworte_menue()
+                elif k == "a":                    # wie sh cleanup.sh: zeigt die Liste, fragt [j/N]
+                    lauf([sys.executable, os.path.join(MOTOR, "aufraeumen.py")], titel="aufräumen")
                 elif k:
                     bauen({"l": "leseprobe", "k": "korrektur", "p": "nur-pdf", "e": "nur-ebook", "c": "pruefen"}[k])
             elif w == "m":

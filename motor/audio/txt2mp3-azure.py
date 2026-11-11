@@ -137,8 +137,9 @@ if not nur and len(todo) == len(alle_dateien):  # ganzes Buch: verwendete Texte 
 with open(os.path.join(mp3_dir, "einstellungen.txt"), "a", encoding="utf-8") as f:
     f.write("\n=== %s ===\nAUFRUF=python3 txt2mp3-azure.py %s\nTEXTORDNER=%s\nZIP=%s\n"
             % (jetzt.strftime("%d.%m.%Y %H:%M"), " ".join(sys.argv[1:]), os.path.basename(txt_dir), zipname or "-"))
-    f.write("STIMME=%s\nSPRACHE=%s\nRATE=%s\nPAUSE=%s\nSATZPAUSE=%s\nTITELPAUSE=%s\nAUSSPRACHE=%s\nKBIT=%s\nCOVER=%s\n"
-            % (stimme, sprache, rate, pause, satzpause, titelpause, aussprache, kbit, os.path.basename(cover) or "-"))
+    f.write("STIMME=%s\nSPRACHE=%s\nRATE=%s\nPAUSE=%s\nSATZPAUSE=%s\nTITELPAUSE=%s\nAUSSPRACHE=%s\nKBIT=%s\nCOVER=%s\nAZURE_STUFE=%s\n"
+            % (stimme, sprache, rate, pause, satzpause, titelpause, aussprache, kbit, os.path.basename(cover) or "-",
+               os.environ.get("AZURE_STUFE", "F0")))
     if os.path.exists(aus_pfad):
         f.write("--- %s ---\n%s\n" % (aussprache, open(aus_pfad, encoding="utf-8").read().rstrip()))
 

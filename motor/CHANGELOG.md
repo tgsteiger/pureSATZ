@@ -3,6 +3,16 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.72.3 (November 2026)
+- Hörbuch Azure F0/S0: zweiter Schlüssel `AZURE_SPEECH_KEY_S0` (hb → s → 2), umschalten mit hb → x bzw.
+  `sh hb.sh stufe` (AZURE_STUFE in audio.conf). Stufe oben im Menü, in der Lauf-Linie und in einstellungen.txt.
+  Bei S0 zeigen vertonen/komplett die Höchstkosten (AZURE_PREIS_S0) und fragen [J/n]. hb → c zeigt beide Schlüssel.
+- Lauf-Linie zeigt Stimme und Stufe (── hb probe -5% · Ollie · F0 ──), auch wenn die Stimme mit Enter gewählt wurde.
+- Paket: PAKET_KBIT Standard 128 (statt 96), M4B AAC 96 kbit (statt 64). `sh hb.sh hoerprobe vergleich`
+  (hb → r → v): dieselbe Stelle als hoerprobe-96/-128/-192.mp3 zum Entscheiden.
+- Menü w weitere → a aufräumen (wie sh cleanup.sh).
+- Hilfe: Abschnitt «Hörbuch: Azure gratis oder bezahlt», Qualität (192 = Master aus WAV), Einrichten Schritt 5.
+
 ## 2.72.2 (November 2026)
 - Ja/Nein-Fragen einheitlich wie in Termux: `[J/n]` = Enter heisst ja, `[j/N]` = Enter heisst nein (Löschen, Menü
   beenden, Demo ersetzen, zweite Ausgabe). Menü, Update, Aufräumen, Hörbuch, Setup, Hallo-Buch. j, ja, y, n, nein gelten.
