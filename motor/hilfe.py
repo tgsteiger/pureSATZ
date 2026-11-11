@@ -439,7 +439,7 @@ body.nur main section:not(.drucke){{display:none}} section{{border:0;margin:0}}
 main :not(pre)>code{{cursor:copy}} .hist{{white-space:nowrap}}
 .ki{{margin:14px 0 0;padding:10px 16px;border:1px solid var(--akzent);border-left:5px solid var(--akzent);
 border-radius:10px;background:var(--karte);font-size:15px}} .ki b{{font-family:Poppins,system-ui,sans-serif;font-weight:500;
-color:var(--akzent);display:block;margin-bottom:2px}}
+color:var(--akzent);display:block;margin-bottom:2px}} #kiknopf{{float:right;margin:0 0 6px 10px;font:13px Poppins,system-ui,sans-serif;border:1px solid var(--akzent);background:var(--karte);color:var(--akzent);border-radius:14px;padding:4px 10px;cursor:pointer}}
 #zuletzt{{font-size:12px;color:var(--leise);margin:4px 6px 8px}} #zuletzt span{{color:var(--haupt);cursor:pointer}}
 #zuletzt span:hover{{text-decoration:underline}} main code.kopiert{{background:var(--mark)}}
 </style></head><body>
@@ -448,9 +448,10 @@ color:var(--akzent);display:block;margin-bottom:2px}}
 <span class="hist"><button id="zur" title="zurück (Alt+←)">‹ zurück</button> <button id="vor" title="vor (Alt+→)">vor ›</button></span>
 <span class="os">{'<a class="startk" href="#a1">Start</a> ' if start else ''}<button data-os="lx" class="aktiv">Linux/Mac</button> <button data-os="win">Windows</button></span></header>
 <div class="wrap"><nav><p id="zuletzt"></p>{"".join(nav)}</nav><main>
-<div class="ki"><b>Tipp: Füttere deine Lieblings-KI mit hilfe.html – und du bedienst pureSATZ im Flug.</b>
-Zieh diese Datei in deinen KI-Chat und stell deine Frage: Die KI kennt dann jede Einstellung und sagt dir, was du wo
-eintragen musst. Wie genau: Abschnitt «Mit einer KI arbeiten» (oben «KI» suchen).</div>{"".join(inhalt)}
+<div class="ki"><button id="kiknopf">📋 für KI kopieren</button><b>Tipp: Füttere deine Lieblings-KI mit
+hilfe-ki.md – und du bedienst pureSATZ im Flug.</b> Zieh die Datei <code>hilfe-ki.md</code> (liegt neben dieser Seite) in
+deinen KI-Chat oder kopiere die Hilfe mit dem Knopf und füge sie ein – dann stell deine Frage. Die KI kennt jede Einstellung
+und sagt dir, was du wo eintragen musst. Mehr: Abschnitt «Mit einer KI arbeiten» (oben «KI» suchen).</div>{"".join(inhalt)}
 <p id="leer">Nichts gefunden.</p>
 <footer><a href="{WEBSEITE}">Webseite</a> · <a href="{GITHUB}">GitHub</a> · <a href="{GITHUB}/issues">Fehler melden</a> · <a class=mail href=#>puresatz (at) gsteiger.ch</a><br>
 Erstellt {datetime.now():%d.%m.%Y %H:%M} von pureSATZ {html.escape(version)} · neu mit «sh build.sh hilfe» · Quellen: START.md, motor/HILFE.md, meine-hilfe.md, Variablen-Datei</footer>
@@ -486,6 +487,13 @@ const t=c.textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Prom
 ()=>{{b.textContent='kopiert ✓';setTimeout(()=>b.textContent='kopieren',1200)}},
 ()=>{{const r=document.createRange();r.selectNodeContents(c);getSelection().removeAllRanges();getSelection().addRange(r)}})}})}}
 knoepfe();
+document.getElementById('kiknopf').onclick=e=>{{const b=e.target;                  // ganze Hilfe als Text für eine KI
+if(such.value){{such.value='';such.dispatchEvent(new Event('input'))}}
+const N=String.fromCharCode(10),t='pureSATZ Hilfe – '+document.title+N+N+'Für eine KI: Beantworte meine Frage zu pureSATZ mit dieser Hilfe. '
++'Ändere nur Buchdateien, nie den Ordner motor/.'+N+N+secs.map(s=>s.innerText).join(N+N);
+(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(
+()=>{{b.textContent='✓ kopiert ('+Math.round(t.length/1000)+' KB) – im KI-Chat einfügen';setTimeout(()=>b.textContent='📋 für KI kopieren',4000)}},
+()=>{{b.textContent='Kopieren ging nicht – hilfe-ki.md hochladen'}})}};
 document.addEventListener('click',e=>{{const c=e.target.closest('main code');      // Klick auf Code im Text = kopieren
 if(c&&!c.closest('pre')&&navigator.clipboard){{navigator.clipboard.writeText(c.textContent).then(()=>{{
 c.classList.add('kopiert');setTimeout(()=>c.classList.remove('kopiert'),900)}});return}}
@@ -528,6 +536,34 @@ s.classList.remove('drucke');document.body.classList.remove('nur')}});
 
 def _lies(p):
     return open(p, encoding="utf-8").read() if p and os.path.exists(p) else ""
+
+
+def _als_text(h):
+    """HTML eines Abschnitts → einfacher Text für eine KI (hilfe-ki.md): Befehle nur Linux/Mac, ohne Knöpfe."""
+    h = re.sub(r'<code class="win">.*?</code>|<button[^>]*>.*?</button>|<span class="(dauer|bis)"[^>]*>.*?</span>', "", h, flags=re.S)
+    h = re.sub(r"<code>(.*?)</code>", r"`\1`", h, flags=re.S)
+    h = re.sub(r"<pre>", "\n```\n", h).replace("</pre>", "\n```\n")
+    h = re.sub(r"<h[3-5][^>]*>", "\n### ", h)
+    h = re.sub(r"<li[^>]*>", "\n- ", h)
+    h = re.sub(r"</t[dh]>\s*<t[dh][^>]*>", " | ", h)
+    h = re.sub(r"</(p|tr|h[3-5]|div|table|ul|ol|blockquote)>|<br>", "\n", h)
+    h = html.unescape(re.sub(r"<[^>]+>", "", h))
+    return re.sub(r"\n[ \t]*\n(\s*\n)+", "\n\n", h).strip()
+
+
+def ki_text(gruppen, titel, version):
+    """hilfe-ki.md: dieselbe Hilfe als reiner Text – etwa halb so gross wie hilfe.html, passt auch in kostenlose KI-Chats."""
+    kopf = (f"# pureSATZ Hilfe · {titel} · Motor {version}\n\n"
+            "Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. "
+            "Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien "
+            "(MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. "
+            "Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».\n")
+    teile = [kopf]
+    for g, abschnitte in gruppen:
+        if abschnitte:
+            teile.append(f"# {g}")
+            teile += [f"## {_als_text(_inline(t))}\n\n{_als_text(h)}" for t, h in abschnitte]
+    return "\n\n".join(teile) + "\n"
 
 
 def start_datei(basis):
@@ -577,6 +613,8 @@ def erzeuge(basis, buchtitel=None, variablen=None, farben=None, oeffnen=False):
     ziel = os.path.join(basis, "hilfe.html")
     with open(ziel, "w", encoding="utf-8") as fh:
         fh.write(seite(buchtitel or "pureSATZ", gruppen, farben, version, start=bool(start)))
+    with open(os.path.join(basis, "hilfe-ki.md"), "w", encoding="utf-8") as fh:      # dasselbe als Text für eine KI
+        fh.write(ki_text(gruppen, buchtitel or "pureSATZ", version))
     if oeffnen:
         oeffne(ziel)
     return ziel

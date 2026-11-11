@@ -3,6 +3,13 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.71.2 (November 2026)
+- Hilfe für eine KI: `sh build.sh hilfe` (und jeder Bau) schreibt neben `hilfe.html` auch `hilfe-ki.md` – dieselbe Hilfe
+  als reiner Text, Befehle nur Linux/Mac, ohne Gestaltung (etwa halb so gross, passt auch in kostenlose KI-Chats).
+  Im Tipp-Kasten oben Knopf «📋 für KI kopieren»: legt die ganze Hilfe als Text in die Zwischenablage (Befehle in der
+  gewählten Fassung Linux/Mac oder Windows). Kasten und Abschnitt «Mit einer KI arbeiten» nennen jetzt hilfe-ki.md.
+  `hilfe-ki.md` steht in buch.gitignore (wird jedes Mal neu erzeugt).
+
 ## 2.71.1 (November 2026)
 - Hilfe: Tipp-Kasten ganz oben «Füttere deine Lieblings-KI mit hilfe.html – und du bedienst pureSATZ im Flug.»
   Abschnitt «Mit einer KI arbeiten» neu: vier Schritte mit Beispielfragen, Regel «nie den Ordner motor/ ändern»,
