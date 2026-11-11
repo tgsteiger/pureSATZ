@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.72.4
+# pureSATZ Hilfe · pureSATZ · Motor 2.72.5
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -1057,7 +1057,7 @@ Taste | Was passiert
 `r` | Hörprobe → `audio/verkauf/hoerprobe.mp3`, spielt gleich ab. `v` = Vergleich: dieselbe Stelle als 96, 128 und 192 kbit
 `e` | öffnet `aussprache-<stimme>.txt`, `probe.txt` oder `audio.conf` im Editor
 `s` | Azure-Schlüssel und Region eingeben (→ `~/.bashrc`, gilt sofort): `1` = F0 gratis, `2` = S0 bezahlt
-`x` | Azure umschalten: F0 gratis ↔ S0 bezahlt. Oben im Menü und in jeder Lauf-Linie steht, was gilt
+`x` | Azure umschalten: F0 gratis ↔ S0 bezahlt. Was gilt, ist gold – oben in der Kopfzeile und in dieser Zeile; dazu in jeder Lauf-Linie
 `$` | Terminal im Ordner `audio/` – dort `sh hb.sh` zeigt alle Befehle
 `o` · `h` · `c` | Ordner `audio/` öffnen · diese Hilfe · Azure-Paket, Schlüssel, ffmpeg prüfen
 

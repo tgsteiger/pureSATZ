@@ -394,14 +394,19 @@ def hoerbuch_schritt(H, audio, hb):
     fav = {n: kurz(c.get("AZURE_FAVORIT" + n, "")) for n in ("1", "2")}
     andere = "1" if st == "2" else "2"                # die andere Favoritin zum Umschalten
     name = fav.get(st) or kurz(st)
-    print("\n" + kopf("Hörbuch", f"{name} · {c.get('AZURE_RATE', '')} · {c.get('MP3_KBIT', '128')} kbit · {H.stufe_jetzt()}"))
+    st = H.stufe_jetzt()
+    gold = FETT if FARBIG else (lambda t: f"[{t}]")    # aktive Azure-Stufe: gold (ohne Farben in Klammern)
+    k_ = kopf("Hörbuch", f"{name} · {c.get('AZURE_RATE', '')} · {c.get('MP3_KBIT', '128')} kbit · {st}")
+    i_ = k_.rfind(f" {st} ")                          # erst nach dem Ausrichten färben (Farbcodes haben keine Breite)
+    print("\n" + (k_[:i_ + 1] + FETT(st) + k_[i_ + 1 + len(st):] if FARBIG and i_ > 0 else k_))
     spalten_zeigen([("Probieren", [("p", "Probe hören (probe.txt)"), ("w", "Wörter hören (KLINGEN FALSCH)")]),
                     ("Hörbuch", [("a", "alles: Texte → vertonen → Paket → Hörprobe"),
                                  ("t", "Texte aus dem Buch (zeigt Geänderte)"), ("v", "vertonen: was fehlt + geändert"),
                                  ("k", "vertonen: Kapitel auswählen …")]),
                     ("Weitergeben", [("f", "fertiges Paket: ZIP mit M4B"), ("r", "Hörprobe (verkauf/)")]),
                     ("Bearbeiten · Ordner", [("e", "Wörter · Probe · Einstellungen"), ("s", "Azure-Schlüssel eingeben"),
-                                             ("x", "Azure: F0 gratis ↔ S0 bezahlt"),
+                                             ("x", "Azure: " + " ↔ ".join(gold(t) if t[:2] == st else t
+                                                                          for t in ("F0 gratis", "S0 bezahlt"))),
                                              ("$", "Terminal in audio/"), ("o", "Ordner audio/ öffnen")])],
                    "h hilfe · c prüfen · z zurück")
     k = frage(" Wahl: ").lower()

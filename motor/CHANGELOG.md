@@ -3,6 +3,9 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.72.5 (November 2026)
+- Hörbuch-Menü: die aktive Azure-Stufe (F0/S0) ist gold – in der Kopfzeile und bei x (ohne Farben: [F0 gratis]).
+
 ## 2.72.4 (November 2026)
 - Hörbuch-Aussprache: `Wort = {fr: Wort}` in aussprache-<stimme>.txt spricht das Wort in dieser Sprache
   (SSML <lang xml:lang="fr-FR">, Kürzel fr, en, es, it oder z. B. fr-CH). Für vertonen, probe und woerter.
