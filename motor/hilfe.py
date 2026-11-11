@@ -430,13 +430,16 @@ font:500 13px Poppins,system-ui,sans-serif;color:var(--akzent)}}
 .kacheln .ziel{{display:inline-block;font:14px Poppins,system-ui,sans-serif;margin:4px 0 2px}}
 .kacheln .ziel input{{font:14px Poppins,system-ui,sans-serif;padding:3px 6px;border:1px solid var(--linie);border-radius:8px;
 background:var(--karte);color:var(--text);margin-left:6px}}
-@media print{{header,nav,footer,#leer,button{{display:none!important}} body{{background:#fff;color:#000}}
+@media print{{header,nav,footer,#leer,button,.ki{{display:none!important}} body{{background:#fff;color:#000}}
 body.nur main section:not(.drucke){{display:none}} section{{border:0;margin:0}}
 .kacheln ol,.kacheln ul{{grid-template-columns:1fr 1fr}} .kacheln li.haken{{break-inside:avoid;background:#fff}}}}
 .spick{{margin:8px 0 0}} .spicktext{{margin:2px 0 10px 4px;color:var(--leise);font-size:14px}}
 #leer{{display:none;color:var(--leise);padding:20px}} footer{{color:var(--leise);font-size:13px;padding:10px 0}}
 @media (max-width:760px){{nav{{display:none}} main{{padding:8px 10px 60px}}}}
 main :not(pre)>code{{cursor:copy}} .hist{{white-space:nowrap}}
+.ki{{margin:14px 0 0;padding:10px 16px;border:1px solid var(--akzent);border-left:5px solid var(--akzent);
+border-radius:10px;background:var(--karte);font-size:15px}} .ki b{{font-family:Poppins,system-ui,sans-serif;font-weight:500;
+color:var(--akzent);display:block;margin-bottom:2px}}
 #zuletzt{{font-size:12px;color:var(--leise);margin:4px 6px 8px}} #zuletzt span{{color:var(--haupt);cursor:pointer}}
 #zuletzt span:hover{{text-decoration:underline}} main code.kopiert{{background:var(--mark)}}
 </style></head><body>
@@ -444,7 +447,10 @@ main :not(pre)>code{{cursor:copy}} .hist{{white-space:nowrap}}
 <input id="suche" type="search" placeholder="Suchen … (Taste /)" autocomplete="off">
 <span class="hist"><button id="zur" title="zurück (Alt+←)">‹ zurück</button> <button id="vor" title="vor (Alt+→)">vor ›</button></span>
 <span class="os">{'<a class="startk" href="#a1">Start</a> ' if start else ''}<button data-os="lx" class="aktiv">Linux/Mac</button> <button data-os="win">Windows</button></span></header>
-<div class="wrap"><nav><p id="zuletzt"></p>{"".join(nav)}</nav><main>{"".join(inhalt)}
+<div class="wrap"><nav><p id="zuletzt"></p>{"".join(nav)}</nav><main>
+<div class="ki"><b>Tipp: Füttere deine Lieblings-KI mit hilfe.html – und du bedienst pureSATZ im Flug.</b>
+Zieh diese Datei in deinen KI-Chat und stell deine Frage: Die KI kennt dann jede Einstellung und sagt dir, was du wo
+eintragen musst. Wie genau: Abschnitt «Mit einer KI arbeiten» (oben «KI» suchen).</div>{"".join(inhalt)}
 <p id="leer">Nichts gefunden.</p>
 <footer><a href="{WEBSEITE}">Webseite</a> · <a href="{GITHUB}">GitHub</a> · <a href="{GITHUB}/issues">Fehler melden</a> · <a class=mail href=#>puresatz (at) gsteiger.ch</a><br>
 Erstellt {datetime.now():%d.%m.%Y %H:%M} von pureSATZ {html.escape(version)} · neu mit «sh build.sh hilfe» · Quellen: START.md, motor/HILFE.md, meine-hilfe.md, Variablen-Datei</footer>

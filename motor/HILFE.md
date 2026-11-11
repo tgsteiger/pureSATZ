@@ -1230,7 +1230,19 @@ Danach im neuen Buchordner `sh build.sh`. Mit GitHub: dort `git init -b main` un
 
 Statt `sh build.sh …` einfach `build.bat …` (gleiche Optionen), ebenso `cleanup.bat`, `sicherung.bat` und `sync.bat`.
 
-## Mit einer anderen KI arbeiten
+## Mit einer KI arbeiten
 
-Gib der KI zuerst `readme4ki.txt` (kurze Regeln, passt auch in kostenlose KI-Chats), dann die MD-Datei,
-an der sie arbeiten soll (auch eine Druckdatei aus `druck/`). Danach `sh build.sh pruefen` – der Motor meldet sofort, falls etwas nicht passt.
+**Füttere deine Lieblings-KI mit `hilfe.html` – und du bedienst pureSATZ im Flug.** Die KI kennt dann jede
+Einstellung und sagt dir, was du wo eintragen musst.
+
+1. Neuen Chat öffnen (Claude, ChatGPT, Gemini …) und `hilfe.html` hineinziehen – am besten die aus dem Buchordner,
+   dort stehen auch die Variablen deines Buchs.
+2. Die Datei dazugeben, um die es geht, z. B. `Mein-Buch-variablen.md`, die Buch-MD oder eine Druckdatei aus `druck/`.
+3. Fragen, z. B. «Wie bringe ich das Inhaltsverzeichnis auf zwei Seiten?» oder «Wie wird ein Foto so breit wie der Text?»
+4. Vorschlag übernehmen, dann `sh build.sh pruefen` – der Motor meldet sofort, falls etwas nicht passt.
+
+**Regel für die KI:** nur die Buchdateien ändern (MD, Variablen, Umschlag, `druck/`, Stichworte, Tabellen, Geschichten) –
+**nie den Ordner `motor/`**.
+
+Kostenlose KI-Chats nehmen nicht immer so viel Text auf einmal. Dann `readme4ki.txt` (kurze Regeln) und deine Frage
+geben und den passenden Abschnitt dieser Hilfe dazukopieren (oben suchen, Text markieren, kopieren).
