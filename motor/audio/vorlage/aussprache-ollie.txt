@@ -4,6 +4,7 @@
 # Klingt es gut: Zeile nach «KLINGEN GUT» verschieben (nicht kopieren). Im Buch gelten beide Teile.
 # Reihenfolge: lange/besondere Regeln VOR kurzen/allgemeinen (z. B. «Sitting in the Power» vor «Power»).
 # Varianten vergleichen: mehrere Zeilen mit demselben Original untereinander, anhören, die beste behalten.
+# Andere Sprache: La Chaux-de-Fonds = {fr: La Chaux-de-Fonds}   (fr, en, es, it – spricht das Wort in dieser Sprache)
 ## KLINGEN FALSCH
 Learning by Doing = Lörning bai Duuing
 KI = Ka-I

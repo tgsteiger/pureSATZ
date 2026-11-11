@@ -8,6 +8,22 @@
 import os, re, sys, subprocess, tempfile
 from xml.sax.saxutils import escape
 
+SPRACHEN = {"fr": "fr-FR", "en": "en-GB", "es": "es-ES", "it": "it-IT", "de": "de-DE"}
+
+def sprachen(text, haupt, rate):
+    """SSML-Teil in <lang><prosody> (wie bisher). {fr: La Chaux-de-Fonds} aus der Aussprache-Liste wird ein eigener
+    Teil in dieser Sprache (ab 2.72.4); lang bleibt direkt unter voice, wie Azure es verlangt."""
+    teile = re.split(r"\{([a-z]{2}(?:-[A-Z]{2})?):\s*([^{}]+?)\s*\}", text)    # Text, Code, Wort, Text, …
+    aus = []
+    for i in range(0, len(teile), 3):
+        for code, stueck in ((haupt, teile[i]),) + (((teile[i + 1], teile[i + 2]),) if i + 1 < len(teile) else ()):
+            if not stueck:
+                continue
+            code = SPRACHEN.get(code, code) if code else ""
+            p = '<prosody rate="%s">%s</prosody>' % (rate, stueck)
+            aus.append('<lang xml:lang="%s">%s</lang>' % (code, p) if code else p)
+    return "".join(aus)
+
 DIR = os.path.dirname(os.path.abspath(__file__))              # Skripte (motor/audio)
 DATEN = os.environ.get("AUDIO_DIR") or DIR                     # Buch: audio/
 
@@ -95,9 +111,7 @@ for stimme in auswahl:
         text = ('<break time="%s"/>' % conf.get("AZURE_PAUSE", "1200ms")).join(escape(z.strip()) for z in zeilen if z.strip())
         if not text:
             print(f"Nichts zu hören: {quelle} ist leer (oder alles mit # auskommentiert)."); continue
-    inhalt = f'<prosody rate="{rate}">{text}</prosody>'
-    if sprache:
-        inhalt = f'<lang xml:lang="{sprache}">{inhalt}</lang>'
+    inhalt = sprachen(text, sprache, rate)              # <lang><prosody>…, {fr: …} als eigener Teil
     ssml = ('<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="de-DE">'
             f'<voice name="{stimme}">{inhalt}</voice></speak>')
     synth = speechsdk.SpeechSynthesizer(speech_config=speech_config,

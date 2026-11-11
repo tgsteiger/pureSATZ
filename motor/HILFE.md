@@ -998,6 +998,9 @@ Regeln:
 - **Lange vor kurzen:** `Sitting in the Power` vor `Power`, `www.…ch` vor `…ch` – sonst findet die lange nichts mehr.
 - Ein Punkt am Ende des Originals greift nicht (`Dipl.`) – mit dem nächsten Wort schreiben: `Dipl. Techniker = …`.
 - `# jahreszahlen: aus` oben: die Stimme spricht Jahreszahlen selbst (Ollie kann es).
+- **In einer anderen Sprache sprechen:** `La Chaux-de-Fonds = {fr: La Chaux-de-Fonds}` – die Stimme spricht das Wort
+  französisch. Kürzel: `fr`, `en`, `es`, `it` (oder genau, z. B. `fr-CH`). Gilt für Multilingual-Stimmen wie Ollie und
+  Florian. Gibt es für das Wort schon eine Zeile (`Chalet = Scha-le`), diese ersetzen, nicht eine zweite dazuschreiben.
 
 Was bei Ollie Korrektur brauchte (Beispiele aus «Leben 1.0, 2.0, 3.0»):
 
@@ -1005,7 +1008,7 @@ Was bei Ollie Korrektur brauchte (Beispiele aus «Leben 1.0, 2.0, 3.0»):
 |---|---|
 | «Teil 2.» liest er als «zweiter» | `Teil 2 = Zweiter Teil` (steht schon in der Vorlage) |
 | englisch | `Power = Pauer` · `Trance Healing = Tränss Hieling` · `Channeln = Tschenneln` |
-| französisch | `Impératif = Äähnperatiff` · `Chalet = Scha-le` · `Française = Fran-sääs` |
+| französisch | `Impératif = Äähnperatiff` · `Chalet = Scha-le` · `Française = Fran-sääs` – oder echt französisch: `Chalet = {fr: Chalet}` |
 | Abkürzungen | `IT = Ei-Tii` · `RAV = R.A.V` |
 | Web-Adressen | `www.thomasgsteiger.ch = w w w, Punkt, thomas gsteiger, Punkt, c h` |
 | Zahl mit Buchstaben | `7x7 = Sieben mal Sieben` · `8ung = Achtung` |
