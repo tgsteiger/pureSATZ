@@ -2067,8 +2067,8 @@ def _build(out, ausgleich=None):
         elif s == "@INHALTSVERZEICHNIS":
             if DRUCK and not vorspann["kernsatz"]:
                 story.append(PageBreak())
-            zusammen = V("inhalt-teile", "fortlaufend").strip().lower() == "zusammen"
-            toc = Inhaltsverzeichnis() if zusammen else TableOfContents()
+            teile_zusammen = V("inhalt-teile", "fortlaufend").strip().lower() == "zusammen"
+            toc = Inhaltsverzeichnis() if teile_zusammen else TableOfContents()
             toc.levelStyles = [toc1, toc2, toc3, toc4]
             toc.dotsMinLevel = 0 if ja("inhalt-punkte") else -1     # {inhalt-punkte}: nein = ohne Punktlinie
             story += [Paragraph(E.WORT_INHALT, INHALT_STIL), NextPageTemplate("tocfolge"), toc]
