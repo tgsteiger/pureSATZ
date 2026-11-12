@@ -51,6 +51,8 @@ Die Schritte unten sind dasselbe von Hand.
 
 **Hörbuch (nur Linux, freiwillig):** braucht ein kostenloses Azure-Konto, `sudo apt install ffmpeg mpv` und den
 Schlüssel in `~/.bashrc` – alles in der Hilfe «Hörbuch: Einrichten». Im Menü `hb`.
+Für die Fremdwörter-Prüfung (`hb` → `u`) zusätzlich die Wörterbücher:
+`sudo apt install hunspell hunspell-de-ch hunspell-fr hunspell-es hunspell-it hunspell-en-gb` (`hb` → `c` prüft sie).
 
 **Ghostscript (freiwillig):** nur nötig, wenn eine Druckerei CMYK verlangt (z. B. tredition, `{farbmodus}: cmyk`
 in der Druckdatei). Die Einrichte-Skripte fragen danach. Von Hand: Linux `sudo apt install ghostscript` ·

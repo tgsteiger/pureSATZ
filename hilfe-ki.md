@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.73.1
+# pureSATZ Hilfe · pureSATZ · Motor 2.73.2
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -1016,6 +1016,7 @@ Aus dem Buch ein Hörbuch machen: eine MP3 pro Kapitel, vorgelesen von einer KI-
 
 - Ein kostenloses Azure-Konto (Tarif F0: 0,5 Mio. Zeichen pro Monat gratis – ein Buch hat etwa 80'000; darüber blockiert Azure, es entstehen keine Kosten).
 - ffmpeg (Pflicht) und mpv (zum Anhören), das Azure-Paket für Python – `hb` → `c` prüft alles.
+- Für die Fremdwörter (`hb` → `u`, freiwillig): hunspell mit Wörterbüchern – `sudo apt install hunspell hunspell-de-ch hunspell-fr hunspell-es hunspell-it hunspell-en-gb`.
 - Einmalig etwa 30 Minuten zum Einrichten.
 
 ## Hörbuch: Einrichten (einmalig)
@@ -1612,7 +1613,7 @@ Buchprojekte/
 
 Mac: Terminal öffnen (Cmd+Leertaste, «Terminal», Enter), `sh ` tippen, `START-Mac-imTerminal.sh` ins Fenster ziehen, Enter. (Ein Doppelklick geht nicht: der Mac sperrt heruntergeladene Startdateien; der Start hebt die Sperre auf.) Im Buchordner öffnet `Terminal hier` (Windows, Mac) per Doppelklick das Befehlsfenster genau dort. Die Skripte dahinter: `bash pc-einrichten/linux-einrichten.sh` · `bash pc-einrichten/mac-einrichten.sh` · `pc-einrichten\win-einrichten.bat` (ohne Angabe: der ganze Ablauf; `--technik` bzw. `--extras` nur diese Teile auf Linux/Mac). Die Schritte unten sind dasselbe von Hand.
 
-Hörbuch (nur Linux, freiwillig): braucht ein kostenloses Azure-Konto, `sudo apt install ffmpeg mpv` und den Schlüssel in `~/.bashrc` – alles in der Hilfe «Hörbuch: Einrichten». Im Menü `hb`.
+Hörbuch (nur Linux, freiwillig): braucht ein kostenloses Azure-Konto, `sudo apt install ffmpeg mpv` und den Schlüssel in `~/.bashrc` – alles in der Hilfe «Hörbuch: Einrichten». Im Menü `hb`. Für die Fremdwörter-Prüfung (`hb` → `u`) zusätzlich die Wörterbücher: `sudo apt install hunspell hunspell-de-ch hunspell-fr hunspell-es hunspell-it hunspell-en-gb` (`hb` → `c` prüft sie).
 
 Ghostscript (freiwillig): nur nötig, wenn eine Druckerei CMYK verlangt (z. B. tredition, `{farbmodus}: cmyk` in der Druckdatei). Die Einrichte-Skripte fragen danach. Von Hand: Linux `sudo apt install ghostscript` · Mac: siehe «Mac: Zusatzprogramme» unten · Windows `winget install ArtifexSoftware.GhostScript`. Ohne Ghostscript bleiben die Druckdateien RGB.
 

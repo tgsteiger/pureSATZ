@@ -206,6 +206,18 @@ def pruefen():
         else:
             ok = ok and prog == "mpv"                       # mpv nur zum Anhören
             print(f"Fehlt: {prog} – installieren mit:  sudo apt install {prog}")
+    try:                                                    # Wörterbücher nur für Fremdwörter (hb → u), kein Muss
+        sys.path.insert(0, DIR)
+        import fremd
+        fehlt = [n for n, namen in (("de", fremd.DEUTSCH),) + tuple((l, v[0]) for l, v in fremd.SPRACHEN.items())
+                 if not fremd.woerterbuch(namen)]
+        if not shutil.which("hunspell") or fehlt:
+            print("Fehlt (nur für Fremdwörter hb → u): " + ("hunspell" if not shutil.which("hunspell") else
+                  "Wörterbuch " + ", ".join(fehlt)) + "\n  installieren mit:  " + fremd.INSTALL)
+        else:
+            print("OK  Wörterbücher de, fr, es, it, en (Fremdwörter)")
+    except Exception:
+        pass
     st = stufe_jetzt()
     for name, s in (("AZURE_SPEECH_KEY", "F0"), ("AZURE_SPEECH_KEY_S0", "S0")):
         aktiv = "  ← eingestellt" if s == st else ""

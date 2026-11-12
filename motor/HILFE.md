@@ -875,6 +875,8 @@ Getestet mit «Leben 1.0, 2.0, 3.0» und der Stimme **Ollie** (spricht Deutsch s
 - Ein **kostenloses Azure-Konto** (Tarif F0: 0,5 Mio. Zeichen pro Monat gratis – ein Buch hat etwa 80'000;
   darüber blockiert Azure, es entstehen keine Kosten).
 - ffmpeg (Pflicht) und mpv (zum Anhören), das Azure-Paket für Python – `hb` → `c` prüft alles.
+- Für die Fremdwörter (`hb` → `u`, freiwillig): hunspell mit Wörterbüchern –
+  `sudo apt install hunspell hunspell-de-ch hunspell-fr hunspell-es hunspell-it hunspell-en-gb`.
 - Einmalig etwa 30 Minuten zum Einrichten.
 
 ## Hörbuch: Einrichten (einmalig)
