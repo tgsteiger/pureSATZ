@@ -894,11 +894,11 @@ Danach zum Ausprobieren: `hb` → `p` (Probe) und `hb` → `w` (Wörter).
 ## Hörbuch: Das Menü hb
 
 ```
- Mein-Buch · pureSATZ 2.72.3 › Hörbuch      Ollie · -8% · 128 kbit · F0
+ Mein-Buch · pureSATZ 2.73.0 › Hörbuch      Ollie · -8% · 128 kbit · F0
  ── Probieren ─────────────────────   ── Hörbuch ───────────────────────
   p  Probe hören (probe.txt)          a  alles: Texte → vertonen → Paket → Hörprobe
   w  Wörter hören (KLINGEN FALSCH)    t  Texte aus dem Buch (zeigt Geänderte)
-                                      v  vertonen: was fehlt + geändert
+  u  Fremdwörter prüfen (Browser)     v  vertonen: was fehlt + geändert
                                       k  vertonen: Kapitel auswählen …
  ── Weitergeben ───────────────────   ── Bearbeiten · Ordner ──────────
   f  fertiges Paket: ZIP mit M4B      e  Wörter · Probe · Einstellungen
@@ -913,6 +913,7 @@ Danach zum Ausprobieren: `hb` → `p` (Probe) und `hb` → `w` (Wörter).
 |---|---|
 | `p` | `audio/probe.txt` vorlesen – fragt Stimme (Enter = eingestellt, `1`/`2` = Favorit, `l` = alle Stimmen) und Tempo, spielt gleich ab |
 | `w` | Wörter unter `## KLINGEN FALSCH` vorlesen: Original, kurze Pause, Aussprache – spielt gleich ab |
+| `u` | Fremdwörter prüfen: Scan + Prüfseite im Browser (siehe «Hörbuch: Fremdwörter»). Zurück ins Menü: Ctrl+C |
 | `a` | **alles in einem:** Texte → vertonen → Paket → Hörprobe. Fragt das Tempo, hält beim ersten Fehler an, spielt am Schluss die Hörprobe |
 | `t` | Texte aus der Buch-MD → `audio/txt-md/`. Nur geänderte werden ersetzt, die Liste steht danach da. Fragt dann «Jetzt vertonen?» (Enter = ja) |
 | `v` | vertonen: MP3 für Kapitel ohne MP3 **oder** mit geändertem Text (Text neuer als MP3). Fertige bleiben. Fragt das Tempo. Abbruch = nochmals `v` |
@@ -955,8 +956,10 @@ Du hast im Buch etwas korrigiert, z. B. in zwei Kapiteln. So kommen nur diese in
 
 Im Terminal (`hb` → `$`): `sh hb.sh texte` und dann `sh hb.sh vertonen`.
 
-Nicht erkannt werden Änderungen an `aussprache-<stimme>.txt` oder an den Pausen in `audio.conf` – die Texte bleiben
-ja gleich. Dann: betroffene Kapitel mit `k` neu, oder alles in einem neuen Ordner (siehe nächster Abschnitt).
+Änderungen an `aussprache-<stimme>.txt` erkennt `v` selbst (ab 2.73): Kapitel mit einem neuen, geänderten oder
+gelöschten Wort werden neu vertont («Aussprache geändert (Chalet) → 2 Kapitel neu»). Dafür merkt sich jeder MP3-Ordner
+in `regeln.json`, welche Regeln in welchem Kapitel stecken. Nicht erkannt werden die Pausen in `audio.conf` –
+dann betroffene Kapitel mit `k` neu, oder alles in einem neuen Ordner (siehe nächster Abschnitt).
 Kapitel umbenannt? `v` meldet «MP3 ohne Text» – die alte Datei von Hand löschen.
 
 ## Hörbuch: Anderes Tempo ausprobieren
@@ -1017,8 +1020,26 @@ Was bei Ollie Korrektur brauchte (Beispiele aus «Leben 1.0, 2.0, 3.0»):
 Ganze Sätze im Zusammenhang prüfen: in `audio/probe.txt` schreiben (`#` = Zeile aus, Leerzeile = Absatz), dann
 `hb` → `p`. Mehrere Probetexte: daneben `probe-namen.txt` usw., hören mit `sh hb.sh probe probe-namen.txt`.
 
-Bewährt: zuerst alle Fremdwörter, Abkürzungen und Adressen im Buch zusammentragen (eine KI kann die Buch-MD
-durchsuchen), mit `p` anhören, dann das ganze Buch einmal hören und den Rest notieren.
+Bewährt: zuerst alle Fremdwörter, Abkürzungen und Adressen im Buch zusammentragen (`hb` → `u`, siehe nächster
+Abschnitt), mit `w` anhören, dann das ganze Buch einmal hören und den Rest notieren.
+
+## Hörbuch: Fremdwörter
+
+`hb` → `u` sucht Wörter, die das deutsche Wörterbuch nicht kennt, ein französisches, spanisches, italienisches oder
+englisches aber schon, und öffnet eine Prüfseite im Browser. Benachbarte Fremdwörter werden eine Gruppe
+(«Trance Healing», «La Chaux-de-Fonds»).
+
+1. Einmalig die Wörterbücher: `sudo apt install hunspell hunspell-de-ch hunspell-fr hunspell-es hunspell-it hunspell-en-gb`
+   (ohne: Scan nur nach Akzenten wie é, ñ).
+2. `hb` → `u`. Oben die **Kandidaten**, darunter das ganze Buch, Fremdwörter farbig. Jedes Wort ist anklickbar,
+   mehrere Wörter: mit der Maus markieren.
+3. Pro Wort: `fr` · `en` · `es` · `it` (in dieser Sprache sprechen) · ✎ (eigene Aussprache) · ✗ deutsch (nie mehr
+   vorschlagen) · ▶ (Original und Entscheid anhören) · – (Entscheid weg).
+4. **💾 in Aussprache-Liste übernehmen**: schreibt unter `## KLINGEN FALSCH` (gleiche Wörter werden ersetzt,
+   Sicherung `.bak`). Dann `w` anhören, die guten nach `## KLINGEN GUT`, dann `v` – die betroffenen Kapitel kommen neu.
+
+Ins Buch kommt nichts: Die Regeln gelten für jedes Vertonen, auch nach Änderungen im Buch.
+Ohne Server (`sh hb.sh fremd`): Seite `audio/fremdwoerter.html`, Entscheide mit 📋 kopieren und selbst einfügen.
 
 ## Hörbuch: Befehle zum Kopieren
 
@@ -1043,6 +1064,8 @@ sh hb.sh probe 1 -10%                # Ollie, Tempo −10 %
 sh hb.sh probe alle                  # alle Stimmen nacheinander (eine MP3 pro Stimme)
 sh hb.sh probe probe-namen.txt       # eigener Probetext
 sh hb.sh woerter                     # KLINGEN FALSCH anhören
+sh hb.sh fremd server                # Fremdwörter: Prüfseite mit Speichern und ▶ (Ctrl+C beendet)
+sh hb.sh fremd                       # dasselbe ohne Server → fremdwoerter.html
 mpv probe-ollie-t-8.mp3              # anhören (der Name steht nach jedem Lauf da)
 ls -t *.mp3 | head                   # die neusten Proben
 rm probe-*.mp3 aussprache-*.mp3      # Proben aufräumen

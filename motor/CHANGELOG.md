@@ -3,6 +3,16 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.73.0 (November 2026)
+- Hörbuch: Aussprache-Änderungen werden erkannt. Jeder MP3-Ordner merkt sich in regeln.json, welche Regeln in
+  welchem Kapitel gegriffen haben; vertonen (hb → v / a) macht Kapitel mit neuen, geänderten oder gelöschten
+  Wörtern neu. Bestehende MP3 gelten beim ersten Lauf als aktuell.
+- Hörbuch: Fremdwörter (motor/audio/fremd.py, Menü hb → u, `sh hb.sh fremd [server]`): Scan mit hunspell
+  (de, fr, es, it, en; ohne Wörterbücher nur nach Akzenten), Gruppen benachbarter Fremdwörter, Prüfseite mit
+  farbigem Buchtext. Klick: fr · en · es · it · ✎ · ✗ deutsch · ▶ hören. Server-Seite speichert direkt in
+  aussprache-<stimme>.txt (unter KLINGEN FALSCH, gleiche Wörter ersetzt, .bak), ohne Server: kopieren.
+  «# deutsch: Wort» = nie mehr vorschlagen. probe-azure.py: PROBE_REGELN (Probe ohne Aussprache-Liste).
+
 ## 2.72.5 (November 2026)
 - Hörbuch-Menü: die aktive Azure-Stufe (F0/S0) ist gold – in der Kopfzeile und bei x (ohne Farben: [F0 gratis]).
 

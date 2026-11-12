@@ -107,7 +107,8 @@ for stimme in auswahl:
             pfad = t.name
         zeilen = subprocess.run(["bash", os.path.join(DIR, "text-vorbereiten.sh"), pfad],
                                 capture_output=True, text=True, check=True,
-                                env=dict(os.environ, AUSSPRACHE_DATEI=aus, AUDIO_DIR=DATEN)).stdout.splitlines()
+                                env=dict(os.environ, AUSSPRACHE_DATEI=os.environ.get("PROBE_REGELN") or aus,   # fremd.py: ohne Regeln
+                                         AUDIO_DIR=DATEN)).stdout.splitlines()
         text = ('<break time="%s"/>' % conf.get("AZURE_PAUSE", "1200ms")).join(escape(z.strip()) for z in zeilen if z.strip())
         if not text:
             print(f"Nichts zu hören: {quelle} ist leer (oder alles mit # auskommentiert)."); continue

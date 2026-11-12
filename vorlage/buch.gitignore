@@ -33,3 +33,6 @@ audio/buch*.txt
 audio/_buch-hoerbuch.md
 audio/*.mp3
 audio/verkauf/
+audio/fremdwoerter.html
+audio/*.bak
+audio/_fremd-*

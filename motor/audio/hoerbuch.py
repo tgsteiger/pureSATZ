@@ -12,6 +12,8 @@ KURZ = """Hörbuch – Befehle im Ordner audio/ (sh hb.sh …):
     sh hb.sh probe 2 -10%             Stimme 2, Tempo −10 %      (l = Stimmen-Liste, alle = alle Stimmen)
     sh hb.sh probe probe-namen.txt    anderer Probetext (eigene Datei im Ordner audio/)
     sh hb.sh woerter                  «## KLINGEN FALSCH» aus aussprache-<stimme>.txt anhören
+    sh hb.sh fremd                    Fremdwörter suchen → Prüfseite fremdwoerter.html (Entscheide kopieren)
+    sh hb.sh fremd server             dasselbe mit Speichern und ▶ hören (Menü hb → u)
   Hörbuch
     sh hb.sh texte                    Texte aus der Buch-MD → txt-md/ (zeigt, welche sich geändert haben)
     sh hb.sh vertonen                 MP3 für alles, was fehlt oder geändert ist
@@ -322,6 +324,15 @@ def main():
         return texte()
     if befehl == "stufe":
         return stufe(rest)
+    if befehl == "fremd":                                   # Fremdwörter: Scan + Prüfseite (fremd.py)
+        if not glob.glob(os.path.join(DATEN, "txt-md", "*.txt")) and texte():
+            return 1
+        try:
+            stufe_schluessel()                              # Schlüssel der Stufe fürs ▶ hören
+        except SystemExit as e:
+            print(f"Hinweis: {e} – ▶ hören geht dann nicht.")
+        return subprocess.run([sys.executable, os.path.join(DIR, "fremd.py")] + rest, cwd=DATEN,
+                              env=dict(os.environ, AUDIO_DIR=DATEN)).returncode
     if befehl == "komplett":                                # Ablauf in einem: texte → vertonen → paket → hoerprobe
         return komplett(rest)
     if befehl in ("paket", "hoerprobe"):                   # braucht kein Azure, nur ffmpeg und fertige MP3s

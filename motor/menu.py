@@ -399,7 +399,8 @@ def hoerbuch_schritt(H, audio, hb):
     k_ = kopf("Hörbuch", f"{name} · {c.get('AZURE_RATE', '')} · {c.get('MP3_KBIT', '128')} kbit · {st}")
     i_ = k_.rfind(f" {st} ")                          # erst nach dem Ausrichten färben (Farbcodes haben keine Breite)
     print("\n" + (k_[:i_ + 1] + FETT(st) + k_[i_ + 1 + len(st):] if FARBIG and i_ > 0 else k_))
-    spalten_zeigen([("Probieren", [("p", "Probe hören (probe.txt)"), ("w", "Wörter hören (KLINGEN FALSCH)")]),
+    spalten_zeigen([("Probieren", [("p", "Probe hören (probe.txt)"), ("w", "Wörter hören (KLINGEN FALSCH)"),
+                                   ("u", "Fremdwörter prüfen (Browser)")]),
                     ("Hörbuch", [("a", "alles: Texte → vertonen → Paket → Hörprobe"),
                                  ("t", "Texte aus dem Buch (zeigt Geänderte)"), ("v", "vertonen: was fehlt + geändert"),
                                  ("k", "vertonen: Kapitel auswählen …")]),
@@ -480,6 +481,10 @@ def hoerbuch_schritt(H, audio, hb):
             abspielen("verkauf/hoerprobe.mp3", seit)
     elif k == "x":
         H.stufe([])
+    elif k == "u":
+        print(" Fremdwörter: Scan → Prüfseite im Browser. Klick = fr · en · es · it · ✎ · ✗ deutsch · ▶ hören.")
+        print(" «💾 übernehmen» schreibt in die Aussprache-Liste. Danach w (anhören) und v. Zurück hierher: Ctrl+C.")
+        lauf(hb + ["fremd", "server"])
     elif k == "c":
         lauf(hb + ["pruefen"])
     elif k == "k":

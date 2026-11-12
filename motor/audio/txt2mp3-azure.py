@@ -10,7 +10,7 @@
 # Jeder Lauf wird in einstellungen.txt angehängt (Zeit, Aufruf, Einstellungen, Aussprache-Liste).
 # Ganzes Buch (ohne Auswahl): ZIP mit Textordner, Aussprache-Liste und audio.conf in audio/
 # Braucht: AZURE_SPEECH_KEY und AZURE_SPEECH_REGION (z.B. in ~/.bashrc)
-import os, sys, glob, re, subprocess, zipfile, datetime
+import os, sys, glob, re, json, subprocess, zipfile, datetime
 from xml.sax.saxutils import escape
 
 SPRACHEN = {"fr": "fr-FR", "en": "en-GB", "es": "es-ES", "it": "it-IT", "de": "de-DE"}
@@ -117,6 +117,42 @@ if args and not nur:
 mp3_von = lambda t: os.path.join(mp3_dir, os.path.splitext(os.path.basename(t))[0] + ".mp3")
 todo = nur or [t for t in alle_dateien
                if not os.path.exists(mp3_von(t)) or os.path.getmtime(mp3_von(t)) < os.path.getmtime(t)]
+# Aussprache geändert? Pro MP3 steht in regeln.json, welche Regeln in ihrem Text gegriffen haben (ab 2.73).
+# Hat sich davon etwas geändert (neu, anders, gelöscht), wird das Kapitel neu vertont.
+def regeln_lesen():
+    p = os.path.join(DATEN, aussprache)
+    zeilen = open(p, encoding="utf-8").read().splitlines() if os.path.exists(p) else []
+    jahr = not any(re.match(r"^# *jahreszahlen *: *aus", z, re.I) for z in zeilen)
+    return [m.groups() for z in zeilen if not z.lstrip().startswith("#")
+            for m in [re.match(r"^ *(.*[^ ]) *= *(.*[^ ]) *$", z)] if m], jahr
+REGELN, JAHR = regeln_lesen()
+def abdruck(t):
+    s = open(t, encoding="utf-8").read()
+    fp = sorted({"%s = %s" % (o, e) for o, e in REGELN if re.search(r"(?<!\w)%s(?!\w)" % re.escape(o), s, re.I)})
+    return fp + (["# jahreszahlen"] if JAHR and re.search(r"\b(1[1-9]\d\d|20\d\d)\b", s) else [])
+regeln_pfad = os.path.join(mp3_dir, "regeln.json")
+try:
+    stand = json.load(open(regeln_pfad, encoding="utf-8"))
+except (OSError, ValueError):
+    stand = {}
+stamm = lambda t: os.path.splitext(os.path.basename(t))[0]
+if not nur and os.path.isdir(mp3_dir):
+    neu_regel, woerter, erster = [], set(), False
+    for t in alle_dateien:
+        if t in todo or not os.path.exists(mp3_von(t)):
+            continue
+        fp = abdruck(t)
+        if stamm(t) not in stand:              # MP3 von vor 2.73: heutige Regeln gelten als Ausgang
+            stand[stamm(t)], erster = fp, True
+        elif fp != stand[stamm(t)]:
+            neu_regel.append(t); woerter |= {x.split(" = ")[0].replace("# jahreszahlen", "Jahreszahlen") for x in set(fp) ^ set(stand[stamm(t)])}
+    if erster:
+        json.dump(stand, open(regeln_pfad, "w", encoding="utf-8"), ensure_ascii=False, indent=0)
+    if neu_regel:
+        w = sorted(woerter, key=str.lower)
+        print("Aussprache geändert (%s%s) → %d Kapitel neu" % (", ".join(w[:6]), " …" if len(w) > 6 else "", len(neu_regel)))
+        todo = [t for t in alle_dateien if t in todo or t in neu_regel]
+
 ziel = os.path.relpath(mp3_dir)
 namen = {os.path.splitext(os.path.basename(t))[0] for t in alle_dateien}
 ohne = sorted(n for n in (os.listdir(mp3_dir) if os.path.isdir(mp3_dir) else [])
@@ -261,6 +297,8 @@ for t in todo:
     for p in teile:
         os.remove(p)
     erzeugt.append(os.path.basename(mp3))
+    stand[name] = abdruck(t)                    # welche Regeln jetzt drin sind (für den nächsten Vergleich)
+    json.dump(stand, open(regeln_pfad, "w", encoding="utf-8"), ensure_ascii=False, indent=0)
 print("Fertig: %d neue Datei(en) in %s" % (len(erzeugt), ziel))
 for n in erzeugt[:10]:
     print("  mpv %s/%s" % (ziel, n.replace(" ", "\\ ")))
