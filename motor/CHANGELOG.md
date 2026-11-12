@@ -3,6 +3,16 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.75.0 (November 2026)
+- Hilfe neu gegliedert, in der Reihenfolge, wie ein Buch entsteht: Erste Schritte · Schreiben · Gestalten ·
+  Bauen und Drucken · E-Book · Hörbuch · Werkzeuge · Nachschlagen (Grundlage für das «pureSATZ Handbuch»).
+  START.md und HILFE.md dürfen dieselben Gruppen haben, sie werden zusammengelegt (hilfe.py: sammle, GRUPPEN).
+  Spickzettel jetzt unter Nachschlagen, meine-hilfe.md als Gruppe «Meine Hilfe».
+- Neue Abschnitte: Hilfe verwenden, Lösungen finden · Die Buchdateien und Ordner (druck/, ausgabe-…) · Korrekturlesen
+  mit KI · Seitengestaltung · Inhaltsverzeichnis gestalten · Umschlag: Rücken und Seitenzahl · Selber drucken:
+  Booklet · Veröffentlichen: ISBN, Preis, Pflichtexemplar · E-Book: Ablauf · Skripte und Kurzbefehle · Werben · Glossar.
+- Neuer Ordner handbuch/ (Einleitung fürs Handbuch, nur im Ordner pureSATZ).
+
 ## 2.74.1 (November 2026)
 - Strichcode-Namen: isbn-position, isbn-groesse, isbn-bild, isbn-rahmen, isbn-rahmen-farbe, isbn-rahmen-abstand
   (Strichcode mit der ISBN, EAN-13). Die alten barcode-… gelten weiter. Vorlagen und Druckdateien umgestellt,

@@ -3,13 +3,15 @@
 hilfe.py – erzeugt hilfe.html: die ganze Hilfe von pureSATZ als eine Seite mit Suche (ab 2.13).
 
 Quellen (Markdown, nur dort pflegen – die HTML-Seite entsteht daraus):
-    motor/HILFE.md        Hilfe zum Schreiben und Bauen (kommt mit jedem Motor-Update);
-                          «# Gruppe» = gelber Titel in der Navigation, «## Abschnitt» darunter
-    meine-hilfe.md        eigene Praxis-Notizen im Buchordner (freiwillig, «Mein Alltag»)
+    START.md              Erste Schritte (Ordner pureSATZ) – «# Gruppe», «## Abschnitt» wie HILFE.md
+    motor/HILFE.md        die Hilfe (kommt mit jedem Motor-Update);
+                          «# Gruppe» = gelber Titel in der Navigation, «## Abschnitt» darunter.
+                          Gleiche Gruppen aus START.md und HILFE.md werden zusammengelegt (ab 2.75), Reihenfolge: GRUPPEN
+    meine-hilfe.md        eigene Praxis-Notizen im Buchordner (freiwillig, Gruppe «Meine Hilfe»)
     Befehle, Blöcke       direkt aus dem Motor (manuskript.py)
     Variablen             aus der Variablen-Datei des Buchs (mit den aktuellen Werten)
 Im Ordner pureSATZ zusätzlich: ERSTES-BUCH.md, INSTALLATION.md, GITHUB.md.
-Ganz oben (Knopf «Start»): START.md aus dem Ordner pureSATZ – Checkliste und Hallo-Buch für den Anfang.
+Knopf «Start» oben: springt zum ersten Abschnitt von START.md (Checkliste und Hallo-Buch für den Anfang).
 
 Aufruf:  sh build.sh hilfe   (erzeugen und im Browser öffnen) – entsteht ausserdem bei jedem Bau.
 """
@@ -640,6 +642,52 @@ def ki_text(gruppen, titel, version):
     return "\n\n".join(teile) + "\n"
 
 
+GRUPPEN = ["Erste Schritte", "Meine Hilfe", "Schreiben", "Gestalten", "Bauen", "E-Book", "Hörbuch", "Werkzeuge",
+           "Nachschlagen", "Einrichten"]      # Reihenfolge in der Navigation (Anfang des Gruppennamens genügt)
+
+
+def gruppiert(text, standard):
+    """Markdown mit «# Gruppe» / «## Abschnitt» → [(gruppe, [(titel, html)])]."""
+    gruppen = []
+    for e, t, h in md_html(text):
+        if e == 1 and t:
+            gruppen.append((t, [(t, h)] if h.strip() else []))
+        elif t and h.strip():
+            if not gruppen:
+                gruppen.append((standard, []))
+            gruppen[-1][1].append((t, h))
+    return gruppen
+
+
+def zusammen(gruppen):
+    """Gleichnamige Gruppen zusammenlegen (Abschnitte in der Reihenfolge des Auftretens), dann nach GRUPPEN ordnen."""
+    sammel = {}
+    for g, abschnitte in gruppen:
+        sammel.setdefault(g, []).extend(abschnitte)
+    rang = lambda g: next((i for i, a in enumerate(GRUPPEN) if g.startswith(a)), len(GRUPPEN))
+    return [(g, a) for g, a in sorted(sammel.items(), key=lambda x: rang(x[0])) if a]
+
+
+def sammle(basis, variablen=None):
+    """Alle Gruppen der Hilfe in ihrer Reihenfolge – für hilfe.html, hilfe-ki.md (und später das Handbuch).
+    Gibt (gruppen, start_da) zurück."""
+    start = gruppiert(_lies(start_datei(basis)), "Erste Schritte")
+    meine = [(t, h) for _, t, h in md_html(_lies(os.path.join(basis, "meine-hilfe.md"))) if t and h.strip()]
+    nachschlagen = [("Spickzettel", spick_html()), ("Befehle (@)", befehle_html()), ("Blöcke (:::)", bloecke_html()),
+                    ("Buchformate", formate_html(variablen))]
+    if variablen:
+        nachschlagen.append(("Variablen dieses Buchs", variablen_html(variablen)))
+    nachschlagen.append(("pureSATZ im Netz (GitHub, Webseite)", netz_html()))
+    gruppen = start + [("Meine Hilfe", meine), ("Nachschlagen", nachschlagen)]   # Nachschlagen: Motor-Teile zuerst
+    gruppen += gruppiert(_lies(os.path.join(MOTOR, "HILFE.md")), "Schreiben")
+    if not variablen:                       # Ordner pureSATZ: Installation und GitHub
+        extra = []
+        for datei in ("ERSTES-BUCH.md", "INSTALLATION.md", "GITHUB.md", "LIZENZ.md"):
+            extra += [(t, h) for e, t, h in md_html(_lies(os.path.join(basis, datei))) if t]
+        gruppen.append(("Einrichten und GitHub", extra))
+    return zusammen(gruppen), any(a for _, a in start)
+
+
 def start_datei(basis):
     """START.md (Checkliste für den Anfang): im Ordner selbst, im Ordner pureSATZ dieses Motors oder daneben."""
     for p in (os.path.join(basis, "START.md"), os.path.join(os.path.dirname(MOTOR), "START.md"),
@@ -652,36 +700,7 @@ def start_datei(basis):
 def erzeuge(basis, buchtitel=None, variablen=None, farben=None, oeffnen=False):
     """hilfe.html im Ordner basis schreiben. Buchordner (mit Variablen-Datei) oder Ordner pureSATZ."""
     version = _lies(os.path.join(MOTOR, "VERSION")).strip()
-    gruppen = []
-    start = [(t, h) for _, t, h in md_html(_lies(start_datei(basis))) if t and h.strip()]
-    if start:
-        gruppen.append(("Start", start))
-    meine = os.path.join(basis, "meine-hilfe.md")
-    gruppen.append(("Alltag", [("Spickzettel", spick_html())]
-                    + [(t, h) for _, t, h in md_html(_lies(meine)) if t and h.strip()]))
-    # HILFE.md: «# Gruppe» = gelber Titel in der Navigation, «## Abschnitt» darunter
-    hilfe_gruppen = []
-    for e, t, h in md_html(_lies(os.path.join(MOTOR, "HILFE.md"))):
-        if e == 1 and t:
-            hilfe_gruppen.append((t, []))
-            if h.strip():
-                hilfe_gruppen[-1][1].append((t, h))
-        elif t and h.strip():
-            if not hilfe_gruppen:
-                hilfe_gruppen.append(("Schreiben und Bauen", []))
-            hilfe_gruppen[-1][1].append((t, h))
-    gruppen += [g for g in hilfe_gruppen if g[1]]
-    nachschlagen = [("Befehle (@)", befehle_html()), ("Blöcke (:::)", bloecke_html()),
-                    ("Buchformate", formate_html(variablen))]
-    if variablen:
-        nachschlagen.append(("Variablen dieses Buchs", variablen_html(variablen)))
-    nachschlagen.append(("pureSATZ im Netz (GitHub, Webseite)", netz_html()))
-    gruppen.append(("Nachschlagen", nachschlagen))
-    if not variablen:                       # Ordner pureSATZ: Installation und GitHub
-        extra = []
-        for datei in ("ERSTES-BUCH.md", "INSTALLATION.md", "GITHUB.md", "LIZENZ.md"):
-            extra += [(t, h) for e, t, h in md_html(_lies(os.path.join(basis, datei))) if t]
-        gruppen.append(("Einrichten und GitHub", extra))
+    gruppen, start = sammle(basis, variablen)
     farben = dict(dict(papier="#FBF6EC", text="#2E2A26", leise="#6E655C", haupt="#1E428A", akzent="#B8873B"),
                   **(farben or {}))
     ziel = os.path.join(basis, "hilfe.html")

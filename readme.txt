@@ -58,6 +58,6 @@ Druck (ab 2.19)
   Druckangaben pro Fassung in druck/<datei>.md (Muster: vorlage/druck/, epubli und BoD).
   sh build.sh final                     Druckdateien in ausgabe-normal/, ausgabe-<zweite>/
   sh build.sh final druck=<datei>       Test mit einer anderen Druckdatei -> ausgabe-test/<datei>/
-  Andere Plattformen (KDP, XinXii, Lulu, Copyshop): hilfe.html, Gruppe «Andere Plattformen».
+  Andere Plattformen (KDP, XinXii, Lulu, Copyshop): hilfe.html, Gruppen «Bauen und Drucken» und «E-Book».
 
 Mehr: ERSTES-BUCH.md (fünf Schritte), INSTALLATION.md, GITHUB.md

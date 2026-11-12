@@ -1,4 +1,4 @@
-# Start
+# Erste Schritte
 
 ## 1. Erstes PDF in fünf Minuten
 
@@ -103,45 +103,13 @@ macht gleich weiter (wenn nötig in einem neuen Fenster). Details: Punkt 1, «Vo
 6. **Stand festhalten** an wichtigen Punkten, z. B. bei einer Bestellung: `sh build.sh stand "Probedruck 1"`.
    Später zeigt `sh build.sh aenderungen` als PDF, was sich seither geändert hat.
 
-**Erfolg:** Druckdateien, E-Book und Lese-PDF deines Buchs. Weiter: Hilfe «Bauen» und «Drucken und veröffentlichen».
+**Erfolg:** Druckdateien, E-Book und Lese-PDF deines Buchs. Weiter: Hilfe «Bauen und Drucken».
 
 ```sh
 sh build.sh final
 ```
 
-## 4. Gestalten: Ich will …
-
-Die häufigsten Fälle beim Gestalten – nachsehen, wenn etwas nicht so aussieht wie gewünscht.
-Danach mit `sh build.sh schnell` ansehen. **Klick auf einen Code = kopiert.** Ganze Bausteine:
-[Zum Kopieren](#Zum-Kopieren) · Suchen: Taste `/`.
-
-| Ich will … | So geht es |
-|---|---|
-| eine **neue Seite** | `---` auf einer eigenen Zeile, davor eine Leerzeile. **Nicht innerhalb eines `:::`-Blocks**, sondern nach dem `:::`. Steht `---` schon oben auf einer Seite, entsteht keine leere Seite. |
-| **mehr Abstand** | `@ABSTAND 8` (in mm). Mehrere Leerzeilen geben *nicht* mehr Abstand. Nicht innerhalb eines `:::`-Blocks. |
-| einen Satz **ganz unten** auf der Seite | `@UNTEN Satz` – zentriert und kursiv, z. B. für einen Hinweis |
-| einen **schönen Schluss** (Gruss, Zitat) | `@ZITAT Schön, dass du da bist.<br/>Herzlich, Name`, darunter `@ZIER 10` |
-| ein Zitat **mit Verzierung** | `@ZITAT-ZIER Satz` (kurz `> Satz`). Nur eine Verzierung pro Seite – sonst wird es unruhig. |
-| einen kurzen **Abschluss am Teil-Ende** | `::: mitte` … `:::` |
-| eine **Dankesseite oder ein Nachwort** im Inhaltsverzeichnis | als Kapitel `## Danke`, Text im Blocksatz, zum Schluss `@ZITAT` und `@ZIER 10` |
-| Text **hervorheben** (fett, kursiv) | `**Wort**` = fett mitten im Text · kursiv als eigene Zeile: `~ Satz` (Randbemerkung) oder `@ZITAT Satz`. [→ fett und kursiv](#Text-hervorheben) |
-| einen **Zwischentitel** | `### Titel`, kleiner `#### Titel`. Im Inhaltsverzeichnis erscheinen sie mit `{inhalt-tiefe}: 3` bzw. `4` in der Variablen-Datei (Standard: nur `##`) |
-| eine **Randbemerkung** | `~ Satz` (klein, kursiv) |
-| eine **Zeile umbrechen**, ohne neuen Absatz | `\` am Zeilenende (in Variablen: `<br/>`) |
-| Text **nur in einer Fassung** | `::: nur-uz` … `:::` oder `::: nur-normal` … `:::` |
-| ein **Foto** | `#### @FOTO Titel`, darunter `datei: bild.jpg` – eine Leerzeile beendet das Foto. [→ Blöcke zum Kopieren](#Zum-Kopieren) · [→ alle Angaben](#Bilder-und-Fotos) |
-| ein Foto, das der **Text umfliesst** | zusätzlich `fluss: rechts` oder `fluss: links` und `breite: 40` (mm) – die nächsten Absätze fliessen daneben |
-| eine **Geschichte** einbinden | `##### @@name` (Dateiname ohne .md, im Ordner geschichten/) – Menü `g` → `b` macht es selbst. [→ Geschichten](#Geschichten-sammeln) |
-| eine **Tabelle** | `@#name` (CSV im Ordner tabellen/) – Menü `t` → `n` legt sie an. [→ Tabellen](#Tabellen) |
-| eine **Notiz**, die nie gedruckt wird | in einer Geschichte unter dem Titel `notiz: …`; im Buch `::: offen-notiz` … `:::` |
-| den Druck in **CMYK** (z. B. tredition) | in der Druckdatei `{farbmodus}: cmyk`, dann `sh build.sh final`. [→ RGB oder CMYK](#Farben-fuer-den-Druck) |
-| den **Strichcode mit der ISBN** (EAN-13, Barcode) mit Goldrahmen oder Bergkette | in der Druckdatei `{isbn-rahmen}: berge` oder `gold` (dazu evtl. `{isbn-rahmen-abstand}: 2`, `{isbn-rahmen-farbe}: schwarz`). [→ Druckangaben](#Plattform-Dateien) |
-| einen **QR-Code** | `@QR https://… \| Text`, zwei nebeneinander mit `@QR-PAAR` |
-| sehen, **ob es passt** | `sh build.sh schnell`, dann das PDF öffnen (der Befehl steht am Ende des Baus) |
-
-Alle Befehle: Hilfe «Befehle (@)» und «Blöcke (:::)».
-
-## 5. Wenn etwas klemmt
+## 4. Wenn etwas klemmt
 
 | Meldung | Was tun |
 |---|---|
@@ -160,9 +128,9 @@ Alle Befehle: Hilfe «Befehle (@)» und «Blöcke (:::)».
 | Meine Änderung ist wieder weg | Editor: «Auto save» aus. Beim Hinweis «Datei geändert» neu laden. Ändert eine KI oder ein Skript die Datei, sie vorher im Editor schliessen. Ältere Fassungen liegen in `md-history/`. |
 | Abstand oder neue Seite wirkt nicht | Steht der Befehl innerhalb eines `:::`-Blocks? Dann nach das `:::` setzen. |
 | Farben am Bildschirm unsicher | Am Probedruck auf Papier beurteilen, nicht am Bildschirm. |
-| Etwas anderes | Die Meldung kopieren und in die Suche oben eingeben, oder einer KI zeigen (mit `readme4ki.txt`). |
+| Etwas anderes | Die Meldung kopieren und in die Suche oben eingeben (im Menü: `hf wort`), oder einer KI zeigen (mit `hilfe-ki.md`). |
 
-## 6. Fahrplan: vom Manuskript zum fertigen Buch
+## 5. Fahrplan: vom Manuskript zum fertigen Buch
 
 Zum Abhaken – der Browser merkt sich die Häkchen. «drucken» oben rechts druckt nur diesen Fahrplan.
 Mit einem Zieldatum (freiwillig, z. B. Erscheinen oder Vernissage) zeigt jede Kachel, bis wann der Schritt spätestens
@@ -199,4 +167,38 @@ Schreiben (`m` MD öffnen, `g` Geschichten, `t` Tabellen, `c` gegenlesen), Bauen
 Hallo-Buch, `v` Lotus-Starter). `:` zeigt Befehle zum Tippen, `h` oder `?` die Hilfe.
 Mit ↑ holst du die letzten Befehle zurück, Enter (oder `z`) = eine Stufe zurück (im Hauptmenü: «beenden? [j/N]»).
 
-Mehr dazu in der Hilfe unter «Bauen → Menü».
+Mehr dazu in der Hilfe unter «Erste Schritte → Menü».
+
+# Gestalten
+
+## Gestalten: Ich will …
+
+Die häufigsten Fälle beim Gestalten – nachsehen, wenn etwas nicht so aussieht wie gewünscht.
+Danach mit `sh build.sh schnell` ansehen. **Klick auf einen Code = kopiert.** Ganze Bausteine:
+[Zum Kopieren](#Zum-Kopieren) · Suchen: Taste `/`.
+
+| Ich will … | So geht es |
+|---|---|
+| eine **neue Seite** | `---` auf einer eigenen Zeile, davor eine Leerzeile. **Nicht innerhalb eines `:::`-Blocks**, sondern nach dem `:::`. Steht `---` schon oben auf einer Seite, entsteht keine leere Seite. |
+| **mehr Abstand** | `@ABSTAND 8` (in mm). Mehrere Leerzeilen geben *nicht* mehr Abstand. Nicht innerhalb eines `:::`-Blocks. |
+| einen Satz **ganz unten** auf der Seite | `@UNTEN Satz` – zentriert und kursiv, z. B. für einen Hinweis |
+| einen **schönen Schluss** (Gruss, Zitat) | `@ZITAT Schön, dass du da bist.<br/>Herzlich, Name`, darunter `@ZIER 10` |
+| ein Zitat **mit Verzierung** | `@ZITAT-ZIER Satz` (kurz `> Satz`). Nur eine Verzierung pro Seite – sonst wird es unruhig. |
+| einen kurzen **Abschluss am Teil-Ende** | `::: mitte` … `:::` |
+| eine **Dankesseite oder ein Nachwort** im Inhaltsverzeichnis | als Kapitel `## Danke`, Text im Blocksatz, zum Schluss `@ZITAT` und `@ZIER 10` |
+| Text **hervorheben** (fett, kursiv) | `**Wort**` = fett mitten im Text · kursiv als eigene Zeile: `~ Satz` (Randbemerkung) oder `@ZITAT Satz`. [→ fett und kursiv](#Text-hervorheben) |
+| einen **Zwischentitel** | `### Titel`, kleiner `#### Titel`. Im Inhaltsverzeichnis erscheinen sie mit `{inhalt-tiefe}: 3` bzw. `4` in der Variablen-Datei (Standard: nur `##`) |
+| eine **Randbemerkung** | `~ Satz` (klein, kursiv) |
+| eine **Zeile umbrechen**, ohne neuen Absatz | `\` am Zeilenende (in Variablen: `<br/>`) |
+| Text **nur in einer Fassung** | `::: nur-uz` … `:::` oder `::: nur-normal` … `:::` |
+| ein **Foto** | `#### @FOTO Titel`, darunter `datei: bild.jpg` – eine Leerzeile beendet das Foto. [→ Blöcke zum Kopieren](#Zum-Kopieren) · [→ alle Angaben](#Bilder-und-Fotos) |
+| ein Foto, das der **Text umfliesst** | zusätzlich `fluss: rechts` oder `fluss: links` und `breite: 40` (mm) – die nächsten Absätze fliessen daneben |
+| eine **Geschichte** einbinden | `##### @@name` (Dateiname ohne .md, im Ordner geschichten/) – Menü `g` → `b` macht es selbst. [→ Geschichten](#Geschichten-sammeln) |
+| eine **Tabelle** | `@#name` (CSV im Ordner tabellen/) – Menü `t` → `n` legt sie an. [→ Tabellen](#Tabellen) |
+| eine **Notiz**, die nie gedruckt wird | in einer Geschichte unter dem Titel `notiz: …`; im Buch `::: offen-notiz` … `:::` |
+| den Druck in **CMYK** (z. B. tredition) | in der Druckdatei `{farbmodus}: cmyk`, dann `sh build.sh final`. [→ RGB oder CMYK](#Farben-fuer-den-Druck) |
+| den **Strichcode mit der ISBN** (EAN-13, Barcode) mit Goldrahmen oder Bergkette | in der Druckdatei `{isbn-rahmen}: berge` oder `gold` (dazu evtl. `{isbn-rahmen-abstand}: 2`, `{isbn-rahmen-farbe}: schwarz`). [→ Druckangaben](#Plattform-Dateien) |
+| einen **QR-Code** | `@QR https://… \| Text`, zwei nebeneinander mit `@QR-PAAR` |
+| sehen, **ob es passt** | `sh build.sh schnell`, dann das PDF öffnen (der Befehl steht am Ende des Baus) |
+
+Alle Befehle: Hilfe «Befehle (@)» und «Blöcke (:::)».

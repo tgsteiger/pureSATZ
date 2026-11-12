@@ -63,7 +63,7 @@ sh build.sh final
 - Das **Probedruck-Booklet** ausdrucken (A4, doppelseitig, kurze Kante) und auf Papier lesen.
 - Die `CHECKLISTE.md` im Buchordner Punkt für Punkt abhaken.
 - Bei epubli: `…_Buchblock.pdf` und `…_Umschlag_Hardcover.jpg` (bzw. Softcover) hochladen – `00-UEBERSICHT.txt` zeigt sie unter «Bei der Druckerei hochladen».
-- Andere Plattform (BoD, KDP …) oder nur E-Book (XinXii, tolino …): Hilfe, Gruppe «Andere Plattformen».
+- Andere Plattform (BoD, KDP …) oder nur E-Book (XinXii, tolino …): Hilfe, Gruppen «Bauen und Drucken» und «E-Book».
 - Die Texte für den Shop stehen in `ausgabe-normal/shop-angaben.txt`.
 
 Zwischendurch sichern: `sh sicherung.sh` (Ziele in der Variablen-Datei unter `# TECHNIK`).

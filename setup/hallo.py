@@ -114,7 +114,7 @@ if __name__ == "__main__":
     try:
         main()
     except subprocess.CalledProcessError:
-        sys.exit("\nHallo-Buch hat nicht geklappt (Meldung oben). Hilfe: START.md, «Wenn etwas nicht klappt». "
+        sys.exit("\nHallo-Buch hat nicht geklappt (Meldung oben). Hilfe: START.md, «Wenn etwas klemmt». "
                  "Danach einfach nochmals starten.")
     except KeyboardInterrupt:
         sys.exit("\nAbgebrochen.")

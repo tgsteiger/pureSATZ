@@ -186,7 +186,7 @@ def main():
     if os.path.exists(hh):
         ht = open(hh, encoding="utf-8").read()
         for muss in ('id="suche"', "Befehle (@)", "Variablen", "@@name", "Buchformate", "taschenbuch", "class=dies",
-                     "tgsteiger.github.io/pureSATZ", "Andere Plattformen", "00-UEBERSICHT.txt"):
+                     "tgsteiger.github.io/pureSATZ", "Bauen und Drucken", "00-UEBERSICHT.txt"):
             if muss not in ht:
                 fehlt.append(f"hilfe.html: «{muss}» fehlt")
     if not tippfehler_erkannt:
