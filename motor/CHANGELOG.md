@@ -3,6 +3,16 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.74.0 (November 2026)
+- Hörbuch mithören mit Leuchtstift (hb → u): ▶ mithören beim Kapitel, das gesprochene Wort leuchtet, die letzten
+  verblassen über 20 s – zum Anklicken, was falsch klang. Wortgenau mit <kapitel>.zeiten.json (Azure-Wortgrenzen,
+  entsteht ab jetzt beim Vertonen), sonst geschätzt (≈). Der Server liefert die MP3 mit Spulen (Range).
+- Prüfseite: Entscheide in der Farbe ihrer Sprache; bestehende Regeln (Liste unten und unterstrichene Wörter) mit
+  denselben Knöpfen, ✎ zeigt die alte Aussprache, ▶ ohne Entscheid spielt die bestehende Regel, 🗑 löscht eine Regel.
+- Andere Stimme: hb → p → l holt alle deutschen und mehrsprachigen Stimmen von Azure (♀/♂, Liste in
+  audio/_stimmen.txt), Nummer oder Name (z. B. de-CH-LeniNeural) geht; danach «als Standard-Stimme? [j/N]»
+  (AZURE_STIMME), Aussprache-Liste der alten Stimme übernehmen [J/n]. {fr: …}/<lang> nur bei Multilingual-Stimmen.
+
 ## 2.73.2 (November 2026)
 - hb → c (prüfen) zeigt auch hunspell und die Wörterbücher für die Fremdwörter, mit Installationszeile.
   INSTALLATION.md und Hilfe «Hörbuch: Was es braucht» nennen sie.

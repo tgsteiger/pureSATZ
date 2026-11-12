@@ -15,16 +15,18 @@ from xml.sax.saxutils import escape
 
 SPRACHEN = {"fr": "fr-FR", "en": "en-GB", "es": "es-ES", "it": "it-IT", "de": "de-DE"}
 
-def sprachen(text, haupt, rate):
+def sprachen(text, haupt, rate, stimme=""):
     """SSML-Teil in <lang><prosody> (wie bisher). {fr: La Chaux-de-Fonds} aus der Aussprache-Liste wird ein eigener
-    Teil in dieser Sprache (ab 2.72.4); lang bleibt direkt unter voice, wie Azure es verlangt."""
+    Teil in dieser Sprache (ab 2.72.4); lang bleibt direkt unter voice, wie Azure es verlangt.
+    <lang> nur bei Multilingual-Stimmen (ab 2.74) – andere sprechen das Wort einfach in ihrer Sprache."""
+    mehr = not stimme or "multilingual" in stimme.lower()
     teile = re.split(r"\{([a-z]{2}(?:-[A-Z]{2})?):\s*([^{}]+?)\s*\}", text)    # Text, Code, Wort, Text, …
     aus = []
     for i in range(0, len(teile), 3):
         for code, stueck in ((haupt, teile[i]),) + (((teile[i + 1], teile[i + 2]),) if i + 1 < len(teile) else ()):
             if not stueck:
                 continue
-            code = SPRACHEN.get(code, code) if code else ""
+            code = (SPRACHEN.get(code, code) if code else "") if mehr else ""
             p = '<prosody rate="%s">%s</prosody>' % (rate, stueck)
             aus.append('<lang xml:lang="%s">%s</lang>' % (code, p) if code else p)
     return "".join(aus)
@@ -236,7 +238,7 @@ def ssml(absaetze, titel=False):
     if titel:                                       # erster Absatz = Kapitelname, längere Pause davor und danach
         tp = '<break time="%s"/>' % titelpause
         inhalt = tp + teile[0] + tp + inhalt
-    inhalt = sprachen(inhalt, sprache, rate)        # <lang><prosody>…, {fr: …} als eigener Teil
+    inhalt = sprachen(inhalt, sprache, rate, stimme)   # <lang><prosody>…, {fr: …} als eigener Teil
     return ('<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="de-DE">'
             '<voice name="%s">%s</voice></speak>' % (stimme, inhalt))
 
@@ -252,11 +254,24 @@ def stuecke(absaetze):
         yield teil
 
 def sprechen(absaetze, datei, titel=False):
+    """Spricht ein Stück; gibt die Wörter mit Zeit zurück [(sekunden, wort)] – für den Leuchtstift (ab 2.74)."""
     audio = speechsdk.audio.AudioOutputConfig(filename=datei)
     synth = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio)
+    woerter = []
+    def grenze(e):
+        art = str(getattr(e, "boundary_type", "Word"))
+        if art.endswith("Word"):
+            woerter.append((round(e.audio_offset / 1e7, 3), e.text))
+    synth.synthesis_word_boundary.connect(grenze)
     r = synth.speak_ssml_async(ssml(absaetze, titel)).get()
     if r.reason != speechsdk.ResultReason.SynthesizingAudioCompleted:
         raise RuntimeError(r.cancellation_details.error_details)
+    return woerter
+
+def dauer(datei):
+    r = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", datei],
+                       capture_output=True, text=True)
+    return float(r.stdout.strip() or 0)
 
 erzeugt = []
 for t in todo:
@@ -270,11 +285,12 @@ for t in todo:
         continue
     print("Lese:", name, flush=True)
 
-    teile = []
+    teile, zeiten, start = [], [], 0.0
     try:
         for i, st in enumerate(stuecke(absaetze)):
             tmp = "/tmp/tts-azure-%03d.%s" % (i, "wav" if hoch else "mp3")
-            sprechen(st, tmp, titel=(i == 0 and bool(titelpause)))
+            zeiten += [(round(start + s, 3), w) for s, w in sprechen(st, tmp, titel=(i == 0 and bool(titelpause)))]
+            start += dauer(tmp)
             teile.append(tmp)
     except RuntimeError as e:
         print("  Fehler:", e)
@@ -297,6 +313,7 @@ for t in todo:
     for p in teile:
         os.remove(p)
     erzeugt.append(os.path.basename(mp3))
+    json.dump(zeiten, open(mp3[:-4] + ".zeiten.json", "w", encoding="utf-8"), ensure_ascii=False)   # Leuchtstift (hb → u)
     stand[name] = abdruck(t)                    # welche Regeln jetzt drin sind (für den nächsten Vergleich)
     json.dump(stand, open(regeln_pfad, "w", encoding="utf-8"), ensure_ascii=False, indent=0)
 print("Fertig: %d neue Datei(en) in %s" % (len(erzeugt), ziel))

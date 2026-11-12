@@ -230,6 +230,37 @@ def pruefen():
     return ok
 
 
+def conf_setzen(name, wert, kommentar=""):
+    """Eine Zeile NAME="wert" in audio.conf ersetzen (oder anhängen)."""
+    p = os.path.join(DATEN, "audio.conf")
+    zeilen = open(p, encoding="utf-8").read().splitlines()
+    neu = f'{name}="{wert}"' + (f"   # {kommentar}" if kommentar else "")
+    i = next((i for i, z in enumerate(zeilen) if z.startswith(name + "=")), None)
+    if i is None:
+        zeilen.append(neu)
+    else:
+        zeilen[i] = neu
+    open(p, "w", encoding="utf-8").write("\n".join(zeilen) + "\n")
+
+
+def stimme_name(wahl):
+    """1/2 = Favorit, andere Nummer = aus der letzten Liste (hb → p → l), sonst der Name selbst."""
+    c = konf()
+    if wahl in ("1", "2"):
+        return c.get("AZURE_FAVORIT" + wahl, wahl)
+    if wahl.isdigit():
+        cache = os.path.join(DATEN, "_stimmen.txt")
+        favs = [c.get("AZURE_FAVORIT1", ""), c.get("AZURE_FAVORIT2", "")]
+        liste = favs + [z.split("|")[0] for z in (open(cache, encoding="utf-8").read().split() if os.path.exists(cache) else [])]
+        liste = list(dict.fromkeys(liste))
+        return liste[int(wahl) - 1] if 0 < int(wahl) <= len(liste) else ""
+    return wahl
+
+
+def kurzname(stimme):
+    return "-".join(stimme.split("-")[2:]).replace("MultilingualNeural", "").replace("Neural", "").replace(":", "-").lower()
+
+
 def stufe_jetzt():
     return "S0" if konf().get("AZURE_STUFE", "F0").upper() == "S0" else "F0"
 

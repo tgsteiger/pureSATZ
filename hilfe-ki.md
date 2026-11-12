@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.73.2
+# pureSATZ Hilfe · pureSATZ · Motor 2.74.0
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -1048,7 +1048,7 @@ Beim ersten `hb` entsteht der Ordner `audio/` mit `audio.conf`, `aussprache-olli
 ```
 
 Taste | Was passiert
-`p` | `audio/probe.txt` vorlesen – fragt Stimme (Enter = eingestellt, `1`/`2` = Favorit, `l` = alle Stimmen) und Tempo, spielt gleich ab
+`p` | `audio/probe.txt` vorlesen – fragt Stimme (Enter = eingestellt, `1`/`2` = Favorit, `l` = alle Stimmen von Azure mit ♀/♂, Nummer oder Name) und Tempo, spielt gleich ab. Danach: «als Standard-Stimme? [j/N]» (siehe «Andere Stimme»)
 `w` | Wörter unter `## KLINGEN FALSCH` vorlesen: Original, kurze Pause, Aussprache – spielt gleich ab
 `u` | Fremdwörter prüfen: Scan + Prüfseite im Browser (siehe «Hörbuch: Fremdwörter»). Zurück ins Menü: Ctrl+C
 `a` | alles in einem: Texte → vertonen → Paket → Hörprobe. Fragt das Tempo, hält beim ersten Fehler an, spielt am Schluss die Hörprobe
@@ -1099,7 +1099,7 @@ Vergleichen: gleiche Datei in beiden Ordnern anhören, z. B. `mpv mp3-md-azure-o
 ## Hörbuch: Einstellungen (audio.conf)
 
 Zeile | Wirkung
-`AZURE_STIMME="1"` | `1` = Favorit 1 (Ollie), `2` = Favorit 2 (Florian) oder ganzer Stimmname. Einmalig: `vertonen stimme=2`
+`AZURE_STIMME="1"` | `1` = Favorit 1 (Ollie), `2` = Favorit 2 (Florian) oder ganzer Stimmname (z. B. `de-CH-LeniNeural`). Einmalig: `vertonen stimme=2`
 `AZURE_SPRACHE="de-DE"` | fest Deutsch – ohne kippt Ollie bei englischen Wörtern ins Englische
 `AZURE_RATE="-8%"` | Tempo, minus = langsamer. Einmalig: `vertonen tempo=-5%` (eigener Ordner `…-t-5-…`)
 `AZURE_TITELPAUSE="2000ms"` | Pause vor und nach dem Kapitelnamen (dazu `AZURE_PAUSE`, `AZURE_SATZPAUSE`)
@@ -1150,6 +1150,18 @@ Bewährt: zuerst alle Fremdwörter, Abkürzungen und Adressen im Buch zusammentr
 - 💾 in Aussprache-Liste übernehmen: schreibt unter `## KLINGEN FALSCH` (gleiche Wörter werden ersetzt, Sicherung `.bak`). Dann `w` anhören, die guten nach `## KLINGEN GUT`, dann `v` – die betroffenen Kapitel kommen neu.
 
 Ins Buch kommt nichts: Die Regeln gelten für jedes Vertonen, auch nach Änderungen im Buch. Ohne Server (`sh hb.sh fremd`): Seite `audio/fremdwoerter.html`, Entscheide mit 📋 kopieren und selbst einfügen.
+
+Entschiedene Wörter zeigen die Farbe ihrer Sprache (✎ gold, deutsch durchgestrichen). Auch die bestehenden Regeln unten auf der Seite (und jedes unterstrichene Wort im Text) haben die Knöpfe: z. B. `Française = Fran-sääs` → `fr`, `Mallorca = Majorka` → `es`, ▶ vergleicht vorher, 🗑 löscht die Regel.
+
+Mithören mit Leuchtstift: ▶ mithören beim Kapitel spielt dessen MP3 (unten in der Leiste). Das gesprochene Wort leuchtet gold, die letzten verblassen über 20 Sekunden – klingt etwas falsch, auch nach ein paar Sekunden noch draufklicken und entscheiden. Wortgenau mit den Zeiten, die beim Vertonen entstehen (`…zeiten.json`, ab 2.74); bei älteren MP3s steht «≈» – dann ist die Stelle geschätzt, das Verblassen gleicht es aus. Scrollst du selbst, folgt die Seite erst nach ein paar Sekunden wieder.
+
+## Hörbuch: Andere Stimme
+
+- `hb` → `p` → `l`: alle deutschen und mehrsprachigen Stimmen von Azure, ♀ Frau · ♂ Mann.
+- Nummer oder Namen eingeben (z. B. `de-CH-LeniNeural`), Tempo – die Probe spielt.
+- «als Standard-Stimme? [j/N]» → `j`: steht dann in `audio.conf`. Die Aussprache-Liste der bisherigen Stimme kann übernommen werden (jede Stimme hat ihre eigene). Die MP3s kommen in einen eigenen Ordner.
+
+Nur Multilingual-Stimmen (z. B. Ollie, Florian, Seraphina) können `{fr: …}` – andere sprechen solche Wörter in ihrer Sprache.
 
 ## Hörbuch: Befehle zum Kopieren
 

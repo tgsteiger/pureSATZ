@@ -10,16 +10,18 @@ from xml.sax.saxutils import escape
 
 SPRACHEN = {"fr": "fr-FR", "en": "en-GB", "es": "es-ES", "it": "it-IT", "de": "de-DE"}
 
-def sprachen(text, haupt, rate):
+def sprachen(text, haupt, rate, stimme=""):
     """SSML-Teil in <lang><prosody> (wie bisher). {fr: La Chaux-de-Fonds} aus der Aussprache-Liste wird ein eigener
-    Teil in dieser Sprache (ab 2.72.4); lang bleibt direkt unter voice, wie Azure es verlangt."""
+    Teil in dieser Sprache (ab 2.72.4); lang bleibt direkt unter voice, wie Azure es verlangt.
+    <lang> nur bei Multilingual-Stimmen (ab 2.74) – andere sprechen das Wort einfach in ihrer Sprache."""
+    mehr = not stimme or "multilingual" in stimme.lower()
     teile = re.split(r"\{([a-z]{2}(?:-[A-Z]{2})?):\s*([^{}]+?)\s*\}", text)    # Text, Code, Wort, Text, …
     aus = []
     for i in range(0, len(teile), 3):
         for code, stueck in ((haupt, teile[i]),) + (((teile[i + 1], teile[i + 2]),) if i + 1 < len(teile) else ()):
             if not stueck:
                 continue
-            code = SPRACHEN.get(code, code) if code else ""
+            code = (SPRACHEN.get(code, code) if code else "") if mehr else ""
             p = '<prosody rate="%s">%s</prosody>' % (rate, stueck)
             aus.append('<lang xml:lang="%s">%s</lang>' % (code, p) if code else p)
     return "".join(aus)
@@ -46,19 +48,46 @@ STIMMEN = list(dict.fromkeys([
     "de-CH-JanNeural",
     "de-CH-LeniNeural",
 ]))
+CACHE = os.path.join(DATEN, "_stimmen.txt")             # letzte Liste von Azure (hb → p → l), Nummern bleiben gleich
+if os.path.exists(CACHE):
+    STIMMEN = list(dict.fromkeys(STIMMEN[:2] + [z.split("|")[0] for z in open(CACHE, encoding="utf-8").read().split()]))
 
 args = sys.argv[1:]
 hoeren = any(a in ("aussprache", "woerter") for a in args)
 quelle = next((a for a in args if a.endswith(".txt")), "probe.txt")
 args = [a for a in args if a not in ("aussprache", "woerter") and not a.endswith(".txt")]
+def stimmen_holen():
+    """Alle deutschen und mehrsprachigen Stimmen von Azure, mit ♀/♂ – Frauen und Männer (ab 2.74)."""
+    import azure.cognitiveservices.speech as sdk
+    c = sdk.SpeechConfig(subscription=os.environ["AZURE_SPEECH_KEY"],
+                         region=os.environ.get("AZURE_SPEECH_REGION", "switzerlandnorth"))
+    r = sdk.SpeechSynthesizer(speech_config=c, audio_config=None).get_voices_async("").get()
+    liste = [(v.short_name, "♀" if "Female" in str(v.gender) else "♂", v.locale) for v in r.voices
+             if v.locale.startswith("de-") or "Multilingual" in v.short_name]
+    reihe = {"de-CH": 0, "de-DE": 1, "de-AT": 2}
+    return sorted(liste, key=lambda x: (reihe.get(x[2], 3), x[1] != "♀", x[0]))
+
 if args and args[0] in ("liste", "l"):
-    for i, s in enumerate(STIMMEN, 1):
-        print(f"{i}  {s}" + ("   (Favorit %d)" % i if i <= 2 else ""))
-    print("Aufruf: sh hb.sh probe [NUMMER|alle] [TEMPO, z. B. -10%] [probe-xy.txt]")
+    try:
+        liste = stimmen_holen()
+        open(CACHE, "w", encoding="utf-8").write("\n".join("|".join(x) for x in liste) + "\n")
+        STIMMEN = list(dict.fromkeys(STIMMEN[:2] + [x[0] for x in liste]))
+        art = {x[0]: x[1] for x in liste}
+    except Exception as e:
+        print(f"(Liste von Azure nicht erreichbar: {str(e)[:80]} – zeige die kurze Liste)")
+        art = {}
+        if not os.path.exists(CACHE):                  # damit die Nummern auch für «als Standard» stimmen
+            open(CACHE, "w", encoding="utf-8").write("\n".join(STIMMEN[2:]) + "\n")
+    breit = max(len(s) for s in STIMMEN) + 9
+    zeilen = [f"{i:>3} {art.get(s, ' ')} {s}" + (" ★" if i <= 2 else "") for i, s in enumerate(STIMMEN, 1)]
+    for i in range(0, len(zeilen), 2):
+        print("".join(z.ljust(breit) for z in zeilen[i:i + 2]).rstrip())
+    print("★ = Favorit · ♀ Frau · ♂ Mann · Multilingual = spricht Deutsch und kann {fr: …} usw.")
+    print("Aufruf: sh hb.sh probe [NUMMER|NAME|alle] [TEMPO, z. B. -10%] [probe-xy.txt]")
     sys.exit(0)
 
 wahl = conf.get("AZURE_STIMME", "1")
-if args and (args[0] == "alle" or args[0].isdigit()):
+if args and (args[0] == "alle" or args[0].isdigit() or "Neural" in args[0]):
     wahl = args.pop(0)
 if wahl == "alle":
     auswahl = STIMMEN
@@ -112,7 +141,7 @@ for stimme in auswahl:
         text = ('<break time="%s"/>' % conf.get("AZURE_PAUSE", "1200ms")).join(escape(z.strip()) for z in zeilen if z.strip())
         if not text:
             print(f"Nichts zu hören: {quelle} ist leer (oder alles mit # auskommentiert)."); continue
-    inhalt = sprachen(text, sprache, rate)              # <lang><prosody>…, {fr: …} als eigener Teil
+    inhalt = sprachen(text, sprache, rate, stimme)      # <lang><prosody>…, {fr: …} als eigener Teil
     ssml = ('<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="de-DE">'
             f'<voice name="{stimme}">{inhalt}</voice></speak>')
     synth = speechsdk.SpeechSynthesizer(speech_config=speech_config,

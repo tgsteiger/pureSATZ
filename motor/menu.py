@@ -434,7 +434,7 @@ def hoerbuch_schritt(H, audio, hb):
         if s_ == "l":
             lauf(hb + ["probe", "l"])
             gelaufen = False
-            print(f" Stimme – Nummer aus der Liste · Enter = {name} (eingestellt) · z = zurück")
+            print(f" Stimme – Nummer oder Name aus der Liste (z. B. de-CH-LeniNeural) · Enter = {name} (eingestellt) · z = zurück")
             s_ = frage(" Stimme: ").strip()
         if s_ in ("z", "q"):
             return True
@@ -442,8 +442,18 @@ def hoerbuch_schritt(H, audio, hb):
         if t_ is None:
             return True
         seit = time.time()
-        lauf(hb + ["probe"] + [x for x in (s_, t_) if x])
+        r_ = lauf(hb + ["probe"] + [x for x in (s_, t_) if x])
         abspielen("*.mp3", seit)
+        neu_ = H.stimme_name(s_) if s_ else ""
+        if r_ == 0 and neu_ and neu_ != H.stimme_name(c.get("AZURE_STIMME", "1")) and \
+                frage(f" {neu_} als Standard-Stimme? [j/N]: ").lower() in ("j", "ja", "y"):
+            H.conf_setzen("AZURE_STIMME", s_ if s_ in ("1", "2") else neu_,
+                          "1/2 = Favorit oder ganzer Name – hb → p → l zeigt alle")
+            alt_, neu_a = (os.path.join(audio, f"aussprache-{H.kurzname(x)}.txt") for x in (H.stimme_name(c.get("AZURE_STIMME", "1")), neu_))
+            if not os.path.exists(neu_a) and os.path.exists(alt_) and \
+                    frage(f" Aussprache-Liste von {os.path.basename(alt_)} übernehmen? [J/n]: ").lower() not in ("n", "nein"):
+                shutil.copy(alt_, neu_a)
+            print(f" ✓ Stimme: {neu_} – neue MP3s kommen in einen eigenen Ordner (…-{H.kurzname(neu_)}-…)")
     elif k == "w":
         seit = time.time()
         lauf(hb + ["woerter"])
