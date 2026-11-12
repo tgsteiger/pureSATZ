@@ -10,7 +10,7 @@ Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.
   (falsche Meldung «unbekannter Name» weg).
 - Hilfe-Suche: verwandte Wörter (isbn ↔ Strichcode, Barcode, EAN-13; löschen ↔ aufräumen …), Anzahl Abschnitte und
   Stellen, grosse Tabellen zeigen nur passende Zeilen. hilfe.html#suche=wort öffnet gefiltert.
-- finde-hilfe: im Menü `fh wort` (Liste der Abschnitte, Nummer öffnet die Hilfe dort), ohne Menü `sh build.sh hilfe wort`.
+- hilfe finden: im Menü `hf wort` (Liste der Abschnitte, Nummer öffnet die Hilfe dort), ohne Menü `sh build.sh hilfe wort`.
 
 ## 2.74.0 (November 2026)
 - Hörbuch mithören mit Leuchtstift (hb → u): ▶ mithören beim Kapitel, das gesprochene Wort leuchtet, die letzten

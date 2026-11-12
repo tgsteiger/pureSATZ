@@ -614,7 +614,7 @@ def zeige():
                 + ([("hb", "Hörbuch …")] if LINUX else [])),
                ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen")]),
                ("Abgleichen", [("sy", "sync   (GitHub)"), ("u", "update" + (" (ul lokal)" if LOKAL else ""))])]
-    spalten_zeigen(spalten, "n neu · $ Terminal · : Befehle · h hilfe · fh finden · ! Klang · ↵ beenden")
+    spalten_zeigen(spalten, "n neu · $ Terminal · : Befehle · h hilfe · hf finden · ! Klang · ↵ beenden")
     if os.path.exists(ALLE):
         print(SPERRE)
 
@@ -697,14 +697,14 @@ def schreibtisch():
 
 
 def finde_hilfe(wort):
-    """fh wort: Abschnitte der Hilfe mit dem Wort (und verwandten: isbn → Strichcode, Barcode), Nummer öffnet dort."""
+    """hf wort (hilfe finden): Abschnitte der Hilfe mit dem Wort (und verwandten: isbn → Strichcode, Barcode), Nummer öffnet dort."""
     import hilfe as Hf
     wort = wort or frage(" In der Hilfe suchen (z. B. isbn, farbe, hörbuch): ").strip()
     if not wort or wort.lower() in ("z", "q"):
         return
     tr = Hf.finden(BASE, wort)
     if tr is None:
-        return print("  Noch keine Hilfe – einmal bauen (s), dann nochmals fh.")
+        return print("  Noch keine Hilfe – einmal bauen (s), dann nochmals hf.")
     if not tr:
         return print(f"  Nichts gefunden zu «{wort}».")
     verwandt = [x for x in Hf.erweitern(wort)[1:]]
@@ -782,7 +782,7 @@ def main():
                     break
                 continue
             seit = time.time()
-            if w == "fh" or w.startswith("fh "):            # finde-hilfe: fh isbn
+            if w == "hf" or w.startswith("hf "):            # hilfe finden: hf isbn
                 finde_hilfe(e[2:].strip())
             elif w == "s":
                 bauen("schnell")

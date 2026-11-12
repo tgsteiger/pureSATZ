@@ -468,7 +468,7 @@ Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {v
   p  PDF öffnen …                     sy sync   (GitHub)
   o  Ordner öffnen …                  u  update (ul lokal)
   a  änderungen
- ── Weiteres:  n neu · $ Terminal · : Befehle · h hilfe · fh finden · ! Klang · ↵ beenden
+ ── Weiteres:  n neu · $ Terminal · : Befehle · h hilfe · hf finden · ! Klang · ↵ beenden
 ```
 
 Ja/Nein-Fragen: `[J/n]` = Enter heisst ja, `[j/N]` = Enter heisst nein (der Grossbuchstabe gilt bei Enter).
@@ -685,7 +685,7 @@ Sie entsteht ausserdem bei jedem Bau neu. Oben ein **Suchfeld** (Taste `/`, `Esc
 **Suchen:** Die Hilfe schrumpft auf die Abschnitte mit dem Wort, es ist gelb markiert; grosse Tabellen zeigen nur
 die passenden Zeilen («alle zeigen» holt den Rest). Verwandte Wörter finden sich gegenseitig: `isbn` findet auch
 Strichcode, Barcode und EAN-13 · `löschen` auch aufräumen · `farbe` auch Farbschema · `hörbuch` auch vertonen.
-Im Menü: `fh isbn` zeigt die Abschnitte als Liste, eine Nummer öffnet die Hilfe genau dort (schon gefiltert).
+Im Menü: `hf isbn` (hilfe finden) zeigt die Abschnitte als Liste, eine Nummer öffnet die Hilfe genau dort (schon gefiltert).
 Ohne Menü: `sh build.sh hilfe isbn`.
 
 Inhalt: Spickzettel, eigene Praxis-Notizen aus `meine-hilfe.md` (freiwillig, im Buchordner, selbst pflegen:

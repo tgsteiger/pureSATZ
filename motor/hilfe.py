@@ -21,7 +21,7 @@ from datetime import datetime
 import json
 import unicodedata
 
-# Suche: verwandte Wörter finden sich gegenseitig (Hilfe-Seite und «fh» im Menü, ab 2.74.1)
+# Suche: verwandte Wörter finden sich gegenseitig (Hilfe-Seite und «hf» im Menü, ab 2.74.1)
 SYNONYME = [("isbn", "strichcode", "barcode", "ean-13"), ("aufräumen", "cleanup", "löschen", "entfernen", "delete"),
             ("hörbuch", "audio", "vertonen", "azure"), ("umschlag", "cover", "rückseite"),
             ("farbe", "farbschema", "farben"), ("sicherung", "backup", "md-history"),
@@ -118,7 +118,7 @@ SPICKZETTEL = [
     ("sh cleanup.sh", "Aufräumen: alte Motoren und Zwischenspeicher löschen, entfernen (delete) – fragt zuerst, "
                       "md-history/ und Texte bleiben"),
     ("sh build.sh hilfe", "Diese Hilfe neu erzeugen und öffnen"),
-    ("sh build.sh hilfe isbn", "In der Hilfe suchen: zeigt die Abschnitte und öffnet die Hilfe gefiltert (Menü: fh isbn)"),
+    ("sh build.sh hilfe isbn", "In der Hilfe suchen: zeigt die Abschnitte und öffnet die Hilfe gefiltert (Menü: hf isbn)"),
     ("sh build.sh mockup", "Werbebild: Vorder- und Rückseite mit Schatten (…_Mockup.jpg) für Webseite, Newsletter, Shop "
                            "(grosse Cover-Bilder für E-Book-Shops entstehen mit dem E-Book: …_Cover-vorne.jpg)"),
 ]
@@ -587,7 +587,7 @@ addEventListener('hashchange',()=>zuletzt(location.hash.slice(1)));
 if(z&&!document.getElementById(z)){{const s=secs.find(x=>k(x.querySelector('h2').textContent).includes(k(z)));
 if(s){{history.replaceState(null,'','#'+s.id);s.scrollIntoView()}}}}}}
 zuletzt(location.hash.slice(1));
-if(location.hash.startsWith('#suche=')){{const q=new URLSearchParams(location.hash.slice(1));   // von «fh» im Menü oder sh build.sh hilfe wort
+if(location.hash.startsWith('#suche=')){{const q=new URLSearchParams(location.hash.slice(1));   // von «hf» im Menü oder sh build.sh hilfe wort
 such.value=q.get('suche')||'';such.dispatchEvent(new Event('input'));const ab=q.get('abschnitt'),z=ab&&secs.find(x=>titel(x)===ab);
 if(z)setTimeout(()=>z.scrollIntoView(),50)}}
 function haken(){{let h={{}};try{{h=JSON.parse(localStorage.getItem('ps-haken')||'{{}}')}}catch(e){{}}
