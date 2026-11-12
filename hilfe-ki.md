@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.73.0
+# pureSATZ Hilfe · pureSATZ · Motor 2.73.1
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -170,7 +170,7 @@ Zum Abhaken – der Browser merkt sich die Häkchen. «drucken» oben rechts dru
 
 ## Tipp: Menü statt Befehle
 
-Im Buchordner `sh menu.sh` (Windows: `menu.bat` doppelklicken). Dann genügt ein Buchstabe – geordnet nach Schreiben (`m` MD öffnen, `g` Geschichten, `t` Tabellen, `c` gegenlesen), Bauen (`s` schnell, `k` komplett, `w` weitere), Ansehen (`p` PDF, `o` Ordner) und Abgleichen (`sy` sync, `u` update); `n` neu (neues Buch, Hallo-Buch, `v` Lotus-Starter). `:` zeigt Befehle zum Tippen, `h` oder `?` die Hilfe. Mit ↑ holst du die letzten Befehle zurück, `z` = eine Stufe zurück (im Hauptmenü: beenden).
+Im Buchordner `sh menu.sh` (Windows: `menu.bat` doppelklicken). Dann genügt ein Buchstabe – geordnet nach Schreiben (`m` MD öffnen, `g` Geschichten, `t` Tabellen, `c` gegenlesen), Bauen (`s` schnell, `k` komplett, `w` weitere), Ansehen (`p` PDF, `o` Ordner) und Abgleichen (`sy` sync, `u` update); `n` neu (neues Buch, Hallo-Buch, `v` Lotus-Starter). `:` zeigt Befehle zum Tippen, `h` oder `?` die Hilfe. Mit ↑ holst du die letzten Befehle zurück, Enter (oder `z`) = eine Stufe zurück (im Hauptmenü: «beenden? [j/N]»).
 
 Mehr dazu in der Hilfe unter «Bauen → Menü».
 
@@ -739,12 +739,12 @@ Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {v
   p  PDF öffnen …                     sy sync   (GitHub)
   o  Ordner öffnen …                  u  update (ul lokal)
   a  änderungen
- ── Weiteres:  n neu · $ Terminal · : Befehle · h hilfe · ! Klang · z beenden
+ ── Weiteres:  n neu · $ Terminal · : Befehle · h hilfe · ! Klang · ↵ beenden
 ```
 
 Ja/Nein-Fragen: `[J/n]` = Enter heisst ja, `[j/N]` = Enter heisst nein (der Grossbuchstabe gilt bei Enter).
 
-`z` = eine Stufe zurück; im Hauptmenü fragt `z` «Menü beenden? [j/N]» · Strg+C bei einer Frage = beenden (mit Rückfrage), während eines Laufs = nur den Lauf abbrechen.
+Enter (oder `z`) = eine Stufe zurück; im Hauptmenü fragt Enter «Menü beenden? [j/N]» – nur `j` schliesst · Strg+C bei einer Frage = beenden (mit Rückfrage), während eines Laufs = nur den Lauf abbrechen.
 
 Untermenüs («…» = nur was es gibt):
 
@@ -1043,7 +1043,7 @@ Beim ersten `hb` entsteht der Ordner `audio/` mit `audio.conf`, `aussprache-olli
                                       x  Azure: F0 gratis ↔ S0 bezahlt
                                       $  Terminal in audio/
                                       o  Ordner audio/ öffnen
- ── Weiteres:  h hilfe · c prüfen · z zurück
+ ── Weiteres:  h hilfe · c prüfen · ↵ zurück
 ```
 
 Taste | Was passiert
@@ -1062,7 +1062,7 @@ Taste | Was passiert
 `$` | Terminal im Ordner `audio/` – dort `sh hb.sh` zeigt alle Befehle
 `o` · `h` · `c` | Ordner `audio/` öffnen · diese Hilfe · Azure-Paket, Schlüssel, ffmpeg prüfen
 
-Oben steht, wo du bist (› Hörbuch) und was gerade gilt: Stimme, Tempo, Qualität (aus `audio.conf`). Das Menü bleibt offen, bis `z` oder Enter – nach einem Lauf bleiben die Meldungen stehen. Bei jeder Frage (Stimme, Tempo, Kürzel, Weiter?) heisst `z` zurück.
+Oben steht, wo du bist (› Hörbuch) und was gerade gilt: Stimme, Tempo, Qualität (aus `audio.conf`). Das Menü bleibt offen, bis Enter (oder `z`) – nach einem Lauf bleiben die Meldungen stehen. Bei jeder Frage (Stimme, Tempo, Kürzel, Weiter?) heisst `z` zurück.
 
 `v` oder `k`? `v` schaut selbst, was fehlt oder sich geändert hat – der Normalfall. `k` macht genau die Kapitel, die du nennst, auch wenn sie aktuell sind – zum Vergleichen (anderes Tempo) oder nach einer neuen Aussprache-Regel.
 

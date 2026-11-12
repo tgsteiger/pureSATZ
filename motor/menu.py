@@ -2,7 +2,7 @@
 """
 menu.py – Menü mit den häufigsten Befehlen (ab 2.50, Buchstaben 2.51). Aufruf im Buchordner: sh menu.sh (Windows: menu.bat)
 
-Ein Buchstabe pro Befehl, m / g / t / c / w / p / o / n mit Untermenü; Geschichten mit festem Kürzel (g → e). ↑ ↓ = letzte Eingaben, z = zurück (im Hauptmenü: beenden).
+Ein Buchstabe pro Befehl, m / g / t / c / w / p / o / n mit Untermenü; Geschichten mit festem Kürzel (g → e). ↑ ↓ = letzte Eingaben, Enter (oder z) = zurück (im Hauptmenü: beenden? [j/N]).
 Ganze Befehle gehen auch: final · leseprobe uz 18,20 · personen Eltern.
 MD, PDF und Ordner öffnen im eigenen Programm (das Menü wartet nicht), Bauen läuft hier im Fenster.
 Klang (!) und Verlauf stehen in .menu (kommt nicht zu GitHub). Klang: motor/klang.wav (oder klang.wav im Buchordner), sonst Piepton.
@@ -232,7 +232,7 @@ def untermenue(titel, eintraege, zusatz=""):
     """eintraege: {Taste: (Text, Pfad oder None)} – gibt die gewählte Taste zurück, None = zurück.
     zusatz: z. B. "tp" – dann geht auch Taste + t / p (bt, ap …) und eine Hinweiszeile steht darunter."""
     print(f"\n {FETT(titel)}")
-    raster([(k, t) for k, (t, _) in eintraege.items()] + [("z", "zurück")])
+    raster([(k, t) for k, (t, _) in eintraege.items()] + [("↵", "zurück")])
     if zusatz:
         print("  " + GRAU("dazu: + t = Terminal dort (bt, at …) · + p = Pfad kopieren (bp, ap …)"))
     e = frage(" Wahl: ").lower()
@@ -306,7 +306,7 @@ def geschichte_oeffnen():
     for n in G.reihe(BASE, buchdatei()):
         titel, kopf, _ = G.lies(ks[nach[n]][1])
         print(f"  {nach[n]:<4}{titel[:40]:<42}{G.stand(kopf):<14}{'' if n in drin else 'nicht im Buch'}".rstrip())
-    print("  z   zurück")
+    print("  ↵   zurück")
     e = frage(" Wahl: ").lower()
     if e in ks:
         oeffnen(ks[e][1])
@@ -409,7 +409,7 @@ def hoerbuch_schritt(H, audio, hb):
                                              ("x", "Azure: " + " ↔ ".join(gold(t) if t[:2] == st else t
                                                                           for t in ("F0 gratis", "S0 bezahlt"))),
                                              ("$", "Terminal in audio/"), ("o", "Ordner audio/ öffnen")])],
-                   "h hilfe · c prüfen · z zurück")
+                   "h hilfe · c prüfen · ↵ zurück")
     k = frage(" Wahl: ").lower()
     if k in ("", "z"):
         return False
@@ -547,7 +547,7 @@ def tabellen_menue():
         print("\n Tabelle öffnen …")
         for kz, (n, _) in ks.items():
             print(f"  {kz:<4}{n}")
-        print("  z   zurück")
+        print("  ↵   zurück")
         e = frage(" Wahl: ").lower()
         if e in ks:
             oeffnen(ks[e][1])
@@ -604,7 +604,7 @@ def zeige():
                 + ([("hb", "Hörbuch …")] if LINUX else [])),
                ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen")]),
                ("Abgleichen", [("sy", "sync   (GitHub)"), ("u", "update" + (" (ul lokal)" if LOKAL else ""))])]
-    spalten_zeigen(spalten, "n neu · $ Terminal · : Befehle · h hilfe · ! Klang · z beenden")
+    spalten_zeigen(spalten, "n neu · $ Terminal · : Befehle · h hilfe · ! Klang · ↵ beenden")
     if os.path.exists(ALLE):
         print(SPERRE)
 
@@ -645,7 +645,7 @@ def befehle():
     for befehl, text in liste:
         print(f"  {befehl:<{breit}}{text if len(text) <= rest else text[:rest - 1] + '…'}")
     print(" Ganze Hilfe: h (hilfe.html im Browser)")
-    e = frage(" Eingabe (z = zurück): ", merken=True)
+    e = frage(" Eingabe (Enter = zurück): ", merken=True)
     return "" if e.lower() == "z" else e             # z hier = zurück, nicht beenden
 
 
@@ -741,9 +741,7 @@ def main():
                 print(" Wahl oder Befehl (z. B. final · ↑ = letzte):")
                 e = frage(" Eingabe: ", merken=True)
             w = e.lower()
-            if not w:
-                continue
-            if w in ("z", "q"):                       # Hauptmenü: z = beenden (q geht still weiter)
+            if w in ("", "z", "q"):                   # Hauptmenü: Enter / z = beenden? [j/N] – nur j schliesst
                 if beenden_frage():
                     break
                 continue
