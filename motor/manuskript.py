@@ -59,18 +59,34 @@ def _wo(name, nr):
     return f"{nr.datei}, Zeile {int(nr)}" if isinstance(nr, Nr) else f"{name}, Zeile {nr}"
 
 
+CODE_ZAUN = "```"          # Code-Block: Zeilen zwischen «```» und «```» bleiben wörtlich (ab 2.76)
+
+
+def im_code(zeilen):
+    """Menge der Indizes, die in einem Code-Block liegen (mit den ```-Zeilen selbst)."""
+    drin, aus = False, set()
+    for i, z in enumerate(zeilen):
+        z = z[1] if isinstance(z, tuple) else z
+        if z.lstrip().startswith(CODE_ZAUN):
+            aus.add(i); drin = not drin
+        elif drin:
+            aus.add(i)
+    return aus
+
+
 def _geschichten_einsetzen(pfad, zeilen_mit_nr):
     """Zeilen «@@name» durch die Geschichte geschichten/name.md ersetzen.
     Ohne @@-Zeilen bleibt alles, wie es war."""
     import geschichten as G
-    if not any(G.VERWEIS.match(z) for _, z in zeilen_mit_nr):
+    code = im_code(zeilen_mit_nr)
+    if not any(G.VERWEIS.match(z) for i, (_, z) in enumerate(zeilen_mit_nr) if i not in code):
         return zeilen_mit_nr
     basis = os.path.dirname(os.path.abspath(pfad))
     vorhanden = G.alle(basis)
     sammlung = os.environ.get("BUCH_SAMMLUNG") == "1"
     out = []
-    for nr, z in zeilen_mit_nr:
-        m = G.VERWEIS.match(z)
+    for i, (nr, z) in enumerate(zeilen_mit_nr):
+        m = G.VERWEIS.match(z) if i not in code else None
         if not m:
             out.append((nr, z)); continue
         name = m.group(1)
@@ -276,7 +292,9 @@ class Ausgabe:
             if w == "":
                 leer = True
             return w
-        neu = re.sub(r"\{([A-Za-z][A-Za-z0-9-]*)\}", ein, text)
+        teile = re.split(r"(`[^`]+`)", text)         # in `Code` bleibt {name} stehen (ab 2.76)
+        neu = "".join(x if x.startswith("`") and x.endswith("`") and len(x) > 1 else
+                      re.sub(r"\{([A-Za-z][A-Za-z0-9-]*)\}", ein, x) for x in teile)
         return None if leer else neu
 
 
@@ -303,10 +321,12 @@ def markdown_zeilen(roh):
     """Markdown-Schreibweisen vor dem Lesen umsetzen:
     «\\» am Zeilenende = Zeilenumbruch im Absatz (wie <br/>; die nächste Zeile gehört zum selben Absatz),
     eine Zeile «---» = neue Seite (wie @UMBRUCH), «@ZITAT-ZIER Satz» = «> Satz» (Zitat mit Verzierung)."""
-    out, i = [], 0
+    out, i, code = [], 0, im_code(roh)
     while i < len(roh):
         nr, s = roh[i]
         t = s.rstrip()
+        if i in code:
+            out.append((nr, t)); i += 1; continue
         while t.endswith("\\") and not t.endswith("\\\\") and i + 1 < len(roh) and roh[i + 1][1].strip():
             i += 1
             t = t[:-1].rstrip() + "<br/>" + roh[i][1].strip()
@@ -329,10 +349,10 @@ IMPRESSUM_VORLAGE = ["© {jahr} {autor}", "{website}", "", "{impressum-herstellu
 def impressum_einsetzen(roh, a):
     """Leeres «## @IMPRESSUM»: der Motor setzt die Zeilen selbst ein (IMPRESSUM_VORLAGE).
     Zeilen mit einer Variablen, die das Buch nicht kennt, fallen weg."""
-    out = []
+    out, code = [], im_code(roh)
     for i, (nr, s) in enumerate(roh):
         out.append((nr, s))
-        if not IMPRESSUM_KOPF.match(s):
+        if i in code or not IMPRESSUM_KOPF.match(s):
             continue
         naechste = next((z for _, z in roh[i + 1:] if z.strip()), "")
         if naechste and not naechste.lstrip().startswith(("#", "@", ":::")):
@@ -353,6 +373,14 @@ def zeilen(pfad, a, entwurf=False):
     while i < len(roh):
         nr, s = roh[i]
         s = s.rstrip()
+        if s.lstrip().startswith(CODE_ZAUN):    # Code-Block: wörtlich, ohne Variablen (ab 2.76)
+            inhalt, i = [], i + 1
+            while i < len(roh) and not roh[i][1].lstrip().startswith(CODE_ZAUN):
+                inhalt.append(_zeile(roh[i][1].rstrip(), roh[i][0])); i += 1
+            if i >= len(roh):
+                raise Fehler(f"{_wo(name, nr)}: Code-Block wird nicht mit «{CODE_ZAUN}» geschlossen.")
+            out.append(("CODE", s.strip()[3:].strip(), inhalt)); i += 1
+            continue
         fk = FOTO_KOPF.match(s)
         if fk:                                  # «#### @FOTO Titel» … bis zur ersten Leerzeile
             art, tag, titel = _art("foto" + (fk.group(1) or "").lower() + " " + (fk.group(2) or ""))

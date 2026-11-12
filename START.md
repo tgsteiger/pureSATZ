@@ -2,8 +2,13 @@
 
 ## 1. Erstes PDF in fünf Minuten
 
+::: nur-webhilfe
 Einmal von oben nach unten. Die Häkchen kannst du anklicken, der Browser merkt sie sich.
 Oben rechts **Linux/Mac** oder **Windows** wählen, dann stimmen alle Befehle.
+:::
+::: nur-handbuch
+Einmal von oben nach unten.
+:::
 
 - [ ] **Starten.** ZIP auspacken (Windows: Rechtsklick → «Alle extrahieren …»), dann im Ordner pureSATZ:
   Windows `START-Windows.bat` doppelklicken · Mac: Terminal öffnen (Cmd+Leertaste, «Terminal», Enter), `sh ` tippen,
@@ -132,10 +137,15 @@ sh build.sh final
 
 ## 5. Fahrplan: vom Manuskript zum fertigen Buch
 
+::: nur-webhilfe
 Zum Abhaken – der Browser merkt sich die Häkchen. «drucken» oben rechts druckt nur diesen Fahrplan.
 Mit einem Zieldatum (freiwillig, z. B. Erscheinen oder Vernissage) zeigt jede Kachel, bis wann der Schritt spätestens
 fertig sein sollte. Dauer und Wochen stehen in `pureSATZ/START.md`, z. B. `{⏱ 3–6 Wochen · fertig −8}` = 8 Wochen vor
 dem Ziel; die Zahlen sind grobe Erfahrungswerte und lassen sich anpassen.
+:::
+::: nur-handbuch
+Zum Abhaken. Die Hilfe (`hilfe.html`) zeigt zu jedem Schritt Dauer und spätestes Datum, wenn du ein Zieldatum eingibst.
+:::
 **Zwei Probedrucke** sind eingeplant: Der zweite kommt ca. 10 Tage nach Erhalt des ersten, mit allen Korrekturen.
 
 ::: kacheln
@@ -174,8 +184,11 @@ Mehr dazu in der Hilfe unter «Erste Schritte → Menü».
 ## Gestalten: Ich will …
 
 Die häufigsten Fälle beim Gestalten – nachsehen, wenn etwas nicht so aussieht wie gewünscht.
-Danach mit `sh build.sh schnell` ansehen. **Klick auf einen Code = kopiert.** Ganze Bausteine:
-[Zum Kopieren](#Zum-Kopieren) · Suchen: Taste `/`.
+Danach mit `sh build.sh schnell` ansehen. Ganze Bausteine: [Zum Kopieren](#Zum-Kopieren).
+
+::: nur-webhilfe
+**Klick auf einen Code = kopiert.** Suchen: Taste `/`.
+:::
 
 | Ich will … | So geht es |
 |---|---|

@@ -1,0 +1,37 @@
+# Stichwortverzeichnis des pureSATZ Handbuchs – eine Zeile pro Stichwort, Varianten mit |.
+# Wird bei jedem Bau ins Handbuch kopiert (motor/handbuch.py). Hier pflegen, nicht im Buchordner.
+Ausgabe | Ausgaben
+Ausgabeordner
+Beschnitt
+Booklet | Booklets
+Coverrechner
+CMYK
+Druckdatei | Druckdateien | Plattform-Datei | Plattform-Dateien
+E-Book | E-Books
+EPUB
+Farbschema | Farbschemas
+Fassung | Fassungen
+Foto | Fotos
+Geschichte | Geschichten
+GitHub
+Hörbuch
+Impressum
+Inhaltsverzeichnis
+ISBN
+KI
+Korrektur-PDF
+Leseprobe
+Lese-PDF
+Menü
+Mockup
+Probedruck | Probedrucke
+Rücken | Rückenbreite
+Seitenzahl
+Sicherung
+Stand | Stände
+Stichwortverzeichnis
+Strichcode
+Tabelle | Tabellen
+Umschlag
+Variable | Variablen
+Verzierung

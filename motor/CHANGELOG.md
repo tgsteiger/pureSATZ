@@ -3,6 +3,16 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.76.0 (November 2026)
+- Das «pureSATZ Handbuch»: die Hilfe als Buch, gesetzt mit pureSATZ (motor/handbuch.py). Einmal anlegen:
+  `sh setup/setup.sh handbuch/handbuch.txt`, dann im Ordner pureSATZ-Handbuch `sh build.sh handbuch`. Danach entsteht
+  die Buch-MD bei jedem Bau neu aus START.md, HILFE.md und handbuch/ (`{buch-aus-hilfe}: ja`). Teile = Gruppen der
+  Hilfe, Anhang = Installation und Lizenz, Stichwortverzeichnis aus handbuch/stichworte.txt.
+- Code im Buch: `Wort` in Backticks = Code-Schrift, wörtlich (keine Variablen, kein fett); Zeilen zwischen
+  drei Backticks = Code-Kasten. Im E-Book als code/pre.
+- Tabellen: Zeile 1 leer = Tabelle ohne Titel; erste Zeile «sep=;» bestimmt den Trenner.
+- Hilfe: `::: nur-webhilfe` … `:::` nur auf der Webseite, `::: nur-handbuch` … `:::` nur im Buch.
+
 ## 2.75.0 (November 2026)
 - Hilfe neu gegliedert, in der Reihenfolge, wie ein Buch entsteht: Erste Schritte · Schreiben · Gestalten ·
   Bauen und Drucken · E-Book · Hörbuch · Werkzeuge · Nachschlagen (Grundlage für das «pureSATZ Handbuch»).

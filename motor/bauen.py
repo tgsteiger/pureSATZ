@@ -26,6 +26,7 @@ Booklets zum Selberdrucken entstehen automatisch: im «final» der Probedruck au
     python motor/bauen.py aenderungen ["Name" ["Name2"]]   was sich seit dem (letzten) Stand geändert hat → …_Aenderungen.pdf
     python motor/bauen.py geschichten [uz]   Sammel-PDF aller Geschichten aus geschichten/ (normal; mit uz auch unzensiert)
     python motor/bauen.py hilfe           hilfe.html erzeugen und im Browser öffnen
+    python motor/bauen.py handbuch        nur im Buchordner pureSATZ-Handbuch: Buch-MD aus der Hilfe (motor/handbuch.py)
     python motor/bauen.py mockup          Werbebilder (…_Mockup.jpg, …_Vorderseite.jpg) aus dem Bildschirm-PDF
     python motor/bauen.py final druck=bod-a5-normal [normal|uz]
                                           Test: nur Druckdateien mit einer anderen Datei aus druck/,
@@ -48,6 +49,12 @@ except ImportError:
 MOTOR = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.dirname(MOTOR)
 sys.path.insert(0, MOTOR)
+if __name__ == "__main__" and os.path.exists(os.path.join(MOTOR, "handbuch.py")):   # Handbuch: Buch-MD aus der Hilfe
+    import handbuch as _HB                                                           # (vor dem Lesen der MD, ab 2.76)
+    if "handbuch" in [a.lower() for a in sys.argv[1:]]:
+        _HB.einschalten(BASE)
+    if _HB.aktiv(BASE):
+        _HB.erzeuge(BASE)
 import build as bk          # noqa: E402  (liest die Buch-MD)
 import manuskript as M      # noqa: E402
 
@@ -691,6 +698,8 @@ def main():
         NUR_FASSUNG = next((a for a in args if a in ("normal", "uz")), None)
     final = "final" in args
     art = next((a for a in args if a not in ("final", "uz", "normal")), "alles")
+    if art == "handbuch":                   # «sh build.sh handbuch»: einschalten, erzeugen (oben), Lese-PDF
+        art = "schnell"
     komplett = art == "komplett"            # final + Leseprobe + Korrektur
     if komplett:
         art, final = "alles", True

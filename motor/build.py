@@ -1153,14 +1153,22 @@ def links(t):
                   lambda m: f'<a href="{m.group(2)}" color="{hexfarbe("akzent")}">{m.group(1)}</a>', t)
 
 
+def code_text(t):
+    """Text in `Code`: wörtlich, in der Titelschrift und Hauptfarbe (ab 2.76)."""
+    t = t.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    return f'<font name="{schrift("titel")}" color="{hexfarbe("haupt")}">{t}</font>'
+
+
 def inline(t):
+    codes = []                                        # `Code` bleibt wörtlich (kein fett, keine Trennstellen)
+    t = re.sub(r"`([^`]+)`", lambda m: codes.append(m.group(1)) or f"\x00{len(codes) - 1}\x00", t)
     t = re.sub(r"^(\d{1,3})\\\.", r"\1.", t)          # «3\. Mai» = keine Aufzählung, gedruckt «3. Mai»
     t = stichwort_marken(links(t))
     for wort, getrennt in TRENNSTELLEN.items():
         t = t.replace(wort, getrennt)
     t = re.sub(r"&(?!amp;|lt;|gt;|quot;|#)", "&amp;", t)
     t = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", t)
-    return t
+    return re.sub(r"\x00(\d+)\x00", lambda m: code_text(codes[int(m.group(1))]), t)
 
 
 class Ornament(Flowable):
@@ -1652,6 +1660,28 @@ uz_nummer = ParagraphStyle("uznr", parent=uz_bullet, leftIndent=7 * mm, bulletIn
                            bulletFontName=uz_bullet.fontName, bulletFontSize=uz_bullet.fontSize)
 
 
+def code_kasten(sprache, inhalt):
+    """Code-Block «```» … «```»: heller Kasten, jede Zeile wörtlich in der Titelschrift (ab 2.76)."""
+    st = ParagraphStyle("code", parent=body, fontName=schrift("titel"), fontSize=TEXT_GROESSE * 0.78,
+                        leading=TEXT_GROESSE * 1.1, alignment=TA_LEFT, spaceAfter=0, firstLineIndent=0,
+                        leftIndent=3 * mm, textColor=BLAU)
+    zeilen = list(inhalt)
+    while zeilen and not zeilen[-1].strip():
+        zeilen.pop()
+    if not zeilen:
+        return []
+    def zeile(z):
+        e = len(z) - len(z.lstrip(" "))
+        z = z.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        return Paragraph("&nbsp;" * e + (z.lstrip(" ") or "&nbsp;"), st)
+    t = Table([[zeile(z)] for z in zeilen], colWidths=[W - IN - OUT], hAlign="LEFT")
+    t.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, -1), farbe("kasten")),
+                           ("LEFTPADDING", (0, 0), (-1, -1), 2 * mm), ("RIGHTPADDING", (0, 0), (-1, -1), 2 * mm),
+                           ("TOPPADDING", (0, 0), (-1, -1), 0.6), ("BOTTOMPADDING", (0, 0), (-1, -1), 0.6),
+                           ("TOPPADDING", (0, 0), (-1, 0), 2.5 * mm), ("BOTTOMPADDING", (0, -1), (-1, -1), 2.5 * mm)]))
+    return [Spacer(1, 2), KeepTogether([t]) if len(zeilen) <= 14 else t, Spacer(1, 6)]
+
+
 def offen_kasten(zusatz, inhalt):
     """«::: offen»: Buchtext, über den noch nicht entschieden ist. Nur im Entwurf als gelber Kasten."""
     return uz_kasten("", inhalt, kopf_text="OFFEN", hinweis="noch nicht entschieden " + zusatz,
@@ -2002,7 +2032,7 @@ def _build(out, ausgleich=None):
             story.append(QuellenMarke(nr))
         if isinstance(ln, tuple):          # Kasten, offene Stelle, Notiz, Foto, Mitte, Zusammen
             teile = {"UZ": uz_kasten, "OFFEN": offen_kasten, "PH": platzhalter, "FOTO": foto, "MITTE": mitte,
-                     "ZUSAMMEN": zusammen}[ln[0]](ln[1], ln[2])
+                     "ZUSAMMEN": zusammen, "CODE": code_kasten}[ln[0]](ln[1], ln[2])
             if teile and isinstance(teile[0], tuple) and teile[0][0] == "FLOAT":
                 story += marke
                 _, t, seite, bw = teile[0]
@@ -2440,6 +2470,7 @@ def tabelle(zeile):
     qs = ParagraphStyle("tq", parent=zs, fontName=schrift("text_kursiv"), fontSize=gr - 0.8, textColor=SOFT)
     daten = [[Paragraph(inline(ein(d["titel"])), ts)] + [""] * (len(kopf) - 1),
              [Paragraph(inline(k), kr if rechts[i] else ks) for i, k in enumerate(kopf)]]
+    ohne_titel = not d["titel"].strip()          # Zeile 1 leer = Tabelle ohne Titel (ab 2.76)
     daten += [[Paragraph(inline(x), zr if rechts[i] else zs) for i, x in enumerate(r)] for r in reihen]
     stil = [("SPAN", (0, 0), (-1, 0)), ("VALIGN", (0, 0), (-1, -1), "TOP"),
             ("LEFTPADDING", (0, 0), (-1, -1), 4), ("RIGHTPADDING", (0, 0), (-1, -1), 4),
@@ -2454,7 +2485,16 @@ def tabelle(zeile):
         daten.append([Paragraph(inline(ein(d["quelle"])), qs)] + [""] * (len(kopf) - 1))
         stil += [("SPAN", (0, -1), (-1, -1)), ("LINEBELOW", (0, -2), (-1, -2), 0.6, GOLD),
                  ("LEFTPADDING", (0, -1), (0, -1), 0), ("TOPPADDING", (0, -1), (-1, -1), 4)]
-    t = Table(daten, colWidths=spalten, repeatRows=2, hAlign="LEFT")
+    if ohne_titel:                               # Titelzeile weglassen, Zeilen im Stil um eins nach oben
+        daten = daten[1:]
+        def schieb(s):
+            (a, b), (c, d_) = s[1], s[2]
+            if b == 0 and d_ == 0:
+                return None
+            f = lambda y: y - 1 if y > 0 else y
+            return (s[0], (a, f(b)), (c, f(d_))) + tuple(s[3:])
+        stil = [x for x in map(schieb, stil) if x]
+    t = Table(daten, colWidths=spalten, repeatRows=1 if ohne_titel else 2, hAlign="LEFT")
     t.setStyle(TableStyle(stil))
     if quer:
         return [PageBreak(), QuerTabelle(t), PageBreak()]

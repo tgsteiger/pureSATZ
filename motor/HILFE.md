@@ -26,8 +26,12 @@ Inhalt: Spickzettel, eigene Praxis-Notizen aus `meine-hilfe.md` (freiwillig, im 
 normales Markdown, jede `##`-Überschrift wird ein Abschnitt), diese Hilfe (`motor/HILFE.md`, kommt mit jedem
 Motor-Update), alle Befehle und Blöcke direkt aus dem Motor und die Variablen dieses Buchs mit ihren Werten.
 
+::: nur-webhilfe
 Der Knopf **Start** oben springt zur Checkliste für den Anfang (`START.md` im Ordner pureSATZ, mit Häkchen
-zum Anklicken). Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `hallo.bat`).
+zum Anklicken).
+:::
+
+Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `hallo.bat`).
 
 ## Menü
 
@@ -287,6 +291,10 @@ Dieser Text steht nur in der zweiten Ausgabe.
 | Leerzeile | neuer Absatz |
 | `\` am Zeilenende | Zeilenumbruch im Absatz: die nächste Zeile gehört zum selben Absatz (in Variablen: `<br/>`) |
 | `---` (eigene Zeile, davor eine Leerzeile) | neue Seite, wie `@UMBRUCH` (im Editor eine waagrechte Linie) |
+
+**Code** (ab 2.76): Ein Wort zwischen zwei Backticks (Taste neben dem Fragezeichen) steht in Code-Schrift und bleibt
+wörtlich – keine Variablen, kein fett; gut für Befehle und Dateinamen. Mehrere Zeilen: eine Zeile mit drei Backticks
+davor und eine danach – heller Kasten, jede Zeile genau wie getippt.
 
 **Blöcke** `::: art-ausgabe Titel` … `:::` – Art: `nur`, `mitte`, `zusammen`, `offen`,
 `offen-notiz`, `zeitstrahl`, `uz` (Kasten der zweiten Ausgabe). Endung: keine (überall),
@@ -1512,6 +1520,19 @@ Im Buchordner (Windows: dieselben Namen mit `.bat`):
 | `.venv/bin/python3 motor/booklet.py datei.pdf` | ein beliebiges PDF als Booklet zum Selberdrucken → `datei_booklet.pdf` |
 | `.venv/bin/python3 motor/mockup.py ausgabe-normal/<datei>.pdf` | Werbebilder aus einem PDF (sonst `sh build.sh mockup`) |
 | `python3 motor/epub2.py ausgabe-normal/<datei>.epub` | EPUB 2 aus einem fertigen E-Book |
+
+## Das pureSATZ Handbuch
+
+Diese Hilfe gibt es auch als Buch, gesetzt mit pureSATZ selbst. Einmal anlegen, im Ordner pureSATZ:
+
+```sh
+sh setup/setup.sh handbuch/handbuch.txt
+cd ../pureSATZ-Handbuch && sh build.sh handbuch
+```
+
+Danach entsteht die Buch-MD bei jedem Bau neu aus der Hilfe (`{buch-aus-hilfe}: ja` in der Variablen-Datei). Darum
+nie dort ändern, sondern in `START.md`, `motor/HILFE.md` und `handbuch/` (Einleitung, Stichworte). Text nur für die
+Webseite steht zwischen `::: nur-webhilfe` und `:::`, Text nur fürs Buch zwischen `::: nur-handbuch` und `:::`.
 
 ## Werben: Leseprobe, Bilder, Shop-Texte
 

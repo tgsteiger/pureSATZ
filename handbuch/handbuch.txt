@@ -1,0 +1,16 @@
+# Werte für das Buch «pureSATZ Handbuch» (ab 2.76). Im Ordner pureSATZ:
+#   sh setup/setup.sh handbuch/handbuch.txt
+#   cd ../pureSATZ-Handbuch && sh build.sh handbuch
+# Danach entsteht die Buch-MD bei jedem Bau neu aus der Hilfe (motor/handbuch.py).
+# ISBN, Preis, Adresse fürs Impressum: später in pureSATZ-Handbuch-variablen.md.
+TITEL = pureSATZ Handbuch
+UNTERTITEL = Dein Buch selber setzen – Schritt für Schritt
+AUTOR = Thomas Gsteiger
+NAME = pureSATZ-Handbuch
+FORMAT = a5
+BINDUNG = softcover
+ZWEITE_AUSGABE = nein
+ORT = Bern
+JAHR = 2026
+WEBSITE = tgsteiger.github.io/pureSATZ
+ADRESSE = Bern

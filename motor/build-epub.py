@@ -49,9 +49,12 @@ PORTRAIT_ALT = f"Porträt von {AUTOR}"
 
 
 def esc(t):
+    codes = []                                  # `Code` bleibt wörtlich (ab 2.76)
+    t = re.sub(r"`([^`]+)`", lambda m: codes.append(m.group(1)) or f"\x00{len(codes) - 1}\x00", t)
     t = html.escape(t, quote=False).replace("&lt;br/&gt;", "<br/>")
     t = re.sub(r"\[([^\]]+)\]\((https?://[^)\s]+)\)", r'<a href="\2">\1</a>', t)
-    return re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", t)
+    t = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", t)
+    return re.sub(r"\x00(\d+)\x00", lambda m: "<code>" + html.escape(codes[int(m.group(1))], quote=False) + "</code>", t)
 
 
 # --- Bilder -----------------------------------------------------------------
@@ -345,6 +348,8 @@ for zeile in bk.text_zeilen():
                                  for a, b in bk.zeitstrahl_zeilen(zeile[2]))
             aktuell["html"].append(f"<h2 id='z{seitennr}'>{esc(titel_z)}</h2><table>{zeilen_z}</table>")
             nav.append((1, titel_z, name))
+        elif zeile[0] == "CODE":          # Code-Block wörtlich (ab 2.76)
+            aktuell["html"].append("<pre>" + html.escape("\n".join(zeile[2]), quote=False) + "</pre>")
         elif zeile[0] == "MITTE":         # zentrierter Block zwischen zwei Lotusblüten
             absaetze, p = [], []
             for z in zeile[2] + [""]:
@@ -534,6 +539,8 @@ dateien.insert(0, ("titel.xhtml", TITEL, titel_html))
 # --- CSS ----------------------------------------------------------------------
 CSS = """
 p.mitte { text-align: center; text-indent: 0; }
+code, pre { font-family: "Titel", sans-serif; color: @@haupt@@; font-size: 0.9em; }
+pre { background: @@kasten@@; padding: 0.6em 0.8em; white-space: pre-wrap; margin: 0.6em 0 1em 0; }
 div.motto { margin: 30% 0; page-break-before: always; page-break-after: always; }
 
 img.foto { max-width: 100%; max-height: 60vh; }

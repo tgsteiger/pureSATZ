@@ -20,3 +20,9 @@ E-Book, Hörbuch, Werkzeuge, Nachschlagen.
 
 Platzhalter: Dieses Handbuch ist die Hilfe von pureSATZ, mit pureSATZ selbst gesetzt. In der Hilfe (`hilfe.html`)
 steht immer der neuste Stand. Dieses Buch gilt für pureSATZ {version}.
+
+## Befehle in diesem Buch
+
+Alle Befehle stehen so, wie sie auf Linux und Mac im Terminal eingegeben werden. Auf Windows heissen sie gleich, nur
+mit `.bat` statt `sh … .sh`: `build.bat final` statt `sh build.sh final`, `menu.bat` statt `sh menu.sh`. Am einfachsten
+geht beides über das Menü – dort genügt ein Buchstabe.

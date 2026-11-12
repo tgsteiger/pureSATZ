@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.75.0
+# pureSATZ Hilfe · pureSATZ · Motor 2.76.0
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -162,7 +162,9 @@ Suchen: Die Hilfe schrumpft auf die Abschnitte mit dem Wort, es ist gelb markier
 
 Inhalt: Spickzettel, eigene Praxis-Notizen aus `meine-hilfe.md` (freiwillig, im Buchordner, selbst pflegen: normales Markdown, jede `##`-Überschrift wird ein Abschnitt), diese Hilfe (`motor/HILFE.md`, kommt mit jedem Motor-Update), alle Befehle und Blöcke direkt aus dem Motor und die Variablen dieses Buchs mit ihren Werten.
 
-Der Knopf Start oben springt zur Checkliste für den Anfang (`START.md` im Ordner pureSATZ, mit Häkchen zum Anklicken). Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `hallo.bat`).
+Der Knopf Start oben springt zur Checkliste für den Anfang (`START.md` im Ordner pureSATZ, mit Häkchen zum Anklicken).
+
+Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `hallo.bat`).
 
 ## Menü
 
@@ -400,6 +402,8 @@ Leerzeile | neuer Absatz
 `\` am Zeilenende | Zeilenumbruch im Absatz: die nächste Zeile gehört zum selben Absatz (in Variablen: `<br/>`)
 `---` (eigene Zeile, davor eine Leerzeile) | neue Seite, wie `@UMBRUCH` (im Editor eine waagrechte Linie)
 
+Code (ab 2.76): Ein Wort zwischen zwei Backticks (Taste neben dem Fragezeichen) steht in Code-Schrift und bleibt wörtlich – keine Variablen, kein fett; gut für Befehle und Dateinamen. Mehrere Zeilen: eine Zeile mit drei Backticks davor und eine danach – heller Kasten, jede Zeile genau wie getippt.
+
 Blöcke `::: art-ausgabe Titel` … `:::` – Art: `nur`, `mitte`, `zusammen`, `offen`, `offen-notiz`, `zeitstrahl`, `uz` (Kasten der zweiten Ausgabe). Endung: keine (überall), `-normal`, `-uz` (`-dc`), `-bildschirm`, `-druck`, `-ebook`, `-buch`, `-privatdruck`.
 
 Foto: beginnt mit `#### @FOTO Titel` (steht so in der Gliederung des Editors), darunter die Angaben, eine pro Zeile. Die erste Leerzeile beendet das Foto – ein `:::` braucht es nicht. `#### @FOTO-UZ Titel` = nur in der zweiten Ausgabe (auch `-NORMAL`, `-DRUCK`, `-EBOOK` …).
@@ -604,7 +608,9 @@ Für ein Lektorat auf Papier: `sh build.sh korrektur` (A4 mit Zeilennummern).
 
 ## Gestalten: Ich will …
 
-Die häufigsten Fälle beim Gestalten – nachsehen, wenn etwas nicht so aussieht wie gewünscht. Danach mit `sh build.sh schnell` ansehen. Klick auf einen Code = kopiert. Ganze Bausteine: Zum Kopieren · Suchen: Taste `/`.
+Die häufigsten Fälle beim Gestalten – nachsehen, wenn etwas nicht so aussieht wie gewünscht. Danach mit `sh build.sh schnell` ansehen. Ganze Bausteine: Zum Kopieren.
+
+Klick auf einen Code = kopiert. Suchen: Taste `/`.
 
 Ich will … | So geht es
 eine neue Seite | `---` auf einer eigenen Zeile, davor eine Leerzeile. Nicht innerhalb eines `:::`-Blocks, sondern nach dem `:::`. Steht `---` schon oben auf einer Seite, entsteht keine leere Seite.
@@ -1356,6 +1362,17 @@ Befehl | Wofür
 `.venv/bin/python3 motor/booklet.py datei.pdf` | ein beliebiges PDF als Booklet zum Selberdrucken → `datei_booklet.pdf`
 `.venv/bin/python3 motor/mockup.py ausgabe-normal/<datei>.pdf` | Werbebilder aus einem PDF (sonst `sh build.sh mockup`)
 `python3 motor/epub2.py ausgabe-normal/<datei>.epub` | EPUB 2 aus einem fertigen E-Book
+
+## Das pureSATZ Handbuch
+
+Diese Hilfe gibt es auch als Buch, gesetzt mit pureSATZ selbst. Einmal anlegen, im Ordner pureSATZ:
+
+```
+sh setup/setup.sh handbuch/handbuch.txt
+cd ../pureSATZ-Handbuch && sh build.sh handbuch
+```
+
+Danach entsteht die Buch-MD bei jedem Bau neu aus der Hilfe (`{buch-aus-hilfe}: ja` in der Variablen-Datei). Darum nie dort ändern, sondern in `START.md`, `motor/HILFE.md` und `handbuch/` (Einleitung, Stichworte). Text nur für die Webseite steht zwischen `::: nur-webhilfe` und `:::`, Text nur fürs Buch zwischen `::: nur-handbuch` und `:::`.
 
 ## Werben: Leseprobe, Bilder, Shop-Texte
 

@@ -200,7 +200,7 @@ def md_html(text):
     """Markdown → Liste von (ebene, titel, html) Abschnitten (getrennt an # und ##)."""
     abschnitte, titel, ebene, out = [], "", 1, []
     zeilen = text.replace("\r\n", "\n").split("\n")
-    i, absatz, liste = 0, [], None
+    i, absatz, liste, bloecke = 0, [], None, []      # bloecke: offene «:::» (kacheln / web)
 
     def absatz_ende():
         nonlocal absatz
@@ -264,11 +264,21 @@ def md_html(text):
                     not re.match(r"^\s*([-*]|\d+\.)\s+", zeilen[i]):
                 liste[1][-1] += " " + zeilen[i].strip(); i += 1
             continue
+        if s == "::: nur-handbuch":             # nur im Handbuch (Buch), nicht in der Hilfe (ab 2.76)
+            while i < len(zeilen) and zeilen[i].strip() != ":::":
+                i += 1
+            i += 1; continue
+        if s == "::: nur-webhilfe":             # nur in der Hilfe (Webseite), nicht im Handbuch
+            bloecke.append("web"); i += 1; continue
+        if s == ":::" and bloecke and bloecke[-1] == "web":
+            bloecke.pop(); i += 1; continue
         if s == "::: kacheln":                  # Liste als Kacheln, mit Knopf «drucken»
-            absatz_ende(); liste_ende()
+            absatz_ende(); liste_ende(); bloecke.append("kacheln")
             out.append('<div class="kacheln"><button class="kopie druck" title="nur diesen Abschnitt drucken">drucken</button>')
             i += 1; continue
         if s == ":::":
+            if bloecke:
+                bloecke.pop()
             absatz_ende(); liste_ende(); out.append("</div>"); i += 1; continue
         if s.startswith(">"):
             absatz_ende(); liste_ende()

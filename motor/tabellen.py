@@ -58,7 +58,10 @@ def lies(pfad):
     if len(zeilen_txt) < 2:
         return dict(titel="", kopf=[], zeilen=[], quelle="", fehler=[f"{name}: zu kurz – Zeile 1 Bezeichnung, "
                                                                         "Zeile 2 Spaltenüberschriften, dann Werte."])
-    trenner = ";" if zeilen_txt[1].count(";") >= zeilen_txt[1].count(",") else ","
+    if zeilen_txt[0].lower().startswith("sep=") and len(zeilen_txt[0].strip()) == 5:   # «sep=;» (wie Excel)
+        trenner = zeilen_txt.pop(0).strip()[4]
+    else:
+        trenner = ";" if zeilen_txt[1].count(";") >= zeilen_txt[1].count(",") else ","
     reihen = list(csv.reader(io.StringIO("\n".join(zeilen_txt)), delimiter=trenner))
     titel = " ".join(x.strip() for x in reihen[0] if x.strip())
     kopf = [x.strip() for x in reihen[1]]
