@@ -614,7 +614,7 @@ def zeige():
                 + ([("hb", "Hörbuch …")] if LINUX else [])),
                ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen")]),
                ("Abgleichen", [("sy", "sync   (GitHub)"), ("u", "update" + (" (ul lokal)" if LOKAL else ""))])]
-    spalten_zeigen(spalten, "n neu · $ Terminal · : Befehle · h hilfe · ! Klang · ↵ beenden")
+    spalten_zeigen(spalten, "n neu · $ Terminal · : Befehle · h hilfe · fh finden · ! Klang · ↵ beenden")
     if os.path.exists(ALLE):
         print(SPERRE)
 
@@ -696,6 +696,32 @@ def schreibtisch():
                  if os.path.isdir(p)), "")
 
 
+def finde_hilfe(wort):
+    """fh wort: Abschnitte der Hilfe mit dem Wort (und verwandten: isbn → Strichcode, Barcode), Nummer öffnet dort."""
+    import hilfe as Hf
+    wort = wort or frage(" In der Hilfe suchen (z. B. isbn, farbe, hörbuch): ").strip()
+    if not wort or wort.lower() in ("z", "q"):
+        return
+    tr = Hf.finden(BASE, wort)
+    if tr is None:
+        return print("  Noch keine Hilfe – einmal bauen (s), dann nochmals fh.")
+    if not tr:
+        return print(f"  Nichts gefunden zu «{wort}».")
+    verwandt = [x for x in Hf.erweitern(wort)[1:]]
+    print(f"\n {FETT('Hilfe')} · «{wort}»" + (GRAU(" (auch: " + ", ".join(verwandt) + ")") if verwandt else "")
+          + f" · {len(tr)} Abschnitte")
+    breit = max(20, shutil.get_terminal_size((80, 24)).columns - 40)
+    for i, (g, t, z, n) in enumerate(tr[:20], 1):
+        print(f"  {FETT(f'{i:>2}')}  {t[:32]:<33}" + GRAU(z[:breit] if z else ""))
+    if len(tr) > 20:
+        print(GRAU(f"  … und {len(tr) - 20} weitere – a zeigt alle in der Hilfe"))
+    k = frage(" Nummer = dort öffnen · a = alle in der Hilfe · ↵ zurück: ").strip().lower()
+    if k == "a":
+        Hf.oeffne_suche(BASE, wort)
+    elif k.isdigit() and 0 < int(k) <= len(tr):
+        Hf.oeffne_suche(BASE, wort, tr[int(k) - 1][1])
+
+
 def verknuepfung():
     """Starter mit Lotus, der dieses Menü öffnet: Linux .desktop (Startmenü), Windows .lnk, Mac .command."""
     name = os.path.basename(next(iter(glob.glob(os.path.join(BASE, "*-buch.md"))), "Buch-buch.md"))[:-8]
@@ -756,7 +782,9 @@ def main():
                     break
                 continue
             seit = time.time()
-            if w == "s":
+            if w == "fh" or w.startswith("fh "):            # finde-hilfe: fh isbn
+                finde_hilfe(e[2:].strip())
+            elif w == "s":
                 bauen("schnell")
             elif w == "k":
                 bauen("komplett")

@@ -208,7 +208,7 @@ def druck_pruefen():
             for n in ("barcode-groesse", "deckel-hardcover"):
                 bk.masse_mm(v(n), n)
             if v("barcode-bild") and not bk.finde(v("barcode-bild"), ("bilder",)):
-                fehler.append(f"{d}: barcode-bild {v('barcode-bild')} fehlt im Ordner bilder/")
+                fehler.append(f"{d}: isbn-bild {v('barcode-bild')} fehlt im Ordner bilder/")
             if v("impressum-logo") and not bk.finde(v("impressum-logo"), ("bilder",)):
                 fehler.append(f"{d}: impressum-logo {v('impressum-logo')} fehlt im Ordner bilder/")
         except SystemExit as e:
@@ -720,7 +720,16 @@ def main():
     if art == "mockup":
         mockups(); ausgabe_uebersicht(art, final); return
     if art == "hilfe":
-        hilfe(oeffnen=True); return
+        roh = sys.argv[1:]
+        wort = " ".join(roh[[x.lower() for x in roh].index("hilfe") + 1:]).strip()
+        if not wort:
+            hilfe(oeffnen=True); return
+        hilfe()                                       # sh build.sh hilfe isbn: Treffer zeigen, Hilfe gefiltert öffnen
+        import hilfe as H
+        for g, t, z, n in H.finden(BASE, wort) or []:
+            print(f"  {g} › {t}" + (f"   {z[:60]}" if z else ""))
+        H.oeffne_suche(BASE, wort)
+        return
     if art in ("hoerbuch", "hörbuch"):     # Hörbuch in einem: texte → vertonen → paket → hoerprobe (audio/hoerbuch.py)
         roh = sys.argv[1:]
         i = next(k for k, x in enumerate(roh) if x.lower() == art)

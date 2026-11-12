@@ -44,15 +44,19 @@
 > {deckel-hardcover}: default: leer = laut format (A5: 157 x 228) · optional: Breite x Höhe in mm
 > {papier}: default: leer · optional: Papier wie bestellt (nur zur Info)
 
-## Strichcode
-{barcode-position}: rechts
-{barcode-groesse}: 40x19
-{barcode-bild}:
-{barcode-rahmen}:
-> {barcode-position}: default: leer = epubli links frei, bod rechts · optional: links | mitte | rechts
-> {barcode-groesse}: default: leer = 60 x 35 mm frei ab Ecke · optional: Breite x Höhe in mm, z. B. 40x20
-> {barcode-bild}: default: leer = nichts zeichnen (bod: Strichcode aus der ISBN) · optional: PNG aus bilder/
-> {barcode-rahmen}: default: leer = kein Rahmen · optional: gold = Goldrahmen · berge = Goldrahmen, oben als Bergkette (Striche eines PNG werden oben zu Gipfeln geschnitten)
+## Strichcode mit der ISBN (EAN-13, Barcode)
+{isbn-position}: rechts
+{isbn-groesse}: 40x19
+{isbn-bild}:
+{isbn-rahmen}:
+{isbn-rahmen-farbe}:
+{isbn-rahmen-abstand}:
+> {isbn-position}: default: leer = epubli links frei, bod rechts · optional: links | mitte | rechts
+> {isbn-groesse}: default: leer = 60 x 35 mm frei ab Ecke · optional: Breite x Höhe in mm, z. B. 40x20
+> {isbn-bild}: default: leer = nichts zeichnen (bod: Strichcode aus der ISBN) · optional: PNG aus bilder/
+> {isbn-rahmen}: default: leer = kein Rahmen · optional: gold = Goldrahmen · berge = Goldrahmen, oben als Bergkette (Striche eines PNG werden oben zu Gipfeln geschnitten)
+> {isbn-rahmen-farbe}: default: leer = gold · optional: schwarz
+> {isbn-rahmen-abstand}: default: leer = 0 (Linie berührt die Striche) · optional: mm weiss dazwischen, z. B. 2 (tredition: nur schwarze Striche auf Weiss)
 
 ## Offen
 > Umschlag: Rücken, Deckelmass und Einschlag von tredition

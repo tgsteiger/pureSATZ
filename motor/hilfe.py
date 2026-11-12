@@ -18,6 +18,69 @@ import os
 import re
 import sys
 from datetime import datetime
+import json
+import unicodedata
+
+# Suche: verwandte Wörter finden sich gegenseitig (Hilfe-Seite und «fh» im Menü, ab 2.74.1)
+SYNONYME = [("isbn", "strichcode", "barcode", "ean-13"), ("aufräumen", "cleanup", "löschen", "entfernen", "delete"),
+            ("hörbuch", "audio", "vertonen", "azure"), ("umschlag", "cover", "rückseite"),
+            ("farbe", "farbschema", "farben"), ("sicherung", "backup", "md-history"),
+            ("seitenzahl", "coverrechner", "rücken"), ("inhaltsverzeichnis", "inhalt-"), ("fremdwort", "aussprache")]
+
+
+def norm2(t):
+    """Wie die Suche der Seite: klein, ohne Akzente, ä/ae → a."""
+    t = unicodedata.normalize("NFD", t.lower())
+    t = "".join(c for c in t if unicodedata.category(c) != "Mn")
+    return t.replace("ae", "a").replace("oe", "o").replace("ue", "u").replace("ß", "ss")
+
+
+def erweitern(wort):
+    """Suchwort plus verwandte Wörter (isbn → strichcode, barcode, ean-13)."""
+    w = norm2(wort)
+    for g in SYNONYME:
+        g = [norm2(x) for x in g]
+        if any(x == w or (len(w) >= 4 and x.startswith(w)) for x in g):
+            return list(dict.fromkeys([w] + g))
+    return [w]
+
+
+def finden(basis, wort):
+    """Abschnitte aus hilfe-ki.md, in denen das Wort (oder ein verwandtes) vorkommt:
+    [(gruppe, abschnitt, erste passende zeile, anzahl)] – None, wenn es noch keine Hilfe gibt."""
+    p = os.path.join(basis, "hilfe-ki.md")
+    if not os.path.exists(p):
+        return None
+    teile, gruppe, abschnitte, code = erweitern(wort), "", [], False
+    for z in open(p, encoding="utf-8"):
+        if z.startswith("```"):                       # in Code-Blöcken sind # und ## Beispiele, keine Titel
+            code = not code
+        elif not code and z.startswith("# "):
+            gruppe = z[2:].strip()
+        elif not code and z.startswith("## "):
+            abschnitte.append([gruppe, z[3:].strip(), []])
+        elif abschnitte and z.strip():
+            abschnitte[-1][2].append(z.strip())
+    treffer = []
+    for g, t, zeilen in abschnitte:
+        hits = [z for z in zeilen if any(x in norm2(z) for x in teile)]
+        if hits or any(x in norm2(t) for x in teile):
+            erste = (hits or [""])[0].lstrip("-|> ").replace("`", "").replace("**", "")
+            i = min([k for k in (norm2(erste).find(x) for x in teile) if k >= 0] or [0])
+            if i > 20:                                 # Ausschnitt um das Wort herum
+                erste = "…" + erste[i - 15:]
+            treffer.append((g, t, erste, len(hits)))
+    return treffer
+
+
+def oeffne_suche(basis, wort, abschnitt=""):
+    """hilfe.html gefiltert öffnen – über eine kleine Weiterleitung, damit «#suche=…» sicher ankommt."""
+    import urllib.parse
+    ziel = "hilfe.html#" + urllib.parse.urlencode({"suche": wort, **({"abschnitt": abschnitt} if abschnitt else {})})
+    p = os.path.join(basis, "hilfe-suche.html")
+    open(p, "w", encoding="utf-8").write(f'<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url={html.escape(ziel)}">'
+                                       f'<a href="{html.escape(ziel)}">Hilfe öffnen</a>')
+    oeffne(p)
 try:                                            # Windows: «sh build.sh» in Meldungen als «.\build.bat»
     sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "."))
     import plattform
@@ -55,6 +118,7 @@ SPICKZETTEL = [
     ("sh cleanup.sh", "Aufräumen: alte Motoren und Zwischenspeicher löschen, entfernen (delete) – fragt zuerst, "
                       "md-history/ und Texte bleiben"),
     ("sh build.sh hilfe", "Diese Hilfe neu erzeugen und öffnen"),
+    ("sh build.sh hilfe isbn", "In der Hilfe suchen: zeigt die Abschnitte und öffnet die Hilfe gefiltert (Menü: fh isbn)"),
     ("sh build.sh mockup", "Werbebild: Vorder- und Rückseite mit Schatten (…_Mockup.jpg) für Webseite, Newsletter, Shop "
                            "(grosse Cover-Bilder für E-Book-Shops entstehen mit dem E-Book: …_Cover-vorne.jpg)"),
 ]
@@ -445,7 +509,7 @@ color:var(--akzent);display:block;margin-bottom:2px}} #kiknopf{{float:right;marg
 #zuletzt span:hover{{text-decoration:underline}} main code.kopiert{{background:var(--mark)}}
 </style></head><body>
 <header><h1>pureSATZ Hilfe · {html.escape(titel)} <small>Motor {html.escape(version)}</small></h1>
-<input id="suche" type="search" placeholder="Suchen … (Taste /)" autocomplete="off">
+<input id="suche" type="search" placeholder="Suchen … (Taste /) – z. B. isbn, farbe, hörbuch" autocomplete="off"><small id="treffer"></small>
 <span class="hist"><button id="zur" title="zurück (Alt+←)">‹ zurück</button> <button id="vor" title="vor (Alt+→)">vor ›</button></span>
 <span class="os">{'<a class="startk" href="#a1">Start</a> ' if start else ''}<button data-os="lx" class="aktiv">Linux/Mac</button> <button data-os="win">Windows</button></span></header>
 <div class="wrap"><nav><p id="zuletzt"></p>{"".join(nav)}</nav><main>
@@ -463,7 +527,8 @@ const norm=t=>t.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'');
 const norm2=t=>norm(t).replace(/ae/g,'a').replace(/oe/g,'o').replace(/ue/g,'u').replace(/ß/g,'ss');
 const secs=[...document.querySelectorAll('main section')],navs=[...document.querySelectorAll('nav a')];
 secs.forEach(s=>{{s._orig=s.innerHTML;s._text=norm2(s.textContent)}});
-const such=document.getElementById('suche');
+const such=document.getElementById('suche'),SYN={json.dumps([[norm2(x) for x in g] for g in SYNONYME])};
+const erw=x=>{{x=norm2(x);for(const g of SYN)if(g.some(y=>y===x||(x.length>=4&&y.startsWith(x))))return [...new Set([x,...g])];return [x]}};
 function markiere(el,woerter){{const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);const knoten=[];
 while(w.nextNode())knoten.push(w.currentNode);for(const n of knoten){{const t=n.nodeValue,nt=norm(t);let pos=[];
 for(const x of woerter){{let i=nt.indexOf(x);while(i>=0){{pos.push([i,i+x.length]);i=nt.indexOf(x,i+x.length)}}}}
@@ -471,11 +536,16 @@ if(!pos.length)continue;pos.sort((a,b)=>a[0]-b[0]);const f=document.createDocume
 for(const [s,e] of pos){{if(s<a)continue;f.append(t.slice(a,s));const m=document.createElement('mark');m.textContent=t.slice(s,e);f.append(m);a=e}}
 f.append(t.slice(a));n.parentNode.replaceChild(f,n)}}}}
 such.addEventListener('input',()=>{{const w=norm(such.value).split(/\\s+/).filter(Boolean);let n=0;
-const passt=(s,alle)=>alle?w.every(x=>s._text.includes(norm2(x))):w.some(x=>s._text.includes(norm2(x)));
+const gr=w.map(erw),passt=(s,alle)=>alle?gr.every(g=>g.some(x=>s._text.includes(x))):gr.some(g=>g.some(x=>s._text.includes(x)));
 let alle=true;if(w.length>1&&!secs.some(s=>passt(s,true)))alle=false;   // kein Abschnitt mit allen Wörtern: eines genügt
 secs.forEach((s,i)=>{{s.innerHTML=s._orig;const ok=passt(s,alle);s.style.display=ok?'':'none';
-navs[i].style.display=ok?'':'none';if(ok){{n++;if(w.length)markiere(s,w)}}}});
-document.getElementById('leer').style.display=n?'none':'block';knoepfe();}});
+navs[i].style.display=ok?'':'none';if(ok){{n++;if(w.length){{markiere(s,gr.flat());zeilen(s)}}}}}});
+document.getElementById('leer').style.display=n?'none':'block';knoepfe();
+document.getElementById('treffer').textContent=w.length?n+' Abschnitte · '+document.querySelectorAll('main mark').length+' Stellen':'';}});
+function zeilen(s){{s.querySelectorAll('table').forEach(t=>{{const r=[...t.querySelectorAll('tr')].filter(x=>!x.querySelector('th'));   // grosse Tabellen: nur passende Zeilen
+if(r.length<=6||!r.some(x=>x.querySelector('mark')))return;const weg=r.filter(x=>!x.querySelector('mark'));weg.forEach(x=>x.style.display='none');
+const p=document.createElement('p');p.className='leise';p.innerHTML=weg.length+' weitere Zeilen ausgeblendet – <a href="#">alle zeigen</a>';
+p.querySelector('a').onclick=e=>{{e.preventDefault();weg.forEach(x=>x.style.display='');p.remove()}};t.after(p)}})}}
 document.addEventListener('keydown',e=>{{if(e.key==='/'&&document.activeElement!==such){{e.preventDefault();such.focus()}}
 if(e.key==='Escape'){{such.value='';such.dispatchEvent(new Event('input'))}}}});
 document.querySelectorAll('.os button').forEach(b=>b.onclick=()=>{{document.body.classList.toggle('win',b.dataset.os==='win');
@@ -517,6 +587,9 @@ addEventListener('hashchange',()=>zuletzt(location.hash.slice(1)));
 if(z&&!document.getElementById(z)){{const s=secs.find(x=>k(x.querySelector('h2').textContent).includes(k(z)));
 if(s){{history.replaceState(null,'','#'+s.id);s.scrollIntoView()}}}}}}
 zuletzt(location.hash.slice(1));
+if(location.hash.startsWith('#suche=')){{const q=new URLSearchParams(location.hash.slice(1));   // von «fh» im Menü oder sh build.sh hilfe wort
+such.value=q.get('suche')||'';such.dispatchEvent(new Event('input'));const ab=q.get('abschnitt'),z=ab&&secs.find(x=>titel(x)===ab);
+if(z)setTimeout(()=>z.scrollIntoView(),50)}}
 function haken(){{let h={{}};try{{h=JSON.parse(localStorage.getItem('ps-haken')||'{{}}')}}catch(e){{}}
 document.querySelectorAll('li.haken input').forEach(c=>{{const k=c.parentNode.textContent.trim().slice(0,60);
 if(k in h)c.checked=h[k];c.onchange=()=>{{h[k]=c.checked;try{{localStorage.setItem('ps-haken',JSON.stringify(h))}}catch(e){{}}}}}})}}

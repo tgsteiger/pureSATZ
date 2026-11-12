@@ -3,6 +3,15 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.74.1 (November 2026)
+- Strichcode-Namen: isbn-position, isbn-groesse, isbn-bild, isbn-rahmen, isbn-rahmen-farbe, isbn-rahmen-abstand
+  (Strichcode mit der ISBN, EAN-13). Die alten barcode-… gelten weiter. Vorlagen und Druckdateien umgestellt,
+  Abschnitt heisst «## Strichcode mit der ISBN (EAN-13, Barcode)». pruefen kennt jetzt auch …-rahmen-farbe/-abstand
+  (falsche Meldung «unbekannter Name» weg).
+- Hilfe-Suche: verwandte Wörter (isbn ↔ Strichcode, Barcode, EAN-13; löschen ↔ aufräumen …), Anzahl Abschnitte und
+  Stellen, grosse Tabellen zeigen nur passende Zeilen. hilfe.html#suche=wort öffnet gefiltert.
+- finde-hilfe: im Menü `fh wort` (Liste der Abschnitte, Nummer öffnet die Hilfe dort), ohne Menü `sh build.sh hilfe wort`.
+
 ## 2.74.0 (November 2026)
 - Hörbuch mithören mit Leuchtstift (hb → u): ▶ mithören beim Kapitel, das gesprochene Wort leuchtet, die letzten
   verblassen über 20 s – zum Anklicken, was falsch klang. Wortgenau mit <kapitel>.zeiten.json (Azure-Wortgrenzen,

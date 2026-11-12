@@ -102,7 +102,9 @@ def _grundvariablen():
 DRUCK_NAMEN = ("plattform", "format", "seite", "bindung", "projekt", "ruecken", "ruecken-hardcover",
                "ruecken-softcover", "beschnitt-hardcover", "beschnitt-softcover", "beschnitt-buchblock",
                "deckel-hardcover", "papier", "extra-seiten", "isbn-buch", "barcode-position",
-               "barcode-groesse", "barcode-bild", "barcode-rahmen", "versatz-vertikal", "versatz-horizontal",
+               "barcode-groesse", "barcode-bild", "barcode-rahmen", "barcode-rahmen-farbe", "barcode-rahmen-abstand",
+               "isbn-position", "isbn-groesse", "isbn-bild", "isbn-rahmen", "isbn-rahmen-farbe", "isbn-rahmen-abstand",
+               "versatz-vertikal", "versatz-horizontal",
                "neu-berechnen", "berechnet-fuer-seiten", "farbmodus")
 
 
@@ -153,7 +155,11 @@ def _plattform_variablen(d, was):
     if not os.path.exists(pfad):
         raise SystemExit(f"{was}: {d} fehlt. Name prüfen (Variable «druck-…», «ebook» bzw. druck=…); "
                          "Musterdateien liegen in pureSATZ/vorlage/druck/.")
-    return M.lies_variablen(pfad)[0]
+    v = M.lies_variablen(pfad)[0]
+    for k in list(v):                     # isbn-… = Name ab 2.74.1 für den Strichcode (früher barcode-…, gilt weiter)
+        if k.startswith("isbn-") and not k.startswith("isbn-buch"):
+            v["barcode-" + k[5:]] = v[k]
+    return v
 
 
 def druck_variablen(fassung=None):
@@ -1538,7 +1544,7 @@ def barcode_feld():
     pos = (pos or "links").lower()
     if pos not in ("links", "mitte", "rechts"):
         raise SystemExit(f"Variable «barcode-position»: «{pos}» – möglich: links, mitte, rechts")
-    masse = masse_mm(gr, "barcode-groesse")
+    masse = masse_mm(gr, "isbn-groesse")
     if masse:            # Feld mit Abstand zum Rand: seitlich wie der Text, unten 8 mm
         b, h, rand, unten = masse[0] * mm, masse[1] * mm, 16 * mm * S, 8 * mm
     else:                # wie bisher bei epubli: 60 x 35 mm ab der Ecke frei
@@ -1586,15 +1592,15 @@ def barcode_rahmen(c, x, y, b, h, bild=None, oberhalb=False):
     art = V("barcode-rahmen").strip().lower()
     if art not in ("gold", "berge"):
         if art:
-            raise SystemExit(f"Variable «barcode-rahmen»: «{art}» – möglich: gold, berge (oder leer)")
+            raise SystemExit(f"Variable «isbn-rahmen»: «{art}» – möglich: gold, berge (oder leer)")
         return False
     fa = V("barcode-rahmen-farbe").strip().lower()
     if fa not in ("", "gold", "schwarz"):
-        raise SystemExit(f"Variable «barcode-rahmen-farbe»: «{fa}» – möglich: gold, schwarz (oder leer = gold)")
+        raise SystemExit(f"Variable «isbn-rahmen-farbe»: «{fa}» – möglich: gold, schwarz (oder leer = gold)")
     try:
         abstand = float(V("barcode-rahmen-abstand").lower().replace("mm", "").replace(",", ".").strip() or 0) * mm
     except ValueError:
-        raise SystemExit("Variable «barcode-rahmen-abstand»: Zahl in mm, z. B. 1 (oder leer = 0)")
+        raise SystemExit("Variable «isbn-rahmen-abstand»: Zahl in mm, z. B. 1 (oder leer = 0)")
     m, oben = 1.5 * mm, y + h
     if bild:                                       # Bild wie bisher einpassen, Rahmen eng darum
         from reportlab.lib.utils import ImageReader

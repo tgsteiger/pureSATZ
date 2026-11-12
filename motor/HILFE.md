@@ -468,7 +468,7 @@ Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {v
   p  PDF öffnen …                     sy sync   (GitHub)
   o  Ordner öffnen …                  u  update (ul lokal)
   a  änderungen
- ── Weiteres:  n neu · $ Terminal · : Befehle · h hilfe · ! Klang · ↵ beenden
+ ── Weiteres:  n neu · $ Terminal · : Befehle · h hilfe · fh finden · ! Klang · ↵ beenden
 ```
 
 Ja/Nein-Fragen: `[J/n]` = Enter heisst ja, `[j/N]` = Enter heisst nein (der Grossbuchstabe gilt bei Enter).
@@ -682,6 +682,12 @@ bleiben unverändert.
 Sie entsteht ausserdem bei jedem Bau neu. Oben ein **Suchfeld** (Taste `/`, `Esc` leert), ein Umschalter
 **Linux/Mac · Windows** für alle Befehle und bei jedem Befehl ein Knopf **kopieren**.
 
+**Suchen:** Die Hilfe schrumpft auf die Abschnitte mit dem Wort, es ist gelb markiert; grosse Tabellen zeigen nur
+die passenden Zeilen («alle zeigen» holt den Rest). Verwandte Wörter finden sich gegenseitig: `isbn` findet auch
+Strichcode, Barcode und EAN-13 · `löschen` auch aufräumen · `farbe` auch Farbschema · `hörbuch` auch vertonen.
+Im Menü: `fh isbn` zeigt die Abschnitte als Liste, eine Nummer öffnet die Hilfe genau dort (schon gefiltert).
+Ohne Menü: `sh build.sh hilfe isbn`.
+
 Inhalt: Spickzettel, eigene Praxis-Notizen aus `meine-hilfe.md` (freiwillig, im Buchordner, selbst pflegen:
 normales Markdown, jede `##`-Überschrift wird ein Abschnitt), diese Hilfe (`motor/HILFE.md`, kommt mit jedem
 Motor-Update), alle Befehle und Blöcke direkt aus dem Motor und die Variablen dieses Buchs mit ihren Werten.
@@ -751,12 +757,14 @@ Lese-PDF, E-Book, Leseprobe, Korrektur und Mockup bleiben beim `{format}` der Va
 | `bindung`, `projekt`, `papier`, `extra-seiten` | `hardcover`/`softcover`/`beide` · `veroeffentlichen`/`privatdruck` · Papier zur Info · leere Notizseiten am Schluss |
 | `ruecken-hardcover`, `ruecken-softcover` | Rücken in mm laut Coverrechner der Plattform |
 | `beschnitt-buchblock`, `beschnitt-hardcover`, `beschnitt-softcover`, `deckel-hardcover` | Masse in mm (BoD: Buchblock 0, Deckel 153x216, Einschlag 17) |
-| `barcode-position` | `links` · `mitte` · `rechts` (leer: epubli links frei, BoD rechts) |
-| `barcode-groesse` | z. B. `40x20` (mm, 16 mm vom Rand seitlich, 8 mm von unten); leer = 60 × 35 mm ab der Ecke frei |
-| `barcode-bild` | PNG aus `bilder/` auf weissem Feld; leer = nichts zeichnen (BoD: Strichcode aus der ISBN) |
-| `barcode-rahmen` | leer = kein Rahmen · `gold` = Goldrahmen · `berge` = Goldrahmen, oben als Bergkette. Mit `barcode-bild` werden die Striche oben zu Gipfeln geschnitten (unten bleiben über 70 % frei, bleibt lesbar); beim eigenen BoD-Strichcode liegt die Bergkette darüber; bei epubli rahmt sie das freie Feld (Lage nach dem ersten Probedruck prüfen). Farbe = Akzentfarbe |
-| `barcode-rahmen-farbe` | leer = `gold` (Akzentfarbe) · `schwarz` |
-| `barcode-rahmen-abstand` | mm weiss zwischen Strichen und Linie, z. B. `1` – dann besteht der Code nur aus schwarzen Strichen auf Weiss (Vorgabe mancher Plattformen, z. B. tredition); leer = 0 |
+| `isbn-position` | `links` · `mitte` · `rechts` (leer: epubli links frei, BoD rechts) |
+| `isbn-groesse` | z. B. `40x20` (mm, 16 mm vom Rand seitlich, 8 mm von unten); leer = 60 × 35 mm ab der Ecke frei |
+| `isbn-bild` | PNG aus `bilder/` auf weissem Feld; leer = nichts zeichnen (BoD: Strichcode aus der ISBN) |
+| `isbn-rahmen` | leer = kein Rahmen · `gold` = Goldrahmen · `berge` = Goldrahmen, oben als Bergkette. Mit `isbn-bild` werden die Striche oben zu Gipfeln geschnitten (unten bleiben über 70 % frei, bleibt lesbar); beim eigenen BoD-Strichcode liegt die Bergkette darüber; bei epubli rahmt sie das freie Feld (Lage nach dem ersten Probedruck prüfen). Farbe = Akzentfarbe |
+| `isbn-rahmen-farbe` | leer = `gold` (Akzentfarbe) · `schwarz` |
+| `isbn-rahmen-abstand` | mm weiss zwischen Strichen und Linie, z. B. `2` – dann besteht der Code nur aus schwarzen Strichen auf Weiss (Vorgabe mancher Plattformen, z. B. tredition); leer = 0 |
+
+Die `isbn-…`-Zeilen gelten für den **Strichcode mit der ISBN** auf der Rückseite (EAN-13, auch Barcode genannt). Bis 2.74 hiessen sie `barcode-…` – diese Namen gelten weiter.
 | `versatz-vertikal`, `versatz-horizontal` | ganzen Seiteninhalt verschieben, in mm: vertikal + = nach oben, horizontal + = nach aussen (nach Messung am Probeexemplar) |
 
 Zuunterst steht `## Coverrechner (Rohdaten)`: Dort fügst du ein, was der Coverrechner der Plattform ausgibt
@@ -799,8 +807,8 @@ Für technisch Interessierte – der Motor kennt epubli und BoD, andere Druckere
    (eigenes Mass in mm), `ruecken-…`, `beschnitt-…`, `deckel-hardcover`, `papier`.
    Ohne Coverrechner: ein PDF hochladen – die Plattform nennt die Masse, die sie erwartet.
 3. `plattform: bod` stehen lassen (Strichcode-Feld selbst bestimmen, keine epubli-Füllseite).
-   Setzt die Plattform den Strichcode selbst (z. B. KDP), das Feld mit `barcode-position` / `barcode-groesse`
-   frei lassen und `barcode-bild` leer.
+   Setzt die Plattform den Strichcode selbst (z. B. KDP), das Feld mit `isbn-position` / `isbn-groesse`
+   frei lassen und `isbn-bild` leer.
 4. Testen: `sh build.sh final druck=kdp-dein-format` → `ausgabe-test/kdp-dein-format/`, Masse in `00-UEBERSICHT.txt`
    mit dem Rechner der Plattform vergleichen. Passt alles: `{druck-datei}` unter `## Ausgabe: Druck …` umstellen.
 
