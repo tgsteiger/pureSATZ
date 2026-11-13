@@ -127,9 +127,20 @@ teilnr = 0
 seitennr = 0
 
 
+INITIAL = (bk.V("initial", "nein") or "").strip().lower() in ("ja", "j")          # ab 2.77
+EINZUG = (bk.V("absatz-einzug", "nein") or "").strip().lower() in ("ja", "j")
+KAP = (bk.V("kapitaelchen", "nein") or "").strip().lower() in ("ja", "j")                # ab 2.80
+NACH_KAPITEL = [False]
+
+
 def flush_absatz():
     if absatz:
-        aktuell["html"].append(f"<p>{esc(' '.join(absatz))}</p>"); absatz.clear()
+        klasse = [k for k, an in (("initial", INITIAL and NACH_KAPITEL[0]), ("e", EINZUG)) if an]
+        inhalt = esc(' '.join(absatz))
+        if KAP and NACH_KAPITEL[0]:      # erste zwei Wörter in Kapitälchen
+            inhalt = re.sub(r"^((?:[^\s<&]+\s+){0,1}[^\s<&]+)", r'<span class="kap">\1</span>', inhalt, count=1)
+        aktuell["html"].append((f'<p class="{" ".join(klasse)}">' if klasse else "<p>") + f"{inhalt}</p>"); absatz.clear()
+        NACH_KAPITEL[0] = False
 
 
 def neue_datei(name, titel):
@@ -434,7 +445,7 @@ for zeile in bk.text_zeilen():
             neue_datei("vorwort.xhtml", s[3:])
         kapitelnr += 1
         anker = f"k{kapitelnr}"
-        aktuell["html"].append(f'<h2 id="{anker}">{esc(s[3:])}</h2>')
+        aktuell["html"].append(f'<h2 id="{anker}">{esc(s[3:])}</h2>'); NACH_KAPITEL[0] = True
         if TIEFE >= 2:
             nav.append((2 if any(n[0] == 1 for n in nav) else 1, s[3:], f"{aktuell['name']}#{anker}"))
     elif s.startswith("> "):
@@ -539,7 +550,12 @@ dateien.insert(0, ("titel.xhtml", TITEL, titel_html))
 # --- CSS ----------------------------------------------------------------------
 CSS = """
 p.mitte { text-align: center; text-indent: 0; }
-code, pre { font-family: "Titel", sans-serif; color: @@haupt@@; font-size: 0.9em; }
+code { font-family: "Titel", sans-serif; color: @@haupt@@; font-size: 0.9em; }
+pre { font-family: monospace; color: @@haupt@@; font-size: 0.8em; }
+p.initial::first-letter { float: left; font-size: @@initialgroesse@@; line-height: 0.85; margin: 0.05em 0.08em 0 0; color: @@initialfarbe@@;@@initialextra@@ }
+span.kap { font-variant: small-caps; letter-spacing: 0.03em; }
+p.e { margin: 0; }
+p.e + p.e { text-indent: 1.2em; }
 pre { background: @@kasten@@; padding: 0.6em 0.8em; white-space: pre-wrap; margin: 0.6em 0 1em 0; }
 div.motto { margin: 30% 0; page-break-before: always; page-break-after: always; }
 
@@ -610,6 +626,12 @@ table.daten tbody tr:nth-child(even) td { background: @@kasten@@; }
 p.tabquelle { font-size: 0.8em; font-style: italic; margin: 0.3em 0 0 0; text-indent: 0; }
 """
 CSS = CSS.replace("@@akzenttext@@", AKZENT_TEXT)
+_ist = (bk.V("initial-stil", "normal") or "").strip().lower()
+CSS = CSS.replace("@@initialgroesse@@", "4.2em" if (bk.V("initial-zeilen", "3") or "").strip() == "4" else "3.2em")
+CSS = CSS.replace("@@initialextra@@", (" font-weight: bold;" if (bk.V("initial-schrift", "") or "").strip().lower() == "fett" else "")
+                  + (" background: @@kasten@@; border: 1px solid @@akzent@@; padding: 0.05em 0.15em;" if _ist == "feld" else ""))
+CSS = CSS.replace("@@initialfarbe@@", bk.hexfarbe("haupt") if (bk.V("initial-farbe", "akzent") or "").strip().lower() == "haupt"
+                  else AKZENT_TEXT)
 CSS = re.sub(r"@@(\w+)@@", lambda m: bk.hexfarbe(m.group(1)), CSS)
 
 

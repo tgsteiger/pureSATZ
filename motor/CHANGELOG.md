@@ -3,6 +3,30 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.80.0 (November 2026)
+- Initial wählbar: `{initial-stil}: normal | rand | feld` (im Text · links im Rand · im hellen Feld mit Goldrahmen),
+  `{initial-zeilen}: 3 | 4`, `{initial-schrift}: fett` oder eigene TTF-Datei (fonts/ oder bilder/).
+- `{kapitaelchen}: ja` = die ersten zwei Wörter jedes Kapitels in Kapitälchen, mit oder ohne Initial (auch im E-Book).
+
+## 2.79.0 (November 2026)
+- Initial: Ist der erste Absatz kürzer als drei Zeilen, läuft der nächste Absatz neben dem Buchstaben weiter (keine
+  Lücke mehr). Folgt vorher ein Titel, Foto o. Ä., beginnt das Kapitel ohne Initial.
+
+## 2.78.0 (November 2026)
+- Menü: Steht in einer Druckdatei `{neu-berechnen}: ja` oder passt `{berechnet-fuer-seiten}` nicht zum Buchblock,
+  zeigt das Hauptmenü oben «⚠ Coverrechner …» (nach jedem `final`, Datei _druckbilder/cover-<kurz>.txt).
+  `cv` öffnet die Druckdatei und sagt, was zu tun ist.
+
+## 2.77.0 (November 2026)
+- Initial: `{initial}: ja` = grosser Anfangsbuchstabe über drei Zeilen am Anfang jedes Kapitels, Farbe mit
+  `{initial-farbe}: akzent | haupt`. Absatz-Einzug: `{absatz-einzug}: ja` = Absätze ohne Abstand, ab dem zweiten
+  eingerückt. Beides auch im E-Book; Standard nein (bestehende Bücher bleiben gleich).
+- Code-Blöcke in gleich breiter Schrift (DejaVu Sans Mono in motor/fonts, Lizenz Bitstream Vera) – Spalten und Linien
+  stehen sauber.
+- Hilfe: «Aufbau eines Buchs: Seite für Seite», «Bei tredition», welche Datei RGB und welche CMYK ist.
+- Handbuch: Hardcover bei tredition (`DRUCK =` in handbuch/handbuch.txt), Einleitung und Umschlagtexte
+  (handbuch/umschlag.md), kürzere Stichwortliste.
+
 ## 2.76.0 (November 2026)
 - Das «pureSATZ Handbuch»: die Hilfe als Buch, gesetzt mit pureSATZ (motor/handbuch.py). Einmal anlegen:
   `sh setup/setup.sh handbuch/handbuch.txt`, dann im Ordner pureSATZ-Handbuch `sh build.sh handbuch`. Danach entsteht

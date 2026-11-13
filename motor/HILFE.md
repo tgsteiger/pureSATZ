@@ -50,6 +50,9 @@ Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `h
  ── Weiteres:  n neu · $ Terminal · : Befehle · h hilfe · hf finden · ! Klang · ↵ beenden
 ```
 
+**Coverrechner** (ab 2.78): Steht oben «⚠ Coverrechner …», passt der Umschlag nicht mehr zur Seitenzahl oder
+`{neu-berechnen}: ja` steht noch in der Druckdatei. `cv` öffnet sie (siehe «Umschlag: Rücken und Seitenzahl»).
+
 Ja/Nein-Fragen: `[J/n]` = Enter heisst ja, `[j/N]` = Enter heisst nein (der Grossbuchstabe gilt bei Enter).
 
 Enter (oder `z`) = eine Stufe zurück; im Hauptmenü fragt Enter «Menü beenden? [j/N]» – nur `j` schliesst ·
@@ -294,7 +297,8 @@ Dieser Text steht nur in der zweiten Ausgabe.
 
 **Code** (ab 2.76): Ein Wort zwischen zwei Backticks (Taste neben dem Fragezeichen) steht in Code-Schrift und bleibt
 wörtlich – keine Variablen, kein fett; gut für Befehle und Dateinamen. Mehrere Zeilen: eine Zeile mit drei Backticks
-davor und eine danach – heller Kasten, jede Zeile genau wie getippt.
+davor und eine danach – heller Kasten, jede Zeile genau wie getippt, in gleich breiter Schrift (DejaVu Sans Mono,
+ab 2.77), damit Spalten untereinander stehen.
 
 **Blöcke** `::: art-ausgabe Titel` … `:::` – Art: `nur`, `mitte`, `zusammen`, `offen`,
 `offen-notiz`, `zeitstrahl`, `uz` (Kasten der zweiten Ausgabe). Endung: keine (überall),
@@ -566,6 +570,29 @@ Für ein Lektorat auf Papier: `sh build.sh korrektur` (A4 mit Zeilennummern).
 
 # Gestalten
 
+## Aufbau eines Buchs: Seite für Seite
+
+Ein Buch beginnt mit einer **rechten** Seite (ungerade Seitenzahl). Den Anfang – die Titelei – setzt pureSATZ aus
+diesen Zeilen der Buch-MD:
+
+| Seite | Inhalt | In der Buch-MD |
+|---|---|---|
+| 1 (rechts) | Titel, Untertitel, Autor | `## @TITEL` |
+| 2 (links) | Impressum: ©, Druckerei, Kontakt, ISBN | `## @IMPRESSUM` – setzt sich selbst zusammen |
+| 3 (rechts) | Widmung im unteren Drittel (freiwillig) | `## @WIDMUNG` |
+| danach | ein Satz allein auf einer Seite (freiwillig) | `## @KERNSATZ Satz` |
+| danach | Inhaltsverzeichnis | `## @INHALTSVERZEICHNIS` |
+| danach | Vorwort, dann Teil 1 | `## Vorwort` · `# Teil 1\|Titel\|Untertitel` |
+
+**Gut zu wissen:**
+
+- Ein Kapitel soll auf einer rechten Seite beginnen: `@UMBRUCH-RECHTS` davor.
+- Die Druckerei will eine gerade Seitenzahl (epubli: dazu die letzte Seite frei für den Strichcode). pureSATZ füllt
+  am Schluss selbst mit leeren Seiten auf; `sh build.sh final` zeigt die **Seitenbilanz**.
+- In den Word-Vorlagen der Druckereien macht man das von Hand – Leerseiten, weisse Kästen über Seitenzahlen,
+  Abschnittswechsel. In pureSATZ ist das nicht nötig.
+- Schöner Kapitelanfang: `{initial}: ja` (grosser Anfangsbuchstabe), siehe «Seitengestaltung».
+
 ## Variablen
 
 - In der Variablen-Datei `{titel}: …`, im Buch und im Umschlag `{titel}` – derselbe Name an beiden Stellen.
@@ -588,7 +615,7 @@ Für ein Lektorat auf Papier: `sh build.sh korrektur` (A4 mit Zeilennummern).
 | Shop | `shop-beschreibung`, `shop-schlagwoerter`, `shop-kategorie`, `shop-link`, `sprache` (Standard `de`, steht in den Shop-Angaben) |
 | Leseprobe | `leseprobe`, `leseprobe-seiten`, `leseprobe-seiten-uz`, `leseprobe-text` |
 | Technik | `kurz-normal` / `-uz` (Kürzel vorne an den Druckdateien, z. B. L123), `datei-normal` / `-uz` (Name der Lese-PDFs und E-Books), `ordner-normal` / `-uz` (Ausgabeordner) |
-| Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt\|anschauung), `zier`, `zier-hell`, `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund` |
+| Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt\|anschauung), `zier`, `zier-hell`, `initial` (ja · nein), `initial-farbe` (akzent · haupt), `initial-stil` (normal · rand · feld), `initial-zeilen` (3 · 4), `initial-schrift` (fett · datei.ttf), `kapitaelchen` (ja · nein), `absatz-einzug` (ja · nein), `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund` |
 | Sicherung | `sicherung-lokal`, `sicherung-cloud`, `sicherung-behalten` |
 | Layout | `farbschema`, `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `blocksatz` · Inhaltsverzeichnis: `inhalt-tiefe`, `inhalt-dichte`, `inhalt-teile`, `inhalt-punkte`, `inhalt-schrift` |
 
@@ -634,6 +661,10 @@ Nach einer Änderung `sh build.sh schnell` und ansehen.
 | eine Verzierung unten, danach neue Seite | `@ZIER-UNTEN 10` |
 | eine Verzierung zwischen zwei Abschnitten | `@ZIER-TRENNER` |
 | ein eigenes Zierbild | in der Variablen-Datei `{zier}: meine-zier.png` (Bild in `bilder/`) |
+| einen grossen Anfangsbuchstaben am Kapitelanfang (Initial, drei Zeilen hoch) | `{initial}: ja` – Farbe: `{initial-farbe}: akzent` (Gold) oder `haupt` (Blau). Ist der erste Absatz kürzer als drei Zeilen, läuft der nächste daneben weiter; folgt gleich ein Titel oder Foto, beginnt das Kapitel ohne Initial |
+| das Initial anders: im Rand, im Feld, grösser, fett oder in einer Zierschrift | `{initial-stil}: rand` (links im Rand, Text volle Breite) oder `feld` (helles Feld mit Goldrahmen) · `{initial-zeilen}: 4` · `{initial-schrift}: fett` oder eine TTF-Datei aus `fonts/` (z. B. Cinzel Decorative, UnifrakturMaguntia, Playfair Display – frei auf fonts.google.com) |
+| die ersten Wörter jedes Kapitels in Kapitälchen | `{kapitaelchen}: ja` – mit oder ohne Initial |
+| Absätze eingerückt statt mit Abstand (wie viele Romane) | `{absatz-einzug}: ja` – der erste Absatz nach einem Titel bleibt bündig |
 
 **Wann umbrechen?** Teile (`# Teil …`) und Kapitel oberster Ebene (`# Titel`) beginnen von selbst auf einer neuen Seite.
 Sonst erst umbrechen, wenn der Text fertig ist – jede Änderung verschiebt die Seiten. Lieber `@PLATZ` als `---`:
@@ -919,7 +950,8 @@ Die Breite des Rückens hängt von Seitenzahl und Papier ab. Die Druckerei rechn
 5. Nochmals `sh build.sh final`: Die Masse des Umschlags (z. B. 344 × 250 mm) müssen mit Gesamtbreite und
    Gesamthöhe im Coverrechner übereinstimmen.
 
-Ändert sich die Seitenzahl später, warnt `final`: dann Schritte 2–5 wiederholen.
+Ändert sich die Seitenzahl später, warnt `final`, und das Menü zeigt oben «⚠ Coverrechner …» (ab 2.78) – `cv` öffnet
+die Druckdatei. Dann Schritte 2–5 wiederholen; nach dem nächsten `final` verschwindet der Hinweis.
 Die Texte auf dem Umschlag stehen in `<buch>-umschlag.md` (Vorderseite, Buchrücken, Rückseite).
 [→ Plattform-Dateien](#Plattform-Dateien)
 
@@ -933,6 +965,22 @@ Das E-Book enthält Angaben zur **Barrierefreiheit** (Gliederung, Inhaltsverzeic
 `sh build.sh` warnt bei Fotos ohne `alt:` und ohne `text:`. Eigene Zusammenfassung: `ebook-barrierefreiheit:`. Die Akzentfarbe für Text wird im E-Book automatisch
 lesbar dunkel gesetzt (Kontrast 4,5:1); eigene Farbe mit `farbe-akzent-ebook:`.
 
+## Bei tredition
+
+- **Druckdatei:** Muster `tredition-a5-hardcover` (CMYK ist dort schon eingestellt). In der Variablen-Datei unter
+  `## Ausgabe: Druck …` bei `{druck-datei}:` eintragen.
+- **Hardcover:** Einschlag und Deckel laut Coverrechner, z. B. `{beschnitt-hardcover}: 17` und `{deckel-hardcover}: 153x216`.
+- **Coverrechner** von tredition: Seitenzahl aus `sh build.sh final` eingeben, das Ergebnis in der Druckdatei unter
+  `## Coverrechner (Rohdaten)` einfügen, Rücken übernehmen («Umschlag: Rücken und Seitenzahl»).
+- **ISBN und Strichcode:** tredition gibt jedem Buch eine ISBN und den Strichcode als SVG. Als PNG in `bilder/` legen
+  und bei `{isbn-bild}:` eintragen. `{isbn-rahmen}: berge` und `{isbn-rahmen-abstand}: 2` setzen die Bergkette darüber,
+  ohne dass Gold die Striche berührt.
+- **Hochladen:** `<kurz>_Buchblock.pdf` und `<kurz>_Umschlag_Hardcover.pdf` – `00-UEBERSICHT.txt` zeigt sie.
+- **Impressum:** tredition verlangt Druckerei und Kontakt nach EU-Produktsicherheit: `{impressum-herstellung}` und
+  `{impressum-kontakt}` unter `## Ausgabe: Druck …`. Mehr: tredition.com/impressum-buch
+- **Nur Exemplare, nicht im Handel:** Die Bestellung lässt sich vor der Veröffentlichung beenden – das Buch wird
+  gedruckt, erscheint aber nie im Handel. In der Druckdatei dann `{projekt}: privatdruck` (ohne ISBN im Buch).
+
 ## Farben für den Druck: RGB oder CMYK
 
 Bildschirm, Lese-PDF und E-Book arbeiten mit **RGB**. Viele Druckereien wollen **CMYK** (tredition: ja, epubli: RGB
@@ -943,7 +991,17 @@ geht). Einstellung in der Plattform-Datei (`druck/…md`):
 ```
 
 Dann wandelt `sh build.sh final` (und `komplett`) Buchblock und Umschlag mit Ghostscript nach CMYK um; alles andere
-bleibt RGB. Fotos selber in RGB liefern (nicht CMYK), JPG oder PNG – durchsichtige Stellen in PNG werden weiss.
+bleibt RGB:
+
+| Datei | Farben |
+|---|---|
+| Buchblock und Umschlag für die Druckerei | CMYK mit `{farbmodus}: cmyk` (tredition), sonst RGB (epubli) |
+| E-Book (EPUB) und Cover-Bilder | immer RGB |
+| Lese-PDF, Leseprobe, Korrektur | immer RGB |
+| Booklet zum Selberdrucken | RGB (entsteht vor der Umwandlung) |
+| Werbebilder (Mockup) | RGB |
+
+ Fotos selber in RGB liefern (nicht CMYK), JPG oder PNG – durchsichtige Stellen in PNG werden weiss.
 Wirken Farben im Druck zu dunkel oder zu hell: Probedruck ansehen, bei Bedarf ein zweites Farbschema (siehe «Farbschemas»).
 
 ## Schwarz-weiss drucken (freiwillig)

@@ -285,6 +285,18 @@ if fuell:
 if innen:
     print(f"    Leere Seiten im Inhalt: {', '.join(map(str, innen))} (z. B. vor einer rechten Seite)")
 BERECHNET = bk.V("berechnet-fuer-seiten").strip()
+_status = os.path.join(bk.BASE, "_druckbilder", f"cover-{KUERZEL}.txt")     # fürs Menü (ab 2.78): Coverrechner fällig?
+if not os.environ.get("BUCH_DRUCK_DATEI"):                                   # Testlauf druck=… zählt nicht
+    _grund = ("neu-berechnen: ja" if bk.V("neu-berechnen").strip().lower() == "ja" else
+              "andere Seitenzahl" if BERECHNET and BERECHNET != str(n) else "")
+    try:
+        if _grund:
+            os.makedirs(os.path.dirname(_status), exist_ok=True)
+            open(_status, "w", encoding="utf-8").write(f"{DRUCKDATEI}|{n}|{BERECHNET or '–'}|{_grund}\n")
+        elif os.path.exists(_status):
+            os.remove(_status)
+    except OSError:
+        pass
 if bk.V("neu-berechnen").strip().lower() == "ja":
     print(f"*** ERINNERUNG {KUERZEL}: In {DRUCKDATEI} steht «{{neu-berechnen}}: ja» – Rücken und Umschlag im Coverrechner "
           f"der Plattform für {n} Seiten neu berechnen, Werte unter «## Coverrechner (Rohdaten)» einfügen.")

@@ -606,8 +606,35 @@ def alle_in_einer_datei():
             print(f"  ⚠ {text}: " + ", ".join(liste))
 
 
+def cover_faellig():
+    """[(kuerzel, druckdatei, seiten, berechnet, grund)] aus _druckbilder/cover-*.txt (schreibt jeder «final», ab 2.78)."""
+    out = []
+    for p in sorted(glob.glob(os.path.join(BASE, "_druckbilder", "cover-*.txt"))):
+        try:
+            d, n, b, g = open(p, encoding="utf-8").read().strip().split("|")[:4]
+        except (OSError, ValueError):
+            continue
+        out.append((os.path.basename(p)[6:-4], d, n, b, g))
+    return out
+
+
+def cover_menue():
+    """cv: Druckdateien mit fälligem Coverrechner öffnen und sagen, was zu tun ist."""
+    faellig = cover_faellig()
+    if not faellig:
+        return print("  Coverrechner: alles passt (oder noch kein «final» gebaut).")
+    for k, d, n, b, g in faellig:
+        print(f"  {FETT(k)}: Buchblock {n} Seiten, Werte für {b} – {g}. Öffne {d} …")
+        oeffnen(os.path.join(BASE, d))
+    print("  Im Coverrechner der Druckerei die Seitenzahl eingeben, das Ergebnis zuunterst unter «## Coverrechner (Rohdaten)»\n"
+          "  einfügen, oben Rücken (und Masse) eintragen, {berechnet-fuer-seiten} anpassen, {neu-berechnen}: nein.\n"
+          "  Oder Claude sagen: «Coverwerte übernehmen». Danach k (komplett) – dann verschwindet der Hinweis.")
+
+
 def zeige():
     print("\n" + kopf(rechts=f"Klang (!) {'ein' if ton else 'aus'}"))
+    for k, d, n, b, g in cover_faellig():
+        print(FETT(f" ⚠ Coverrechner {k}: {n} Seiten, eingetragen für {b}") + GRAU(f"  ({g}) → cv"))
     spalten = [("Schreiben", [("m", "MD öffnen …"), ("g", "Geschichten …"), ("t", "Tabellen …"),
                              ("c", "check / gegenlesen …")]),
                ("Bauen", [("s", "schnell  (Lese-PDF)"), ("k", "komplett (vor dem Druck)"), ("w", "weitere …")]
@@ -782,7 +809,9 @@ def main():
                     break
                 continue
             seit = time.time()
-            if w == "hf" or w.startswith("hf "):            # hilfe finden: hf isbn
+            if w == "cv":                                   # Coverrechner fällig? (ab 2.78)
+                cover_menue()
+            elif w == "hf" or w.startswith("hf "):          # hilfe finden: hf isbn
                 finde_hilfe(e[2:].strip())
             elif w == "s":
                 bauen("schnell")

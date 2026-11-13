@@ -10,3 +10,7 @@ eingebettet und mit pureSATZ weitergegeben werden – aber nur zusammen mit dies
 | Poppins | `Poppins-*.ttf` | Copyright 2020 The Poppins Project Authors (https://github.com/itfoundry/Poppins) |
 
 Vollständiger Lizenztext: `OFL.txt` in diesem Ordner, sowie https://openfontlicense.org
+
+**DejaVu Sans Mono** (`DejaVuSansMono.ttf`, ab 2.76/2.77 für Code-Blöcke im Buch): Copyright (c) 2003 by Bitstream, Inc.,
+DejaVu-Änderungen Public Domain. Lizenz «Bitstream Vera» (frei nutzbar, einbettbar und weitergebbar, nicht einzeln
+verkaufen) – Text: `DejaVu-LIZENZ.txt` in diesem Ordner.

@@ -118,6 +118,13 @@
 {trennstellen}: Welt|anschauung, Gedanken|karussell
 {zier}:
 {zier-hell}:
+{initial}: nein
+{initial-farbe}: akzent
+{initial-stil}: normal
+{initial-zeilen}: 3
+{initial-schrift}:
+{kapitaelchen}: nein
+{absatz-einzug}: nein
 {kopfzeile}: ohne-autor
 {bildschirm-dunkler}: nein
 {mockup-hintergrund}: #E9EEF4, #C9D3DF
@@ -126,6 +133,13 @@
 > {bilderverzeichnis}, {tabellenverzeichnis}: ja = eigene Seite mit allen Fotos bzw. Tabellen und Seitenzahl, vor dem Stichwortverzeichnis (anderer Ort: Zeile @BILDERVERZEICHNIS / @TABELLENVERZEICHNIS)
 > {trennstellen}: | = hier darf ein langes Wort getrennt werden
 > {zier}: eigenes Bild der Verzierung im Ordner bilder/, leer = Standard
+> {initial}: ja = grosser Anfangsbuchstabe über drei Zeilen am Anfang jedes Kapitels · nein (Standard)
+> {initial-farbe}: akzent (Gold, Standard) | haupt (Blau)
+> {initial-stil}: normal = im Text · rand = links im Rand, Text in voller Breite · feld = im hellen Feld mit Goldrahmen
+> {initial-zeilen}: 3 | 4 (so hoch ist der Buchstabe)
+> {initial-schrift}: leer = Textschrift · fett · oder eine eigene Schrift (TTF-Datei in fonts/ oder bilder/, z. B. CinzelDecorative-Bold.ttf von fonts.google.com)
+> {kapitaelchen}: ja = die ersten zwei Wörter jedes Kapitels in Kapitälchen (auch ohne Initial)
+> {absatz-einzug}: ja = Absätze ohne Abstand, ab dem zweiten eingerückt (wie viele Romane) · nein = mit Abstand (Standard)
 > {kopfzeile}: ohne-autor (Teil · Kapitel, Standard) | autor (Autor · Teil · Kapitel) | wechselnd (links Teil, rechts Kapitel)
 > {bildschirm-dunkler}: ja = feine Farben nur im Bildschirm-PDF etwas dunkler (für Schwarz-weiss-Ausdrucke)
 > {mockup-hintergrund}: Farbverlauf (oben, unten) des Werbebilds …_Mockup.jpg (entsteht bei «final» und mit «sh build.sh mockup»)

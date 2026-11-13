@@ -40,9 +40,11 @@ ZEICHEN = {"→": "›", "←": "‹", "↔": "‹›", "↑": "Pfeil hoch", "�
            "💾 ": "", "📋 ": "", "🗑 ": "", "💾": "", "📋": "", "🗑": ""}   # fehlen in Lora und Poppins
 
 
-def zeichen(t):
+def zeichen(t, nur_emoji=False):
+    """Zeichen, die Lora und Poppins nicht haben, ersetzen (Code-Blöcke in DejaVu Sans Mono: nur Emojis)."""
     for a, b in ZEICHEN.items():
-        t = t.replace(a, b)
+        if not nur_emoji or ord(a[0]) > 0xFFFF:
+            t = t.replace(a, b)
     return t
 
 
@@ -65,6 +67,15 @@ def einschalten(basis):
                          "im Ordner pureSATZ «sh setup/setup.sh handbuch/handbuch.txt».")
     t = open(v, encoding="utf-8").read()
     if not SCHALTER.search(t):
+        try:                                       # Druckdatei aus handbuch/handbuch.txt (DRUCK = …)
+            werte = dict(re.findall(r"^\s*([A-Z_]+)\s*=\s*(.*?)\s*$", _lies(os.path.join(quelle(basis), "handbuch",
+                                                                                     "handbuch.txt")), re.M))
+        except SystemExit:
+            werte = {}
+        d = werte.get("DRUCK", "")
+        if d and os.path.exists(os.path.join(basis, "druck", d + ".md")):
+            t = re.sub(r"^(\{druck-datei\}:).*$", rf"\1 {d}", t, count=1, flags=re.M)
+            print(f"Handbuch: Druckdatei {d}.")
         t = re.sub(r"^\s*\{buch-aus-hilfe\}\s*:.*\n?", "", t, flags=re.M | re.I)
         t = t.rstrip("\n") + ("\n\n## Handbuch\n{buch-aus-hilfe}: ja\n"
                               "> {buch-aus-hilfe}: ja = die Buch-MD entsteht bei jedem Bau neu aus der Hilfe von pureSATZ "
@@ -171,7 +182,7 @@ class Umsetzer:
                 code = not code
                 out.append(ZAUN if code else ZAUN); i += 1; continue
             if code:
-                out.append(z[i].rstrip()); i += 1; continue
+                out.append(zeichen(z[i].rstrip(), nur_emoji=True)); i += 1; continue
             if s == "::: nur-webhilfe":
                 while i < len(z) and z[i].strip() != ":::":
                     i += 1
@@ -189,10 +200,10 @@ class Umsetzer:
                 out += ["", self.tabelle(kopf, reihen), ""]; continue
             if (z[i].startswith("  ") and s and out and LISTE.match(out[-1])
                     and not LISTE.match(z[i])):              # Fortsetzung eines Listenpunkts: an ihn anhängen
-                out[-1] += " " + self.inline(s)
+                out[-1] += " " + zeichen(self.inline(s))
                 i += 1; continue
-            out.append(self.inline(z[i].rstrip())); i += 1
-        return zeichen("\n".join(out).strip("\n"))
+            out.append(zeichen(self.inline(z[i].rstrip()))); i += 1
+        return "\n".join(out).strip("\n")
 
 
 # --------------------------------------------------------------------------- Teile aus dem Motor
@@ -279,6 +290,9 @@ def erzeuge(basis):
             "> pureSATZ/START.md, pureSATZ/motor/HILFE.md, pureSATZ/handbuch/\n\n# BUCHSTART\n\n")
     if _lies(ziel) != kopf + text:
         open(ziel, "w", encoding="utf-8").write(kopf + text)
+    umschlag = os.path.join(ps, "handbuch", "umschlag.md")       # Umschlagtexte: auch aus pureSATZ/handbuch/
+    if os.path.exists(umschlag):
+        open(os.path.join(basis, f"{name}-umschlag.md"), "w", encoding="utf-8").write(_lies(umschlag))
     stw = os.path.join(ps, "handbuch", "stichworte.txt")
     if os.path.exists(stw):
         open(os.path.join(basis, f"stichworte-{name}.txt"), "w", encoding="utf-8").write(_lies(stw))

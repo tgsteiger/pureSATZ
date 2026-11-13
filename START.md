@@ -202,6 +202,8 @@ Danach mit `sh build.sh schnell` ansehen. Ganze Bausteine: [Zum Kopieren](#Zum-K
 | Text **hervorheben** (fett, kursiv) | `**Wort**` = fett mitten im Text · kursiv als eigene Zeile: `~ Satz` (Randbemerkung) oder `@ZITAT Satz`. [→ fett und kursiv](#Text-hervorheben) |
 | einen **Zwischentitel** | `### Titel`, kleiner `#### Titel`. Im Inhaltsverzeichnis erscheinen sie mit `{inhalt-tiefe}: 3` bzw. `4` in der Variablen-Datei (Standard: nur `##`) |
 | eine **Randbemerkung** | `~ Satz` (klein, kursiv) |
+| einen **grossen Anfangsbuchstaben** am Kapitelanfang | `{initial}: ja` in der Variablen-Datei (Farbe: `{initial-farbe}: haupt` = Blau; Stil: `{initial-stil}: rand` oder `feld`, `{initial-zeilen}: 4`, `{initial-schrift}: fett`; dazu `{kapitaelchen}: ja`) [→ Seitengestaltung](#Seitengestaltung) |
+| Absätze **eingerückt** statt mit Abstand | `{absatz-einzug}: ja` in der Variablen-Datei |
 | eine **Zeile umbrechen**, ohne neuen Absatz | `\` am Zeilenende (in Variablen: `<br/>`) |
 | Text **nur in einer Fassung** | `::: nur-uz` … `:::` oder `::: nur-normal` … `:::` |
 | ein **Foto** | `#### @FOTO Titel`, darunter `datei: bild.jpg` – eine Leerzeile beendet das Foto. [→ Blöcke zum Kopieren](#Zum-Kopieren) · [→ alle Angaben](#Bilder-und-Fotos) |

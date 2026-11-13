@@ -909,6 +909,14 @@ h2 = _stil("h2", L.KAPITEL, keepWithNext=1)
 h3 = _stil("h3", L.ZWISCHENTITEL, keepWithNext=1)
 h4 = _stil("h4", dict(L.ZWISCHENTITEL, groesse=L.ZWISCHENTITEL.get("groesse", 11.5) - 1, zeilenabstand=14,
                       abstand_vor=12, abstand_nach=4), keepWithNext=1)
+INITIAL = (V("initial", "nein") or "nein").strip().lower() in ("ja", "j")          # ab 2.77
+INITIAL_FARBE = farbe("haupt" if (V("initial-farbe", "akzent") or "").strip().lower() == "haupt" else "akzent")
+EINZUG = (V("absatz-einzug", "nein") or "nein").strip().lower() in ("ja", "j")
+INITIAL_STIL = (V("initial-stil", "normal") or "normal").strip().lower()                # ab 2.80: normal | rand | feld
+INITIAL_ZEILEN = 4 if (V("initial-zeilen", "3") or "3").strip() == "4" else 3
+KAPITAELCHEN = (V("kapitaelchen", "nein") or "nein").strip().lower() in ("ja", "j")
+body_e0 = ParagraphStyle("body_e0", parent=body, spaceAfter=0)                         # Absatz-Einzug: erster Absatz
+body_e = ParagraphStyle("body_e", parent=body_e0, firstLineIndent=5 * mm)              # folgende Absätze eingerückt
 quote = _stil("quote", L.ZITAT, alignment=TA_CENTER, spaceBefore=10, spaceAfter=12, leftIndent=8 * mm,
               rightIndent=8 * mm)
 note = _stil("note", L.NOTIZ, parent=body, leftIndent=6 * mm, rightIndent=6 * mm, alignment=TA_LEFT)
@@ -1169,6 +1177,71 @@ def inline(t):
     t = re.sub(r"&(?!amp;|lt;|gt;|quot;|#)", "&amp;", t)
     t = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", t)
     return re.sub(r"\x00(\d+)\x00", lambda m: code_text(codes[int(m.group(1))]), t)
+
+
+def initial_schrift():
+    """{initial-schrift}: leer = Textschrift · fett = Textschrift fett · datei.ttf = eigene Schrift (fonts/ oder bilder/)."""
+    w = (V("initial-schrift", "") or "").strip()
+    if not w:
+        return schrift("text")
+    if w.lower() == "fett":
+        return schrift("text_fett")
+    if "Initial-Eigen" not in pdfmetrics.getRegisteredFontNames():
+        pfad = finde(w, ("fonts", "bilder", ""))
+        if not pfad:
+            print(f"Hinweis: Initial-Schrift {w} nicht gefunden (fonts/ oder bilder/) – nehme die Textschrift.")
+            return schrift("text")
+        pdfmetrics.registerFont(TTFont("Initial-Eigen", pfad))
+    return "Initial-Eigen"
+
+
+class Initial(Flowable):
+    """Grosser Anfangsbuchstabe am Kapitelanfang ({initial}: ja, ab 2.77; Stil, Zeilen, Schrift ab 2.80).
+    stil: normal = im Text · rand = links im Rand, Text in voller Breite · feld = im hellen Feld mit Goldrahmen."""
+    def __init__(self, buchstabe, farbe_, zeilen=3, luft=0, stil="normal", font=None):
+        super().__init__()
+        self.b, self.f, self.luft, self.z, self.stil = buchstabe, farbe_, luft, zeilen, stil
+        self.font = font or schrift("text")
+        cap = (getattr(pdfmetrics.getFont(self.font).face, "capHeight", 700) or 700) / 1000
+        self.cap = cap
+        self.gr = ((zeilen - 1) * TEXT_ZEILE + TEXT_GROESSE * cap) / cap      # Buchstabe: oben Zeile 1 bis Grundlinie
+        if stil == "feld":
+            self.gr *= 0.7
+        self.lw = pdfmetrics.stringWidth(self.b, self.font, self.gr)
+        if stil == "rand":
+            self.w = 0.1
+        elif stil == "feld":
+            self.feld = max(self.lw + 4 * mm, (zeilen - 1) * TEXT_ZEILE + TEXT_GROESSE * cap)
+            self.w = self.feld + 2.5 * mm
+        else:
+            self.w = self.lw + 1.8 * mm
+        self.h = 0 if stil == "rand" else zeilen * TEXT_ZEILE - 1   # so viel Text braucht es daneben (sonst I3)
+    def wrap(self, aw, ah):
+        return self.w, (self.z - 1) * TEXT_ZEILE + self.luft + 1   # ImageAndFlowables setzt noch eine Zeile daneben
+    _restrictSize = wrap
+    def draw(self):
+        c, grund = self.canv, 1 + self.luft - TEXT_GROESSE           # Grundlinie der letzten Initial-Zeile
+        if self.stil == "feld":
+            hoch = (self.z - 1) * TEXT_ZEILE + TEXT_GROESSE * self.cap + 4
+            c.setFillColor(farbe("kasten")); c.rect(0, grund - 2, self.feld, hoch, fill=1, stroke=0)
+            c.setStrokeColor(GOLD); c.setLineWidth(0.6); c.rect(1.2, grund - 0.8, self.feld - 2.4, hoch - 2.4, fill=0, stroke=1)
+            c.setFillColor(self.f); c.setFont(self.font, self.gr)
+            c.drawCentredString(self.feld / 2, grund + (hoch - 4 - self.gr * self.cap) / 2, self.b)
+            return
+        c.setFillColor(self.f); c.setFont(self.font, self.gr)
+        c.drawString(-self.lw - 2.5 * mm if self.stil == "rand" else 0, grund, self.b)
+
+
+def kapitaelchen(text, n=2):
+    """Die ersten n Wörter in Kapitälchen (Grossbuchstaben, etwas kleiner), ab 2.80 ({kapitaelchen}: ja)."""
+    teile = text.split(" ")
+    k = 0
+    while k < len(teile) and k < n and re.fullmatch(r"[A-Za-zÄÖÜäöüß'’.,;:!?«»-]+", teile[k]):
+        k += 1
+    if not k:
+        return text
+    vor = " ".join(teile[:k]).upper().replace("ß", "SS")
+    return f'<font size="{TEXT_GROESSE * 0.82:.1f}">{vor}</font>' + (" " + " ".join(teile[k:]) if k < len(teile) else "")
 
 
 class Ornament(Flowable):
@@ -1660,9 +1733,19 @@ uz_nummer = ParagraphStyle("uznr", parent=uz_bullet, leftIndent=7 * mm, bulletIn
                            bulletFontName=uz_bullet.fontName, bulletFontSize=uz_bullet.fontSize)
 
 
+def code_schrift():
+    """Gleich breite Schrift für Code-Blöcke (DejaVu Sans Mono in motor/fonts, ab 2.77) – sonst die Titelschrift."""
+    if "Code-Mono" not in pdfmetrics.getRegisteredFontNames():
+        pfad = finde("DejaVuSansMono.ttf", ("fonts",))
+        if not pfad:
+            return schrift("titel")
+        pdfmetrics.registerFont(TTFont("Code-Mono", pfad))
+    return "Code-Mono"
+
+
 def code_kasten(sprache, inhalt):
-    """Code-Block «```» … «```»: heller Kasten, jede Zeile wörtlich in der Titelschrift (ab 2.76)."""
-    st = ParagraphStyle("code", parent=body, fontName=schrift("titel"), fontSize=TEXT_GROESSE * 0.78,
+    """Code-Block «```» … «```»: heller Kasten, jede Zeile wörtlich, gleich breite Schrift (ab 2.76/2.77)."""
+    st = ParagraphStyle("code", parent=body, fontName=code_schrift(), fontSize=TEXT_GROESSE * 0.64,
                         leading=TEXT_GROESSE * 1.1, alignment=TA_LEFT, spaceAfter=0, firstLineIndent=0,
                         leftIndent=3 * mm, textColor=BLAU)
     zeilen = list(inhalt)
@@ -1672,8 +1755,9 @@ def code_kasten(sprache, inhalt):
         return []
     def zeile(z):
         e = len(z) - len(z.lstrip(" "))
-        z = z.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-        return Paragraph("&nbsp;" * e + (z.lstrip(" ") or "&nbsp;"), st)
+        z = z.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").lstrip(" ")
+        z = re.sub(r" {2,}", lambda m: "&nbsp;" * (len(m.group()) - 1) + " ", z)   # Spalten bleiben stehen
+        return Paragraph("&nbsp;" * e + (z or "&nbsp;"), st)
     t = Table([[zeile(z)] for z in zeilen], colWidths=[W - IN - OUT], hAlign="LEFT")
     t.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, -1), farbe("kasten")),
                            ("LEFTPADDING", (0, 0), (-1, -1), 2 * mm), ("RIGHTPADDING", (0, 0), (-1, -1), 2 * mm),
@@ -1962,7 +2046,30 @@ def _build(out, ausgleich=None):
     teil_gesehen = False
     schwebe = {}   # Foto, das von den folgenden Absätzen umflossen wird
 
+    ini = {}               # wartendes Initial (I1, ab 2.79): Buchstabe, Absätze daneben, deren Höhe
+
+    def initial_ausgeben(erzwungen=True):
+        """Initial mit den Absätzen daneben setzen, sobald sie drei Zeilen füllen. Kommt vorher ein Titel, Foto
+        o. Ä. (erzwungen) und reicht der Text nicht: ohne Initial setzen (kein Loch unter dem Buchstaben)."""
+        if not ini or (not erzwungen and ini["h"] < ini["b"].h):
+            return
+        if ini["h"] >= ini["b"].h:
+            block = ImageAndFlowables(ini["b"], ini["paras"], imageSide="left", imageLeftPadding=0,
+                                      imageRightPadding=0, imageTopPadding=0, imageBottomPadding=0)
+            block.style = body_e0         # zählt als Absatz (der nächste wird bei Einzug eingerückt)
+            story.append(block)
+        else:
+            text0, stil0 = ini["erst"]
+            story.append(Paragraph(inline(text0), stil0))
+            story.extend(ini["paras"][1:])
+        ini.clear()
+
+    def neben(p):
+        """Höhe eines Absatzes neben dem Initial."""
+        return p.wrap(W - IN - OUT - ini["b"].w, H)[1] + p.getSpaceAfter()
+
     def ausgeben():
+        initial_ausgeben()
         if schwebe:
             bildblock = BildMitText(schwebe["teile"], schwebe["bw"])
             story.append(ImageAndFlowables(bildblock, schwebe["paras"], imageSide=schwebe["seite"],
@@ -1972,8 +2079,33 @@ def _build(out, ausgleich=None):
             schwebe.clear()
 
     def flush():
+        nonlocal nach_kapitel
         if para:
-            p = Paragraph(inline(" ".join(para)), body); para.clear()
+            text = " ".join(para); para.clear()
+            stil = body
+            if EINZUG:                    # eingerückt, wenn direkt ein Absatz davor steht
+                vorher = getattr(getattr(story[-1], "style", None), "name", "") if story else ""
+                stil = body_e if (vorher in ("body_e0", "body_e") or ini) else body_e0
+            if ini:                       # Initial wartet: dieser Absatz fliesst daneben weiter (I1)
+                p = Paragraph(inline(text), ParagraphStyle("ini2", parent=stil, allowOrphans=1, allowWidows=1))
+                ini["paras"].append(p); ini["h"] += neben(p)
+                initial_ausgeben(erzwungen=False)
+                return
+            if INITIAL and nach_kapitel and not schwebe and re.match(r"[A-Za-zÄÖÜäöü]", text):
+                ohne = inline(kapitaelchen(text[1:]) if KAPITAELCHEN else text[1:])
+                rest = Paragraph(ohne, ParagraphStyle("ini", parent=stil, firstLineIndent=0,
+                                                      allowOrphans=1, allowWidows=1))
+                ini.update(b=Initial(text[0], INITIAL_FARBE, zeilen=INITIAL_ZEILEN, luft=stil.spaceAfter or 0,
+                                     stil=INITIAL_STIL, font=initial_schrift()),
+                           paras=[rest], erst=(kapitaelchen(text) if KAPITAELCHEN else text, stil), h=0)
+                ini["h"] = neben(rest)
+                nach_kapitel = False
+                initial_ausgeben(erzwungen=False)
+                return
+            if KAPITAELCHEN and nach_kapitel and not schwebe:     # Kapitälchen auch ohne Initial (J5)
+                text = kapitaelchen(text)
+            nach_kapitel = False
+            p = Paragraph(inline(text), stil)
             if schwebe:
                 schwebe["paras"].append(p)
                 if len(schwebe["paras"]) >= 5:
@@ -1981,6 +2113,7 @@ def _build(out, ausgleich=None):
             else:
                 story.append(p)
 
+    nach_kapitel = False   # {initial}: ja – nächster Absatz bekommt den grossen Anfangsbuchstaben
     sammle = None          # @TITEL / @IMPRESSUM: die folgenden Zeilen gehören dazu
     QUELLEN.clear(); VERZ["bild"].clear(); VERZ["tabelle"].clear(); VERZ_GESETZT.clear()
     bn_gesetzt = False     # Bildnachweis schon gesetzt?
@@ -2084,7 +2217,7 @@ def _build(out, ausgleich=None):
                 story.append(CondPageBreak(45 * mm))
             p = Paragraph(inline(t), h2 if not first else ParagraphStyle("h2f", parent=h2, spaceBefore=0))
             p._toc = (1, t)
-            story.append(p); first = False
+            story.append(p); first = False; nach_kapitel = True
         elif s.startswith("> "):
             flush(); story.append(KeepTogether([Spacer(1, 6), Ornament(), Paragraph(inline(s[2:]), quote),
                                                 Ornament(), Spacer(1, 14)]))
