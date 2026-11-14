@@ -67,16 +67,15 @@ def lesen(zeilen):
     einheiten = re.findall(r"\d\s*(mm|cm)\b", " ".join(zeilen), re.I)
     standard = max(set(einheiten), key=einheiten.count).lower() if einheiten else "mm"
     w = {}
-    teile = [s.strip() for z in zeilen for s in z.split("|")]
+    teile = [s.strip() for z in zeilen for s in re.split(r"[|\t]", z) if s.strip()]   # | oder Tab (Tabelle, 2.82.9)
     for i, t in enumerate(teile):
         m = re.match(r"\s*(papier|paper)\s*[:=]\s*(.+)$", t, re.I)
         if m and "papier" not in w:
             w["papier"] = m.group(2).strip()
-        for name, muster in WOERTER:
+        treffer = [(m.start(), n, m) for n, muster in WOERTER
+                   for m in [re.search(rf"(?<![a-zäöü])(?:{muster})(?![a-zäöü])", t, re.I)] if m]
+        for _, name, m in sorted(treffer, key=lambda x: (x[0], -len(x[2].group())))[:1]:   # nur das erste (längste) Wort zählt
             if name in w:
-                continue
-            m = re.search(rf"(?<![a-zäöü])(?:{muster})(?![a-zäöü])", t, re.I)
-            if not m:
                 continue
             nach, vor = t[m.end():], t[:m.start()]
             if name == "seiten":
@@ -92,7 +91,7 @@ def lesen(zeilen):
                 continue
             v = (re.match(rf"\s*(?:[:=]|ist|is|beträgt|betraegt)?\s*{ZAHL}\s*{EINHEIT}(?![\d])", nach, re.I)
                  or re.search(rf"{ZAHL}\s*{EINHEIT}\s*$", vor, re.I))
-            if not v and not nach.strip(" :") and i + 1 < len(teile):       # Wert auf der nächsten Zeile (tredition)
+            if not v and not re.search(r"\d", nach) and i + 1 < len(teile):   # Wert in der nächsten Zeile/Spalte (tredition)
                 v = re.fullmatch(rf"\s*{ZAHL}\s*{EINHEIT}\s*", teile[i + 1], re.I)
             if v:
                 w[name] = _mm(v.group(1), v.group(2), standard)

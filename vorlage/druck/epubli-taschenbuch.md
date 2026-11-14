@@ -58,11 +58,11 @@
 > {isbn-rahmen-farbe}: default: leer = gold · optional: schwarz
 > {isbn-rahmen-abstand}: default: leer = 0 (Linie berührt die Striche) · optional: mm weiss dazwischen, z. B. 2 (tredition: nur schwarze Striche auf Weiss)
 
-## Coverrechner (Rohdaten)
-> Text aus dem Coverrechner der Druckerei hier einfügen (wie er kommt). Der Motor liest ihn beim Bau selbst.
-> Deckel 134 x 208 mm (zur Kontrolle)
-
 ## Notizen
 > Impressum und ISBN gehören in die Variablen-Datei unter «## Ausgabe: …». Beim Wechsel auf diese Plattform dort eintragen:
 > {impressum-herstellung}: Herstellung: epubli – ein Service der neopubli GmbH, Köpenicker Strasse 154a, 10997 Berlin
 > {impressum-kontakt}: Kontaktadresse nach EU-Produktsicherheitsverordnung: produktsicherheit@epubli.com
+
+## Coverrechner (Rohdaten)
+> Text aus dem Coverrechner der Druckerei hier einfügen (wie er kommt). Der Motor liest ihn beim Bau selbst.
+> Deckel 134 x 208 mm (zur Kontrolle)

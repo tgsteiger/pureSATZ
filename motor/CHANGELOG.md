@@ -3,6 +3,14 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.82.10 (November 2026)
+- `{initial-stufen}: 2 | 3 | 4` (auch mehrere, z. B. `2 3`): welche Überschriften das Initial im Titel bekommen – Grösse
+  immer relativ zur jeweiligen Überschrift; `{initial-farbe}: ueberschrift` = Farbe der jeweiligen Überschrift.
+  Menü: `ti3`, `ti23`, `ti234` · Farbe `ü`.
+- Coverrechner: auch die Tabellenform von tredition (Tabs, «Maß cm Pixel») wird gelesen; pro Zeile zählt nur das erste
+  Wort («Gesamtbreite inkl. Beschnitt» ist die Gesamtbreite, nicht der Beschnitt). Test 25.
+- Druckdateien: «## Notizen» steht vor «## Coverrechner (Rohdaten)» (Vorlagen; der Rohdaten-Block bleibt zuunterst).
+
 ## 2.82.9 (November 2026)
 - `{initial}: titel` – der erste Buchstabe des Kapiteltitels wird hervorgehoben (1,45-mal so gross, Farbe und Schrift
   wie beim Initial; leere Schrift = Titelschrift), der Text beginnt ohne Initial. E-Book passend (h2::first-letter).

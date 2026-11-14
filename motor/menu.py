@@ -643,7 +643,8 @@ INITIAL_SCHRIFTEN = (("t", "", "Textschrift", "schlicht, wie der Text"), ("f", "
 
 
 INITIAL_FARBEN = (("g", "akzent", "gold", "Akzentfarbe, wie Zierlinien und Lotus"),
-                  ("b", "haupt", "blau", "wie die Überschriften"), ("s", "text", "schwarz", "wie der Text"))
+                  ("b", "haupt", "blau", "wie die Überschriften"), ("s", "text", "schwarz", "wie der Text"),
+                  ("ü", "ueberschrift", "Überschrift", "jede Stufe in der Farbe ihrer Überschrift"))
 
 
 def initialen_menue():
@@ -658,6 +659,7 @@ def initialen_menue():
         zeilen = open(pfad, encoding="utf-8").read().split("\n")
         wert = lambda n, s="": next((z.split(":", 1)[1].strip() for z in zeilen if z.startswith("{" + n + "}:")), s)
         art = wert("initial", "nein").lower()
+        stufen = " ".join(sorted(set(re.findall(r"[234]", wert("initial-stufen", "2"))))) or "2"
         zahl = wert("initial-zeilen", "3")
         schrift = wert("initial-schrift", "").lower()
         farbe_ = {"blau": "haupt", "schwarz": "text", "gold": "akzent"}.get(wert("initial-farbe", "akzent").lower(),
@@ -668,12 +670,14 @@ def initialen_menue():
         if art == "titel":
             name = "Titelschrift" if not schrift else name
         fname = next((n for _, w, n, _ in INITIAL_FARBEN if w == farbe_), "gold")
-        wo = "im Titel" if art == "titel" else "aus" if art not in ("ja", "j") or zahl == "0" else \
+        wo = f"im Titel ({stufen.replace(' ', ', ')})" if art == "titel" else "aus" if art not in ("ja", "j") or zahl == "0" else \
             "erhöht" if zahl == "1" else zahl + " Zeilen"
         jetzt = wo if wo == "aus" else f"{wo} · {name} · {fname}"
         print(f"\n {FETT('Initialen …')}   " + GRAU(f"jetzt: {jetzt} · Kapitälchen {'ja' if kap else 'nein'}"
                                                          f" · Einzug {'ja' if einzug else 'nein'}"))
-        print(f"  {FETT('Wo')}       0 aus · 1 erhöht (ragt nach oben) · 2 · 3 · 4 Zeilen · {FETT('ti')} im Titel")
+        print(f"  {FETT('Wo')}       0 aus · 1 erhöht (ragt nach oben) · 2 · 3 · 4 Zeilen")
+        print(f"           {FETT('ti')} im Titel (Kapitel ##) · {FETT('ti3')} nur Zwischentitel ### · "
+              f"{FETT('ti23')} / {FETT('ti234')} mehrere Stufen")
         for i, (t, _, n, b) in enumerate(INITIAL_SCHRIFTEN):
             print(f"  {FETT('Schrift') if i == 0 else '       '}  {FETT(t)} {n:<12} {GRAU(b)}")
         for i, (t, _, n, b) in enumerate(INITIAL_FARBEN):
@@ -681,7 +685,7 @@ def initialen_menue():
         print(f"  {FETT('k')}  Kapitälchen ein/aus  " + GRAU("(erste Wörter in GROSSBUCHSTABEN)"))
         print(f"  {FETT('e')}  Einzug ein/aus       " + GRAU("(Absätze beginnen eingerückt statt mit Abstand dazwischen)"))
         print(f"  {FETT('v')}  Vorschau: schnell bauen, PDF öffnen")
-        e = frage(" Wahl (z. B. «ti c b» = im Titel, Cinzel, blau · ↵ = zurück): ").lower().split()
+        e = frage(" Wahl (z. B. «ti23 c ü» = Kapitel + Zwischentitel, Cinzel, wie Überschrift · ↵ = zurück): ").lower().split()
         if not e or e == ["q"]:
             return
         neu = {}
@@ -690,8 +694,9 @@ def initialen_menue():
                 neu["initial"] = "ja" if t != "0" else "nein"
                 if t != "0":
                     neu["initial-zeilen"] = t
-            elif t == "ti":
+            elif re.fullmatch(r"ti[234]*", t):
                 neu["initial"] = "titel"
+                neu["initial-stufen"] = " ".join(sorted(set(t[2:]))) or "2"
             elif t == "k":
                 neu["kapitaelchen"] = "nein" if kap else "ja"
             elif t == "e":
@@ -703,6 +708,8 @@ def initialen_menue():
                         oeffnen(next(iter(liste.values()))[1])
             elif any(t == x[0] for x in INITIAL_SCHRIFTEN):
                 neu["initial-schrift"] = next(w for x, w, _, _ in INITIAL_SCHRIFTEN if x == t)
+            elif t == "ue":
+                neu["initial-farbe"] = "ueberschrift"
             elif any(t == x[0] for x in INITIAL_FARBEN):
                 neu["initial-farbe"] = next(w for x, w, _, _ in INITIAL_FARBEN if x == t)
             else:

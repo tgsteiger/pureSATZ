@@ -58,11 +58,11 @@
 > {isbn-rahmen-farbe}: default: leer = gold · optional: schwarz
 > {isbn-rahmen-abstand}: default: leer = 0 (Linie berührt die Striche) · optional: mm weiss dazwischen, z. B. 2 (tredition: nur schwarze Striche auf Weiss)
 
-## Coverrechner (Rohdaten)
-> Text aus dem Coverrechner der Druckerei hier einfügen (wie er kommt). Der Motor liest ihn beim Bau selbst.
-
 ## Notizen
 > Impressum und ISBN gehören in die Variablen-Datei unter «## Ausgabe: …». Beim Wechsel auf diese Plattform dort eintragen:
 > DEMO-Texte – vor Gebrauch durch die Angaben von BoD ersetzen
 > {impressum-herstellung}: Herstellung: BoD – Books on Demand GmbH, In de Tarpen 42, 22848 Norderstedt
 > {impressum-kontakt}: Kontaktadresse nach EU-Produktsicherheitsverordnung: (Angabe von BoD eintragen)
+
+## Coverrechner (Rohdaten)
+> Text aus dem Coverrechner der Druckerei hier einfügen (wie er kommt). Der Motor liest ihn beim Bau selbst.

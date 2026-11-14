@@ -102,7 +102,8 @@ ausgereift – Regeln für das Dokument und Einschränkungen in `INSTALLATION.md
 Grosser Anfangsbuchstabe am Kapitelanfang: im Menü `w` → `in` **Initialen …** wählen – wo (`0` aus, `1` erhöht,
 `2`, `3`, `4` Zeilen oder `ti` im Kapiteltitel), Schrift (Textschrift, fett, Cinzel, Uncial, Fraktur), Farbe (gold,
 blau, schwarz) und Kapitälchen; `v` zeigt eine Vorschau. Beispiel `ti c b` = im Titel, Cinzel, blau.
-Oder in der Variablen-Datei: `{initial}: ja | titel`, `{initial-zeilen}: 2`, `{initial-schrift}: cinzel`,
+Im Titel auch für Zwischentitel: `ti23` (Stufen `##` und `###`), Farbe `ü` = wie die jeweilige Überschrift.
+Oder in der Variablen-Datei: `{initial}: ja | titel`, `{initial-stufen}: 2 3`, `{initial-zeilen}: 2`, `{initial-schrift}: cinzel`,
 `{initial-farbe}: haupt`.
 
 ## Weitere Aufrufe

@@ -150,6 +150,11 @@ lauf("20 Vorderseite widerspricht", datei("vw", mit(VORL, TRED_ROH.replace("Vord
 lauf("21 keine Rohdaten, Werte von Hand passen", datei("hand", mit(VORL, "", berechnet_fuer_seiten="68", neu_berechnen="nein")), 68, "passt")
 lauf("22 Datei ohne Kopfzeilen", datei("ohne", re.sub(r"^\{(neu-berechnen|berechnet-fuer-seiten)\}:.*\n", "", mit(VORL, TRED_ROH), flags=re.M)),
      68, "neu", lambda t: g(t, "berechnet-am") and g(t, "berechnet-fuer-seiten") == "68")
+lauf("25 tredition Tabelle (Tabs, cm, Pixel)", datei("tab", mit(VORL, "Hardcover - 14,8 x 21 cm\nRückseite\nVorderseite\n"
+     "\tMaß\tcm\tPixel\n\tGesamtbreite inkl. Beschnitt \t34,84 \t4112\n\tGesamthöhe inkl. Beschnitt \t25,00 \t2950\n"
+     "\tBuchrückenbreite \t0,84 \t100\n\tBeschnittrand \t1,70 \t201\n"
+     "\tBreite Vorder-/Rückseite ohne Beschnitt \t15,30 \t1805\n\tGesamtbreite ohne Beschnitt\t31,44\t3710")),
+     86, "neu", lambda t: g(t, "ruecken-hardcover") == "8.4" and g(t, "beschnitt-hardcover") == "17")
 p = datei("test", mit(VORL, TRED_ROH))
 vor = open(p, encoding="utf-8").read()
 R.auto(p, 68, A5, schreiben=False)

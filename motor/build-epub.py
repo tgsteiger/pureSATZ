@@ -131,6 +131,8 @@ seitennr = 0
 INITIAL_Z = (bk.V("initial-zeilen", "3") or "3").strip()           # 2.82.8: 0 = aus · 1 = erhöht · 2 · 3 · 4
 INITIAL = (bk.V("initial", "nein") or "").strip().lower() in ("ja", "j") and INITIAL_Z != "0"          # ab 2.77
 INITIAL_TITEL = (bk.V("initial", "nein") or "").strip().lower() == "titel"      # 2.82.9: im Kapiteltitel
+INITIAL_STUFEN = {int(z) for z in re.findall(r"[234]", bk.V("initial-stufen", "2") or "2")} or {2}
+ki = lambda n: " class='ini'" if INITIAL_TITEL and n in INITIAL_STUFEN else ""     # <h2/3/4> mit grossem 1. Buchstaben
 EINZUG = (bk.V("absatz-einzug", "nein") or "").strip().lower() in ("ja", "j")
 KAP = (bk.V("kapitaelchen", "nein") or "").strip().lower() in ("ja", "j")                # ab 2.80
 NACH_KAPITEL = [False]
@@ -451,25 +453,25 @@ for zeile in bk.text_zeilen():
         flush_absatz()
         if TIEFE >= 4 and aktuell["name"]:
             kapitelnr += 1
-            aktuell["html"].append(f'<h4 id="{ziel(s[5:], f"k{kapitelnr}")}">{esc(s[5:])}</h4>')
+            aktuell["html"].append(f'<h4{ki(4)} id="{ziel(s[5:], f"k{kapitelnr}")}">{esc(s[5:])}</h4>')
             nav.append((4 if any(n[0] == 1 for n in nav) else 3, s[5:], f"{aktuell['name']}#k{kapitelnr}"))
         else:
-            aktuell["html"].append(f'<h4 id="{ziel(s[5:], None)}">{esc(s[5:])}</h4>')
+            aktuell["html"].append(f'<h4{ki(4)} id="{ziel(s[5:], None)}">{esc(s[5:])}</h4>')
     elif s.startswith("### "):
         flush_absatz()
         if TIEFE >= 3 and aktuell["name"]:
             kapitelnr += 1
-            aktuell["html"].append(f'<h3 id="{ziel(s[4:], f"k{kapitelnr}")}">{esc(s[4:])}</h3>')
+            aktuell["html"].append(f'<h3{ki(3)} id="{ziel(s[4:], f"k{kapitelnr}")}">{esc(s[4:])}</h3>')
             nav.append((3 if any(n[0] == 1 for n in nav) else 2, s[4:], f"{aktuell['name']}#k{kapitelnr}"))
         else:
-            aktuell["html"].append(f'<h3 id="{ziel(s[4:], None)}">{esc(s[4:])}</h3>')
+            aktuell["html"].append(f'<h3{ki(3)} id="{ziel(s[4:], None)}">{esc(s[4:])}</h3>')
     elif s.startswith("## "):
         flush_absatz()
         if aktuell["name"] is None:
             neue_datei("vorwort.xhtml", s[3:])
         kapitelnr += 1
         anker = f"k{kapitelnr}"
-        aktuell["html"].append(f'<h2{" class=\'ini\'" if INITIAL_TITEL else ""} id="{ziel(s[3:], anker)}">{esc(s[3:])}</h2>'); NACH_KAPITEL[0] = True
+        aktuell["html"].append(f'<h2{ki(2)} id="{ziel(s[3:], anker)}">{esc(s[3:])}</h2>'); NACH_KAPITEL[0] = True
         if TIEFE >= 2:
             nav.append((2 if any(n[0] == 1 for n in nav) else 1, s[3:], f"{aktuell['name']}#{anker}"))
     elif s.startswith("> "):
@@ -656,7 +658,8 @@ CSS = CSS.replace("@@initialgroesse@@", {"1": "2em", "2": "2.2em", "4": "4.2em"}
 CSS = CSS.replace("@@initialextra@@", (" float: none; line-height: 1;" if INITIAL_Z == "1" else "") + (" font-weight: bold;" if (bk.V("initial-schrift", "") or "").strip().lower() == "fett" else "")
                   + (" background: @@kasten@@; border: 1px solid @@akzent@@; padding: 0.05em 0.15em;" if _ist == "feld" else ""))
 _ifa = (bk.V("initial-farbe", "akzent") or "").strip().lower()
-CSS += "\nh2.ini::first-letter { font-size: 1.45em; color: @@initialfarbe@@; }\n"
+CSS += ("\n.ini::first-letter { font-size: 1.45em; }\n" if _ifa in ("ueberschrift", "überschrift")
+        else "\n.ini::first-letter { font-size: 1.45em; color: @@initialfarbe@@; }\n")
 CSS = CSS.replace("@@initialfarbe@@", bk.hexfarbe("haupt") if _ifa in ("haupt", "blau")
                   else bk.hexfarbe("text") if _ifa in ("text", "schwarz") else AKZENT_TEXT)
 CSS = re.sub(r"@@(\w+)@@", lambda m: bk.hexfarbe(m.group(1)), CSS)

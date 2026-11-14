@@ -918,6 +918,8 @@ INITIAL_ZEILEN = int(_iz) if _iz in ("0", "1", "2", "3", "4") else 3   # 2.82.8:
 INITIAL = (V("initial", "nein") or "nein").strip().lower() in ("ja", "j") and INITIAL_ZEILEN > 0     # ab 2.77
 INITIAL_TITEL = (V("initial", "nein") or "nein").strip().lower() == "titel"     # 2.82.9: erster Buchstabe des Kapiteltitels
 INITIAL_TITEL_FAKTOR = 1.45
+INITIAL_STUFEN = {int(z) for z in re.findall(r"[234]", V("initial-stufen", "2") or "2")} or {2}   # 2.82.9: ## ### ####
+INITIAL_FARBE_TITEL = (V("initial-farbe", "") or "").strip().lower() in ("ueberschrift", "überschrift")
 INITIAL_FARBE = farbe({"haupt": "haupt", "blau": "haupt", "text": "text", "schwarz": "text"}.get(
     (V("initial-farbe", "akzent") or "").strip().lower(), "akzent"))     # akzent/gold · haupt/blau · text/schwarz (2.82.9)
 EINZUG = (V("absatz-einzug", "nein") or "nein").strip().lower() in ("ja", "j")
@@ -1250,6 +1252,19 @@ def initial_schrift():
 
 
 UMLAUTE, UMLAUT_FAKTOR = "ÄÖÜÅ", 0.8
+
+
+def titel_absatz(t, st, stufe):
+    """Überschrift; bei {initial}: titel und passender Stufe ({initial-stufen}) mit grossem ersten Buchstaben (2.82.9) –
+    1,45-mal die Grösse dieser Überschrift, Farbe {initial-farbe} (ueberschrift = Farbe dieser Überschrift)."""
+    if not (INITIAL_TITEL and stufe in INITIAL_STUFEN and re.match(r"[A-ZÄÖÜ]", t)):
+        return Paragraph(inline(t), st)
+    f = initial_schrift() if (V("initial-schrift", "") or "").strip() else st.fontName
+    fa = st.textColor if INITIAL_FARBE_TITEL else INITIAL_FARBE
+    x = st.fontSize * (INITIAL_TITEL_FAKTOR - 1) * 0.8             # grosser Buchstabe schiebt die Zeile nach unten
+    return Paragraph(f'<font name="{f}" size="{st.fontSize * INITIAL_TITEL_FAKTOR:.1f}" color="#{fa.hexval()[2:]}">{t[0]}</font>'
+                     + inline(t[1:]), ParagraphStyle(st.name + "i", parent=st, spaceBefore=st.spaceBefore - x,
+                                                     spaceAfter=st.spaceAfter + x))
 
 
 class ErhoehtesInitial(Flowable):
@@ -2335,14 +2350,14 @@ def _build(out, ausgleich=None):
             first = True
         elif s.startswith("#### "):
             flush()
-            p = Paragraph(inline(s[5:]), h4)
+            p = titel_absatz(s[5:], h4, 4)
             if TIEFE >= 4:
                 p._toc = (3, s[5:])
             story += [p, AnkerMarke(s[5:])]
         elif s.startswith("### "):
             flush()
             story.append(CondPageBreak(30 * mm))   # Unterüberschrift nie allein unten auf der Seite
-            p = Paragraph(inline(s[4:]), h3)
+            p = titel_absatz(s[4:], h3, 3)
             if TIEFE >= 3:
                 p._toc = (2, s[4:])
             story += [p, AnkerMarke(s[4:])]
@@ -2354,14 +2369,7 @@ def _build(out, ausgleich=None):
             elif not first:
                 story.append(CondPageBreak(45 * mm))
             st = h2 if not first else ParagraphStyle("h2f", parent=h2, spaceBefore=0)
-            if INITIAL_TITEL and re.match(r"[A-ZÄÖÜ]", t):          # {initial}: titel (2.82.9)
-                f = initial_schrift() if (V("initial-schrift", "") or "").strip() else st.fontName
-                p = Paragraph(f'<font name="{f}" size="{st.fontSize * INITIAL_TITEL_FAKTOR:.1f}" '
-                              f'color="#{INITIAL_FARBE.hexval()[2:]}">{t[0]}</font>' + inline(t[1:]),
-                              ParagraphStyle("h2i", parent=st, spaceBefore=st.spaceBefore - (x := st.fontSize * (INITIAL_TITEL_FAKTOR - 1) * 0.8),
-                                             spaceAfter=st.spaceAfter + x))   # grosser Buchstabe schiebt die Zeile nach unten
-            else:
-                p = Paragraph(inline(t), st)
+            p = titel_absatz(t, st, 2)
             p._toc = (1, t)
             story += [p, AnkerMarke(t)]; first = False; nach_kapitel = True
         elif s.startswith("> "):

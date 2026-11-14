@@ -61,13 +61,13 @@
 ## Offen
 > Umschlag: Rücken, Deckelmass und Einschlag von tredition
 
-## Coverrechner (Rohdaten)
-> Text aus dem Coverrechner der Druckerei hier einfügen (wie er kommt). Der Motor liest ihn beim Bau selbst.
-> Strichcode von tredition als PNG nach bilder/
-
 ## Notizen
 > Impressum und ISBN gehören in die Variablen-Datei unter «## Ausgabe: …». Beim Wechsel auf diese Plattform dort eintragen:
 > {impressum-herstellung}: Druck und Distribution im Auftrag des Autors: tredition GmbH, Heinz-Beusen-Stieg 5, 22926 Ahrensburg, Deutschland
 > {impressum-kontakt}: Kontaktadresse nach EU-Produktsicherheitsverordnung: (eigene E-Mail eintragen)
 > E-Book über tredition («## Ausgabe: E-Book»): {impressum-herstellung}: Distribution im Auftrag des Autors: tredition GmbH, Heinz-Beusen-Stieg 5, 22926 Ahrensburg, Deutschland
 > Logo: {impressum-logo}: PNG von tredition in bilder/
+
+## Coverrechner (Rohdaten)
+> Text aus dem Coverrechner der Druckerei hier einfügen (wie er kommt). Der Motor liest ihn beim Bau selbst.
+> Strichcode von tredition als PNG nach bilder/
