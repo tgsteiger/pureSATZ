@@ -9,6 +9,7 @@ Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.
 - `{initial-farbe}: akzent | haupt | text` (gold · blau · schwarz; auch `gold`, `blau`, `schwarz` geschrieben).
 - Menü `w` → `in`: Wo (`0`–`4` Zeilen, `ti` im Titel), Schrift, **Farbe** (`g` `b` `s`) – z. B. `ti c b`.
 - Erhöhtes Initial (`{initial-zeilen}: 1`): Buchstabe sitzt enger am Wort («Schön» statt «S chön»).
+- Menü `w` → `in`: `e` schaltet den Einzug ein/aus (`{absatz-einzug}`) – alles zum Kapitelanfang an einem Ort.
 
 ## 2.82.8 (November 2026)
 - Initialen: `{initial-zeilen}: 0 | 1 | 2 | 3 | 4` – `0` = aus, `1` = erhöhtes Initial (steht auf der ersten Zeile, ragt

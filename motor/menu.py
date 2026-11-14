@@ -663,6 +663,7 @@ def initialen_menue():
         farbe_ = {"blau": "haupt", "schwarz": "text", "gold": "akzent"}.get(wert("initial-farbe", "akzent").lower(),
                                                                         wert("initial-farbe", "akzent").lower())
         kap = wert("kapitaelchen", "nein").lower() in ("ja", "j")
+        einzug = wert("absatz-einzug", "nein").lower() in ("ja", "j")
         name = next((n for _, w, n, _ in INITIAL_SCHRIFTEN if w == schrift), schrift or "Textschrift")
         if art == "titel":
             name = "Titelschrift" if not schrift else name
@@ -670,13 +671,15 @@ def initialen_menue():
         wo = "im Titel" if art == "titel" else "aus" if art not in ("ja", "j") or zahl == "0" else \
             "erhöht" if zahl == "1" else zahl + " Zeilen"
         jetzt = wo if wo == "aus" else f"{wo} · {name} · {fname}"
-        print(f"\n {FETT('Initialen …')}   " + GRAU(f"jetzt: {jetzt} · Kapitälchen {'ja' if kap else 'nein'}"))
+        print(f"\n {FETT('Initialen …')}   " + GRAU(f"jetzt: {jetzt} · Kapitälchen {'ja' if kap else 'nein'}"
+                                                         f" · Einzug {'ja' if einzug else 'nein'}"))
         print(f"  {FETT('Wo')}       0 aus · 1 erhöht (ragt nach oben) · 2 · 3 · 4 Zeilen · {FETT('ti')} im Titel")
         for i, (t, _, n, b) in enumerate(INITIAL_SCHRIFTEN):
             print(f"  {FETT('Schrift') if i == 0 else '       '}  {FETT(t)} {n:<12} {GRAU(b)}")
         for i, (t, _, n, b) in enumerate(INITIAL_FARBEN):
             print(f"  {FETT('Farbe') if i == 0 else '     '}    {FETT(t)} {n:<12} {GRAU(b)}")
         print(f"  {FETT('k')}  Kapitälchen ein/aus  " + GRAU("(erste Wörter in GROSSBUCHSTABEN)"))
+        print(f"  {FETT('e')}  Einzug ein/aus       " + GRAU("(Absätze beginnen eingerückt statt mit Abstand dazwischen)"))
         print(f"  {FETT('v')}  Vorschau: schnell bauen, PDF öffnen")
         e = frage(" Wahl (z. B. «ti c b» = im Titel, Cinzel, blau · ↵ = zurück): ").lower().split()
         if not e or e == ["q"]:
@@ -691,6 +694,8 @@ def initialen_menue():
                 neu["initial"] = "titel"
             elif t == "k":
                 neu["kapitaelchen"] = "nein" if kap else "ja"
+            elif t == "e":
+                neu["absatz-einzug"] = "nein" if einzug else "ja"
             elif t == "v":
                 if bauen("schnell") == 0:
                     liste = pdfs()
