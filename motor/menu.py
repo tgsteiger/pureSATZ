@@ -642,29 +642,43 @@ INITIAL_SCHRIFTEN = (("t", "", "Textschrift", "schlicht, wie der Text"), ("f", "
                      ("r", "fraktur", "Fraktur", "alt, schwerer lesbar"))
 
 
+INITIAL_FARBEN = (("g", "akzent", "gold", "Akzentfarbe, wie Zierlinien und Lotus"),
+                  ("b", "haupt", "blau", "wie die Überschriften"), ("s", "text", "schwarz", "wie der Text"))
+
+
 def initialen_menue():
-    """w → in (ab 2.82.8): Initial am Kapitelanfang – Zeilen 0–4, Schrift, Kapitälchen. Eingabe z. B. «2 c»; «v» = Vorschau.
-    Schreibt {initial}, {initial-zeilen}, {initial-schrift}, {kapitaelchen} in die Variablen-Datei (fehlende Zeilen kommen
-    nach der ersten «{initial…}»-Zeile oder ans Ende von «## Gestaltung»/der Datei)."""
+    """w → in (ab 2.82.8, Titel und Farbe 2.82.9): Initial am Kapitelanfang – wo (0–4 Zeilen im Text, ti = im Titel),
+    Schrift, Farbe, Kapitälchen. Eingabe z. B. «ti c b»; «v» = Vorschau. Schreibt {initial}, {initial-zeilen},
+    {initial-schrift}, {initial-farbe}, {kapitaelchen} in die Variablen-Datei (fehlende Zeilen kommen nach der ersten
+    «{initial…}»-Zeile oder ans Ende von «## Gestaltung»/der Datei)."""
     pfad = next(iter(sorted(glob.glob(os.path.join(BASE, "*-variablen.md")))), None)
     if not pfad:
         return
     while True:
         zeilen = open(pfad, encoding="utf-8").read().split("\n")
         wert = lambda n, s="": next((z.split(":", 1)[1].strip() for z in zeilen if z.startswith("{" + n + "}:")), s)
-        an = wert("initial", "nein").lower() in ("ja", "j")
-        zahl = wert("initial-zeilen", "3") if an else "0"
+        art = wert("initial", "nein").lower()
+        zahl = wert("initial-zeilen", "3")
         schrift = wert("initial-schrift", "").lower()
+        farbe_ = {"blau": "haupt", "schwarz": "text", "gold": "akzent"}.get(wert("initial-farbe", "akzent").lower(),
+                                                                        wert("initial-farbe", "akzent").lower())
         kap = wert("kapitaelchen", "nein").lower() in ("ja", "j")
         name = next((n for _, w, n, _ in INITIAL_SCHRIFTEN if w == schrift), schrift or "Textschrift")
-        jetzt = "aus" if zahl == "0" else ("erhöht" if zahl == "1" else zahl + " Zeilen") + " · " + name
+        if art == "titel":
+            name = "Titelschrift" if not schrift else name
+        fname = next((n for _, w, n, _ in INITIAL_FARBEN if w == farbe_), "gold")
+        wo = "im Titel" if art == "titel" else "aus" if art not in ("ja", "j") or zahl == "0" else \
+            "erhöht" if zahl == "1" else zahl + " Zeilen"
+        jetzt = wo if wo == "aus" else f"{wo} · {name} · {fname}"
         print(f"\n {FETT('Initialen …')}   " + GRAU(f"jetzt: {jetzt} · Kapitälchen {'ja' if kap else 'nein'}"))
-        print(f"  {FETT('Zeilen')}   0 aus · 1 erhöht (ragt nach oben) · 2 · 3 · 4")
+        print(f"  {FETT('Wo')}       0 aus · 1 erhöht (ragt nach oben) · 2 · 3 · 4 Zeilen · {FETT('ti')} im Titel")
         for i, (t, _, n, b) in enumerate(INITIAL_SCHRIFTEN):
             print(f"  {FETT('Schrift') if i == 0 else '       '}  {FETT(t)} {n:<12} {GRAU(b)}")
+        for i, (t, _, n, b) in enumerate(INITIAL_FARBEN):
+            print(f"  {FETT('Farbe') if i == 0 else '     '}    {FETT(t)} {n:<12} {GRAU(b)}")
         print(f"  {FETT('k')}  Kapitälchen ein/aus  " + GRAU("(erste Wörter in GROSSBUCHSTABEN)"))
         print(f"  {FETT('v')}  Vorschau: schnell bauen, PDF öffnen")
-        e = frage(" Wahl (z. B. «2 c» = 2 Zeilen Cinzel · ↵ = zurück): ").lower().split()
+        e = frage(" Wahl (z. B. «ti c b» = im Titel, Cinzel, blau · ↵ = zurück): ").lower().split()
         if not e or e == ["q"]:
             return
         neu = {}
@@ -673,6 +687,8 @@ def initialen_menue():
                 neu["initial"] = "ja" if t != "0" else "nein"
                 if t != "0":
                     neu["initial-zeilen"] = t
+            elif t == "ti":
+                neu["initial"] = "titel"
             elif t == "k":
                 neu["kapitaelchen"] = "nein" if kap else "ja"
             elif t == "v":
@@ -682,11 +698,14 @@ def initialen_menue():
                         oeffnen(next(iter(liste.values()))[1])
             elif any(t == x[0] for x in INITIAL_SCHRIFTEN):
                 neu["initial-schrift"] = next(w for x, w, _, _ in INITIAL_SCHRIFTEN if x == t)
-                neu.setdefault("initial", "ja")
+            elif any(t == x[0] for x in INITIAL_FARBEN):
+                neu["initial-farbe"] = next(w for x, w, _, _ in INITIAL_FARBEN if x == t)
             else:
                 print(ROT(f"  ✗ Unbekannt: {t}"))
         if not neu:
             continue
+        if art not in ("ja", "j", "titel") and "initial" not in neu and ({"initial-schrift", "initial-farbe"} & set(neu)):
+            neu["initial"] = "ja"                         # Schrift oder Farbe gewählt, Initial war aus: einschalten
         for n, w in neu.items():
             z = "{" + n + "}:" + (" " + w if w else "")
             i = next((i for i, x in enumerate(zeilen) if x.startswith("{" + n + "}:")), None)
@@ -699,7 +718,6 @@ def initialen_menue():
                 zeilen.insert(j + 1, z)
         open(pfad, "w", encoding="utf-8").write("\n".join(zeilen))
         print(GRUEN("  ✓ gespeichert") + GRAU(" – v = Vorschau"))
-
 
 ISBN_AUSGABEN = (("Druck normal", "Druck normal"), ("Druck unzensiert", "Druck UZ"),
                  ("E-Book", "E-Book normal"), ("E-Book unzensiert", "E-Book UZ"))

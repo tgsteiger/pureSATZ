@@ -130,6 +130,7 @@ seitennr = 0
 
 INITIAL_Z = (bk.V("initial-zeilen", "3") or "3").strip()           # 2.82.8: 0 = aus · 1 = erhöht · 2 · 3 · 4
 INITIAL = (bk.V("initial", "nein") or "").strip().lower() in ("ja", "j") and INITIAL_Z != "0"          # ab 2.77
+INITIAL_TITEL = (bk.V("initial", "nein") or "").strip().lower() == "titel"      # 2.82.9: im Kapiteltitel
 EINZUG = (bk.V("absatz-einzug", "nein") or "").strip().lower() in ("ja", "j")
 KAP = (bk.V("kapitaelchen", "nein") or "").strip().lower() in ("ja", "j")                # ab 2.80
 NACH_KAPITEL = [False]
@@ -468,7 +469,7 @@ for zeile in bk.text_zeilen():
             neue_datei("vorwort.xhtml", s[3:])
         kapitelnr += 1
         anker = f"k{kapitelnr}"
-        aktuell["html"].append(f'<h2 id="{ziel(s[3:], anker)}">{esc(s[3:])}</h2>'); NACH_KAPITEL[0] = True
+        aktuell["html"].append(f'<h2{" class=\'ini\'" if INITIAL_TITEL else ""} id="{ziel(s[3:], anker)}">{esc(s[3:])}</h2>'); NACH_KAPITEL[0] = True
         if TIEFE >= 2:
             nav.append((2 if any(n[0] == 1 for n in nav) else 1, s[3:], f"{aktuell['name']}#{anker}"))
     elif s.startswith("> "):
@@ -654,8 +655,10 @@ _ist = (bk.V("initial-stil", "normal") or "").strip().lower()
 CSS = CSS.replace("@@initialgroesse@@", {"1": "2em", "2": "2.2em", "4": "4.2em"}.get(INITIAL_Z, "3.2em"))
 CSS = CSS.replace("@@initialextra@@", (" float: none; line-height: 1;" if INITIAL_Z == "1" else "") + (" font-weight: bold;" if (bk.V("initial-schrift", "") or "").strip().lower() == "fett" else "")
                   + (" background: @@kasten@@; border: 1px solid @@akzent@@; padding: 0.05em 0.15em;" if _ist == "feld" else ""))
-CSS = CSS.replace("@@initialfarbe@@", bk.hexfarbe("haupt") if (bk.V("initial-farbe", "akzent") or "").strip().lower() == "haupt"
-                  else AKZENT_TEXT)
+_ifa = (bk.V("initial-farbe", "akzent") or "").strip().lower()
+CSS += "\nh2.ini::first-letter { font-size: 1.45em; color: @@initialfarbe@@; }\n"
+CSS = CSS.replace("@@initialfarbe@@", bk.hexfarbe("haupt") if _ifa in ("haupt", "blau")
+                  else bk.hexfarbe("text") if _ifa in ("text", "schwarz") else AKZENT_TEXT)
 CSS = re.sub(r"@@(\w+)@@", lambda m: bk.hexfarbe(m.group(1)), CSS)
 
 

@@ -916,7 +916,10 @@ h4 = _stil("h4", dict(L.ZWISCHENTITEL, groesse=L.ZWISCHENTITEL.get("groesse", 11
 _iz = (V("initial-zeilen", "3") or "3").strip()
 INITIAL_ZEILEN = int(_iz) if _iz in ("0", "1", "2", "3", "4") else 3   # 2.82.8: 0 = aus · 1 = erhöht · 2 · 3 · 4
 INITIAL = (V("initial", "nein") or "nein").strip().lower() in ("ja", "j") and INITIAL_ZEILEN > 0     # ab 2.77
-INITIAL_FARBE = farbe("haupt" if (V("initial-farbe", "akzent") or "").strip().lower() == "haupt" else "akzent")
+INITIAL_TITEL = (V("initial", "nein") or "nein").strip().lower() == "titel"     # 2.82.9: erster Buchstabe des Kapiteltitels
+INITIAL_TITEL_FAKTOR = 1.45
+INITIAL_FARBE = farbe({"haupt": "haupt", "blau": "haupt", "text": "text", "schwarz": "text"}.get(
+    (V("initial-farbe", "akzent") or "").strip().lower(), "akzent"))     # akzent/gold · haupt/blau · text/schwarz (2.82.9)
 EINZUG = (V("absatz-einzug", "nein") or "nein").strip().lower() in ("ja", "j")
 INITIAL_STIL = (V("initial-stil", "normal") or "normal").strip().lower()                # ab 2.80: normal | rand | feld
 KAPITAELCHEN = (V("kapitaelchen", "nein") or "nein").strip().lower() in ("ja", "j")
@@ -1264,7 +1267,7 @@ class ErhoehtesInitial(Flowable):
         if buchstabe in UMLAUTE:
             self.ueber += self.gr * cap * 0.25                     # Punkte
         lw = pdfmetrics.stringWidth(buchstabe, self.font, self.gr)
-        self.p = Paragraph(text, ParagraphStyle("ini1", parent=stil, firstLineIndent=lw + 1.2 * mm))
+        self.p = Paragraph(text, ParagraphStyle("ini1", parent=stil, firstLineIndent=lw + 0.3 * mm))   # 2.82.9: enger
         self.style = stil
     def wrap(self, aw, ah):
         self.w, self.ph = self.p.wrap(aw, ah)
@@ -2350,7 +2353,15 @@ def _build(out, ausgleich=None):
                 story += [NextPageTemplate("body"), PageBreak()]
             elif not first:
                 story.append(CondPageBreak(45 * mm))
-            p = Paragraph(inline(t), h2 if not first else ParagraphStyle("h2f", parent=h2, spaceBefore=0))
+            st = h2 if not first else ParagraphStyle("h2f", parent=h2, spaceBefore=0)
+            if INITIAL_TITEL and re.match(r"[A-ZÄÖÜ]", t):          # {initial}: titel (2.82.9)
+                f = initial_schrift() if (V("initial-schrift", "") or "").strip() else st.fontName
+                p = Paragraph(f'<font name="{f}" size="{st.fontSize * INITIAL_TITEL_FAKTOR:.1f}" '
+                              f'color="#{INITIAL_FARBE.hexval()[2:]}">{t[0]}</font>' + inline(t[1:]),
+                              ParagraphStyle("h2i", parent=st, spaceBefore=st.spaceBefore - (x := st.fontSize * (INITIAL_TITEL_FAKTOR - 1) * 0.8),
+                                             spaceAfter=st.spaceAfter + x))   # grosser Buchstabe schiebt die Zeile nach unten
+            else:
+                p = Paragraph(inline(t), st)
             p._toc = (1, t)
             story += [p, AnkerMarke(t)]; first = False; nach_kapitel = True
         elif s.startswith("> "):

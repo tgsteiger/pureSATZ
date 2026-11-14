@@ -133,8 +133,8 @@
 > {bilderverzeichnis}, {tabellenverzeichnis}: ja = eigene Seite mit allen Fotos bzw. Tabellen und Seitenzahl, vor dem Stichwortverzeichnis (anderer Ort: Zeile @BILDERVERZEICHNIS / @TABELLENVERZEICHNIS)
 > {trennstellen}: | = hier darf ein langes Wort getrennt werden
 > {zier}: eigenes Bild der Verzierung im Ordner bilder/, leer = Standard
-> {initial}: ja = grosser Anfangsbuchstabe über drei Zeilen am Anfang jedes Kapitels · nein (Standard)
-> {initial-farbe}: akzent (Gold, Standard) | haupt (Blau)
+> {initial}: ja = grosser Anfangsbuchstabe über drei Zeilen am Anfang jedes Kapitels · titel = erster Buchstabe des Kapiteltitels hervorgehoben · nein (Standard)
+> {initial-farbe}: akzent (Gold, Standard) | haupt (Blau wie die Überschriften) | text (Schwarz)
 > {initial-stil}: normal = im Text · rand = links im Rand, Text in voller Breite · feld = im hellen Feld mit Goldrahmen
 > {initial-zeilen}: 0 aus | 1 erhöht (ragt nach oben) | 2 | 3 | 4 (so hoch ist der Buchstabe) – bequem im Menü: w → in
 > {initial-schrift}: leer = Textschrift · fett · cinzel · uncial · fraktur · oder eine eigene Schrift (TTF-Datei in fonts/ oder bilder/, z. B. CinzelDecorative-Bold.ttf von fonts.google.com)

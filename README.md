@@ -99,9 +99,11 @@ ausgereift – Regeln für das Dokument und Einschränkungen in `INSTALLATION.md
 
 ## Kapitelanfang (Initial)
 
-Grosser Anfangsbuchstabe am Kapitelanfang: im Menü `w` → `in` **Initialen …** wählen – Zeilen `0` aus, `1` erhöht,
-`2`, `3`, `4`, Schrift (Textschrift, fett, Cinzel, Uncial, Fraktur) und Kapitälchen; `v` zeigt eine Vorschau.
-Oder in der Variablen-Datei: `{initial}: ja`, `{initial-zeilen}: 2`, `{initial-schrift}: cinzel`.
+Grosser Anfangsbuchstabe am Kapitelanfang: im Menü `w` → `in` **Initialen …** wählen – wo (`0` aus, `1` erhöht,
+`2`, `3`, `4` Zeilen oder `ti` im Kapiteltitel), Schrift (Textschrift, fett, Cinzel, Uncial, Fraktur), Farbe (gold,
+blau, schwarz) und Kapitälchen; `v` zeigt eine Vorschau. Beispiel `ti c b` = im Titel, Cinzel, blau.
+Oder in der Variablen-Datei: `{initial}: ja | titel`, `{initial-zeilen}: 2`, `{initial-schrift}: cinzel`,
+`{initial-farbe}: haupt`.
 
 ## Weitere Aufrufe
 
