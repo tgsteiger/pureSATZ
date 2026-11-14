@@ -685,7 +685,8 @@ def initialen_menue():
         print(f"  {FETT('k')}  Kapitälchen ein/aus  " + GRAU("(erste Wörter in GROSSBUCHSTABEN)"))
         print(f"  {FETT('e')}  Einzug ein/aus       " + GRAU("(Absätze beginnen eingerückt statt mit Abstand dazwischen)"))
         print(f"  {FETT('v')}  Vorschau: schnell bauen, PDF öffnen")
-        e = frage(" Wahl (z. B. «ti23 c ü» = Kapitel + Zwischentitel, Cinzel, wie Überschrift · ↵ = zurück): ").lower().split()
+        print(GRAU("  z. B. «ti23 c ü» = Kapitel + Zwischentitel, Cinzel, wie Überschrift · ↵ = zurück"))
+        e = frage(" Wahl: ").lower().split()
         if not e or e == ["q"]:
             return
         neu = {}
