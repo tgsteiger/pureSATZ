@@ -85,7 +85,7 @@ sys.path.insert(0, MOTOR)
 import plattform                        # noqa: E402
 PURESATZ = plattform.puresatz(BASE)    # ../pureSATZ oder ../../pureSATZ (z. B. buecher/Buch)
 LOKAL = os.path.isdir(os.path.join(PURESATZ, "motor"))
-BEFEHLE = ("schnell", "komplett", "final", "entwurf", "leseprobe", "korrektur", "nur-pdf", "nur-druck", "nur-ebook", "covers", "isbn",
+BEFEHLE = ("cover-stand", "schnell", "komplett", "final", "entwurf", "leseprobe", "korrektur", "nur-pdf", "nur-druck", "nur-ebook", "covers", "isbn",
            "pruefen", "personen", "stichworte", "stand", "aenderungen", "änderungen", "geschichten", "hilfe", "mockup", "sicherung")
 MD = {"b": ("Buch", "*-buch.md"), "v": ("Variablen", "*-variablen.md"), "u": ("Umschlag", "*-umschlag.md"),
       "s": ("Stichworte", "stichworte-*.txt"), "h": ("meine Hilfe", "meine-hilfe.md")}
@@ -250,7 +250,7 @@ def untermenue(titel, eintraege, zusatz=""):
 
 
 def stichworte_menue():
-    """w → s: Vorschläge machen (und öffnen), mit [+] markierte übernehmen, Stichwortdatei öffnen."""
+    """st: Vorschläge machen (und öffnen), mit [+] markierte übernehmen, Stichwortdatei öffnen."""
     k = untermenue("Stichworte …", {"v": ("Vorschläge", 0), "u": ("übernehmen [+]", 0), "o": ("Stichwortdatei öffnen", 0)})
     if k == "v":
         if bauen("stichworte") == 0:
@@ -634,7 +634,7 @@ def cover_menue():
         print(f"  {FETT(k)}: Buchblock {n} Seiten, Werte für {b} – {g}. Öffne {d} …")
         oeffnen(os.path.join(BASE, d))
     print("  Im Coverrechner der Druckerei diese Seitenzahl eingeben, den Text zuunterst unter «## Coverrechner (Rohdaten)»\n"
-          "  einfügen (alten ersetzen). Dann w → co: der Motor liest die Werte und baut den Umschlag neu.")
+          "  einfügen (alten ersetzen). Dann f final: der Motor liest die Werte und baut den Umschlag neu.")
 
 
 INITIAL_SCHRIFTEN = (("t", "", "Textschrift", "schlicht, wie der Text"), ("f", "fett", "fett", "kräftig"),
@@ -648,7 +648,7 @@ INITIAL_FARBEN = (("g", "akzent", "gold", "Akzentfarbe, wie Zierlinien und Lotus
 
 
 def initialen_menue():
-    """w → in (ab 2.82.8, Titel und Farbe 2.82.9): Initial am Kapitelanfang – wo (0–4 Zeilen im Text, ti = im Titel),
+    """in (ab 2.82.8; bis 2.82.10 w → in, Titel und Farbe 2.82.9): Initial am Kapitelanfang – wo (0–4 Zeilen im Text, ti = im Titel),
     Schrift, Farbe, Kapitälchen. Eingabe z. B. «ti c b»; «v» = Vorschau. Schreibt {initial}, {initial-zeilen},
     {initial-schrift}, {initial-farbe}, {kapitaelchen} in die Variablen-Datei (fehlende Zeilen kommen nach der ersten
     «{initial…}»-Zeile oder ans Ende von «## Gestaltung»/der Datei)."""
@@ -736,7 +736,7 @@ ISBN_AUSGABEN = (("Druck normal", "Druck normal"), ("Druck unzensiert", "Druck U
 
 
 def isbn_menue():
-    """w → i (ab 2.82.7): die ISBN aller Ausgaben ansehen und eintragen (Enter = bleibt, - = leeren). Sie stehen weiter
+    """is (ab 2.82.7; bis 2.82.10 w → i): die ISBN aller Ausgaben ansehen und eintragen (Enter = bleibt, - = leeren). Sie stehen weiter
     in der Variablen-Datei («{isbn}:» unter «## Ausgabe: …») – nur dort, also immer gleich. Danach Prüfziffer und
     Strichcode-PNG der gedruckten Fassungen (sh build.sh isbn), die PNG öffnen sich."""
     pfad = next(iter(sorted(glob.glob(os.path.join(BASE, "*-variablen.md")))), None)
@@ -823,30 +823,36 @@ def zeige():
     bp = bp_marke()                                   # zuerst: prüft bei Bedarf still (Stand für die Zeile unten)
     print("\n" + kopf(rechts=f"Klang ({FETT('!')}) {'ein' if ton else 'aus'}"))
     for k, d, n, b, g, _ in cover_faellig():
-        print(FETT(f" ⚠ Coverrechner {k}: {n} Seiten, eingetragen für {b}") + GRAU(f"  ({g}) → cv"))
+        print(FETT(f" ⚠ Coverrechner {k}: {n} Seiten, eingetragen für {b}") + GRAU(f"  ({g}) → co"))
     if pruef_stand() == "fehler":
         print(ROT(" ✗ Buch prüfen: Fehler gefunden") + GRAU("  → bp"))
     spalten = [("Schreiben", [("m", "MD öffnen …"), ("g", "Geschichten …"), ("t", "Tabellen …"),
                              ("c", "check / gegenlesen …")]),
-               ("Bauen", [("s", "schnell  (Lese-PDF)"), ("k", "komplett (vor dem Druck)"), ("w", "weitere …")]
-                + ([("hb", "Hörbuch …")] if LINUX else [])),
-               ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen (a|ä)")]),
+               ("Bauen", [("s", "schnell  (Lese-PDF)"), ("k", "komplett (vor dem Druck)"), ("f", "final    (Druckdateien)")]
+                + ([("hb", "Hörbuch … (Linux)")] if LINUX else [])),
+               ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen (a|ä)"),
+                            ("db", "Druckbericht")]),
                ("Abgleichen / Prüfen", [("sy", "sync   (GitHub)"), ("u", "update" + (" (ul lokal)" if LOKAL else "")),
-                                        ("bp", bp)])]
+                                        ("bp", bp), ("co", "Coverrechner prüfen")]),
+               ("Einstellen", [("in", "Initialen …"), ("is", "ISBN …"), ("st", "Stichworte …")]),     # 2.82.11: ex «w weitere»
+               ("Weitere Ausgaben", [("lp", "Leseprobe    ko Korrektur"), ("np", "nur-pdf      ne nur E-Book"),
+                                     ("sm", "Stand merken au aufräumen …")])]
     spalten_zeigen(spalten, "n neu · $ Terminal · : Befehle · h hilfe · hf finden")
     if os.path.exists(ALLE):
         print(SPERRE)
 
 
 def spalten_zeigen(spalten, weiteres):
-    """Vier Gruppen in zwei Spalten (Haupt- und Hörbuch-Menü gleich) und «── Weiteres ──» mit den übrigen Tasten."""
+    """Gruppen paarweise in zwei Spalten (Haupt- und Hörbuch-Menü gleich) und «── Weiteres ──» mit den übrigen Tasten."""
     taste = lambda k: FETT(k) + " " * (3 - len(k))                 # Taste gold, danach auf 3 Zeichen aufgefüllt
+    zweite = lambda t: re.sub(r"(\s{1,})([a-zäöü]{2}) ", lambda m: m.group(1) + FETT(m.group(2)) + " ", t, count=1) \
+        if re.search(r"\s[a-z]{2} [A-ZÄÖÜa-z]", t[12:]) else t   # «Leseprobe    ko Korrektur»: zweite Taste gold
     linie = lambda t, n=30: GRAU("── ") + t + " " + GRAU("─" * (n - len(t)))
-    for (t1, z1), (t2, z2) in (spalten[:2], spalten[2:]):
+    for (t1, z1), (t2, z2) in zip(spalten[0::2], spalten[1::2]):     # Gruppen paarweise nebeneinander
         print(f" {linie(t1)}   {linie(t2, 29)}")                  # rechte Linie endet bei RAND
         for a, b in zip(z1 + [("", "")] * 3, z2 + [("", "")] * 3):
             if a[0] or b[0]:
-                print((f"  {taste(a[0])}{a[1]:<33}" + (f"{taste(b[0])}{b[1]}" if b[0] else "")).rstrip())
+                print((f"  {taste(a[0])}{a[1]:<33}" + (f"{taste(b[0])}{zweite(b[1])}" if b[0] else "")).rstrip())
     print(f" {GRAU('──')} Weiteres {GRAU('─' * (RAND - 13))}")       # wie die anderen Gruppen (2.82.3)
     zeile, laenge = "", 2                                              # Tasten unter den anderen Tasten, umbrechen bei RAND
     for i, t in enumerate(weiteres.split(" · ")):
@@ -1010,6 +1016,25 @@ def main():
                 bauen("schnell")
             elif w == "k":
                 bauen("komplett")
+            elif w == "f":
+                bauen("final")
+            elif w == "db":                                 # Druckbericht des letzten Druck-Baus (ab 2.82.11)
+                oeffnen(next(iter(sorted(glob.glob(os.path.join(BASE, "*", "00-Druckbericht.pdf")))), None))
+            elif w == "co":                                 # Coverrechner prüfen, ohne zu bauen (ab 2.82.11)
+                bauen("cover-stand")
+            elif w == "in":
+                initialen_menue()
+            elif w == "is":
+                isbn_menue()
+            elif w == "st":
+                stichworte_menue()
+            elif w in ("lp", "ko", "np", "ne"):
+                bauen({"lp": "leseprobe", "ko": "korrektur", "np": "nur-pdf", "ne": "nur-ebook"}[w])
+            elif w == "sm":
+                name = frage(" Name des Stands: ")
+                bauen("stand", *([name] if name else []))
+            elif w == "au":
+                lauf([sys.executable, os.path.join(MOTOR, "aufraeumen.py")], titel="aufräumen")
             elif w == "w":
                 k = untermenue("weitere …", {"l": ("Leseprobe", 0), "k": ("Korrektur", 0), "p": ("nur-pdf", 0),
                                              "e": ("nur E-Book", 0), "co": ("Cover rechnen", 0), "m": ("Stand merken", 0),

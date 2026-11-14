@@ -6,7 +6,7 @@ Unter «## Coverrechner (Rohdaten)» in druck/<datei>.md steht der Text aus dem 
 Gesucht werden Rücken, Beschnitt/Einschlag, Gesamtbreite/-höhe, Vorderseite, Seitenzahl und Papier – egal, wie die
 Druckerei sie nennt (tredition, epubli, BoD, KDP …) und ob in cm, mm oder Zoll. Daraus rechnet es den Deckel.
 
-Läuft bei jedem Bau der Druckdateien von selbst (final, komplett, Menü w → co, sh build.sh covers):
+Läuft bei jedem Bau der Druckdateien von selbst (final, komplett, Menü f, sh build.sh covers; nur prüfen: Menü co):
   neue Rohdaten (anderer Text als beim letzten Mal) → Werte oben eintragen, für die Seitenzahl des Buchblocks
   gleicher Text, gleiche Seitenzahl                 → passt ({neu-berechnet}: ja)
   gleicher Text, andere Seitenzahl, keine/unlesbare Rohdaten → Werte bleiben, {neu-berechnet}: nein, ⚠ im Menü
@@ -278,7 +278,7 @@ if __name__ == "__main__":
     p = sys.argv[1]
     s = int(sys.argv[2]) if len(sys.argv) > 2 and sys.argv[2].isdigit() else buchblock_seiten(p)
     if not s:
-        print("Seitenzahl des Buchblocks unbekannt – zuerst bauen (Menü w → co) oder Zahl angeben.")
+        print("Seitenzahl des Buchblocks unbekannt – zuerst bauen (Menü f) oder Zahl angeben.")
         sys.exit(1)
     stufe, txt = auto(p, s)
     print(txt)

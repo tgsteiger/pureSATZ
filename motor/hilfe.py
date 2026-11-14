@@ -121,8 +121,8 @@ SPICKZETTEL = [
                       "md-history/ und Texte bleiben"),
     ("sh build.sh hilfe", "Diese Hilfe neu erzeugen und öffnen"),
     ("sh build.sh covers", "Cover neu berechnen: Text des Coverrechners (unten in druck/<datei>.md) lesen, Buchblock und "
-                           "Umschlag bauen (wie nur-druck final; Menü: w → co)"),
-    ("sh build.sh isbn", "ISBN prüfen (Prüfziffer) und Strichcode-PNG machen, wie {isbn-bild}: auto (Menü: w → i)"),
+                           "Umschlag bauen (wie nur-druck final; prüfen ohne Bau: Menü co)"),
+    ("sh build.sh isbn", "ISBN prüfen (Prüfziffer) und Strichcode-PNG machen, wie {isbn-bild}: auto (Menü: is)"),
     ("cv (im Menü)", "Coverrechner fällig? Öffnet die Druckdatei, wenn Seitenzahl oder Rohdaten nicht passen (ab 2.78)"),
     ("sh build.sh hilfe isbn", "In der Hilfe suchen: zeigt die Abschnitte und öffnet die Hilfe gefiltert (Menü: hf isbn)"),
     ("sh build.sh mockup", "Werbebild: Vorder- und Rückseite mit Schatten (…_Mockup.jpg) für Webseite, Newsletter, Shop "

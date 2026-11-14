@@ -71,3 +71,5 @@
 ## Coverrechner (Rohdaten)
 > Text aus dem Coverrechner der Druckerei hier einfügen (wie er kommt). Der Motor liest ihn beim Bau selbst.
 > Strichcode von tredition als PNG nach bilder/
+> Nötig sind: Buchrücken(breite), Beschnittrand/Einschlag und Gesamtbreite/-höhe. Seitenzahl und Falz braucht der Motor nicht.
+> Nicht lesbar (⚠ im Menü, co)? Den Text einer KI geben: «Ich brauche Rücken, Beschnitt/Einschlag und Deckel in mm» – oder die Werte oben von Hand eintragen.

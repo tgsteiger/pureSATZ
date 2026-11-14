@@ -1763,7 +1763,7 @@ def isbn_ok(isbn):
 def isbn_png(isbn=None):
     """{isbn-bild}: auto (ab 2.82.5) – Strichcode als PNG aus {isbn} (EAN-13, Ziffern darunter), gleich verwendet wie das
     PNG einer Druckerei (Feld, Bergkette). Liegt in _druckbilder/isbn-<13 Ziffern>.png; fehlt die ISBN: None.
-    isbn: andere ISBN als die des laufenden Baus (w → i im Menü, ab 2.82.6)."""
+    isbn: andere ISBN als die des laufenden Baus (Menü is, ab 2.82.6)."""
     ziffern = re.sub(r"\D", "", isbn or ISBN or "")
     if len(ziffern) != 13:
         print("Hinweis: «isbn-bild: auto» braucht eine ISBN mit 13 Ziffern ({isbn} unter «## Ausgabe: Druck …»).")

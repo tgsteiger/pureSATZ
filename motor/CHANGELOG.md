@@ -3,6 +3,16 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.82.11 (November 2026)
+- Menü: «weitere» ist immer sichtbar – neue Gruppen **Einstellen** (`in` Initialen · `is` ISBN · `st` Stichworte) und
+  **Weitere Ausgaben** (`lp` Leseprobe · `ko` Korrektur · `np` nur-pdf · `ne` nur E-Book · `sm` Stand merken ·
+  `au` aufräumen); dazu `f` final, `db` Druckbericht, `co` Coverrechner prüfen, `hb Hörbuch … (Linux)`. `w` geht weiter.
+- `co` baut nichts mehr: zeigt pro Fassung Buchblock-Seiten (letzter Druck-Bau), eingetragene Werte, ob die Rohdaten
+  passen, und was zu tun ist (`sh build.sh cover-stand`). Umschlag neu bauen: `f` final oder `sh build.sh covers`.
+- **Druckbericht** nach jedem Bau der Druckdateien: `ausgabe-…/00-Druckbericht.pdf` mit Seitenbilanz, Umschlag,
+  Coverrechner, ISBN, Farbmodus und Warnungen; öffnet sich von selbst (`{druckbericht}: nein` = nicht öffnen).
+- Druckdateien: Hinweis bei den Rohdaten, welche Angaben nötig sind und was tun, wenn sie nicht lesbar sind.
+
 ## 2.82.10 (November 2026)
 - `{initial-stufen}: 2 | 3 | 4` (auch mehrere, z. B. `2 3`): welche Überschriften das Initial im Titel bekommen – Grösse
   immer relativ zur jeweiligen Überschrift; `{initial-farbe}: ueberschrift` = Farbe der jeweiligen Überschrift.

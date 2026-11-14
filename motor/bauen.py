@@ -274,10 +274,105 @@ def isbn_zeigen():
                 p = bk.isbn_png(nr)
                 pngs.append(p)
                 print(t + f"{nr} ✓  Strichcode: {os.path.relpath(p, BASE)}")
-    print("  Eintragen: Menü w → i (Variablen-Datei, «## Ausgabe: …») · Im Umschlag: {isbn-bild}: auto (druck/…md)")
+    print("  Eintragen: Menü is (Variablen-Datei, «## Ausgabe: …») · Im Umschlag: {isbn-bild}: auto (druck/…md)")
     os.makedirs(os.path.join(BASE, "_druckbilder"), exist_ok=True)
     with open(os.path.join(BASE, "_druckbilder", "isbn.txt"), "w", encoding="utf-8") as f:
         f.write("".join(p + "\n" for p in pngs))
+
+
+BERICHT = []          # Ausgaben der Druckdateien-Läufe – für den Druckbericht (2.82.11)
+
+
+def cover_stand():
+    """Menü co / «sh build.sh cover-stand» (2.82.11): Stand des Umschlags pro Fassung, OHNE zu bauen –
+    Buchblock-Seiten vom letzten Druck-Bau, Werte und Rohdaten in der Druckdatei, passt oder was zu tun ist."""
+    import rohdaten2cover as R
+    try:
+        from pypdf import PdfReader
+    except ImportError:
+        PdfReader = None
+    texte = [p for m in ("*-buch.md", "*-variablen.md", "geschichten/*.md") for p in __import__("glob").glob(os.path.join(BASE, m))]
+    for a in ausgaben():
+        d = bk.druck_datei(a)
+        if not d or not os.path.exists(os.path.join(BASE, d)):
+            continue
+        g = bk.AUSGABEN["B" if a == "uz" else "A"]
+        block = os.path.join(BASE, g["ordner"], g["kuerzel"] + "_Buchblock.pdf")
+        print(f"\n  {name(a)} · {d}")
+        oben = R.kopf(open(os.path.join(BASE, d), encoding="utf-8").read())
+        werte = " · ".join(f"{t} {oben[k]}" for t, k in (("Rücken", "ruecken-hardcover"), ("Beschnitt", "beschnitt-hardcover"),
+                                                           ("Deckel", "deckel-hardcover")) if oben.get(k))
+        print(f"    eingetragen: {werte or '–'} · für {oben.get('berechnet-fuer-seiten') or '–'} Seiten")
+        if not (PdfReader and os.path.exists(block)):
+            print("    Buchblock: noch kein Druck-Bau → f final")
+            continue
+        n = len(PdfReader(block).pages)
+        alt = any(os.path.getmtime(t) > os.path.getmtime(block) for t in texte)
+        print(f"    Buchblock: {n} Seiten (letzter Druck-Bau {datetime.fromtimestamp(os.path.getmtime(block)):%d.%m. %H:%M})"
+              + (" – Text seither geändert → f final für die aktuelle Seitenzahl" if alt else ""))
+        stufe, msg = R.auto(os.path.join(BASE, d), n, tuple(bk.FMT["seite"]), schreiben=False)
+        zeichen = {"passt": "✓", "neu": "●", "warnung": "✗"}.get(stufe, "?")
+        print(f"    {zeichen} {msg}" + (" → f final übernimmt sie" if stufe == "neu" else
+                                        " → cv öffnet die Druckdatei"
+                                        if stufe == "warnung" else ""))
+
+
+def druckbericht(final):
+    """00-Druckbericht.pdf im Ausgabeordner der normalen Fassung (2.82.11): was der Bau der Druckdateien gemeldet hat –
+    Seitenbilanz, Umschlag, Coverrechner, CMYK, Warnungen. Jedes Mal neu; öffnet sich ({druckbericht}: nein = aus)."""
+    if not BERICHT:
+        return
+    from reportlab.lib.pagesizes import A4
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+    from reportlab.pdfgen import canvas
+    for n, f in (("BerichtMono", "DejaVuSansMono.ttf"), ("BerichtTitel", "Poppins-Medium.ttf")):
+        if n not in pdfmetrics.getRegisteredFontNames():
+            pdfmetrics.registerFont(TTFont(n, os.path.join(MOTOR, "fonts", f)))
+    ziel = os.path.join(BASE, bk.AUSGABEN["A"]["ordner"], "00-Druckbericht.pdf")
+    os.makedirs(os.path.dirname(ziel), exist_ok=True)
+    version = open(os.path.join(MOTOR, "VERSION"), encoding="utf-8").read().strip()
+    zeilen = [("t", f"Druckbericht · {bk.V('titel')}"),
+              ("g", f"{datetime.now():%d.%m.%Y %H:%M} · pureSATZ {version} · {'final' if final else 'Entwurf'}"), ("", "")]
+    for titel, aus in BERICHT:
+        zeilen += [("h", titel.replace("Druckdateien · ", ""))]
+        for z in aus.split("\n"):
+            z = z.rstrip()
+            if z and not z.startswith(("Farben:", "Lade ", "Schrift")):
+                zeilen.append(("w" if ("WARNUNG" in z or "FEHLER" in z or "✗" in z) else "", z))
+        zeilen.append(("", ""))
+    for a in ausgaben():
+        isbn = bk.druck_V("isbn", "", a).replace("folgt", "").strip()
+        zeilen.append(("", f"ISBN {name(a)}: {isbn or '–'}" + (" ✓" if isbn and bk.isbn_ok(isbn) else " ✗" if isbn else "")
+                       + f" · Farbmodus {bk.druck_V('farbmodus', 'rgb', a)}"))
+    c = canvas.Canvas(ziel, pagesize=A4)
+    W, H = A4
+    y = H - 50
+    for art, z in zeilen:
+        teile = [z[i:i + 92] for i in range(0, len(z), 92)] or [""]
+        for t in teile:
+            if y < 50:
+                c.showPage(); y = H - 50
+            if art == "t":
+                c.setFont("BerichtTitel", 15); c.setFillColorRGB(0.12, 0.26, 0.54)
+            elif art == "h":
+                y -= 4; c.setFont("BerichtTitel", 11.5); c.setFillColorRGB(0.12, 0.26, 0.54)
+            else:
+                c.setFont("BerichtMono", 8.6)
+                c.setFillColorRGB(*((0.7, 0.15, 0.1) if art == "w" else (0.45, 0.45, 0.45) if art == "g" else (0.1, 0.1, 0.1)))
+            c.drawString(45, y, t)
+            y -= 20 if art == "t" else 15 if art == "h" else 12
+    c.save()
+    print(f"Druckbericht: {os.path.relpath(ziel, BASE)}")
+    if sys.stdout.isatty() and (bk.V("druckbericht", "ja") or "ja").strip().lower() not in ("nein", "n"):
+        try:
+            if os.name == "nt":
+                os.startfile(ziel)
+            else:
+                subprocess.Popen(["open" if sys.platform == "darwin" else "xdg-open", ziel],
+                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except OSError:
+            pass
 
 
 def parallel(schritte, env):
@@ -311,6 +406,8 @@ def parallel(schritte, env):
         f.close()
         print(f"\n=== {titel} ===")
         print(aus.rstrip())
+        if titel.startswith("Druckdateien"):
+            BERICHT.append((titel, aus.rstrip()))
         if p.returncode:
             fehler.append(titel)
     if fehler:
@@ -761,6 +858,8 @@ def main():
         NUR_FASSUNG = next((a for a in args if a in ("normal", "uz")), None)
     final = "final" in args
     art = next((a for a in args if a not in ("final", "uz", "normal")), "alles")
+    if art == "cover-stand":                # Menü co: nur anzeigen, nichts bauen (2.82.11)
+        cover_stand(); return
     if art == "covers":                     # «sh build.sh covers» = Umschlag neu (Rohdaten lesen): nur-druck final (ab 2.82)
         art, final = "nur-druck", True
     if art == "handbuch":                   # «sh build.sh handbuch»: einschalten, erzeugen (oben), Lese-PDF
@@ -889,6 +988,8 @@ def main():
     ordner = ", ".join(bk.AUSGABEN["B" if a == "uz" else "A"]["ordner"] + "/" for a in ausgaben())
     if druck:
         ordner = "ausgabe-test/" + os.path.splitext(os.path.basename(bk.druck_datei()))[0] + "/"
+    if art in ("alles", "nur-druck") and not druck:
+        druckbericht(final)
     print(f"\nFertig in {time.time() - start:.0f} Sekunden. Ordner: {ordner}")
 
 

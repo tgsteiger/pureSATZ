@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.82.10
+# pureSATZ Hilfe · pureSATZ · Motor 2.82.11
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -197,12 +197,17 @@ Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `h
  ── Schreiben ─────────────────────   ── Bauen ────────────────────────
   m  MD öffnen …                      s  schnell  (Lese-PDF)
   g  Geschichten …                    k  komplett (vor dem Druck)
-  t  Tabellen …                       w  weitere …
-  c  check / gegenlesen …             hb Hörbuch …   (nur Linux)
+  t  Tabellen …                       f  final    (Druckdateien)
+  c  check / gegenlesen …             hb Hörbuch … (Linux)
  ── Ansehen ───────────────────────   ── Abgleichen / Prüfen ──────────
   p  PDF öffnen …                     sy sync   (GitHub)
   o  Ordner öffnen …                  u  update (ul lokal)
   a  änderungen (a|ä)                 bp Buch prüfen  N ✓  UZ ✗
+  db Druckbericht                     co Coverrechner prüfen
+ ── Einstellen ────────────────────   ── Weitere Ausgaben ─────────────
+  in Initialen …                      lp Leseprobe    ko Korrektur
+  is ISBN …                           np nur-pdf      ne nur E-Book
+  st Stichworte …                     sm Stand merken au aufräumen …
  ── Weiteres ──────────────────────────────────────────────────────────
   n neu · $ Terminal · : Befehle · h hilfe · hf finden
  Wahl oder Befehl (z. B. final · ↑ = letzte · ↵ = beenden):
@@ -226,7 +231,9 @@ Untermenüs («…» = nur was es gibt):
 `t` Tabellen | `e` bearbeiten … (Liste mit Kürzel) · `n` neue Tabelle (öffnet die CSV, `@#name` kommt in den Block «## Noch einordnen» im Buch) · `o` Ordner
 `c` check / gegenlesen | `n` Liste neu (personen-seiten.txt) · `c` check-PDF für eine Person (öffnet sich danach) · `t` Textdatei
 `hb` Hörbuch (Linux) | `p` Probe hören · `w` Wörter hören · `t` Texte aus dem Buch · `v` vertonen · `k` Kapitel vertonen … · `e` Wörter/Probe/Einstellungen öffnen · `s` Azure-Schlüssel · `$` Terminal in audio/ · `o` Ordner · `h` Hilfe · `c` prüfen – siehe Hörbuch: Das Menü
-`w` weitere | `l` Leseprobe · `k` Korrektur · `p` nur-pdf · `e` nur E-Book · `co` Cover rechnen (wie `sh build.sh covers`) · `m` Stand merken · `s` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` Stichwortdatei öffnen) · `i` ISBN … (alle Ausgaben ansehen und eintragen – Druck/E-Book, normal/UZ; Enter = bleibt, `-` = leeren; speichert in der Variablen-Datei, dann Prüfziffer und Strichcode-PNG wie `sh build.sh isbn`) · `in` Initialen … (wo: 0–4 Zeilen oder `ti` im Titel – `ti3`, `ti23`, `ti234` = weitere Stufen; Schrift; Farbe `g` gold · `b` blau · `s` schwarz · `ü` wie die Überschrift; `k` Kapitälchen, `e` Einzug; z. B. `ti c b` = im Titel, Cinzel, blau; `v` = Vorschau) · `a` aufräumen (wie `sh cleanup.sh`, fragt `[j/N]`)
+`f` final | Druckdateien für die Druckerei (wie `sh build.sh final`); danach öffnet sich der Druckbericht (`db`): Seitenbilanz, Umschlag, Coverrechner, ISBN, CMYK, Warnungen – jedes Mal neu, `ausgabe-…/00-Druckbericht.pdf` (`{druckbericht}: nein` in den Variablen = nicht öffnen)
+`co` Coverrechner prüfen | baut nichts: pro Fassung Buchblock-Seiten vom letzten Druck-Bau, eingetragene Werte, ob die Rohdaten passen, und was zu tun ist (`cv` öffnet die Druckdatei)
+Einstellen · Weitere Ausgaben (bis 2.82.10 unter `w` weitere) | `lp` Leseprobe · `ko` Korrektur · `np` nur-pdf · `ne` nur E-Book · `sm` Stand merken · `st` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` Stichwortdatei öffnen) · `is` ISBN … (alle Ausgaben ansehen und eintragen – Druck/E-Book, normal/UZ; Enter = bleibt, `-` = leeren; speichert in der Variablen-Datei, dann Prüfziffer und Strichcode-PNG wie `sh build.sh isbn`) · `in` Initialen … (wo: 0–4 Zeilen oder `ti` im Titel – `ti3`, `ti23`, `ti234` = weitere Stufen; Schrift; Farbe `g` gold · `b` blau · `s` schwarz · `ü` wie die Überschrift; `k` Kapitälchen, `e` Einzug; z. B. `ti c b` = im Titel, Cinzel, blau; `v` = Vorschau) · `au` aufräumen (wie `sh cleanup.sh`, fragt `[j/N]`)
 `p` PDF öffnen | `n` normal · `u` unzensiert · `l` Leseprobe · `k` Korrektur …
 `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten · `t` tabellen · `a` audio … · `p` Pfad Buchordner kopieren · dazu Taste + `t` = Terminal dort (`bt`, `at` …), + `p` = Pfad kopieren (`ap` …)
 `n` neu | `b` neues Buch · `h` Hallo-Buch · `e` einrichten · `m` Motor-Selbsttest · `v` Verknüpfung
@@ -315,9 +322,9 @@ Geschichten als eigene Dateien – Ordner `geschichten/`, im Buch eine Zeile `@@
 
 Ein Inhaltsverzeichnis – `## @INHALTSVERZEICHNIS` in der Buch-Datei (neue Bücher haben es).\ Schritte: Kapitel mit `##` schreiben › `s` schnell › Tiefe und Abstände unter `### Inhaltsverzeichnis` in der Variablen-Datei.\ → Inhaltsverzeichnis gestalten
 
-Ein Stichwortverzeichnis – `{stichworte}: ja`, eine Zeile `@STICHWORTE`, die Liste `stichworte-<buch>.txt`.\ Schritte: `w` → `i` → `v` Vorschläge › `[+]` markieren › `u` übernehmen › `s` schnell.\ → Stichwortverzeichnis
+Ein Stichwortverzeichnis – `{stichworte}: ja`, eine Zeile `@STICHWORTE`, die Liste `stichworte-<buch>.txt`.\ Schritte: `st` → `v` Vorschläge › `[+]` markieren › `u` übernehmen › `s` schnell.\ → Stichwortverzeichnis
 
-Drucken lassen – eine Druckdatei in `druck/` mit dem Text des Coverrechners.\ Schritte: `w` → `co` zeigt die Seitenzahl › Coverrechner der Druckerei, Text unten einfügen › `w` → `co` › `bp` zeigt ✓ › hochladen.\ → Umschlag: Rücken und Seitenzahl
+Drucken lassen – eine Druckdatei in `druck/` mit dem Text des Coverrechners.\ Schritte: `f` final › `co` zeigt die Seitenzahl › Coverrechner der Druckerei, Text unten einfügen › `f` final › `bp` zeigt ✓ › hochladen.\ → Umschlag: Rücken und Seitenzahl
 
 ## Zum Kopieren
 
@@ -768,7 +775,7 @@ eine kleine Verzierung | `@ZIER 12` (Breite in mm)
 eine Verzierung unten, danach neue Seite | `@ZIER-UNTEN 10`
 eine Verzierung zwischen zwei Abschnitten | `@ZIER-TRENNER`
 ein eigenes Zierbild | in der Variablen-Datei `{zier}: meine-zier.png` (Bild in `bilder/`)
-einen grossen Anfangsbuchstaben am Kapitelanfang (Initial, drei Zeilen hoch) | Menü `w` → `in` Initialen … (wo, Schrift, Farbe, Kapitälchen, Vorschau) oder `{initial}: ja` – Farbe: `{initial-farbe}: akzent` (Gold), `haupt` (Blau wie die Überschriften) oder `text` (Schwarz). Ist der erste Absatz kürzer als drei Zeilen, läuft der nächste daneben weiter; folgt gleich ein Titel oder Foto, beginnt das Kapitel ohne Initial
+einen grossen Anfangsbuchstaben am Kapitelanfang (Initial, drei Zeilen hoch) | Menü `in` Initialen … (wo, Schrift, Farbe, Kapitälchen, Vorschau) oder `{initial}: ja` – Farbe: `{initial-farbe}: akzent` (Gold), `haupt` (Blau wie die Überschriften) oder `text` (Schwarz). Ist der erste Absatz kürzer als drei Zeilen, läuft der nächste daneben weiter; folgt gleich ein Titel oder Foto, beginnt das Kapitel ohne Initial
 den ersten Buchstaben des Kapiteltitels hervorheben (statt eines Initials im Text) | `{initial}: titel` – Buchstabe 1,45-mal so gross wie die Überschrift, welche Stufen: `{initial-stufen}: 2` (Kapitel `##`, Standard), `2 3` oder `2 3 4` (nie `#`, die Teil-Seite), Farbe `{initial-farbe}` (`ueberschrift` = jede Stufe in ihrer eigenen Farbe), Schrift `{initial-schrift}` (leer = Titelschrift, z. B. `cinzel`). Seitenzahl kann sich um 1–2 ändern → Coverrechner prüfen
 das Initial anders: im Rand, im Feld, grösser, fett oder in einer Zierschrift | `{initial-stil}: rand` (links im Rand, Text volle Breite) oder `feld` (helles Feld mit Goldrahmen) · `{initial-zeilen}:` `1` erhöht (steht auf der ersten Zeile und ragt nach oben, Text in voller Breite) · `2` · `3` · `4` · `0` = aus · `{initial-schrift}: fett` · Ä, Ö, Ü werden etwas kleiner gesetzt, damit die Punkte nicht an den Titel stossen · Zierschrift aus dem Motor: `cinzel` (klassisch), `uncial` (keltisch, kleiner), `fraktur` (das I sieht aus wie ein J) · oder eine eigene TTF-Datei aus `fonts/` im Buch (frei z. B. auf fonts.google.com)
 die ersten Wörter jedes Kapitels in Kapitälchen | `{kapitaelchen}: ja` – mit oder ohne Initial
@@ -799,7 +806,7 @@ Nur ein, zwei Zeilen auf der letzten Seite? Zuerst `{inhalt-teile}: zusammen`, s
 
 Das Verzeichnis am Schluss des Buchs listet Begriffe mit ihren Seiten. Es braucht drei Dinge: `{stichworte}: ja` in der Variablen-Datei, eine eigene Zeile `@STICHWORTE` in der Buchdatei (meist vor `@RUECKSEITE`) und die Liste `stichworte-<buch>.txt`. Neue Bücher (auch das Hallo-Buch) haben alles schon, mit Beispielen aus dem Demo.
 
-In 4 Schritten (Menü: `w` → `s` Stichworte …):
+In 4 Schritten (Menü: `st` Stichworte …):
 
 ```
 sh build.sh stichworte              # 1. prüft die drei Dinge, schreibt stichworte-vorschlag.txt
@@ -964,10 +971,10 @@ Ausgabeordner: Ein normaler Bau legt die Druckdateien immer in `ausgabe-normal/`
 
 Die Breite des Rückens hängt von Seitenzahl und Papier ab. Die Druckerei rechnet sie mit ihrem Coverrechner aus.
 
-- Menü `w` → `co` (oder `sh build.sh covers`) – zeigt die Seitenzahl des Buchblocks (Seitenbilanz).
+- Menü `f` final, dann `co` (baut nichts) – zeigt die Seitenzahl des Buchblocks und ob die Werte passen.
 - Im Coverrechner der Druckerei eingeben: Format, Bindung, Papier wie bestellt, diese Seitenzahl.
 - Den Text, wie er kommt, in der Plattform-Datei `druck/<datei>.md` zuunterst unter `## Coverrechner (Rohdaten)` einfügen (alten Text ersetzen).
-- Nochmals `w` → `co`: Der Motor liest Rücken, Beschnitt/Einschlag, Gesamtbreite und -höhe (tredition, epubli, BoD, KDP …, in cm, mm oder Zoll), rechnet den Deckel, trägt die Werte oben ein und baut den Umschlag damit. Oben stehen dann `{neu-berechnet}: ja`, `{berechnet-fuer-seiten}` und `{berechnet-am}`.
+- Nochmals `f` final (oder `sh build.sh covers`): Der Motor liest Rücken, Beschnitt/Einschlag, Gesamtbreite und -höhe (tredition, epubli, BoD, KDP …, in cm, mm oder Zoll), rechnet den Deckel, trägt die Werte oben ein und baut den Umschlag damit. Oben stehen dann `{neu-berechnet}: ja`, `{berechnet-fuer-seiten}` und `{berechnet-am}`.
 
 Das machen auch `final` und `komplett`. Neue Rohdaten erkennt der Motor am geänderten Text. Er übernimmt nichts, wenn die Seitenzahl in den Rohdaten (z. B. epubli) nicht zum Buchblock passt, der Deckel nicht zum Buchformat passt oder der Text nicht lesbar ist – dann bleiben die Werte oben, und das Menü zeigt «⚠ Coverrechner …» (`cv` öffnet die Datei). Nicht lesbar? Den Rohdaten-Block einer KI geben («Rücken, Beschnitt/Einschlag und Deckel in mm») oder die Werte von Hand eintragen. Gibt der Coverrechner für die neue Seitenzahl genau denselben Text aus, `{berechnet-fuer-seiten}` von Hand anpassen. Von Hand prüfen: `python3 motor/rohdaten2cover.py druck/<datei>.md`. Die Texte auf dem Umschlag stehen in `<buch>-umschlag.md` (Vorderseite, Buchrücken, Rückseite). → Plattform-Dateien
 
@@ -979,8 +986,8 @@ Ausgabeordner (z. B. `ausgabe-normal/`): `<kurz>_Buchblock.pdf` und `<kurz>_Umsc
 
 - Druckdatei: Muster `tredition-a5-hardcover` (CMYK ist dort schon eingestellt). In der Variablen-Datei unter `## Ausgabe: Druck …` bei `{druck-datei}:` eintragen.
 - Hardcover: Einschlag und Deckel laut Coverrechner, z. B. `{beschnitt-hardcover}: 17` und `{deckel-hardcover}: 153x216`.
-- Coverrechner von tredition: Seitenzahl aus `w` → `co` eingeben, den Text in der Druckdatei unter `## Coverrechner (Rohdaten)` einfügen, nochmals `w` → `co` («Umschlag: Rücken und Seitenzahl»).
-- ISBN und Strichcode: tredition gibt jedem Buch eine ISBN. Die ISBN unter `## Ausgabe: Druck …` bei `{isbn}:` eintragen und in der Druckdatei `{isbn-bild}: auto` – der Motor macht den Strichcode selbst. Prüfen und ansehen: Menü `w` → `i` (`sh build.sh isbn`). (Oder das SVG von tredition als PNG in `bilder/` legen und dort eintragen.) `{isbn-rahmen}: berge` und `{isbn-rahmen-abstand}: 2` setzen die Bergkette darüber, ohne dass Gold die Striche berührt.
+- Coverrechner von tredition: Seitenzahl aus `co` eingeben, den Text in der Druckdatei unter `## Coverrechner (Rohdaten)` einfügen, nochmals `f` final («Umschlag: Rücken und Seitenzahl»).
+- ISBN und Strichcode: tredition gibt jedem Buch eine ISBN. Die ISBN unter `## Ausgabe: Druck …` bei `{isbn}:` eintragen und in der Druckdatei `{isbn-bild}: auto` – der Motor macht den Strichcode selbst. Prüfen und ansehen: Menü `is` (`sh build.sh isbn`). (Oder das SVG von tredition als PNG in `bilder/` legen und dort eintragen.) `{isbn-rahmen}: berge` und `{isbn-rahmen-abstand}: 2` setzen die Bergkette darüber, ohne dass Gold die Striche berührt.
 - Hochladen: `<kurz>_Buchblock.pdf` und `<kurz>_Umschlag_Hardcover.pdf` – `00-UEBERSICHT.txt` zeigt sie.
 - Impressum: tredition verlangt Druckerei und Kontakt nach EU-Produktsicherheit: `{impressum-herstellung}` und `{impressum-kontakt}` unter `## Ausgabe: Druck …`. Mehr: tredition.com/impressum-buch
 - Nur Exemplare, nicht im Handel: Die Bestellung lässt sich vor der Veröffentlichung beenden – das Buch wird gedruckt, erscheint aber nie im Handel. In der Druckdatei dann `{projekt}: privatdruck` (ohne ISBN im Buch).
@@ -1647,13 +1654,13 @@ Diese Hilfe neu erzeugen und öffnen
 sh build.sh covers
 ```
 
-Cover neu berechnen: Text des Coverrechners (unten in druck/<datei>.md) lesen, Buchblock und Umschlag bauen (wie nur-druck final; Menü: w → co)
+Cover neu berechnen: Text des Coverrechners (unten in druck/<datei>.md) lesen, Buchblock und Umschlag bauen (wie nur-druck final; prüfen ohne Bau: Menü co)
 
 ```
 sh build.sh isbn
 ```
 
-ISBN prüfen (Prüfziffer) und Strichcode-PNG machen, wie {isbn-bild}: auto (Menü: w → i)
+ISBN prüfen (Prüfziffer) und Strichcode-PNG machen, wie {isbn-bild}: auto (Menü: is)
 
 ```
 cv (im Menü)
@@ -1804,7 +1811,7 @@ Gestalten
 Probedruck und Farben
 
 - Farben am Bildschirm nur grob beurteilen. Was zählt, ist der Probedruck auf dem echten Papier (matt/glänzend, weiss/creme).
-- Seitenzahl geändert: im Coverrechner der Druckerei neu rechnen, Text unter `## Coverrechner (Rohdaten)` ersetzen, dann `w` → `co` (Umschlag).
+- Seitenzahl geändert: im Coverrechner der Druckerei neu rechnen, Text unter `## Coverrechner (Rohdaten)` ersetzen, dann `f` final (Umschlag).
 
 ## Glossar
 

@@ -99,12 +99,18 @@ ausgereift – Regeln für das Dokument und Einschränkungen in `INSTALLATION.md
 
 ## Kapitelanfang (Initial)
 
-Grosser Anfangsbuchstabe am Kapitelanfang: im Menü `w` → `in` **Initialen …** wählen – wo (`0` aus, `1` erhöht,
+Grosser Anfangsbuchstabe am Kapitelanfang: im Menü `in` **Initialen …** wählen – wo (`0` aus, `1` erhöht,
 `2`, `3`, `4` Zeilen oder `ti` im Kapiteltitel), Schrift (Textschrift, fett, Cinzel, Uncial, Fraktur), Farbe (gold,
 blau, schwarz) und Kapitälchen; `v` zeigt eine Vorschau. Beispiel `ti c b` = im Titel, Cinzel, blau.
 Im Titel auch für Zwischentitel: `ti23` (Stufen `##` und `###`), Farbe `ü` = wie die jeweilige Überschrift.
 Oder in der Variablen-Datei: `{initial}: ja | titel`, `{initial-stufen}: 2 3`, `{initial-zeilen}: 2`, `{initial-schrift}: cinzel`,
 `{initial-farbe}: haupt`.
+
+## Drucken: Druckbericht und Coverrechner
+
+`f` final baut die Druckdateien und öffnet danach den **Druckbericht** (`ausgabe-…/00-Druckbericht.pdf`, jedes Mal
+neu, wieder öffnen mit `db`): Seitenbilanz, Umschlag, Coverrechner, ISBN, CMYK und Warnungen. `co` prüft den Umschlag,
+ohne zu bauen, und sagt, welche Seitenzahl im Coverrechner der Druckerei einzugeben ist.
 
 ## Weitere Aufrufe
 
