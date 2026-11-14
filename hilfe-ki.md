@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.82.3
+# pureSATZ Hilfe · pureSATZ · Motor 2.82.4
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -302,6 +302,22 @@ sh setup/setup.sh           # fragt Titel, Autor, technischen Namen (= Ordnernam
 Danach im neuen Buchordner `sh build.sh`. Mit GitHub: dort `git init -b main` und `gh repo create <buchname> --private --source . --push` (siehe «Auf mehreren Computern»).
 
 # Schreiben
+
+## Überblick: was es braucht, in Schritten
+
+Für jede Aufgabe: was im Buch stehen muss, die Schritte und wo es genauer steht.
+
+Ein Buch schreiben – braucht die drei Dateien `<buch>-buch.md`, `-variablen.md`, `-umschlag.md` (macht `setup`).\ Schritte: Titel, Autor usw. in der Variablen-Datei › Text in der Buch-Datei › `s` schnell, Lese-PDF ansehen › `k` komplett vor dem Druck.\ → Ein neues Buch anlegen
+
+Teile und Kapitel – Überschriften in der Buch-Datei: `# Teil 1|Titel|Untertitel`, `## Kapitel`, `### Zwischentitel`.\ Schritte: Teil-Zeile (neue Seite mit Teil-Seite) › darunter Kapitel mit `##` › `s` schnell.\ → Aufbau eines Buchs
+
+Geschichten als eigene Dateien – Ordner `geschichten/`, im Buch eine Zeile `@@name`.\ Schritte: Menü `g` → `n` neue Geschichte › schreiben › `g` → `b` fehlende ins Buch › `s` schnell.\ → Geschichten sammeln
+
+Ein Inhaltsverzeichnis – `## @INHALTSVERZEICHNIS` in der Buch-Datei (neue Bücher haben es).\ Schritte: Kapitel mit `##` schreiben › `s` schnell › Tiefe und Abstände unter `### Inhaltsverzeichnis` in der Variablen-Datei.\ → Inhaltsverzeichnis gestalten
+
+Ein Stichwortverzeichnis – `{stichworte}: ja`, eine Zeile `@STICHWORTE`, die Liste `stichworte-<buch>.txt`.\ Schritte: `w` → `i` → `v` Vorschläge › `[+]` markieren › `u` übernehmen › `s` schnell.\ → Stichwortverzeichnis
+
+Drucken lassen – eine Druckdatei in `druck/` mit dem Text des Coverrechners.\ Schritte: `w` → `co` zeigt die Seitenzahl › Coverrechner der Druckerei, Text unten einfügen › `w` → `co` › `bp` zeigt ✓ › hochladen.\ → Umschlag: Rücken und Seitenzahl
 
 ## Zum Kopieren
 
@@ -1430,13 +1446,20 @@ Befehl | Wofür
 `sh cleanup.sh` | aufräumen (zeigt zuerst die Liste, fragt); `sh cleanup.sh ausgaben` = auch die Ausgabeordner
 `sh neu.sh "Titel"` | neue Geschichte anlegen; ohne Titel: Übersicht der Geschichten
 
-Von Hand, für Spezielles:
+Von Hand, für Spezielles (im Buchordner; `.venv/bin/python3` = das Python des Buchs, Windows `.venv\Scripts\python.exe`):
 
-Befehl | Wofür
-`python3 motor/manuskript.py` | Liste aller `@`-Befehle
-`.venv/bin/python3 motor/booklet.py datei.pdf` | ein beliebiges PDF als Booklet zum Selberdrucken → `datei_booklet.pdf`
-`.venv/bin/python3 motor/mockup.py ausgabe-normal/<datei>.pdf` | Werbebilder aus einem PDF (sonst `sh build.sh mockup`)
-`python3 motor/epub2.py ausgabe-normal/<datei>.epub` | EPUB 2 aus einem fertigen E-Book
+Befehl | Wofür | Beispiel
+`python3 motor/manuskript.py` | Liste aller `@`-Befehle | –
+`.venv/bin/python3 motor/booklet.py datei.pdf` | ein beliebiges PDF als Booklet zum Selberdrucken | `… booklet.py ausgabe-normal/Buch.pdf` → `Buch_booklet.pdf`
+`.venv/bin/python3 motor/mockup.py <pdf>` | Werbebilder aus einem PDF (sonst `sh build.sh mockup`) | `… mockup.py ausgabe-normal/Buch.pdf`
+`python3 motor/epub2.py <epub>` | EPUB 2 aus einem fertigen E-Book | `… epub2.py ausgabe-normal/Buch.epub` → `Buch_EPUB2.epub`
+`python3 motor/rohdaten2cover.py druck/<datei>.md` | Coverrechner-Text lesen und zeigen, was der Motor eintragen würde (mit Seitenzahl: eintragen) | `… rohdaten2cover.py druck/tredition-a5.md 70`
+`python3 motor/hilfe.py` | `hilfe.html` und `hilfe-ki.md` neu machen (sonst `sh build.sh hilfe`) | –
+`python3 motor/einrichten.py` | Python-Umgebung `.venv` neu einrichten (braucht Internet), z. B. nach einem Python-Update | Ordner `.venv` vorher löschen
+`python3 motor/geschichten.py "Titel"` | neue Geschichte (wie `sh neu.sh "Titel"`) | `… geschichten.py "Schutzschild hoch!"`
+`python3 motor/update.py pruefen` | nur schauen, ob es einen neueren Motor gibt | –
+
+Alle übrigen Module (`build.py`, `bauen.py`, `staende.py`, `personen.py` …) laufen über `sh build.sh …` und das Menü.
 
 ## Das pureSATZ Handbuch
 
