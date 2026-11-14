@@ -637,6 +637,59 @@ def cover_menue():
           "  einfügen (alten ersetzen). Dann w → co: der Motor liest die Werte und baut den Umschlag neu.")
 
 
+ISBN_AUSGABEN = (("Druck normal", "Druck normal"), ("Druck unzensiert", "Druck UZ"),
+                 ("E-Book", "E-Book normal"), ("E-Book unzensiert", "E-Book UZ"))
+
+
+def isbn_menue():
+    """w → i (ab 2.82.7): die ISBN aller Ausgaben ansehen und eintragen (Enter = bleibt, - = leeren). Sie stehen weiter
+    in der Variablen-Datei («{isbn}:» unter «## Ausgabe: …») – nur dort, also immer gleich. Danach Prüfziffer und
+    Strichcode-PNG der gedruckten Fassungen (sh build.sh isbn), die PNG öffnen sich."""
+    pfad = next(iter(sorted(glob.glob(os.path.join(BASE, "*-variablen.md")))), None)
+    if not pfad:
+        return
+    zeilen = open(pfad, encoding="utf-8").read().split("\n")
+
+    def stelle(abschnitt):                            # (Zeile «## Ausgabe: …», Zeile «{isbn}:» oder None)
+        k = next((i for i, z in enumerate(zeilen) if z.strip() == "## Ausgabe: " + abschnitt), None)
+        if k is None:
+            return None, None
+        for i in range(k + 1, len(zeilen)):
+            if zeilen[i].startswith("## "):
+                break
+            if zeilen[i].startswith("{isbn}:"):
+                return k, i
+        return k, None
+
+    print(GRAU(" ISBN – Enter = bleibt · - = leeren · steht in ") + os.path.basename(pfad))
+    geaendert = False
+    for abschnitt, kurz in ISBN_AUSGABEN:
+        k, i = stelle(abschnitt)
+        if k is None:
+            continue
+        alt = zeilen[i].split(":", 1)[1].strip() if i is not None else ""
+        e = frage(f"  {kurz:<14} [{alt or 'leer'}]: ").strip()
+        if e.lower() == "q":
+            return
+        if not e or e == alt:
+            continue
+        z = "{isbn}:" + ("" if e == "-" else " " + e)
+        if i is None:
+            zeilen.insert(k + 1, z)
+        else:
+            zeilen[i] = z
+        geaendert = True
+    if geaendert:
+        open(pfad, "w", encoding="utf-8").write("\n".join(zeilen))
+        print(GRUEN("  ✓ gespeichert"))
+    if bauen("isbn") == 0:
+        try:
+            for p in open(os.path.join(BASE, "_druckbilder", "isbn.txt"), encoding="utf-8").read().split():
+                oeffnen(p)
+        except OSError:
+            pass
+
+
 def pruef_stand():
     """Letzte Prüfung (bauen.py schreibt _druckbilder/pruefen.txt, ab 2.82.1): «ok», «fehler» oder "" =
     noch nie geprüft oder seither Buch, Variablen, Umschlag, Stichworte, Druckdatei, Geschichte oder Tabelle geändert."""
@@ -866,19 +919,14 @@ def main():
             elif w == "w":
                 k = untermenue("weitere …", {"l": ("Leseprobe", 0), "k": ("Korrektur", 0), "p": ("nur-pdf", 0),
                                              "e": ("nur E-Book", 0), "co": ("Cover rechnen", 0), "m": ("Stand merken", 0),
-                                             "s": ("Stichworte …", 0), "i": ("ISBN prüfen", 0), "a": ("aufräumen …", 0)})
+                                             "s": ("Stichworte …", 0), "i": ("ISBN …", 0), "a": ("aufräumen …", 0)})
                 if k == "m":
                     name = frage(" Name des Stands: ")
                     bauen("stand", *([name] if name else []))
                 elif k == "s":
                     stichworte_menue()
-                elif k == "i":                    # ISBN prüfen, Strichcode-PNG öffnen (ab 2.82.6)
-                    if bauen("isbn") == 0:
-                        try:
-                            for p in open(os.path.join(BASE, "_druckbilder", "isbn.txt"), encoding="utf-8").read().split():
-                                oeffnen(p)
-                        except OSError:
-                            pass
+                elif k == "i":                    # ISBN eintragen und prüfen, Strichcode-PNG öffnen (ab 2.82.7)
+                    isbn_menue()
                 elif k == "a":                    # wie sh cleanup.sh: zeigt die Liste, fragt [j/N]
                     lauf([sys.executable, os.path.join(MOTOR, "aufraeumen.py")], titel="aufräumen")
                 elif k:

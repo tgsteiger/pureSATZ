@@ -3,6 +3,12 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.82.7 (November 2026)
+- Menü `w` → `i` **ISBN …**: zeigt die ISBN aller Ausgaben (Druck normal, Druck UZ, E-Book normal, E-Book UZ) und
+  fragt sie ab (Enter = bleibt, `-` = leeren). Gespeichert wird nur in der Variablen-Datei («{isbn}:» unter
+  «## Ausgabe: …»), also immer gleich. Danach Prüfziffer und Strichcode-PNG der gedruckten Fassungen.
+- `sh build.sh isbn` prüft auch die E-Book-ISBN.
+
 ## 2.82.6 (November 2026)
 - Bücher dürfen eine Ebene tiefer liegen (z. B. `pureWORLD/buecher/Leben123`): Menü, `update.sh lokal`, Handbuch und
   Hilfe finden pureSATZ unter `../pureSATZ` oder `../../pureSATZ`. Neue Bücher (auch Hallo-Buch) kommen in den Ordner

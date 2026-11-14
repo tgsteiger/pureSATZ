@@ -253,22 +253,28 @@ def name(a):
 
 
 def isbn_zeigen():
-    """sh build.sh isbn (ab 2.82.6): je Fassung die ISBN aus der Druckdatei, Prüfziffer, Strichcode-PNG wie bei
-    {isbn-bild}: auto. Die PNG-Pfade stehen danach in _druckbilder/isbn.txt (das Menü öffnet sie)."""
+    """sh build.sh isbn (ab 2.82.6): je Fassung die ISBN aus der Variablen-Datei («## Ausgabe: …»), Prüfziffer;
+    für den Druck auch das Strichcode-PNG wie bei {isbn-bild}: auto. Die PNG-Pfade stehen danach in
+    _druckbilder/isbn.txt (das Menü öffnet sie). Ab 2.82.7 auch die E-Books (ohne Strichcode)."""
     import re
     pngs = []
     for a in ausgaben():
-        nr = bk.druck_V("isbn", "", a).strip()
-        if len(re.sub(r"\D", "", nr)) != 13:
-            print(f"  {name(a)}: keine ISBN mit 13 Ziffern ({nr or 'leer'}) – {{isbn}} in der Druckdatei eintragen")
-        elif not bk.isbn_ok(nr):
-            print(f"  {name(a)}: ISBN {nr} ✗ Prüfziffer stimmt nicht – Tippfehler?")
-        else:
-            p = bk.isbn_png(nr)
-            pngs.append(p)
-            print(f"  {name(a)}: ISBN {nr} ✓  Strichcode: {os.path.relpath(p, BASE)}")
-    if pngs:
-        print("  Im Umschlag: {isbn-bild}: auto in der Druckdatei (druck/…md)")
+        for art, nr in (("Druck", bk.druck_V("isbn", "", a).replace("folgt", "").strip()),
+                        ("E-Book", M.Ausgabe(bk.alle_variablen(a), a, "ebook")("isbn").strip())):
+            t = f"  {art} {name(a)}:".ljust(28)
+            if not nr:
+                print(t + "leer")
+            elif len(re.sub(r"\D", "", nr)) != 13:
+                print(t + f"{nr} ✗ keine 13 Ziffern")
+            elif not bk.isbn_ok(nr):
+                print(t + f"{nr} ✗ Prüfziffer stimmt nicht – Tippfehler?")
+            elif art == "E-Book":
+                print(t + f"{nr} ✓")
+            else:
+                p = bk.isbn_png(nr)
+                pngs.append(p)
+                print(t + f"{nr} ✓  Strichcode: {os.path.relpath(p, BASE)}")
+    print("  Eintragen: Menü w → i (Variablen-Datei, «## Ausgabe: …») · Im Umschlag: {isbn-bild}: auto (druck/…md)")
     os.makedirs(os.path.join(BASE, "_druckbilder"), exist_ok=True)
     with open(os.path.join(BASE, "_druckbilder", "isbn.txt"), "w", encoding="utf-8") as f:
         f.write("".join(p + "\n" for p in pngs))
