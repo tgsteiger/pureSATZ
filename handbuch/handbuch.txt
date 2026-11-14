@@ -9,7 +9,11 @@ AUTOR = Thomas Gsteiger
 NAME = pureSATZ-Handbuch
 FORMAT = a5
 BINDUNG = hardcover
-ZWEITE_AUSGABE = nein
+# Zwei Ausgaben (ab 2.81): normal = Linux & Mac (grüner Stempel), zweite = Windows (blauer Stempel), je eigene ISBN.
+# Stempel und Farben danach in pureSATZ-Handbuch-variablen.md: {stempel-normal}, {stempel-uz},
+# {farbe-stempel-normal}: #2E7D32, {farbe-stempel-uz}: #1F5FA8 (siehe Hilfe «Das pureSATZ Handbuch»).
+ZWEITE_AUSGABE = ja
+ZWEITE_NAME = Windows
 ORT = Bern
 JAHR = 2026
 WEBSITE = tgsteiger.github.io/pureSATZ

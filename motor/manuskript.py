@@ -60,6 +60,15 @@ def _wo(name, nr):
 
 
 CODE_ZAUN = "```"          # Code-Block: Zeilen zwischen «```» und «```» bleiben wörtlich (ab 2.76)
+                           # «```nur-uz» … = nur in dieser Ausgabe (wie «::: nur-uz», ab 2.81)
+
+
+def anker(t):
+    """Sprungmarke einer Überschrift: «Farben für den Druck» → «farbenfurdendruck» (Links [Text](#Farben-fuer-den-Druck))."""
+    import unicodedata
+    t = "".join(c for c in unicodedata.normalize("NFD", t.lower()) if unicodedata.category(c) != "Mn")
+    t = t.replace("ae", "a").replace("oe", "o").replace("ue", "u").replace("ß", "ss")
+    return re.sub(r"[^a-z0-9]+", "", t)
 
 
 def im_code(zeilen):
@@ -153,7 +162,7 @@ def lies(pfad):
 
 
 AUSGABE_KOPF = re.compile(r"^ausgabe\s*:\s*(.+)$", re.I)       # «## Ausgabe: Druck normal»
-ROHDATEN_KOPF = re.compile(r"coverrechner|rohdaten", re.I)       # «## Coverrechner (Rohdaten)»: wird nicht gelesen
+ROHDATEN_KOPF = re.compile(r"coverrechner|rohdaten", re.I)       # «## Coverrechner (Rohdaten)»: keine Variablen (liest rohdaten2cover.py)
 SCHEMA_KOPF = re.compile(r"^farbschema\s*(\d+)\b", re.I)          # «### Farbschema 2: dunkler für den Druck»
 FARBSCHEMA_FEHLT = {}                                             # Pfad -> gewählte Nummer ohne Abschnitt
 FARBSCHEMA_NAME = {}                                              # Pfad -> «Farbschema 2: dunkler für den Druck»
@@ -379,7 +388,14 @@ def zeilen(pfad, a, entwurf=False):
                 inhalt.append(_zeile(roh[i][1].rstrip(), roh[i][0])); i += 1
             if i >= len(roh):
                 raise Fehler(f"{_wo(name, nr)}: Code-Block wird nicht mit «{CODE_ZAUN}» geschlossen.")
-            out.append(("CODE", s.strip()[3:].strip(), inhalt)); i += 1
+            info = s.strip()[3:].strip()
+            i += 1
+            if info.lower().startswith("nur-"):          # «```nur-uz»: nur in dieser Ausgabe (ab 2.81)
+                tag = ALT.get(info[4:].lower(), info[4:].lower())
+                info = ""
+                if tag in TAGS and tag not in a.tags():
+                    continue
+            out.append(("CODE", info, inhalt))
             continue
         fk = FOTO_KOPF.match(s)
         if fk:                                  # «#### @FOTO Titel» … bis zur ersten Leerzeile

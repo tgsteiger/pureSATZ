@@ -3,6 +3,28 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.82.0 (November 2026)
+- Cover rechnet der Motor selbst: Den Text aus dem Coverrechner der Druckerei (tredition, epubli, BoD, KDP …) unten in
+  der Druckdatei unter `## Coverrechner (Rohdaten)` einfügen – beim Bau der Druckdateien liest `motor/rohdaten2cover.py`
+  Rücken, Beschnitt/Einschlag, Gesamtbreite/-höhe (cm, mm oder Zoll), rechnet den Deckel und trägt die Werte oben ein.
+  Er prüft: Seitenzahl in den Rohdaten = Buchblock, Deckel passt zum Buchformat, Vorderseite passt zur Rechnung.
+  Nicht lesbar → Werte bleiben, Hinweis (Block einer KI geben oder von Hand eintragen). Sicherung nach md-history/druck/.
+- Kopfzeilen der Druckdatei setzt der Motor: `{neu-berechnet}: ja|nein`, `{berechnet-fuer-seiten}`, `{berechnet-am}`
+  (Datum + Prüfsumme des Rohdaten-Textes). `{neu-berechnen}` aus älteren Dateien wird beim Bau umgestellt.
+- Menü: `w` → `co` Cover rechnen (`sh build.sh covers` = nur-druck final) · `bp` Buch prüfen unter
+  «Abgleichen / Prüfen» (statt `w` → `c`) · `a` änderungen geht auch mit `ä`.
+- Selbsttest: `test/rohdaten2cover-test.py` (24 Fälle) und «covers» im Testbuch (beide Ausgaben, gleiche Druckdatei).
+
+## 2.81.0 (November 2026)
+- Verweise im Buch: `[→ Tabellen](#Tabellen)` springt im PDF und im E-Book zum Kapitel (jede Überschrift hat eine
+  Sprungmarke). Im Druck steht die Seite dahinter («→ Tabellen, S. 23»), aus dem ersten Satzlauf.
+- Code-Block nur in einer Ausgabe: drei Backticks mit `nur-uz`, `nur-normal` … dahinter.
+- `{farbe-stempel-normal}` / `{farbe-stempel-uz}`: Stempelfarbe je Ausgabe (gilt für alle `farbe-…`).
+- Initial nur bei einem Grossbuchstaben am Kapitelanfang («pureSATZ macht …» bleibt ohne). Behoben: Absturz, wenn
+  ein Initial-Block neu umbrochen wird.
+- Handbuch in zwei Ausgaben: Linux & Mac (grüner Stempel) und Windows (blauer Stempel), Befehle automatisch
+  umgeschrieben, Verweise klickbar. Neues Kapitel «Mein erstes Buch in 5 Minuten – Schritt für Schritt».
+
 ## 2.80.0 (November 2026)
 - Initial wählbar: `{initial-stil}: normal | rand | feld` (im Text · links im Rand · im hellen Feld mit Goldrahmen),
   `{initial-zeilen}: 3 | 4`, `{initial-schrift}: fett` oder eigene TTF-Datei (fonts/ oder bilder/).

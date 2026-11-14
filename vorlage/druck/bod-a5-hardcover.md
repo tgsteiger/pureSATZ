@@ -1,11 +1,11 @@
 # BoD – A5 Hardcover
 
-{neu-berechnen}: ja
+{neu-berechnet}: nein
 {berechnet-fuer-seiten}: 
-> {neu-berechnen}: ja = Seitenzahl hat sich geändert, Rücken und Umschlag im Coverrechner neu berechnen · nein = Werte passen
-> {berechnet-fuer-seiten}: Seiten des Buchblocks, für die die Werte unten berechnet sind. Weicht der Buchblock ab, warnt «sh build.sh final».
+{berechnet-am}: 
+> {neu-berechnet}, {berechnet-fuer-seiten}, {berechnet-am}: setzt der Motor beim Bau der Druckdateien. nein = Seitenzahl geändert oder Rohdaten fehlen → Coverrechner rechnen, Text unten ersetzen.
 > Nur Technik dieser Plattform. ISBN, Preis und Impressum stehen in der Variablen-Datei unter «## Ausgabe: …».
-> Neue Werte vom Coverrechner: unten unter «## Coverrechner (Rohdaten)» einfügen und Claude sagen: «Coverwerte übernehmen».
+> Neue Werte: Text des Coverrechners unten unter «## Coverrechner (Rohdaten)» einfügen.
 > UNGETESTET – Werte nach dem ersten Upload bei BoD prüfen
 > Test: sh build.sh final druck=bod-a5-hardcover
 
@@ -59,8 +59,7 @@
 > {isbn-rahmen-abstand}: default: leer = 0 (Linie berührt die Striche) · optional: mm weiss dazwischen, z. B. 2 (tredition: nur schwarze Striche auf Weiss)
 
 ## Coverrechner (Rohdaten)
-> Hier die Angaben aus dem Coverrechner der Plattform einfügen (Text, wie er kommt). Der Motor liest diesen Abschnitt nicht.
-> Rücken und Papier laut BoD-Coverrechner eintragen
+> Text aus dem Coverrechner der Druckerei hier einfügen (wie er kommt). Der Motor liest ihn beim Bau selbst.
 
 ## Notizen
 > Impressum und ISBN gehören in die Variablen-Datei unter «## Ausgabe: …». Beim Wechsel auf diese Plattform dort eintragen:

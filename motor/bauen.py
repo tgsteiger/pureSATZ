@@ -11,6 +11,7 @@ Aufruf (im Buchordner, mit der Python-Umgebung .venv):
 Booklets zum Selberdrucken entstehen automatisch: im «final» der Probedruck aus der Druckfassung
 (<kurz>_Probedruck_booklet.pdf), sonst aus dem Bildschirm-PDF (<datei>_booklet.pdf).
     python motor/bauen.py nur-druck [final]   nur Druckdateien (Buchblock, Umschlag)
+    python motor/bauen.py covers          Cover neu berechnen: Rohdaten des Coverrechners lesen, nur-druck final
     python motor/bauen.py nur-ebook [final]   nur E-Books
     python motor/bauen.py schnell         nur Lese-PDFs, so schnell wie möglich (beim Schreiben)
     python motor/bauen.py leseprobe       Leseprobe: Umschlag, Titelei, erste Kapitel (Variable «leseprobe»)
@@ -698,6 +699,8 @@ def main():
         NUR_FASSUNG = next((a for a in args if a in ("normal", "uz")), None)
     final = "final" in args
     art = next((a for a in args if a not in ("final", "uz", "normal")), "alles")
+    if art == "covers":                     # «sh build.sh covers» = Umschlag neu (Rohdaten lesen): nur-druck final (ab 2.82)
+        art, final = "nur-druck", True
     if art == "handbuch":                   # «sh build.sh handbuch»: einschalten, erzeugen (oben), Lese-PDF
         art = "schnell"
     komplett = art == "komplett"            # final + Leseprobe + Korrektur

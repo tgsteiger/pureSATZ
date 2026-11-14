@@ -14,6 +14,7 @@
 #   sh build.sh korrektur       Korrekturfassung: A4, Zeilennummern, Rand für Notizen
 #   sh build.sh hoerbuch        Hörbuch in einem: Texte → vertonen → Paket → Hörprobe (audio/verkauf/)
 #   sh build.sh nur-druck [final] / nur-ebook [final] / pruefen / sicherung (nur MD nach md-history/)
+#   sh build.sh covers          Cover neu berechnen: Text des Coverrechners (druck/<datei>.md) lesen, nur-druck final
 # Ganzes Buch als ZIP sichern: sh sicherung.sh
 # Beim ersten Mal wird die Python-Umgebung .venv eingerichtet (braucht Internet).
 set -e

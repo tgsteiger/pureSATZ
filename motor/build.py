@@ -105,7 +105,7 @@ DRUCK_NAMEN = ("plattform", "format", "seite", "bindung", "projekt", "ruecken", 
                "barcode-groesse", "barcode-bild", "barcode-rahmen", "barcode-rahmen-farbe", "barcode-rahmen-abstand",
                "isbn-position", "isbn-groesse", "isbn-bild", "isbn-rahmen", "isbn-rahmen-farbe", "isbn-rahmen-abstand",
                "versatz-vertikal", "versatz-horizontal",
-               "neu-berechnen", "berechnet-fuer-seiten", "farbmodus")
+               "neu-berechnet", "neu-berechnen", "berechnet-fuer-seiten", "berechnet-am", "farbmodus")   # neu-berechnen: bis 2.81
 
 
 def druckmodus():
@@ -355,6 +355,9 @@ def _layout_aus_variablen():
     for k, w in v.items():
         if k.startswith("farbe-") and w:
             L.FARBEN[k[6:].replace("-", "_")] = w
+    for k, w in v.items():                 # farbe-stempel-uz: gilt nur in dieser Ausgabe (ab 2.81)
+        if k.startswith("farbe-") and k.endswith(("-normal", "-uz")) and w and k.rpartition("-")[2] == FASSUNG:
+            L.FARBEN[k[6:].rpartition("-")[0].replace("-", "_")] = w
 
     def familie(name, rollen):
         for rolle, (endung, ersatz) in rollen.items():
@@ -1155,8 +1158,51 @@ def stichwortverzeichnis():
     return [PageBreak(), p, Spacer(1, 4), REGISTER]
 
 
+# --- Verweise im Buch: [Text](#Abschnitt) (ab 2.81) -------------------------------------------
+# Jede Überschrift bekommt eine Sprungmarke (M.anker). Der Link führt im PDF dorthin; im Druck steht dahinter
+# die Seite («→ «Tabellen», S. 23»). Die Seite stammt aus dem ersten Satzlauf, der zweite setzt sie ein.
+ANKER_ALLE = []           # Sprungmarken aller Überschriften dieser Ausgabe (vor dem Satz gesammelt)
+ANKER_SEITE = {}          # Marke -> Seite (aus dem vorherigen Durchlauf)
+ANKER_GENUTZT = {}        # Marke -> Seite, die im Text steht (Prüfung am Schluss)
+
+
+def ziel_anker(name):
+    """[Text](#Farben-fuer-den-Druck) -> Marke der Überschrift (genau oder Anfang wie in der Hilfe), sonst None."""
+    a = M.anker(name)
+    return a if a in ANKER_ALLE else next((x for x in ANKER_ALLE if a and x.startswith(a)), None)
+
+
+def _verweis(m):
+    a = ziel_anker(m.group(2))
+    if not a:
+        return m.group(1)                         # Ziel nicht in dieser Ausgabe: nur der Text
+    s = f'<a href="#{a}" color="{hexfarbe("akzent")}">{m.group(1)}</a>'
+    if DRUCK and os.environ.get("BUCH_SCHNELL") != "1":
+        n = ANKER_SEITE.get(a)
+        ANKER_GENUTZT[a] = n
+        n = n or "00"                             # erster Satzlauf: Platzhalter in ähnlicher Breite
+        s += f", S. {n}" if m.group(1).lstrip().startswith(("→", "›")) else f" (S. {n})"
+    return s
+
+
+class AnkerMarke(Flowable):
+    """Unsichtbar, direkt nach einer Überschrift: Sprungziel für Verweise, merkt sich die Seite."""
+    def __init__(self, text):
+        super().__init__(); self.name = M.anker(text)
+        self.keepWithNext = 1                     # Überschrift bleibt beim folgenden Text (wie ohne Marke)
+    def wrap(self, aw, ah):
+        return 0, 0
+    def draw(self):
+        schon = self.canv.__dict__.setdefault("_anker", set())
+        if self.name and self.name not in schon:
+            schon.add(self.name)
+            self.canv.bookmarkPage(self.name)
+            ANKER_SEITE[self.name] = self.canv.getPageNumber()
+
+
 def links(t):
-    """Markdown-Link [Text](https://…) -> farbiger Link im PDF."""
+    """Markdown-Link [Text](https://…) -> farbiger Link im PDF; [Text](#Abschnitt) -> Verweis im Buch."""
+    t = re.sub(r"\[([^\]]+)\]\(#([^)\s]+)\)", _verweis, t)
     return re.sub(r"\[([^\]]+)\]\((https?://[^)\s]+)\)",
                   lambda m: f'<a href="{m.group(2)}" color="{hexfarbe("akzent")}">{m.group(1)}</a>', t)
 
@@ -1219,6 +1265,8 @@ class Initial(Flowable):
     def wrap(self, aw, ah):
         return self.w, (self.z - 1) * TEXT_ZEILE + self.luft + 1   # ImageAndFlowables setzt noch eine Zeile daneben
     _restrictSize = wrap
+    def _unRestrictSize(self):      # von ImageAndFlowables beim erneuten Umbruch aufgerufen (2.81)
+        pass
     def draw(self):
         c, grund = self.canv, 1 + self.luft - TEXT_GROESSE           # Grundlinie der letzten Initial-Zeile
         if self.stil == "feld":
@@ -2041,6 +2089,8 @@ def _build(out, ausgleich=None):
     story = [] if DRUCK else [NextPageTemplate("plain"), PageBreak()]
     vorspann = {"kernsatz": False}
     lines = text_zeilen()
+    ANKER_ALLE[:] = [M.anker(re.sub(r"^#+\s+", "", z)) for z in lines if isinstance(z, str)
+                     and re.match(r"^#{1,4} (?!@)[^|]+$", z.strip())]
     para = []
     first = True
     teil_gesehen = False
@@ -2091,7 +2141,7 @@ def _build(out, ausgleich=None):
                 ini["paras"].append(p); ini["h"] += neben(p)
                 initial_ausgeben(erzwungen=False)
                 return
-            if INITIAL and nach_kapitel and not schwebe and re.match(r"[A-Za-zÄÖÜäöü]", text):
+            if INITIAL and nach_kapitel and not schwebe and re.match(r"[A-ZÄÖÜ]", text):   # nur Grossbuchstaben (2.81)
                 ohne = inline(kapitaelchen(text[1:]) if KAPITAELCHEN else text[1:])
                 rest = Paragraph(ohne, ParagraphStyle("ini", parent=stil, firstLineIndent=0,
                                                       allowOrphans=1, allowWidows=1))
@@ -2182,7 +2232,7 @@ def _build(out, ausgleich=None):
             # Kapitel auf oberster Ebene (Anhang, Zeitstrahl, Über den Autor …): neue Seite, eigener Eintrag
             flush(); t = s[2:].strip()
             p = Paragraph(inline(t), ZEIT_STIL); p._toc = (0, t)
-            story += [NextPageTemplate("body"), PageBreak(), p]
+            story += [NextPageTemplate("body"), PageBreak(), p, AnkerMarke(t)]
             first = False
         elif s.startswith("# "):
             flush()
@@ -2200,14 +2250,14 @@ def _build(out, ausgleich=None):
             p = Paragraph(inline(s[5:]), h4)
             if TIEFE >= 4:
                 p._toc = (3, s[5:])
-            story.append(p)
+            story += [p, AnkerMarke(s[5:])]
         elif s.startswith("### "):
             flush()
             story.append(CondPageBreak(30 * mm))   # Unterüberschrift nie allein unten auf der Seite
             p = Paragraph(inline(s[4:]), h3)
             if TIEFE >= 3:
                 p._toc = (2, s[4:])
-            story.append(p)
+            story += [p, AnkerMarke(s[4:])]
         elif s.startswith("## "):
             flush()
             t = s[3:]
@@ -2217,7 +2267,7 @@ def _build(out, ausgleich=None):
                 story.append(CondPageBreak(45 * mm))
             p = Paragraph(inline(t), h2 if not first else ParagraphStyle("h2f", parent=h2, spaceBefore=0))
             p._toc = (1, t)
-            story.append(p); first = False; nach_kapitel = True
+            story += [p, AnkerMarke(t)]; first = False; nach_kapitel = True
         elif s.startswith("> "):
             flush(); story.append(KeepTogether([Spacer(1, 6), Ornament(), Paragraph(inline(s[2:]), quote),
                                                 Ornament(), Spacer(1, 14)]))
@@ -2448,7 +2498,12 @@ def build(out):
     if os.environ.get("BUCH_SCHNELL") == "1":       # sh build.sh schnell: ein Durchgang, kein Seitenausgleich
         return _build(out)[0].page
     doc, story = _build(out)
-    return _build(out, seitenausgleich(doc, story))
+    n = _build(out, seitenausgleich(doc, story))
+    falsch = [a for a, s in ANKER_GENUTZT.items() if s != ANKER_SEITE.get(a)]
+    if falsch:                                     # Verweise im Druck: Seite hat sich im zweiten Lauf verschoben
+        print(f"Hinweis: {len(falsch)} Verweis(e) mit verschobener Seitenzahl ({', '.join(falsch[:3])}) – "
+              "nochmals bauen, dann stimmen sie.")
+    return n
 
 
 def zeitstrahl_zeilen(inhalt):

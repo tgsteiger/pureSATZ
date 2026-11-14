@@ -26,6 +26,7 @@ import unicodedata
 MOTOR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, MOTOR)
 import hilfe as H          # noqa: E402
+import manuskript as M     # noqa: E402
 
 SCHALTER = re.compile(r"^\s*\{buch-aus-hilfe\}\s*:\s*ja\b", re.I | re.M)
 ZAUN = "`" * 3
@@ -127,8 +128,20 @@ def kurz(titel):
     return re.sub(r"^Hörbuch:\s*", "", titel)
 
 
+def win(zeile):
+    """Befehle in `Code` für die Windows-Ausgabe umschreiben (wie der Umschalter in hilfe.html)."""
+    return re.sub(r"`([^`]+)`", lambda m: "`" + (H._windows(m.group(1)) or m.group(1)) + "`", zeile)
+
+
+def win_zelle(c):
+    """Tabellenzelle für Windows: auch Befehle ohne Backticks («einmalig: sh build.sh leseprobe …»)."""
+    return H._windows(c) or c
+
+
 class Umsetzer:
-    """Hilfe-Markdown → Buch-Markdown (pureSATZ)."""
+    """Hilfe-Markdown → Buch-Markdown (pureSATZ). Zwei Ausgaben (ab 2.81): normal = Linux & Mac, uz = Windows.
+    Wo sich ein Absatz, Code-Block oder eine Tabelle unterscheidet, steht er zweimal: «::: nur-normal» / «::: nur-uz»
+    bzw. «```nur-normal» / «```nur-uz»."""
 
     def __init__(self, basis, titel):
         self.basis, self.titel, self.nr = basis, titel, 0
@@ -138,13 +151,15 @@ class Umsetzer:
             os.remove(alt)
 
     def verweis(self, text, anker):
+        """[Text](#Abschnitt) → Verweis mit Sprungmarke auf das Kapitel im Buch (klickbar, im Druck mit Seite)."""
         ziel = next((t for t in self.titel if k(anker) in k(t)), None)
         if not ziel:
             return text
         ziel = kurz(ziel)
+        a = M.anker(ziel)
         if text.lstrip().startswith(("→", "←")):
-            return f"→ «{ziel}»"
-        return f"«{ziel}»" if k(text) in k(ziel) else f"{text} (→ «{ziel}»)"
+            return f"[→ «{ziel}»](#{a})"
+        return f"[«{ziel}»](#{a})" if k(text) in k(ziel) else f"{text} ([→ «{ziel}»](#{a}))"
 
     def inline(self, t):
         teile = re.split(r"(`[^`]*`)", t)
@@ -158,12 +173,16 @@ class Umsetzer:
             teile[j] = x
         return "".join(teile)
 
-    def tabelle(self, kopf, reihen):
+    def zeile(self, z):
+        return zeichen(self.inline(z))
+
+    def tabelle(self, kopf, reihen, umschreiben=None):
         self.nr += 1
         name = f"h-{self.nr:03d}"
         if not any(c.strip() for c in kopf) and reihen:     # Tabelle ohne Überschriften: erste Zeile nimmt ihren Platz
             kopf, reihen = reihen[0], reihen[1:]
-        zell = lambda r: [zeichen(self.inline(c.replace("\\|", "|"))) for c in r]
+        f = umschreiben or (lambda c: c)
+        zell = lambda r: [zeichen(self.inline(f(c.replace("\\|", "|")))) for c in r]
         puffer = io.StringIO()
         w = csv.writer(puffer, delimiter=";", lineterminator="\n")
         puffer.write("sep=;\n\n")                     # Zeile 1 leer = Tabelle ohne Titel
@@ -171,38 +190,81 @@ class Umsetzer:
         for r in reihen:
             w.writerow(zell(r + [""] * (len(kopf) - len(r)))[:len(kopf)])
         open(os.path.join(self.ordner, name + ".csv"), "w", encoding="utf-8").write(puffer.getvalue())
-        return f"@#{name} hoch"
+        return f"@#{name} hoch", puffer.getvalue()
 
     def md(self, text):
-        out, z, i, code, bloecke = [], text.split("\n"), 0, False, []
+        """Einheiten (Absatz, Code, Tabelle) je zweimal umsetzen: (Linux & Mac, Windows)."""
+        einheiten, z, i, bloecke, zwang = [], text.split("\n"), 0, [], None
         zell = lambda r: [c.strip() for c in re.split(r"(?<!\\)\|", r.strip().strip("|"))]
+
+        def fix(*zeilen):
+            einheiten.append(["fix", list(zeilen), list(zeilen)])
+
         while i < len(z):
             s = z[i].strip()
-            if s.startswith(ZAUN):
-                code = not code
-                out.append(ZAUN if code else ZAUN); i += 1; continue
-            if code:
-                out.append(zeichen(z[i].rstrip(), nur_emoji=True)); i += 1; continue
+            if s.startswith(ZAUN):                       # Code-Block: Linux und Windows
+                roh, i = [], i + 1
+                while i < len(z) and not z[i].strip().startswith(ZAUN):
+                    roh.append(zeichen(z[i].rstrip(), nur_emoji=True)); i += 1
+                i += 1
+                lx = roh
+                wn = H._windows("\n".join(roh)).split("\n") if zwang != "normal" else roh
+                if zwang == "uz":
+                    lx = wn
+                einheiten.append(["code", lx, wn]); continue
             if s == "::: nur-webhilfe":
                 while i < len(z) and z[i].strip() != ":::":
                     i += 1
                 i += 1; continue
+            if s in ("::: nur-normal", "::: nur-uz"):      # eigener Text je Ausgabe (z. B. in der Einleitung)
+                bloecke.append(s); zwang = s[8:]; fix("", s); i += 1; continue
             if s in ("::: nur-handbuch", "::: kacheln"):
                 bloecke.append(s); i += 1; continue
             if s == ":::" and bloecke:
-                bloecke.pop(); i += 1; continue
+                if bloecke.pop() in ("::: nur-normal", "::: nur-uz"):
+                    zwang = None; fix(":::", "")
+                i += 1; continue
             if s in ("---", "***"):
                 i += 1; continue
             if s.startswith("|") and i + 1 < len(z) and re.match(r"^\|[\s:|-]+\|$", z[i + 1].strip()):
                 kopf, i, reihen = zell(s), i + 2, []
                 while i < len(z) and z[i].strip().startswith("|"):
                     reihen.append(zell(z[i])); i += 1
-                out += ["", self.tabelle(kopf, reihen), ""]; continue
-            if (z[i].startswith("  ") and s and out and LISTE.match(out[-1])
-                    and not LISTE.match(z[i])):              # Fortsetzung eines Listenpunkts: an ihn anhängen
-                out[-1] += " " + zeichen(self.inline(s))
+                a, inhalt = self.tabelle(kopf, reihen, win_zelle if zwang == "uz" else None)
+                b = a
+                if zwang is None:
+                    b, inhalt_w = self.tabelle(kopf, reihen, win_zelle)
+                    if inhalt_w == inhalt:                   # gleich: nur eine Tabelle
+                        os.remove(os.path.join(self.ordner, b[2:-5] + ".csv")); self.nr -= 1; b = a
+                einheiten.append(["tabelle", ["", a, ""], ["", b, ""]]); continue
+            if (z[i].startswith("  ") and s and einheiten and einheiten[-1][0] == "text"
+                    and LISTE.match(einheiten[-1][1][-1]) and not LISTE.match(z[i])):   # Fortsetzung eines Listenpunkts
+                e = einheiten[-1]
+                e[1][-1] += " " + self.zeile(s if zwang != "uz" else win(s))
+                e[2][-1] += " " + self.zeile(win(s) if zwang != "normal" else s)
                 i += 1; continue
-            out.append(zeichen(self.inline(z[i].rstrip()))); i += 1
+            if not s:
+                fix(""); i += 1; continue
+            lx = self.zeile(z[i].rstrip() if zwang != "uz" else win(z[i].rstrip()))
+            wn = self.zeile(win(z[i].rstrip()) if zwang != "normal" else z[i].rstrip())
+            if einheiten and einheiten[-1][0] == "text":
+                einheiten[-1][1].append(lx); einheiten[-1][2].append(wn)
+            else:
+                einheiten.append(["text", [lx], [wn]])
+            i += 1
+
+        out = []
+        for art, lx, wn in einheiten:
+            if art == "code":
+                if lx == wn:
+                    out += [ZAUN] + lx + [ZAUN]
+                else:
+                    out += [ZAUN + "nur-normal"] + lx + [ZAUN, "", ZAUN + "nur-uz"] + wn + [ZAUN]
+            elif lx == wn:
+                out += lx
+            else:
+                out += ["", "::: nur-normal"] + [x for x in lx if x.strip()] + [":::", "::: nur-uz"] \
+                    + [x for x in wn if x.strip()] + [":::", ""]
         return "\n".join(out).strip("\n")
 
 
@@ -215,7 +277,7 @@ def _md_tabelle(kopf, reihen):
 
 def motor_teile():
     import manuskript as M
-    teile = [("Spickzettel", "Die häufigsten Befehle im Buchordner (Windows: `build.bat` statt `sh build.sh`).\n\n"
+    teile = [("Spickzettel", "Die häufigsten Befehle im Buchordner.\n\n"
               + _md_tabelle(["Befehl", "Wofür"], [(f"`{b}`", t) for b, t in H.SPICKZETTEL]))]
     b = ["Jeder Befehl steht auf einer eigenen Zeile, genau so geschrieben (GROSS). `## @TITEL` wirkt wie `@TITEL`.",
          "", "### Seite sieht nicht gut aus? – Lösungen", "",
@@ -260,7 +322,7 @@ def erzeuge(basis):
     alle_titel = [t for _, a in gruppen for t, _ in a]
     u = Umsetzer(basis, alle_titel)
 
-    out = ["## @TITEL", "{titel}", "{untertitel}", "", "## @IMPRESSUM", "", "## @INHALTSVERZEICHNIS", ""]
+    out = ["## @TITEL", "{titel}", "{untertitel}", "{titel-zusatz}", "", "## @IMPRESSUM", "", "## @INHALTSVERZEICHNIS", ""]
     ein = _lies(os.path.join(ps, "handbuch", "einleitung.md")).replace("{version}", version)
     ein = "\n".join(z for z in ein.split("\n") if not z.startswith(">"))
     for g, a in abschnitte(ein, "Einleitung"):

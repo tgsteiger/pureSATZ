@@ -35,8 +35,30 @@ aufschlagen, das du gerade brauchst.
 Dieses Handbuch ist die Hilfe von pureSATZ, gesetzt mit pureSATZ selbst. Die Hilfe (`hilfe.html` in jedem
 Buchordner) ist immer auf dem neusten Stand; dieses Buch gilt für pureSATZ {version}.
 
+## Hilfe und Unterstützung
+
+- **Hilfe am Computer:** `hilfe.html` im Buchordner, mit Suche und immer passend zur eigenen Version. Neu erzeugen:
+  `sh build.sh hilfe`.
+- **Online:** tgsteiger.github.io/pureSATZ – Hilfe und Neuigkeiten.
+- **Fragen und Fehler:** auf GitHub unter «Issues»: github.com/tgsteiger/pureSATZ/issues.
+- **Mit einer KI:** Die Datei `hilfe-ki.md` aus dem Buchordner einer KI geben – dann kennt sie jede Einstellung und
+  hilft beim Schreiben, Gestalten und bei Fehlermeldungen. Mehr dazu: [→ KI](#Mit-einer-KI-arbeiten).
+- Alle Adressen auf einen Blick: [→ Netz](#pureSATZ-im-Netz).
+
 ## Befehle in diesem Buch
 
-Alle Befehle stehen so, wie sie auf Linux und Mac im Terminal eingegeben werden. Auf Windows heissen sie gleich, nur
-mit `.bat` statt `sh … .sh`: `build.bat final` statt `sh build.sh final`, `menu.bat` statt `sh menu.sh`. Am einfachsten
-geht beides über das Menü – dort genügt ein Buchstabe.
+::: nur-normal
+Diese Ausgabe ist für **Linux und Mac** (grüner Stempel): Alle Befehle stehen so, wie sie dort im Terminal eingegeben
+werden. Für Windows gibt es eine eigene Ausgabe mit blauem Stempel.
+:::
+::: nur-uz
+Diese Ausgabe ist für **Windows** (blauer Stempel): Alle Befehle stehen so, wie sie im Befehlsfenster (cmd) eingegeben
+werden. Für Linux und Mac gibt es eine eigene Ausgabe mit grünem Stempel.
+:::
+
+Am einfachsten geht vieles über das Menü – dort genügt ein Buchstabe.
+
+## Verweise
+
+Ein Pfeil wie → «Tabellen» führt zum passenden Kapitel. Im PDF und im E-Book genügt ein Klick, im gedruckten Buch steht
+die Seite dabei.

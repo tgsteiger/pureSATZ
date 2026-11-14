@@ -82,7 +82,7 @@ def kopf(bereich="", rechts=""):
 EINST = os.path.join(BASE, ".menu")
 PURESATZ = os.path.join(os.path.dirname(BASE), "pureSATZ")
 LOKAL = os.path.isdir(os.path.join(PURESATZ, "motor"))
-BEFEHLE = ("schnell", "komplett", "final", "entwurf", "leseprobe", "korrektur", "nur-pdf", "nur-druck", "nur-ebook",
+BEFEHLE = ("schnell", "komplett", "final", "entwurf", "leseprobe", "korrektur", "nur-pdf", "nur-druck", "nur-ebook", "covers",
            "pruefen", "personen", "stichworte", "stand", "aenderungen", "änderungen", "geschichten", "hilfe", "mockup", "sicherung")
 MD = {"b": ("Buch", "*-buch.md"), "v": ("Variablen", "*-variablen.md"), "u": ("Umschlag", "*-umschlag.md"),
       "s": ("Stichworte", "stichworte-*.txt"), "h": ("meine Hilfe", "meine-hilfe.md")}
@@ -626,9 +626,8 @@ def cover_menue():
     for k, d, n, b, g in faellig:
         print(f"  {FETT(k)}: Buchblock {n} Seiten, Werte für {b} – {g}. Öffne {d} …")
         oeffnen(os.path.join(BASE, d))
-    print("  Im Coverrechner der Druckerei die Seitenzahl eingeben, das Ergebnis zuunterst unter «## Coverrechner (Rohdaten)»\n"
-          "  einfügen, oben Rücken (und Masse) eintragen, {berechnet-fuer-seiten} anpassen, {neu-berechnen}: nein.\n"
-          "  Oder Claude sagen: «Coverwerte übernehmen». Danach k (komplett) – dann verschwindet der Hinweis.")
+    print("  Im Coverrechner der Druckerei diese Seitenzahl eingeben, den Text zuunterst unter «## Coverrechner (Rohdaten)»\n"
+          "  einfügen (alten ersetzen). Dann w → co: der Motor liest die Werte und baut den Umschlag neu.")
 
 
 def zeige():
@@ -639,8 +638,9 @@ def zeige():
                              ("c", "check / gegenlesen …")]),
                ("Bauen", [("s", "schnell  (Lese-PDF)"), ("k", "komplett (vor dem Druck)"), ("w", "weitere …")]
                 + ([("hb", "Hörbuch …")] if LINUX else [])),
-               ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen")]),
-               ("Abgleichen", [("sy", "sync   (GitHub)"), ("u", "update" + (" (ul lokal)" if LOKAL else ""))])]
+               ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen (a|ä)")]),
+               ("Abgleichen / Prüfen", [("sy", "sync   (GitHub)"), ("u", "update" + (" (ul lokal)" if LOKAL else "")),
+                                        ("bp", "Buch prüfen")])]
     spalten_zeigen(spalten, "n neu · $ Terminal · : Befehle · h hilfe · hf finden · ! Klang · ↵ beenden")
     if os.path.exists(ALLE):
         print(SPERRE)
@@ -819,7 +819,7 @@ def main():
                 bauen("komplett")
             elif w == "w":
                 k = untermenue("weitere …", {"l": ("Leseprobe", 0), "k": ("Korrektur", 0), "p": ("nur-pdf", 0),
-                                             "e": ("nur E-Book", 0), "c": ("prüfen", 0), "s": ("Stand merken", 0),
+                                             "e": ("nur E-Book", 0), "co": ("Cover rechnen", 0), "s": ("Stand merken", 0),
                                              "i": ("Stichworte …", 0), "a": ("aufräumen …", 0)})
                 if k == "s":
                     name = frage(" Name des Stands: ")
@@ -829,7 +829,8 @@ def main():
                 elif k == "a":                    # wie sh cleanup.sh: zeigt die Liste, fragt [j/N]
                     lauf([sys.executable, os.path.join(MOTOR, "aufraeumen.py")], titel="aufräumen")
                 elif k:
-                    bauen({"l": "leseprobe", "k": "korrektur", "p": "nur-pdf", "e": "nur-ebook", "c": "pruefen"}[k])
+                    bauen(*{"l": ["leseprobe"], "k": ["korrektur"], "p": ["nur-pdf"], "e": ["nur-ebook"],
+                            "co": ["covers"]}[k])
             elif w == "m":
                 md = {k: (t, next((p for p in sorted(glob.glob(os.path.join(BASE, m)))
                                       if not p.endswith("stichworte-vorschlag.txt")), None)) for k, (t, m) in MD.items()}
@@ -900,7 +901,9 @@ def main():
                         for p in glob.glob(os.path.join(BASE, "ausgabe-*", f"check_{name}_*.pdf")):
                             if os.path.getmtime(p) >= seit - 1:
                                 oeffnen(p)
-            elif w == "a":
+            elif w == "bp":                                 # Buch prüfen: Variablen, Druckdateien, Befehle, Fotos … (ab 2.82)
+                bauen("pruefen")
+            elif w in ("a", "ä"):
                 seit = time.time()
                 if bauen("aenderungen") == 0:
                     neu = [p for p in glob.glob(os.path.join(BASE, "ausgabe-*", "*_Aenderungen.pdf"))

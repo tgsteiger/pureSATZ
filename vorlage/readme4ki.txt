@@ -42,13 +42,14 @@ AUSGABEN (Variablen-Datei)
 
 DRUCK (nur wenn es den Ordner druck/ gibt)
 - Eine Plattform-Datei pro Druckerei und Format, z. B. druck/epubli-a5.md, druck/bod-a5-hardcover.md. Nur Technik, keine Texte.
-- Erlaubte Namen: neu-berechnen, berechnet-fuer-seiten, plattform, format (nur wenn anders als das Grundformat), bindung,
+- Erlaubte Namen: neu-berechnet, berechnet-fuer-seiten, berechnet-am (diese drei setzt der Motor), plattform, format (nur wenn anders als das Grundformat), bindung,
   projekt, farbmodus (rgb|cmyk; cmyk braucht Ghostscript), ruecken-hardcover, ruecken-softcover, beschnitt-buchblock, beschnitt-hardcover, beschnitt-softcover,
   deckel-hardcover, papier, extra-seiten, barcode-position, barcode-groesse, barcode-bild, versatz-vertikal,
   versatz-horizontal. Masse in mm, z. B. «{deckel-hardcover}: 153x216».
-- «## Coverrechner (Rohdaten)» zuunterst: Text aus dem Coverrechner, vom Motor nicht gelesen. Auftrag «Coverwerte übernehmen»:
-  Werte daraus oben eintragen, {neu-berechnen}: nein, {berechnet-fuer-seiten}: Seitenzahl, für die gerechnet wurde.
-- Werte nur aus dem Coverrechner der Plattform übernehmen, nie schätzen. Danach «sh build.sh pruefen».
+- «## Coverrechner (Rohdaten)» zuunterst: Text aus dem Coverrechner, wie er kommt. Der Motor liest ihn beim Bau
+  (motor/rohdaten2cover.py) und trägt Rücken, Beschnitt, Deckel und die drei Kopfzeilen selbst ein.
+  Meldet er «Rohdaten nicht lesbar»: Rücken, Beschnitt/Einschlag und Deckel (mm) aus dem Text oben von Hand eintragen,
+  nie schätzen. Danach «sh build.sh pruefen».
 
 LESEPROBE (Variablen-Datei)
 - leseprobe-seiten: 14,16,17-20,22  = gedruckte Seitenzahlen; leseprobe-seiten-uz: eigene für die zweite Ausgabe.

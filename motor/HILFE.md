@@ -43,15 +43,17 @@ Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `h
   g  Geschichten …                    k  komplett (vor dem Druck)
   t  Tabellen …                       w  weitere …
   c  check / gegenlesen …             hb Hörbuch …   (nur Linux)
- ── Ansehen ───────────────────────   ── Abgleichen ────────────────────
+ ── Ansehen ───────────────────────   ── Abgleichen / Prüfen ───────────
   p  PDF öffnen …                     sy sync   (GitHub)
   o  Ordner öffnen …                  u  update (ul lokal)
-  a  änderungen
+  a  änderungen (a|ä)                 bp Buch prüfen
  ── Weiteres:  n neu · $ Terminal · : Befehle · h hilfe · hf finden · ! Klang · ↵ beenden
 ```
 
-**Coverrechner** (ab 2.78): Steht oben «⚠ Coverrechner …», passt der Umschlag nicht mehr zur Seitenzahl oder
-`{neu-berechnen}: ja` steht noch in der Druckdatei. `cv` öffnet sie (siehe «Umschlag: Rücken und Seitenzahl»).
+`bp` Buch prüfen = `sh build.sh pruefen`: Variablen, Druckdateien, Befehle, Fotos, Geschichten, Tabellen (ohne Bau).
+
+**Coverrechner** (ab 2.78): Steht oben «⚠ Coverrechner …», passt der Umschlag nicht mehr zur Seitenzahl, oder die
+Rohdaten fehlen bzw. sind nicht lesbar. `cv` öffnet die Druckdatei (siehe «Umschlag: Rücken und Seitenzahl»).
 
 Ja/Nein-Fragen: `[J/n]` = Enter heisst ja, `[j/N]` = Enter heisst nein (der Grossbuchstabe gilt bei Enter).
 
@@ -67,7 +69,7 @@ Untermenüs («…» = nur was es gibt):
 | `t` Tabellen | `e` bearbeiten … (Liste mit Kürzel) · `n` neue Tabelle (öffnet die CSV, `@#name` kommt in den Block «## Noch einordnen» im Buch) · `o` Ordner |
 | `c` check / gegenlesen | `n` Liste neu (personen-seiten.txt) · `c` check-PDF für eine Person (öffnet sich danach) · `t` Textdatei |
 | `hb` Hörbuch (Linux) | `p` Probe hören · `w` Wörter hören · `t` Texte aus dem Buch · `v` vertonen · `k` Kapitel vertonen … · `e` Wörter/Probe/Einstellungen öffnen · `s` Azure-Schlüssel · `$` Terminal in audio/ · `o` Ordner · `h` Hilfe · `c` prüfen – siehe [Hörbuch: Das Menü](#Hörbuch-Das-Menü-hb) |
-| `w` weitere | `l` Leseprobe · `k` Korrektur · `p` nur-pdf · `e` nur E-Book · `c` prüfen · `s` Stand merken · `i` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` Stichwortdatei öffnen) · `a` aufräumen (wie `sh cleanup.sh`, fragt `[j/N]`) |
+| `w` weitere | `l` Leseprobe · `k` Korrektur · `p` nur-pdf · `e` nur E-Book · `co` Cover rechnen (wie `sh build.sh covers`) · `s` Stand merken · `i` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` Stichwortdatei öffnen) · `a` aufräumen (wie `sh cleanup.sh`, fragt `[j/N]`) |
 | `p` PDF öffnen | `n` normal · `u` unzensiert · `l` Leseprobe · `k` Korrektur … |
 | `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten · `t` tabellen · `a` audio … · `p` Pfad Buchordner kopieren · dazu Taste + `t` = Terminal dort (`bt`, `at` …), + `p` = Pfad kopieren (`ap` …) |
 | `n` neu | `b` neues Buch · `h` Hallo-Buch · `e` einrichten · `m` Motor-Selbsttest · `v` Verknüpfung |
@@ -288,6 +290,7 @@ Dieser Text steht nur in der zweiten Ausgabe.
 | `## @BEFEHL` | Befehl als Überschrift (sichtbar in der Navigation des Editors) |
 | `@ZITAT Satz` · `@ZITAT-ZIER Satz` (kurz `> Satz`) · `~ Satz` | Zitat schlicht · Zitat mit Verzierung · Randbemerkung |
 | `- Punkt` · `**fett**` · `[Text](https://…)` | Liste · fett · Link |
+| `[→ Tabellen](#Tabellen)` | Verweis auf ein Kapitel im eigenen Buch: im PDF und E-Book klickbar, im Druck mit Seite («→ Tabellen, S. 23»). Nach `#` der Anfang der Überschrift, Leerzeichen als `-` (ab 2.81) |
 | `1. Punkt` `2. Punkt` | nummerierte Aufzählung (zählt selbst: die erste Zahl ist der Start) |
 | `  - Unterpunkt` | Unterpunkt, 2–4 Leerzeichen eingerückt (unter `-` und unter `1.`) |
 | `3\. Mai war …` | Zahl mit Punkt am Zeilenanfang, aber keine Aufzählung |
@@ -298,7 +301,8 @@ Dieser Text steht nur in der zweiten Ausgabe.
 **Code** (ab 2.76): Ein Wort zwischen zwei Backticks (Taste neben dem Fragezeichen) steht in Code-Schrift und bleibt
 wörtlich – keine Variablen, kein fett; gut für Befehle und Dateinamen. Mehrere Zeilen: eine Zeile mit drei Backticks
 davor und eine danach – heller Kasten, jede Zeile genau wie getippt, in gleich breiter Schrift (DejaVu Sans Mono,
-ab 2.77), damit Spalten untereinander stehen.
+ab 2.77), damit Spalten untereinander stehen. Nur in einer Ausgabe: oben drei Backticks und `nur-uz` (bzw. `nur-normal`,
+`nur-druck` …) direkt dahinter (ab 2.81).
 
 **Blöcke** `::: art-ausgabe Titel` … `:::` – Art: `nur`, `mitte`, `zusammen`, `offen`,
 `offen-notiz`, `zeitstrahl`, `uz` (Kasten der zweiten Ausgabe). Endung: keine (überall),
@@ -746,6 +750,7 @@ sh build.sh schnell         # nur die Lese-PDFs, so schnell wie möglich – bei
 sh build.sh nur-pdf         # nur die Bildschirm-PDFs (mit Booklet und Statistik)
 sh build.sh nur-pdf final   # nur Bildschirm-PDFs als Druckfassung
 sh build.sh nur-druck       # nur Buchblock und Umschlag
+sh build.sh covers          # Cover neu berechnen: Rohdaten des Coverrechners lesen, Buchblock + Umschlag (final)
 sh build.sh nur-ebook       # nur die E-Books (mit «final» ohne offene Stellen)
 sh build.sh sicherung       # nur die MD-Dateien nach md-history/ sichern (ohne Bau)
 sh build.sh final druck=bod-a5-normal       # Test: nur Druckdateien mit einer anderen Datei aus druck/ → ausgabe-test/
@@ -890,8 +895,9 @@ Lese-PDF, E-Book, Leseprobe, Korrektur und Mockup bleiben beim `{format}` der Va
 
 | In der Plattform-Datei | Bedeutung |
 |---|---|
-| `neu-berechnen` | `ja` = Seitenzahl hat sich geändert, im Coverrechner neu berechnen (der Bau erinnert daran) · `nein` = Werte passen |
-| `berechnet-fuer-seiten` | Seiten des Buchblocks, für die Rücken und Umschlag berechnet sind; weicht der Buchblock ab, warnt `final` |
+| `neu-berechnet` | setzt der Motor: `ja` = Coverwerte passen zum Buchblock · `nein` = Seitenzahl geändert oder Rohdaten fehlen/nicht lesbar (⚠ im Menü) |
+| `berechnet-fuer-seiten` | setzt der Motor: Seiten des Buchblocks, für die Rücken und Umschlag berechnet sind |
+| `berechnet-am` | setzt der Motor: Datum und Zeit der Übernahme, dahinter `#` und eine Prüfsumme des Rohdaten-Textes |
 | `plattform` | `epubli`, `bod`, `tredition` oder `kdp` (bestimmt Strichcode-Platz und Füllseite; tredition und kdp wie bod) |
 | `farbmodus` | `rgb` (Standard) oder `cmyk`: Buchblock und Umschlag werden bei `final` und `komplett` mit Ghostscript nach CMYK umgewandelt (z. B. für tredition); im Entwurf bleiben sie RGB (schneller). Jeder Bau rechnet neu aus den Originalbildern, es wird nie mehrfach umgewandelt. Braucht Ghostscript (Linux `sudo apt install ghostscript` · Mac `brew install ghostscript` · Windows: START-Windows, Schritt «Extras», holt den Installer). Lese-PDF, E-Book und Leseprobe bleiben RGB. |
 | `format` | nur, wenn das Druckformat vom Grundformat abweicht; auch eigenes Mass `148 x 210` (Ränder und Schrift vom nächstliegenden Format) |
@@ -909,12 +915,8 @@ Die `isbn-…`-Zeilen gelten für den **Strichcode mit der ISBN** auf der Rücks
 | `versatz-vertikal`, `versatz-horizontal` | ganzen Seiteninhalt verschieben, in mm: vertikal + = nach oben, horizontal + = nach aussen (nach Messung am Probeexemplar) |
 
 Zuunterst steht `## Coverrechner (Rohdaten)`: Dort fügst du ein, was der Coverrechner der Plattform ausgibt
-(Text, wie er kommt). Der Motor liest diesen Abschnitt nicht. Mit Claude: «Coverwerte übernehmen» – dann stehen die
-Werte oben, `{neu-berechnen}: nein` und `{berechnet-fuer-seiten}` passen.
-
-**Rückenbreite:** `sh build.sh final` zeigt die Seitenzahl des Buchblocks. Diese im Coverrechner eingeben (mit dem
-Papier, das du bestellst), Werte übernehmen, nochmals bauen. `final` zeigt die Masse des Umschlags (z. B. 344 × 250 mm)
-– sie müssen mit Gesamtbreite und Gesamthöhe im Coverrechner übereinstimmen.
+(Text, wie er kommt). Der Motor liest ihn beim Bau selbst und trägt Rücken, Beschnitt und Deckel oben ein
+(ab 2.82, siehe «Umschlag: Rücken und Seitenzahl»).
 
 `name-normal` / `name-uz` gehen auch in der Plattform-Datei. Weicht das Druckformat vom Grundformat ab, meldet der
 Bau «Seitenzahlen im Druck anders als im Lese-PDF». Beim Bau steht `Druckangaben: druck/…md`, und eine Kopie der
@@ -941,17 +943,20 @@ Unter `## Notizen` steht bei jedem Muster, welche Impressum-Zeilen diese Plattfo
 
 Die Breite des Rückens hängt von Seitenzahl und Papier ab. Die Druckerei rechnet sie mit ihrem **Coverrechner** aus.
 
-1. `sh build.sh final` – zeigt die **Seitenzahl des Buchblocks** (Seitenbilanz).
-2. Im Coverrechner der Druckerei eingeben: Format, Bindung, Papier wie bestellt, Seitenzahl.
-3. Das Ergebnis (Text, wie er kommt) in der Plattform-Datei `druck/<datei>.md` zuunterst unter
-   `## Coverrechner (Rohdaten)` einfügen.
-4. Oben eintragen: `{ruecken-hardcover}` bzw. `{ruecken-softcover}` (mm), bei Hardcover auch `{beschnitt-hardcover}`
-   und `{deckel-hardcover}`; dazu `{berechnet-fuer-seiten}: <Seitenzahl>` und `{neu-berechnen}: nein`.
-5. Nochmals `sh build.sh final`: Die Masse des Umschlags (z. B. 344 × 250 mm) müssen mit Gesamtbreite und
-   Gesamthöhe im Coverrechner übereinstimmen.
+1. Menü `w` → `co` (oder `sh build.sh covers`) – zeigt die **Seitenzahl des Buchblocks** (Seitenbilanz).
+2. Im Coverrechner der Druckerei eingeben: Format, Bindung, Papier wie bestellt, diese Seitenzahl.
+3. Den Text, wie er kommt, in der Plattform-Datei `druck/<datei>.md` zuunterst unter `## Coverrechner (Rohdaten)`
+   einfügen (alten Text ersetzen).
+4. Nochmals `w` → `co`: Der Motor liest Rücken, Beschnitt/Einschlag, Gesamtbreite und -höhe (tredition, epubli, BoD,
+   KDP …, in cm, mm oder Zoll), rechnet den Deckel, trägt die Werte oben ein und baut den Umschlag damit.
+   Oben stehen dann `{neu-berechnet}: ja`, `{berechnet-fuer-seiten}` und `{berechnet-am}`.
 
-Ändert sich die Seitenzahl später, warnt `final`, und das Menü zeigt oben «⚠ Coverrechner …» (ab 2.78) – `cv` öffnet
-die Druckdatei. Dann Schritte 2–5 wiederholen; nach dem nächsten `final` verschwindet der Hinweis.
+Das machen auch `final` und `komplett`. Neue Rohdaten erkennt der Motor am geänderten Text. Er übernimmt nichts, wenn
+die Seitenzahl in den Rohdaten (z. B. epubli) nicht zum Buchblock passt, der Deckel nicht zum Buchformat passt oder
+der Text nicht lesbar ist – dann bleiben die Werte oben, und das Menü zeigt «⚠ Coverrechner …» (`cv` öffnet die Datei).
+Nicht lesbar? Den Rohdaten-Block einer KI geben («Rücken, Beschnitt/Einschlag und Deckel in mm») oder die Werte von Hand
+eintragen. Gibt der Coverrechner für die neue Seitenzahl genau denselben Text aus, `{berechnet-fuer-seiten}` von Hand
+anpassen. Von Hand prüfen: `python3 motor/rohdaten2cover.py druck/<datei>.md`.
 Die Texte auf dem Umschlag stehen in `<buch>-umschlag.md` (Vorderseite, Buchrücken, Rückseite).
 [→ Plattform-Dateien](#Plattform-Dateien)
 
@@ -970,8 +975,8 @@ lesbar dunkel gesetzt (Kontrast 4,5:1); eigene Farbe mit `farbe-akzent-ebook:`.
 - **Druckdatei:** Muster `tredition-a5-hardcover` (CMYK ist dort schon eingestellt). In der Variablen-Datei unter
   `## Ausgabe: Druck …` bei `{druck-datei}:` eintragen.
 - **Hardcover:** Einschlag und Deckel laut Coverrechner, z. B. `{beschnitt-hardcover}: 17` und `{deckel-hardcover}: 153x216`.
-- **Coverrechner** von tredition: Seitenzahl aus `sh build.sh final` eingeben, das Ergebnis in der Druckdatei unter
-  `## Coverrechner (Rohdaten)` einfügen, Rücken übernehmen («Umschlag: Rücken und Seitenzahl»).
+- **Coverrechner** von tredition: Seitenzahl aus `w` → `co` eingeben, den Text in der Druckdatei unter
+  `## Coverrechner (Rohdaten)` einfügen, nochmals `w` → `co` («Umschlag: Rücken und Seitenzahl»).
 - **ISBN und Strichcode:** tredition gibt jedem Buch eine ISBN und den Strichcode als SVG. Als PNG in `bilder/` legen
   und bei `{isbn-bild}:` eintragen. `{isbn-rahmen}: berge` und `{isbn-rahmen-abstand}: 2` setzen die Bergkette darüber,
   ohne dass Gold die Striche berührt.
@@ -1592,6 +1597,21 @@ Danach entsteht die Buch-MD bei jedem Bau neu aus der Hilfe (`{buch-aus-hilfe}: 
 nie dort ändern, sondern in `START.md`, `motor/HILFE.md` und `handbuch/` (Einleitung, Stichworte). Text nur für die
 Webseite steht zwischen `::: nur-webhilfe` und `:::`, Text nur fürs Buch zwischen `::: nur-handbuch` und `:::`.
 
+**Zwei Ausgaben** (ab 2.81): normal = Linux & Mac (grüner Stempel), zweite Ausgabe = Windows (blauer Stempel), jede mit
+eigener ISBN. Die Befehle schreibt der Motor für Windows selbst um, wie der Umschalter oben in der Hilfe. In der
+Variablen-Datei des Handbuchs:
+
+```
+{zweite-ausgabe}: ja
+{stempel-normal}: Linux & Mac
+{stempel-uz}: Windows
+{farbe-stempel-normal}: #2E7D32
+{farbe-stempel-uz}: #1F5FA8
+```
+
+Verweise wie → «Tabellen» sind im PDF und E-Book klickbar; im Druck steht die Seite dabei. Verschiebt sich eine
+Seite beim Bau, meldet der Motor das – dann nochmals bauen.
+
 ## Werben: Leseprobe, Bilder, Shop-Texte
 
 | Was | So |
@@ -1627,8 +1647,8 @@ Webseite steht zwischen `::: nur-webhilfe` und `:::`, Text nur fürs Buch zwisch
 
 **Probedruck und Farben**
 - Farben am Bildschirm nur grob beurteilen. Was zählt, ist der Probedruck auf dem echten Papier (matt/glänzend, weiss/creme).
-- Seitenzahl geändert: im Coverrechner der Druckerei prüfen, ob Rücken und Umschlag gleich bleiben. Dann
-  `{berechnet-fuer-seiten}` anpassen und `{neu-berechnen}: nein` setzen ([Umschlag](#Umschlag-Ruecken)).
+- Seitenzahl geändert: im Coverrechner der Druckerei neu rechnen, Text unter `## Coverrechner (Rohdaten)` ersetzen,
+  dann `w` → `co` ([Umschlag](#Umschlag-Ruecken)).
 
 ## Glossar
 

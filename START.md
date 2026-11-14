@@ -1,5 +1,33 @@
 # Erste Schritte
 
+## Mein erstes Buch in 5 Minuten – Schritt für Schritt
+
+Der Start führt in fünf Schritten zum eigenen Buch. Enter nimmt immer den Vorschlag; der Start darf beliebig oft
+laufen. ZIP ganz auspacken, dann im Ordner pureSATZ:
+
+- **Linux:** Rechtsklick in den Ordner → «Im Terminal öffnen», dann `sh START-Linux.sh`
+- **Mac:** Terminal öffnen (Cmd+Leertaste, «Terminal»), `sh ` tippen, `START-Mac-imTerminal.sh` ins Fenster ziehen, Enter
+- **Windows:** `START-Windows.bat` doppelklicken
+
+1. **Technik.** Prüft Python (3.10 oder neuer) und installiert, was fehlt. Beim ersten Mal braucht es Internet.
+2. **Ort.** Schlägt einen festen Ordner für deine Bücher vor: `Buchprojekte` im Benutzerordner – nicht Downloads,
+   Schreibtisch oder eine Cloud. pureSATZ wird dorthin kopiert; den ausgepackten Ordner darfst du danach löschen.
+   `n` lässt pureSATZ, wo es ist.
+3. **Hallo-Buch.** Legt ein Beispielbuch an, baut es und öffnet das PDF. So siehst du, was pureSATZ macht, bevor du
+   selber schreibst. Das Hallo-Buch darf später weg.
+4. **Dein Buch.** Fragt Titel, Untertitel, Autor und Format, legt den Buchordner neben pureSATZ an und öffnet ihn.
+5. **Extras.** GitHub (freiwillig: Sicherung im Netz, Abgleich zwischen Computern) und Ghostscript (empfohlen).
+   Beides geht auch später.
+
+Am Schluss zeigt der Start, was wo liegt (steht auch in `00-UEBERSICHT.txt`). Geschrieben und gebaut wird immer im
+Ordner deines Buchs. Dort das Menü öffnen – ein Buchstabe genügt, `s` baut das Lese-PDF in Sekunden:
+
+```sh
+sh menu.sh
+```
+
+Klemmt etwas: [→ Wenn etwas klemmt](#Wenn-etwas-klemmt). Ohne Start, von Hand: [→ Erstes PDF](#Erstes-PDF), «Von Hand».
+
 ## 1. Erstes PDF in fünf Minuten
 
 ::: nur-webhilfe
@@ -173,7 +201,7 @@ Zum Abhaken. Die Hilfe (`hilfe.html`) zeigt zu jedem Schritt Dauer und späteste
 
 Im Buchordner `sh menu.sh` (Windows: `menu.bat` doppelklicken). Dann genügt ein Buchstabe – geordnet nach
 Schreiben (`m` MD öffnen, `g` Geschichten, `t` Tabellen, `c` gegenlesen), Bauen (`s` schnell, `k` komplett,
-`w` weitere), Ansehen (`p` PDF, `o` Ordner) und Abgleichen (`sy` sync, `u` update); `n` neu (neues Buch,
+`w` weitere), Ansehen (`p` PDF, `o` Ordner) und Abgleichen / Prüfen (`sy` sync, `u` update, `bp` Buch prüfen); `n` neu (neues Buch,
 Hallo-Buch, `v` Lotus-Starter). `:` zeigt Befehle zum Tippen, `h` oder `?` die Hilfe.
 Mit ↑ holst du die letzten Befehle zurück, Enter (oder `z`) = eine Stufe zurück (im Hauptmenü: «beenden? [j/N]»).
 

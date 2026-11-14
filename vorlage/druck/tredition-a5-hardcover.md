@@ -1,11 +1,11 @@
 # tredition – A5 Hardcover
 
-{neu-berechnen}: ja
+{neu-berechnet}: nein
 {berechnet-fuer-seiten}: 
-> {neu-berechnen}: ja = Seitenzahl hat sich geändert, Rücken und Umschlag im Coverrechner neu berechnen · nein = Werte passen
-> {berechnet-fuer-seiten}: Seiten des Buchblocks, für die die Werte unten berechnet sind. Weicht der Buchblock ab, warnt «sh build.sh final».
+{berechnet-am}: 
+> {neu-berechnet}, {berechnet-fuer-seiten}, {berechnet-am}: setzt der Motor beim Bau der Druckdateien. nein = Seitenzahl geändert oder Rohdaten fehlen → Coverrechner rechnen, Text unten ersetzen.
 > Nur Technik dieser Plattform. ISBN, Preis und Impressum stehen in der Variablen-Datei unter «## Ausgabe: …».
-> Neue Werte vom Coverrechner: unten unter «## Coverrechner (Rohdaten)» einfügen und Claude sagen: «Coverwerte übernehmen».
+> Neue Werte: Text des Coverrechners unten unter «## Coverrechner (Rohdaten)» einfügen.
 > UNGETESTET beim Umschlag – Buchblock 15,8 x 22 cm (A5 + 5 mm Beschnitt) laut tredition
 > Test: sh build.sh final druck=tredition-a5-hardcover
 
@@ -62,8 +62,8 @@
 > Umschlag: Rücken, Deckelmass und Einschlag von tredition
 
 ## Coverrechner (Rohdaten)
-> Hier die Angaben aus dem Coverrechner der Plattform einfügen (Text, wie er kommt). Der Motor liest diesen Abschnitt nicht.
-> Rücken, Deckel und Einschlag laut tredition eintragen; Strichcode von tredition als PNG nach bilder/
+> Text aus dem Coverrechner der Druckerei hier einfügen (wie er kommt). Der Motor liest ihn beim Bau selbst.
+> Strichcode von tredition als PNG nach bilder/
 
 ## Notizen
 > Impressum und ISBN gehören in die Variablen-Datei unter «## Ausgabe: …». Beim Wechsel auf diese Plattform dort eintragen:

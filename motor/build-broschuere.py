@@ -110,6 +110,21 @@ if ziel % 2:
 if ziel != n:
     bk.build.auffuellen = ziel - n
     n = bk.build(BLOCK)
+
+# Coverwerte aus dem Text des Coverrechners (unten in der Druckdatei) übernehmen – rohdaten2cover.py, ab 2.82
+COVER = None
+if DRUCKDATEI:
+    import rohdaten2cover
+    _pfad = os.path.join(bk.BASE, DRUCKDATEI)
+    COVER = rohdaten2cover.auto(_pfad, n, tuple(bk.FMT["seite"]), schreiben=not TEST)
+    M._CACHE.pop(("V", _pfad), None)              # Druckdatei kann geändert sein (auch von der anderen Fassung,
+    if not TEST:                                  # die gleichzeitig baut) → Werte neu lesen
+        RUECKEN_SOFT = float(bk.V("ruecken-softcover") or (bk.V("ruecken") if BINDUNG == "softcover" else "") or 3)
+        RUECKEN_HART = float(bk.V("ruecken-hardcover") or (bk.V("ruecken") if BINDUNG != "softcover" else "") or 6)
+        RUECKEN_MM = RUECKEN_SOFT
+        COVER_RAND_MM = mm_wert("beschnitt-softcover", 3)
+        HARDCOVER = dict(deckel=deckel(), ruecken=RUECKEN_HART, einschlag=mm_wert("beschnitt-hardcover", bk.EINSCHLAG_MM))
+        PAPIER = bk.V("papier")
 print(f"Buchblock: {n} Seiten, {(bk.W + 2 * bk.B) / mm:.1f} x {(bk.H + 2 * bk.B) / mm:.1f} mm "
       f"(Seite + {P['beschnitt_mm']:g} mm Beschnitt rundum, nur Innenseiten)")
 
@@ -235,9 +250,10 @@ print()
 print(f"*** {KUERZEL}: {bk.FMT['name']}, {BINDUNG}" + (f", {PAPIER}" if PAPIER else "") + f", Buchblock {n} Seiten. Rücken "
       + ", ".join(x for x in (f"Softcover {RUECKEN_SOFT:g} mm" if ganz else "",
                               f"Hardcover {RUECKEN_HART:g} mm" if hc else "") if x) + ".")
-if bk.V("neu-berechnen").strip().lower() == "nein" and bk.V("berechnet-fuer-seiten").strip() == str(n):
-    print(f"*** Coverwerte passen: in {DRUCKDATEI} für {n} Seiten berechnet.")
-elif not bk.V("berechnet-fuer-seiten").strip() and bk.V("neu-berechnen").strip().lower() != "ja":
+if COVER:
+    print(("*** WARNUNG Umschlag: " if COVER[0] == "warnung" else "*** Umschlag: ") + COVER[1]
+          + (" (Testlauf: nichts eingetragen)" if TEST and COVER[0] == "neu" else ""))
+else:
     print(f"*** Stimmt das mit dem {dict(bod='BoD', kdp='KDP').get(PLATTFORM_NAME, PLATTFORM_NAME)}-Coverrechner überein (Seitenzahl, Papier, Gesamtbreite, Gesamthöhe)? "
           f"Sonst in {DRUCKDATEI or 'der Variablen-Datei'} anpassen (ruecken-…, beschnitt-…, deckel-hardcover).")
 print()
@@ -286,9 +302,13 @@ if innen:
     print(f"    Leere Seiten im Inhalt: {', '.join(map(str, innen))} (z. B. vor einer rechten Seite)")
 BERECHNET = bk.V("berechnet-fuer-seiten").strip()
 _status = os.path.join(bk.BASE, "_druckbilder", f"cover-{KUERZEL}.txt")     # fürs Menü (ab 2.78): Coverrechner fällig?
-if not os.environ.get("BUCH_DRUCK_DATEI"):                                   # Testlauf druck=… zählt nicht
-    _grund = ("neu-berechnen: ja" if bk.V("neu-berechnen").strip().lower() == "ja" else
-              "andere Seitenzahl" if BERECHNET and BERECHNET != str(n) else "")
+if not TEST:                                                                 # Testlauf druck=… zählt nicht
+    if COVER:
+        _m = COVER[1]
+        _grund = "" if COVER[0] != "warnung" else next((g for w, g in (("nicht lesbar", "Rohdaten nicht lesbar"),
+                 ("passen nicht", "Rohdaten passen nicht"), ("keine Rohdaten", "keine Rohdaten")) if w in _m), "andere Seitenzahl")
+    else:
+        _grund = "andere Seitenzahl" if BERECHNET and BERECHNET != str(n) else ""
     try:
         if _grund:
             os.makedirs(os.path.dirname(_status), exist_ok=True)
@@ -297,11 +317,8 @@ if not os.environ.get("BUCH_DRUCK_DATEI"):                                   # T
             os.remove(_status)
     except OSError:
         pass
-if bk.V("neu-berechnen").strip().lower() == "ja":
-    print(f"*** ERINNERUNG {KUERZEL}: In {DRUCKDATEI} steht «{{neu-berechnen}}: ja» – Rücken und Umschlag im Coverrechner "
-          f"der Plattform für {n} Seiten neu berechnen, Werte unter «## Coverrechner (Rohdaten)» einfügen.")
-elif BERECHNET and BERECHNET != str(n):
-    print(f"*** WARNUNG {KUERZEL}: Rücken und Umschlag in {DRUCKDATEI} sind für {BERECHNET} Seiten berechnet, "
+if not COVER and BERECHNET and BERECHNET != str(n):
+    print(f"*** WARNUNG {KUERZEL}: Rücken und Umschlag sind für {BERECHNET} Seiten berechnet, "
           f"der Buchblock hat jetzt {n}. Bitte im Coverrechner neu berechnen.")
 ohne = INHALT + (0 if P["eigener_barcode"] else 1)
 if ohne % 2 and ohne >= P["min_seiten"]:

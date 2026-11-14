@@ -120,7 +120,9 @@ SPICKZETTEL = [
     ("sh cleanup.sh", "Aufräumen: alte Motoren und Zwischenspeicher löschen, entfernen (delete) – fragt zuerst, "
                       "md-history/ und Texte bleiben"),
     ("sh build.sh hilfe", "Diese Hilfe neu erzeugen und öffnen"),
-    ("cv (im Menü)", "Coverrechner fällig? Öffnet die Druckdatei, wenn Seitenzahl und Rücken nicht mehr passen (ab 2.78)"),
+    ("sh build.sh covers", "Cover neu berechnen: Text des Coverrechners (unten in druck/<datei>.md) lesen, Buchblock und "
+                           "Umschlag bauen (wie nur-druck final; Menü: w → co)"),
+    ("cv (im Menü)", "Coverrechner fällig? Öffnet die Druckdatei, wenn Seitenzahl oder Rohdaten nicht passen (ab 2.78)"),
     ("sh build.sh hilfe isbn", "In der Hilfe suchen: zeigt die Abschnitte und öffnet die Hilfe gefiltert (Menü: hf isbn)"),
     ("sh build.sh mockup", "Werbebild: Vorder- und Rückseite mit Schatten (…_Mockup.jpg) für Webseite, Newsletter, Shop "
                            "(grosse Cover-Bilder für E-Book-Shops entstehen mit dem E-Book: …_Cover-vorne.jpg)"),
@@ -161,7 +163,7 @@ def _windows(code):
     z = re.sub(r"\bsh setup/setup\.sh\b", r".\\setup\\setup.bat", code)
     z = re.sub(r"\bsh import/import-text\.sh\b", r".\\import\\import-text.bat", z)
     z = re.sub(r"\bbash pc-einrichten/(\w+)-einrichten\.sh\b", r".\\pc-einrichten\\win-einrichten.bat", z)
-    z = re.sub(r"\bsh ([\w-]+)\.sh\b", r".\\\1.bat", z)
+    z = re.sub(r"\bsh (?!START-)([\w-]+)\.sh\b", r".\\\1.bat", z)     # START-Linux.sh / -Mac bleiben (je Betriebssystem)
     z = re.sub(r"\bpython3 motor/([\w-]+)\.py", r"py motor\\\1.py", z)
     return z
 

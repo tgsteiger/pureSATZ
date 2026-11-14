@@ -85,6 +85,15 @@ def main():
             sys.exit("FEHLER: Selbsttest findet «{versatz-vertikal}:» in druck/bod-a5-hardcover.md nicht")
         f_.write(bd_text.replace("{versatz-vertikal}:\n", "{versatz-vertikal}: -1.5\n", 1))
     lauf([py, os.path.join("motor", "bauen.py"), "nur-druck", "final", "druck=bod-a5-hardcover", "normal"], buch)
+    # Coverrechner-Rohdaten (2.82): Text unten in der Druckdatei, «covers» trägt die Werte ein und baut den Umschlag
+    lauf([sys.executable, os.path.join("test", "rohdaten2cover-test.py")], lb)
+    ed = os.path.join(buch, "druck", "epubli-a5.md")
+    with open(ed, encoding="utf-8") as f_:
+        ed_text = f_.read()
+    with open(ed, "w", encoding="utf-8") as f_:
+        f_.write(ed_text.replace("## Coverrechner (Rohdaten)\n", "## Coverrechner (Rohdaten)\n"
+                 "Gesamtbreite: 349mm | Gesamthöhe: 250mm | Beschnitt: 11mm | Rücken: 13mm\n", 1))
+    lauf([py, os.path.join("motor", "bauen.py"), "covers"], buch)
 
     # Geschichten (2.11): zwei anlegen, eine einbinden, Sammel-PDF, Tippfehler muss als Fehler kommen
     lauf([py, os.path.join("motor", "geschichten.py"), "Erste Geschichte"], buch)
@@ -221,6 +230,10 @@ def main():
     for f in ("TESTBUCH_Buchblock.pdf", "TESTBUCH_Umschlag_Hardcover.pdf", "bod-a5-hardcover.md"):
         if not os.path.exists(os.path.join(bod, f)):
             fehlt.append(f"ausgabe-test/bod-a5-hardcover/{f} (druck=bod-a5-hardcover)")
+    ed_text = open(os.path.join(buch, "druck", "epubli-a5.md"), encoding="utf-8").read()
+    for z in ("{neu-berechnet}: ja", "{ruecken-hardcover}: 13", "{deckel-hardcover}: 157x228", "{berechnet-am}: "):
+        if z not in ed_text:
+            fehlt.append(f"druck/epubli-a5.md nach «covers»: «{z}» (rohdaten2cover)")
     ue = os.path.join(normal, "00-UEBERSICHT.txt")
     if not os.path.exists(ue) or "BEI DER DRUCKEREI" not in open(ue, encoding="utf-8").read():
         fehlt.append("ausgabe-normal/00-UEBERSICHT.txt (mit «BEI DER DRUCKEREI»)")
@@ -241,6 +254,12 @@ def main():
             box = PdfReader(bb).pages[0].mediabox
             if (round(float(box.width) / 72 * 25.4), round(float(box.height) / 72 * 25.4)) != (148, 210):
                 fehlt.append("BoD-Buchblock: erwartet 148 x 210 mm (ohne Beschnitt)")
+        for hc in (os.path.join(normal, "TESTBUCH_Umschlag_Hardcover.pdf"),       # nach «covers»: 2 x 11 + 2 x 157 + 13 (2.82),
+                   os.path.join(zweite, "TESTBUCH-DC_Umschlag_Hardcover.pdf")):    # beide Fassungen mit derselben Druckdatei
+            if os.path.exists(hc):
+                box = PdfReader(hc).pages[0].mediabox
+                if (round(float(box.width) / 72 * 25.4), round(float(box.height) / 72 * 25.4)) != (349, 250):
+                    fehlt.append(f"{os.path.basename(hc)} nach «covers»: erwartet 349 x 250 mm (Rohdaten epubli)")
         hc = os.path.join(bod, "TESTBUCH_Umschlag_Hardcover.pdf")
         if os.path.exists(hc):
             box = PdfReader(hc).pages[0].mediabox

@@ -19,7 +19,7 @@ Zum Abhaken: «- [ ]» wird zu «- [x]». Reihenfolge von oben nach unten.
 - [ ] Titel, Untertitel, Autor, Jahr, Auflage stimmen
 - [ ] Impressum geprüft (Verlag, Adresse, Hinweis)
 - [ ] Format und Bindung gewählt
-- [ ] Rückenbreite laut epubli-Coverrechner eingetragen (Seitenzahl des Buchblocks eingeben)
+- [ ] Coverrechner: Text unter «## Coverrechner (Rohdaten)» in der Druckdatei, Menü w → co ohne ⚠
 - [ ] Shop-Angaben: Beschreibung, Schlagwörter, Kategorie, Preis
 
 ## 4. epubli

@@ -53,6 +53,7 @@ def esc(t):
     t = re.sub(r"`([^`]+)`", lambda m: codes.append(m.group(1)) or f"\x00{len(codes) - 1}\x00", t)
     t = html.escape(t, quote=False).replace("&lt;br/&gt;", "<br/>")
     t = re.sub(r"\[([^\]]+)\]\((https?://[^)\s]+)\)", r'<a href="\2">\1</a>', t)
+    t = re.sub(r"\[([^\]]+)\]\(#([^)\s]+)\)", r'<a href="#@@\2@@">\1</a>', t)   # Verweis im Buch (ab 2.81)
     t = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", t)
     return re.sub(r"\x00(\d+)\x00", lambda m: "<code>" + html.escape(codes[int(m.group(1))], quote=False) + "</code>", t)
 
@@ -135,12 +136,33 @@ NACH_KAPITEL = [False]
 
 def flush_absatz():
     if absatz:
-        klasse = [k for k, an in (("initial", INITIAL and NACH_KAPITEL[0]), ("e", EINZUG)) if an]
+        klasse = [k for k, an in (("initial", INITIAL and NACH_KAPITEL[0] and re.match(r"[A-ZÄÖÜ]", absatz[0])), ("e", EINZUG)) if an]
         inhalt = esc(' '.join(absatz))
         if KAP and NACH_KAPITEL[0]:      # erste zwei Wörter in Kapitälchen
             inhalt = re.sub(r"^((?:[^\s<&]+\s+){0,1}[^\s<&]+)", r'<span class="kap">\1</span>', inhalt, count=1)
         aktuell["html"].append((f'<p class="{" ".join(klasse)}">' if klasse else "<p>") + f"{inhalt}</p>"); absatz.clear()
         NACH_KAPITEL[0] = False
+
+
+ZIEL = {}             # Sprungmarke einer Überschrift -> «datei.xhtml#id» (Verweise [Text](#Abschnitt), ab 2.81)
+
+
+def ziel(text, id_):
+    """Überschrift als Ziel für Verweise merken; gibt die id zurück (ohne eigene id: «a-<marke>»)."""
+    a = bk.M.anker(text)
+    id_ = id_ or f"a-{a}"
+    if a and a not in ZIEL:
+        ZIEL[a] = f"{aktuell['name']}#{id_}"
+    return id_
+
+
+def verlinke(h):
+    """Platzhalter der Verweise durch Links auf die richtige Datei ersetzen (Ziel fehlt: nur der Text)."""
+    def r(m):
+        a = bk.M.anker(m.group(1))
+        z = ZIEL.get(a) or next((v for k, v in ZIEL.items() if a and k.startswith(a)), None)
+        return f'<a href="{z}">{m.group(2)}</a>' if z else m.group(2)
+    return re.sub(r'<a href="#@@([^@"]+)@@">(.*?)</a>', r, h)
 
 
 def neue_datei(name, titel):
@@ -412,7 +434,7 @@ for zeile in bk.text_zeilen():
         t = s[2:].strip()
         name = f"seite{seitennr}.xhtml"
         neue_datei(name, t)
-        aktuell["html"].append(f'<h2 id="s{seitennr}">{esc(t)}</h2>')
+        aktuell["html"].append(f'<h2 id="{ziel(t, f"s{seitennr}")}">{esc(t)}</h2>')
         nav.append((1, t, name))
     elif s.startswith("# "):
         num, titel, sub = [x.strip() for x in s[2:].split("|")][:3]
@@ -427,25 +449,25 @@ for zeile in bk.text_zeilen():
         flush_absatz()
         if TIEFE >= 4 and aktuell["name"]:
             kapitelnr += 1
-            aktuell["html"].append(f'<h4 id="k{kapitelnr}">{esc(s[5:])}</h4>')
+            aktuell["html"].append(f'<h4 id="{ziel(s[5:], f"k{kapitelnr}")}">{esc(s[5:])}</h4>')
             nav.append((4 if any(n[0] == 1 for n in nav) else 3, s[5:], f"{aktuell['name']}#k{kapitelnr}"))
         else:
-            aktuell["html"].append(f'<h4>{esc(s[5:])}</h4>')
+            aktuell["html"].append(f'<h4 id="{ziel(s[5:], None)}">{esc(s[5:])}</h4>')
     elif s.startswith("### "):
         flush_absatz()
         if TIEFE >= 3 and aktuell["name"]:
             kapitelnr += 1
-            aktuell["html"].append(f'<h3 id="k{kapitelnr}">{esc(s[4:])}</h3>')
+            aktuell["html"].append(f'<h3 id="{ziel(s[4:], f"k{kapitelnr}")}">{esc(s[4:])}</h3>')
             nav.append((3 if any(n[0] == 1 for n in nav) else 2, s[4:], f"{aktuell['name']}#k{kapitelnr}"))
         else:
-            aktuell["html"].append(f'<h3>{esc(s[4:])}</h3>')
+            aktuell["html"].append(f'<h3 id="{ziel(s[4:], None)}">{esc(s[4:])}</h3>')
     elif s.startswith("## "):
         flush_absatz()
         if aktuell["name"] is None:
             neue_datei("vorwort.xhtml", s[3:])
         kapitelnr += 1
         anker = f"k{kapitelnr}"
-        aktuell["html"].append(f'<h2 id="{anker}">{esc(s[3:])}</h2>'); NACH_KAPITEL[0] = True
+        aktuell["html"].append(f'<h2 id="{ziel(s[3:], anker)}">{esc(s[3:])}</h2>'); NACH_KAPITEL[0] = True
         if TIEFE >= 2:
             nav.append((2 if any(n[0] == 1 for n in nav) else 1, s[3:], f"{aktuell['name']}#{anker}"))
     elif s.startswith("> "):
@@ -545,6 +567,7 @@ titel_html = f"""
 {absaetze_html(vorspann["impressum"])}
 </div>
 {widmung_html}""" + kernsatz_html
+dateien[:] = [(n, t_, verlinke(h)) for n, t_, h in dateien]
 dateien.insert(0, ("titel.xhtml", TITEL, titel_html))
 
 # --- CSS ----------------------------------------------------------------------
