@@ -132,7 +132,7 @@ def main():
                        encoding="utf-8", errors="replace", env=dict(os.environ, PYTHONIOENCODING="utf-8"))
     tippfehler_erkannt = r.returncode != 0 and "@@erste-geschichte?" in (r.stdout + r.stderr)
     pruef_txt = os.path.join(buch, "_druckbilder", "pruefen.txt")         # 2.82.1: Menü färbt «bp» danach rot
-    pruef_rot = os.path.exists(pruef_txt) and open(pruef_txt, encoding="utf-8").read().strip() == "fehler"
+    pruef_rot = os.path.exists(pruef_txt) and (open(pruef_txt, encoding="utf-8").read().split() or [""])[0] == "fehler"
     with open(md, "w", encoding="utf-8") as f:
         f.write(text.replace("# Teil 1|", "@@erste-geschichte\n\n# Teil 1|", 1))
 

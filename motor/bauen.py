@@ -177,12 +177,12 @@ PRUEF_OK = False            # letzte Prüfung in Ordnung? (fürs Menü: bp grün
 
 
 def pruef_ergebnis(wert):
-    """«ok» oder «fehler» nach _druckbilder/pruefen.txt – das Menü färbt damit «bp Buch prüfen»."""
+    """«ok» oder «fehler» und die Fassungen nach _druckbilder/pruefen.txt – das Menü zeigt damit «bp Buch prüfen N ✓ UZ ✗»."""
     try:
         os.makedirs(os.path.join(BASE, "_druckbilder"), exist_ok=True)
         with open(os.path.join(BASE, "_druckbilder", "pruefen.txt"), "w", encoding="utf-8") as f:
-            f.write(wert + "\n")
-    except OSError:
+            f.write(wert + "\n" + " ".join(["normal", "uz"] if bk.zweite_ausgabe() else ["normal"]) + "\n")
+    except Exception:                       # nie den Bau stören
         pass
 
 
@@ -254,16 +254,33 @@ def name(a):
 
 def parallel(schritte, env):
     """Schritte gleichzeitig starten; Meldungen danach in der gewohnten Reihenfolge zeigen."""
+    import tempfile
     laeufe = []
     for titel, skript, a, *extra in schritte:
         cmd = [sys.executable, os.path.join(MOTOR, skript)] + (["uz"] if a == "uz" else [])
         e = dict(env, **extra[0]) if extra else env
         e["PYTHONIOENCODING"] = "utf-8"           # Umlaute und «» auch unter Windows
-        laeufe.append((titel, subprocess.Popen(cmd, cwd=BASE, env=e, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                               text=True, encoding="utf-8", errors="replace")))
+        f = tempfile.TemporaryFile()              # Ausgabe in eine Datei (kein Stau in der Pipe), danach zeigen
+        laeufe.append((titel, subprocess.Popen(cmd, cwd=BASE, env=e, stdout=f, stderr=subprocess.STDOUT), f))
+    if sys.stdout.isatty():                       # Balken, solange gebaut wird (2.82.3): «Bauen: 2 Läufe  :::: ✓ 38 s»
+        start, spalte = time.time(), 0
+        vorne = f"  Bauen: {len(laeufe)} {'Lauf' if len(laeufe) == 1 else 'Läufe'}  "
+        print(vorne, end="", flush=True)
+        spalte = len(vorne)
+        while any(p.poll() is None for _, p, _ in laeufe):
+            time.sleep(1)
+            if spalte >= 66:
+                print("\n  ", end="")
+                spalte = 2
+            print(":", end="", flush=True)
+            spalte += 1
+        print(f" ✓ {time.time() - start:.0f} s")
     fehler = []
-    for titel, p in laeufe:
-        aus, _ = p.communicate()
+    for titel, p, f in laeufe:
+        p.wait()
+        f.seek(0)
+        aus = f.read().decode("utf-8", errors="replace")
+        f.close()
         print(f"\n=== {titel} ===")
         print(aus.rstrip())
         if p.returncode:

@@ -71,7 +71,7 @@ color:var(--akzent);display:block;margin-bottom:2px} #kiknopf{float:right;margin
 #zuletzt{font-size:12px;color:var(--leise);margin:4px 6px 8px} #zuletzt span{color:var(--haupt);cursor:pointer}
 #zuletzt span:hover{text-decoration:underline} main code.kopiert{background:var(--mark)}
 </style></head><body>
-<header><h1>pureSATZ Hilfe · pureSATZ <small>Motor 2.82.1</small></h1>
+<header><h1>pureSATZ Hilfe · pureSATZ <small>Motor 2.82.3</small></h1>
 <input id="suche" type="search" placeholder="Suchen … (Taste /) – z. B. isbn, farbe, hörbuch" autocomplete="off"><small id="treffer"></small>
 <span class="hist"><button id="zur" title="zurück (Alt+←)">‹ zurück</button> <button id="vor" title="vor (Alt+→)">vor ›</button></span>
 <span class="os"><a class="startk" href="#a1">Start</a> <button data-os="lx" class="aktiv">Linux/Mac</button> <button data-os="win">Windows</button></span></header>
@@ -130,26 +130,33 @@ bash pc-einrichten/mac-einrichten.sh       # Mac</code><code class="win">.\pc-ei
 <p>Inhalt: Spickzettel, eigene Praxis-Notizen aus <code>meine-hilfe.md</code> (freiwillig, im Buchordner, selbst pflegen: normales Markdown, jede <code>##</code>-Überschrift wird ein Abschnitt), diese Hilfe (<code>motor/HILFE.md</code>, kommt mit jedem Motor-Update), alle Befehle und Blöcke direkt aus dem Motor und die Variablen dieses Buchs mit ihren Werten.</p>
 <p>Der Knopf <b>Start</b> oben springt zur Checkliste für den Anfang (<code>START.md</code> im Ordner pureSATZ, mit Häkchen zum Anklicken).</p>
 <p>Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ <code>sh hallo.sh</code> (Windows: <code>hallo.bat</code>).</p></section><section id="a9"><h2>Menü</h2><p><code>sh menu.sh</code> (Windows: <code>menu.bat</code>) zeigt die häufigsten Befehle, nach Arbeitsschritten geordnet. Ein Buchstabe genügt:</p>
-<div class="code"><button class="kopie" title="kopieren">kopieren</button><pre><code class="lx"> ── Schreiben ─────────────────────   ── Bauen ─────────────────────────
+<div class="code"><button class="kopie" title="kopieren">kopieren</button><pre><code class="lx"> ══ Buch · pureSATZ                                     Klang (!) aus ══
+ ── Schreiben ─────────────────────   ── Bauen ────────────────────────
   m  MD öffnen …                      s  schnell  (Lese-PDF)
   g  Geschichten …                    k  komplett (vor dem Druck)
   t  Tabellen …                       w  weitere …
   c  check / gegenlesen …             hb Hörbuch …   (nur Linux)
- ── Ansehen ───────────────────────   ── Abgleichen / Prüfen ───────────
+ ── Ansehen ───────────────────────   ── Abgleichen / Prüfen ──────────
   p  PDF öffnen …                     sy sync   (GitHub)
   o  Ordner öffnen …                  u  update (ul lokal)
-  a  änderungen (a|ä)                 bp Buch prüfen
- ── Weiteres:  n neu · $ Terminal · : Befehle · h hilfe · hf finden · ! Klang · ↵ beenden</code><code class="win"> ── Schreiben ─────────────────────   ── Bauen ─────────────────────────
+  a  änderungen (a|ä)                 bp Buch prüfen  N ✓  UZ ✗
+ ── Weiteres ──────────────────────────────────────────────────────────
+  n neu · $ Terminal · : Befehle · h hilfe · hf finden
+ Wahl oder Befehl (z. B. final · ↑ = letzte · ↵ = beenden):</code><code class="win"> ══ Buch · pureSATZ                                     Klang (!) aus ══
+ ── Schreiben ─────────────────────   ── Bauen ────────────────────────
   m  MD öffnen …                      s  schnell  (Lese-PDF)
   g  Geschichten …                    k  komplett (vor dem Druck)
   t  Tabellen …                       w  weitere …
   c  check / gegenlesen …             hb Hörbuch …   (nur Linux)
- ── Ansehen ───────────────────────   ── Abgleichen / Prüfen ───────────
+ ── Ansehen ───────────────────────   ── Abgleichen / Prüfen ──────────
   p  PDF öffnen …                     sy sync   (GitHub)
   o  Ordner öffnen …                  u  update (ul lokal)
-  a  änderungen (a|ä)                 bp Buch prüfen
- ── Weiteres:  n neu · $ Terminal · : Befehle · h hilfe · hf finden · ! Klang · ↵ beenden</code></pre></div>
-<p><code>bp</code> Buch prüfen = <code>sh build.sh pruefen</code>: Variablen, Druckdateien, Befehle, Fotos, Geschichten, Tabellen (ohne Bau). Die Farbe zeigt die letzte Prüfung (auch die bei jedem Bau, ausser <code>schnell</code>): <b>grün ✓</b> = in Ordnung · <b>rot ✗</b> = Fehler, dazu oben «✗ Buch prüfen: Fehler gefunden» – <code>bp</code> drücken, die Meldung nennt Datei und Zeile · ohne Farbe = noch nicht geprüft oder seither eine MD-Datei geändert (ab 2.82.1).</p>
+  a  änderungen (a|ä)                 bp Buch prüfen  N ✓  UZ ✗
+ ── Weiteres ──────────────────────────────────────────────────────────
+  n neu · $ Terminal · : Befehle · h hilfe · hf finden
+ Wahl oder Befehl (z. B. final · ↑ = letzte · ↵ = beenden):</code></pre></div>
+<p><code>bp</code> Buch prüfen = <code>sh build.sh pruefen</code>: Variablen, Druckdateien, Befehle, Fotos, Geschichten, Tabellen (ohne Bau). Dahinter steht der Stand pro Fassung (N = normal, UZ = zweite Fassung; bei nur einer Fassung nur das Zeichen): <b>✓</b> = in Ordnung · <b>✗</b> (rot) = Fehler beim Prüfen – dann steht oben «✗ Buch prüfen: Fehler gefunden», <code>bp</code> drücken, die Meldung nennt Datei und Zeile – oder der Umschlag dieser Fassung passt nicht (oben «⚠ Coverrechner …», <code>cv</code>) · <b>?</b> = noch nicht geprüft. Nach einer Änderung an den MD-Dateien prüft das Menü beim Anzeigen kurz selbst (ab 2.82.3).</p>
+<p>Lange Läufe zeigen einen Balken <code>Bauen: 2 Läufe  ::::::: ✓ 38 s</code> (ein <code>:</code> pro Sekunde).</p>
 <p><b>Coverrechner</b> (ab 2.78): Steht oben «⚠ Coverrechner …», passt der Umschlag nicht mehr zur Seitenzahl, oder die Rohdaten fehlen bzw. sind nicht lesbar. <code>cv</code> öffnet die Druckdatei (siehe «Umschlag: Rücken und Seitenzahl»).</p>
 <p>Ja/Nein-Fragen: <code>[J/n]</code> = Enter heisst ja, <code>[j/N]</code> = Enter heisst nein (der Grossbuchstabe gilt bei Enter).</p>
 <p>Enter (oder <code>z</code>) = eine Stufe zurück; im Hauptmenü fragt Enter «Menü beenden? [j/N]» – nur <code>j</code> schliesst · Strg+C bei einer Frage = beenden (mit Rückfrage), während eines Laufs = nur den Lauf abbrechen.</p>
@@ -1086,7 +1093,7 @@ gh repo create meinbuch --private --source . --push</code></pre></div>
 <p>Weiterentwickelt wird pureSATZ ausschliesslich vom Autor. Neue Versionen kommen über <code>sh update.sh</code>. Vorschläge und Fehlermeldungen sind willkommen – als Issue auf GitHub (github.com/tgsteiger/pureSATZ) oder per E-Mail an puresatz@gsteiger.ch.</p></section><section id="a100"><h2>GPL-3.0 auf Anfrage</h2><p>Wer pureSATZ für ein freies Projekt verändern und weitergeben möchte, kann auf Anfrage eine Lizenz nach der GNU General Public License, Version 3 (GPL-3.0) erhalten. Anfrage über GitHub oder an puresatz@gsteiger.ch.</p></section><section id="a101"><h2>Gewähr</h2><p>pureSATZ wird so zur Verfügung gestellt, wie es ist, ohne jede Gewähr. Für Fehler im Satz, in Druckdaten oder E-Books und für daraus entstehende Kosten oder Schäden wird keine Haftung übernommen. Druckdaten vor der Bestellung immer selbst prüfen.</p></section><section id="a102"><h2>Schriften und Fremdbestandteile</h2><ul><li>Die Schriften <b>Lora</b> und <b>Poppins</b> in <code>motor/fonts/</code> stehen nicht unter dieser Lizenz, sondern unter der <b>SIL Open Font License 1.1</b> (siehe <code>motor/fonts/SCHRIFTEN-LIZENZ.md</code>).</li><li>Verwendete Python-Pakete (reportlab, Pillow, pypdf, pypdfium2) haben ihre eigenen Lizenzen und werden beim Einrichten aus dem Internet geladen, nicht mit pureSATZ verteilt.</li></ul></section>
 <p id="leer">Nichts gefunden.</p>
 <footer><a href="https://tgsteiger.github.io/pureSATZ/">Webseite</a> · <a href="https://github.com/tgsteiger/pureSATZ">GitHub</a> · <a href="https://github.com/tgsteiger/pureSATZ/issues">Fehler melden</a> · <a class=mail href=#>puresatz (at) gsteiger.ch</a><br>
-Erstellt 14.11.2026 11:30 von pureSATZ 2.82.1 · neu mit «sh build.sh hilfe» · Quellen: START.md, motor/HILFE.md, meine-hilfe.md, Variablen-Datei</footer>
+Erstellt 14.11.2026 11:56 von pureSATZ 2.82.3 · neu mit «sh build.sh hilfe» · Quellen: START.md, motor/HILFE.md, meine-hilfe.md, Variablen-Datei</footer>
 </main></div>
 <script>
 document.querySelectorAll('a.mail').forEach(m=>{const a=['puresatz','gsteiger.ch'].join('@');m.textContent=a;m.href='mailto:'+a});

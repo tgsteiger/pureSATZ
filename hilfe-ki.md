@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.82.1
+# pureSATZ Hilfe · pureSATZ · Motor 2.82.3
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -193,19 +193,24 @@ Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `h
 `sh menu.sh` (Windows: `menu.bat`) zeigt die häufigsten Befehle, nach Arbeitsschritten geordnet. Ein Buchstabe genügt:
 
 ```
- ── Schreiben ─────────────────────   ── Bauen ─────────────────────────
+ ══ Buch · pureSATZ                                     Klang (!) aus ══
+ ── Schreiben ─────────────────────   ── Bauen ────────────────────────
   m  MD öffnen …                      s  schnell  (Lese-PDF)
   g  Geschichten …                    k  komplett (vor dem Druck)
   t  Tabellen …                       w  weitere …
   c  check / gegenlesen …             hb Hörbuch …   (nur Linux)
- ── Ansehen ───────────────────────   ── Abgleichen / Prüfen ───────────
+ ── Ansehen ───────────────────────   ── Abgleichen / Prüfen ──────────
   p  PDF öffnen …                     sy sync   (GitHub)
   o  Ordner öffnen …                  u  update (ul lokal)
-  a  änderungen (a|ä)                 bp Buch prüfen
- ── Weiteres:  n neu · $ Terminal · : Befehle · h hilfe · hf finden · ! Klang · ↵ beenden
+  a  änderungen (a|ä)                 bp Buch prüfen  N ✓  UZ ✗
+ ── Weiteres ──────────────────────────────────────────────────────────
+  n neu · $ Terminal · : Befehle · h hilfe · hf finden
+ Wahl oder Befehl (z. B. final · ↑ = letzte · ↵ = beenden):
 ```
 
-`bp` Buch prüfen = `sh build.sh pruefen`: Variablen, Druckdateien, Befehle, Fotos, Geschichten, Tabellen (ohne Bau). Die Farbe zeigt die letzte Prüfung (auch die bei jedem Bau, ausser `schnell`): grün ✓ = in Ordnung · rot ✗ = Fehler, dazu oben «✗ Buch prüfen: Fehler gefunden» – `bp` drücken, die Meldung nennt Datei und Zeile · ohne Farbe = noch nicht geprüft oder seither eine MD-Datei geändert (ab 2.82.1).
+`bp` Buch prüfen = `sh build.sh pruefen`: Variablen, Druckdateien, Befehle, Fotos, Geschichten, Tabellen (ohne Bau). Dahinter steht der Stand pro Fassung (N = normal, UZ = zweite Fassung; bei nur einer Fassung nur das Zeichen): ✓ = in Ordnung · ✗ (rot) = Fehler beim Prüfen – dann steht oben «✗ Buch prüfen: Fehler gefunden», `bp` drücken, die Meldung nennt Datei und Zeile – oder der Umschlag dieser Fassung passt nicht (oben «⚠ Coverrechner …», `cv`) · ? = noch nicht geprüft. Nach einer Änderung an den MD-Dateien prüft das Menü beim Anzeigen kurz selbst (ab 2.82.3).
+
+Lange Läufe zeigen einen Balken `Bauen: 2 Läufe  ::::::: ✓ 38 s` (ein `:` pro Sekunde).
 
 Coverrechner (ab 2.78): Steht oben «⚠ Coverrechner …», passt der Umschlag nicht mehr zur Seitenzahl, oder die Rohdaten fehlen bzw. sind nicht lesbar. `cv` öffnet die Druckdatei (siehe «Umschlag: Rücken und Seitenzahl»).
 

@@ -312,7 +312,8 @@ if not TEST:                                                                 # T
     try:
         if _grund:
             os.makedirs(os.path.dirname(_status), exist_ok=True)
-            open(_status, "w", encoding="utf-8").write(f"{DRUCKDATEI}|{n}|{BERECHNET or '–'}|{_grund}\n")
+            open(_status, "w", encoding="utf-8").write(f"{DRUCKDATEI}|{n}|{BERECHNET or '–'}|{_grund}|"
+                                                       f"{'uz' if bk.AUSGABE == 'B' else 'normal'}\n")   # Fassung: Menü bp (2.82.3)
         elif os.path.exists(_status):
             os.remove(_status)
     except OSError:

@@ -3,6 +3,13 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.82.3 (November 2026)
+- Menü ruhiger: `bp Buch prüfen  N ✓  UZ ✗` – Stand pro Fassung, ✗ (rot) = Fehler beim Prüfen oder Umschlag der Fassung
+  passt nicht (Coverrechner), ? = noch nicht geprüft; nach Änderungen an den MD prüft das Menü beim Anzeigen kurz selbst.
+  Text bleibt weiss, Rot und Grün gedämpft. «Weiteres» als eigene Gruppe (n neu · $ Terminal · : Befehle · h hilfe ·
+  hf finden), Klang in der Kopfzeile «Klang (!)» mit goldenem !, Beenden in der Eingabezeile «↵ = beenden».
+- Bauen zeigt einen Balken `Bauen: 2 Läufe  ::::::: ✓ 38 s`, solange die Fassungen gebaut werden (nur im Terminal).
+
 ## 2.82.1 (November 2026)
 - Menü: `bp Buch prüfen` zeigt die letzte Prüfung (auch die bei jedem Bau): grün ✓ = in Ordnung, rot ✗ = Fehler
   (dazu oben «✗ Buch prüfen: Fehler gefunden»), ohne Farbe = noch nicht geprüft oder seither eine MD geändert.

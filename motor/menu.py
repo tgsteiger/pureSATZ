@@ -29,8 +29,8 @@ FARBIG = not WIN and sys.stdout.isatty()                           # Farben/fett
 FETT = (lambda t: f"\033[1;38;5;178m{t}\033[0m") if FARBIG else (lambda t: t)   # Bereich / Titel: fett, Gold
 HELL = (lambda t: f"\033[1;97m{t}\033[0m") if FARBIG else (lambda t: t)          # Buchname: fett, weiss
 GRAU = (lambda t: f"\033[38;5;244m{t}\033[0m") if FARBIG else (lambda t: t)      # Trennlinien: gedämpft
-GRUEN = (lambda t: f"\033[1;32m{t}\033[0m") if FARBIG else (lambda t: t)        # ✓ nach einem Lauf
-ROT = (lambda t: f"\033[1;31m{t}\033[0m") if FARBIG else (lambda t: t)          # ✗ Fehler
+GRUEN = (lambda t: f"\033[38;5;108m{t}\033[0m") if FARBIG else (lambda t: t)    # ✓ nach einem Lauf (gedämpft, 2.82.3)
+ROT = (lambda t: f"\033[38;5;167m{t}\033[0m") if FARBIG else (lambda t: t)      # ✗ Fehler (gedämpft, 2.82.3)
 GOLDFEIN = (lambda t: f"\033[38;5;136m{t}\033[0m") if FARBIG else (lambda t: t)  # Linien um einen Lauf: fein, dunkleres Gold
 SCHILD = (lambda t: f"\033[1;38;5;234;48;5;178m {t} \033[0m") if FARBIG else (lambda t: t)   # Buchname: goldenes Schild (2.69.19)
 zuletzt = ""                                                                   # letzte Eingabe (für die Startlinie)
@@ -78,7 +78,8 @@ def kopf(bereich="", rechts=""):
     links = links.replace(SCHILD(name), f" {name} " if FARBIG else name)      # sichtbare Länge (ohne Farbcodes)
     zeile = (GOLDFEIN("══") + f" {SCHILD(name)} " + GRAU(f"· pureSATZ {version}")
              + (f" › {FETT(bereich)}" if bereich else ""))
-    return zeile + rechts.rjust(max(len(rechts) + 2, 66 - len(links))) + " " + GOLDFEIN("══")   # endet bei Spalte 71 (RAND)
+    sichtbar = len(re.sub(r"\033\[[0-9;]*m", "", rechts))                       # rechts darf Farben haben (Klang (!))
+    return zeile + " " * max(2, 66 - len(links) - sichtbar) + rechts + " " + GOLDFEIN("══")   # endet bei Spalte 71 (RAND)
 EINST = os.path.join(BASE, ".menu")
 PURESATZ = os.path.join(os.path.dirname(BASE), "pureSATZ")
 LOKAL = os.path.isdir(os.path.join(PURESATZ, "motor"))
@@ -607,14 +608,18 @@ def alle_in_einer_datei():
 
 
 def cover_faellig():
-    """[(kuerzel, druckdatei, seiten, berechnet, grund)] aus _druckbilder/cover-*.txt (schreibt jeder «final», ab 2.78)."""
+    """[(kuerzel, druckdatei, seiten, berechnet, grund, fassung)] aus _druckbilder/cover-*.txt (schreibt jeder Bau der
+    Druckdateien, ab 2.78; Fassung normal|uz ab 2.82.3, ältere Dateien: aus dem Namen geraten)."""
     out = []
     for p in sorted(glob.glob(os.path.join(BASE, "_druckbilder", "cover-*.txt"))):
         try:
-            d, n, b, g = open(p, encoding="utf-8").read().strip().split("|")[:4]
+            teile = open(p, encoding="utf-8").read().strip().split("|")
+            d, n, b, g = teile[:4]
         except (OSError, ValueError):
             continue
-        out.append((os.path.basename(p)[6:-4], d, n, b, g))
+        k = os.path.basename(p)[6:-4]
+        f = teile[4] if len(teile) > 4 else ("uz" if "uz" in (k + d).lower() else "normal")
+        out.append((k, d, n, b, g, f))
     return out
 
 
@@ -623,7 +628,7 @@ def cover_menue():
     faellig = cover_faellig()
     if not faellig:
         return print("  Coverrechner: alles passt (oder noch kein «final» gebaut).")
-    for k, d, n, b, g in faellig:
+    for k, d, n, b, g, _ in faellig:
         print(f"  {FETT(k)}: Buchblock {n} Seiten, Werte für {b} – {g}. Öffne {d} …")
         oeffnen(os.path.join(BASE, d))
     print("  Im Coverrechner der Druckerei diese Seitenzahl eingeben, den Text zuunterst unter «## Coverrechner (Rohdaten)»\n"
@@ -635,7 +640,7 @@ def pruef_stand():
     noch nie geprüft oder seither Buch, Variablen, Umschlag, Stichworte, Druckdatei, Geschichte oder Tabelle geändert."""
     p = os.path.join(BASE, "_druckbilder", "pruefen.txt")
     try:
-        wert, zeit = open(p, encoding="utf-8").read().strip(), os.path.getmtime(p)
+        wert, zeit = (open(p, encoding="utf-8").read().split() or [""])[0], os.path.getmtime(p)
     except OSError:
         return ""
     muster = [m for _, m in MD.values()] + ["druck/*.md", "geschichten/*.md", "tabellen/*.csv"]
@@ -644,12 +649,33 @@ def pruef_stand():
     return wert
 
 
-def zeige():
-    print("\n" + kopf(rechts=f"Klang (!) {'ein' if ton else 'aus'}"))
-    for k, d, n, b, g in cover_faellig():
-        print(FETT(f" ⚠ Coverrechner {k}: {n} Seiten, eingetragen für {b}") + GRAU(f"  ({g}) → cv"))
+def bp_marke():
+    """«bp Buch prüfen» mit dem Stand pro Fassung (2.82.3): «✓» bzw. «N ✓  UZ ✗». ✗ (rot) = Prüfung mit Fehler oder
+    Coverrechner-Warnung der Fassung, ? = noch nicht geprüft. Ist die Prüfung veraltet, prüft das Menü kurz selbst."""
+    if not pruef_stand():
+        try:                                          # still prüfen (ca. 1 s, nur nach Änderungen)
+            subprocess.run([sys.executable, os.path.join(MOTOR, "bauen.py"), "pruefen"], cwd=BASE, timeout=120,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except Exception:
+            pass
     stand = pruef_stand()
-    if stand == "fehler":
+    try:
+        fassungen = open(os.path.join(BASE, "_druckbilder", "pruefen.txt"), encoding="utf-8").read().split()[1:] or ["normal"]
+    except OSError:
+        fassungen = ["normal"]
+    warn = {f for _, _, _, _, _, f in cover_faellig()}
+    marke = lambda f: ROT("✗") if stand == "fehler" or f in warn else ("✓" if stand == "ok" else "?")
+    if len(fassungen) < 2:
+        return "Buch prüfen " + marke(fassungen[0])
+    return "Buch prüfen  " + "  ".join(("N " if f == "normal" else "UZ ") + marke(f) for f in fassungen)
+
+
+def zeige():
+    bp = bp_marke()                                   # zuerst: prüft bei Bedarf still (Stand für die Zeile unten)
+    print("\n" + kopf(rechts=f"Klang ({FETT('!')}) {'ein' if ton else 'aus'}"))
+    for k, d, n, b, g, _ in cover_faellig():
+        print(FETT(f" ⚠ Coverrechner {k}: {n} Seiten, eingetragen für {b}") + GRAU(f"  ({g}) → cv"))
+    if pruef_stand() == "fehler":
         print(ROT(" ✗ Buch prüfen: Fehler gefunden") + GRAU("  → bp"))
     spalten = [("Schreiben", [("m", "MD öffnen …"), ("g", "Geschichten …"), ("t", "Tabellen …"),
                              ("c", "check / gegenlesen …")]),
@@ -657,14 +683,14 @@ def zeige():
                 + ([("hb", "Hörbuch …")] if LINUX else [])),
                ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen (a|ä)")]),
                ("Abgleichen / Prüfen", [("sy", "sync   (GitHub)"), ("u", "update" + (" (ul lokal)" if LOKAL else "")),
-                                        ("bp", {"ok": GRUEN("Buch prüfen ✓"), "fehler": ROT("Buch prüfen ✗")}.get(stand, "Buch prüfen"))])]
-    spalten_zeigen(spalten, "n neu · $ Terminal · : Befehle · h hilfe · hf finden · ! Klang · ↵ beenden")
+                                        ("bp", bp)])]
+    spalten_zeigen(spalten, "n neu · $ Terminal · : Befehle · h hilfe · hf finden")
     if os.path.exists(ALLE):
         print(SPERRE)
 
 
 def spalten_zeigen(spalten, weiteres):
-    """Vier Gruppen in zwei Spalten (Haupt- und Hörbuch-Menü gleich) und die Zeile «── Weiteres: …»."""
+    """Vier Gruppen in zwei Spalten (Haupt- und Hörbuch-Menü gleich) und «── Weiteres ──» mit den übrigen Tasten."""
     taste = lambda k: FETT(k) + " " * (3 - len(k))                 # Taste gold, danach auf 3 Zeichen aufgefüllt
     linie = lambda t, n=30: GRAU("── ") + t + " " + GRAU("─" * (n - len(t)))
     for (t1, z1), (t2, z2) in (spalten[:2], spalten[2:]):
@@ -672,14 +698,15 @@ def spalten_zeigen(spalten, weiteres):
         for a, b in zip(z1 + [("", "")] * 3, z2 + [("", "")] * 3):
             if a[0] or b[0]:
                 print((f"  {taste(a[0])}{a[1]:<33}" + (f"{taste(b[0])}{b[1]}" if b[0] else "")).rstrip())
-    zeile, laenge = f" {GRAU('──')} Weiteres:  ", 15                 # umbrechen bei RAND, eingerückt unter den ersten Befehl
+    print(f" {GRAU('──')} Weiteres {GRAU('─' * (RAND - 13))}")       # wie die anderen Gruppen (2.82.3)
+    zeile, laenge = "", 2                                              # Tasten unter den anderen Tasten, umbrechen bei RAND
     for i, t in enumerate(weiteres.split(" · ")):
         teil = (FETT(t.split(" ", 1)[0]) + " " + t.split(" ", 1)[1]) if " " in t else t
         if i and laenge + 3 + len(t) > RAND:
-            print(zeile); zeile, laenge = " " * 15 + teil, 15 + len(t)
+            print("  " + zeile); zeile, laenge = teil, 2 + len(t)
         else:
             zeile, laenge = zeile + (" · " if i else "") + teil, laenge + (3 if i else 0) + len(t)
-    print(zeile)
+    print("  " + zeile)
 
 
 def raster(zeilen):
@@ -818,7 +845,7 @@ def main():
                     continue
             else:
                 zeige()
-                print(" Wahl oder Befehl (z. B. final · ↑ = letzte):")
+                print(" Wahl oder Befehl (z. B. final · ↑ = letzte · ↵ = beenden):")
                 e = frage(" Eingabe: ", merken=True)
             w = e.lower()
             if w in ("", "z", "q"):                   # Hauptmenü: Enter / z = beenden? [j/N] – nur j schliesst
