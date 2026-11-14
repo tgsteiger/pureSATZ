@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.82.0
+# pureSATZ Hilfe · pureSATZ · Motor 2.82.1
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -205,7 +205,7 @@ Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `h
  ── Weiteres:  n neu · $ Terminal · : Befehle · h hilfe · hf finden · ! Klang · ↵ beenden
 ```
 
-`bp` Buch prüfen = `sh build.sh pruefen`: Variablen, Druckdateien, Befehle, Fotos, Geschichten, Tabellen (ohne Bau).
+`bp` Buch prüfen = `sh build.sh pruefen`: Variablen, Druckdateien, Befehle, Fotos, Geschichten, Tabellen (ohne Bau). Die Farbe zeigt die letzte Prüfung (auch die bei jedem Bau, ausser `schnell`): grün ✓ = in Ordnung · rot ✗ = Fehler, dazu oben «✗ Buch prüfen: Fehler gefunden» – `bp` drücken, die Meldung nennt Datei und Zeile · ohne Farbe = noch nicht geprüft oder seither eine MD-Datei geändert (ab 2.82.1).
 
 Coverrechner (ab 2.78): Steht oben «⚠ Coverrechner …», passt der Umschlag nicht mehr zur Seitenzahl, oder die Rohdaten fehlen bzw. sind nicht lesbar. `cv` öffnet die Druckdatei (siehe «Umschlag: Rücken und Seitenzahl»).
 

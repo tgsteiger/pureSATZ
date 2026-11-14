@@ -630,17 +630,34 @@ def cover_menue():
           "  einfügen (alten ersetzen). Dann w → co: der Motor liest die Werte und baut den Umschlag neu.")
 
 
+def pruef_stand():
+    """Letzte Prüfung (bauen.py schreibt _druckbilder/pruefen.txt, ab 2.82.1): «ok», «fehler» oder "" =
+    noch nie geprüft oder seither Buch, Variablen, Umschlag, Stichworte, Druckdatei, Geschichte oder Tabelle geändert."""
+    p = os.path.join(BASE, "_druckbilder", "pruefen.txt")
+    try:
+        wert, zeit = open(p, encoding="utf-8").read().strip(), os.path.getmtime(p)
+    except OSError:
+        return ""
+    muster = [m for _, m in MD.values()] + ["druck/*.md", "geschichten/*.md", "tabellen/*.csv"]
+    if any(os.path.getmtime(f) > zeit for m in muster for f in glob.glob(os.path.join(BASE, m))):
+        return ""
+    return wert
+
+
 def zeige():
     print("\n" + kopf(rechts=f"Klang (!) {'ein' if ton else 'aus'}"))
     for k, d, n, b, g in cover_faellig():
         print(FETT(f" ⚠ Coverrechner {k}: {n} Seiten, eingetragen für {b}") + GRAU(f"  ({g}) → cv"))
+    stand = pruef_stand()
+    if stand == "fehler":
+        print(ROT(" ✗ Buch prüfen: Fehler gefunden") + GRAU("  → bp"))
     spalten = [("Schreiben", [("m", "MD öffnen …"), ("g", "Geschichten …"), ("t", "Tabellen …"),
                              ("c", "check / gegenlesen …")]),
                ("Bauen", [("s", "schnell  (Lese-PDF)"), ("k", "komplett (vor dem Druck)"), ("w", "weitere …")]
                 + ([("hb", "Hörbuch …")] if LINUX else [])),
                ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen (a|ä)")]),
                ("Abgleichen / Prüfen", [("sy", "sync   (GitHub)"), ("u", "update" + (" (ul lokal)" if LOKAL else "")),
-                                        ("bp", "Buch prüfen")])]
+                                        ("bp", {"ok": GRUEN("Buch prüfen ✓"), "fehler": ROT("Buch prüfen ✗")}.get(stand, "Buch prüfen"))])]
     spalten_zeigen(spalten, "n neu · $ Terminal · : Befehle · h hilfe · hf finden · ! Klang · ↵ beenden")
     if os.path.exists(ALLE):
         print(SPERRE)

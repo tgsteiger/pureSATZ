@@ -3,6 +3,11 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.82.1 (November 2026)
+- Menü: `bp Buch prüfen` zeigt die letzte Prüfung (auch die bei jedem Bau): grün ✓ = in Ordnung, rot ✗ = Fehler
+  (dazu oben «✗ Buch prüfen: Fehler gefunden»), ohne Farbe = noch nicht geprüft oder seither eine MD geändert.
+  Ergebnis in _druckbilder/pruefen.txt.
+
 ## 2.82.0 (November 2026)
 - Cover rechnet der Motor selbst: Den Text aus dem Coverrechner der Druckerei (tredition, epubli, BoD, KDP …) unten in
   der Druckdatei unter `## Coverrechner (Rohdaten)` einfügen – beim Bau der Druckdateien liest `motor/rohdaten2cover.py`

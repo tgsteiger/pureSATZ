@@ -173,13 +173,30 @@ def sammlung(mit_uz):
         os.remove(os.path.join(BASE, tmp))
 
 
+PRUEF_OK = False            # letzte Prüfung in Ordnung? (fürs Menü: bp grün/rot, ab 2.82.1)
+
+
+def pruef_ergebnis(wert):
+    """«ok» oder «fehler» nach _druckbilder/pruefen.txt – das Menü färbt damit «bp Buch prüfen»."""
+    try:
+        os.makedirs(os.path.join(BASE, "_druckbilder"), exist_ok=True)
+        with open(os.path.join(BASE, "_druckbilder", "pruefen.txt"), "w", encoding="utf-8") as f:
+            f.write(wert + "\n")
+    except OSError:
+        pass
+
+
 def pruefen():
+    global PRUEF_OK
+    pruef_ergebnis("fehler")                # bleibt stehen, wenn die Prüfung abbricht
     M.pruefen(BASE, bk.TEXT, bk.UMSCHLAG, bk.finde, bk.alle_variablen())
     druck_pruefen()
     try:
         bk.foto_hinweise()                  # Fotos mit zu wenig Pixeln
     except Exception as e:                  # nie den Bau verhindern
         print(f"Hinweis: Fotos nicht geprüft ({e})")
+    pruef_ergebnis("ok")
+    PRUEF_OK = True
 
 
 NUR_FASSUNG = None          # «normal» oder «uz» zusammen mit druck=… oder leseprobe: nur diese Fassung bauen
@@ -831,5 +848,7 @@ def main():
 if __name__ == "__main__":
     _start = time.time()
     main()
+    if PRUEF_OK:                            # nach dem Bau nochmals: der Bau darf Druckdateien schreiben (rohdaten2cover)
+        pruef_ergebnis("ok")
     pdf_liste(_start)
     farbschema_zeigen()

@@ -51,6 +51,9 @@ Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `h
 ```
 
 `bp` Buch prüfen = `sh build.sh pruefen`: Variablen, Druckdateien, Befehle, Fotos, Geschichten, Tabellen (ohne Bau).
+Die Farbe zeigt die letzte Prüfung (auch die bei jedem Bau, ausser `schnell`): **grün ✓** = in Ordnung · **rot ✗** = Fehler,
+dazu oben «✗ Buch prüfen: Fehler gefunden» – `bp` drücken, die Meldung nennt Datei und Zeile · ohne Farbe = noch nicht
+geprüft oder seither eine MD-Datei geändert (ab 2.82.1).
 
 **Coverrechner** (ab 2.78): Steht oben «⚠ Coverrechner …», passt der Umschlag nicht mehr zur Seitenzahl, oder die
 Rohdaten fehlen bzw. sind nicht lesbar. `cv` öffnet die Druckdatei (siehe «Umschlag: Rücken und Seitenzahl»).
