@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.82.7
+# pureSATZ Hilfe · pureSATZ · Motor 2.82.8
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -226,7 +226,7 @@ Untermenüs («…» = nur was es gibt):
 `t` Tabellen | `e` bearbeiten … (Liste mit Kürzel) · `n` neue Tabelle (öffnet die CSV, `@#name` kommt in den Block «## Noch einordnen» im Buch) · `o` Ordner
 `c` check / gegenlesen | `n` Liste neu (personen-seiten.txt) · `c` check-PDF für eine Person (öffnet sich danach) · `t` Textdatei
 `hb` Hörbuch (Linux) | `p` Probe hören · `w` Wörter hören · `t` Texte aus dem Buch · `v` vertonen · `k` Kapitel vertonen … · `e` Wörter/Probe/Einstellungen öffnen · `s` Azure-Schlüssel · `$` Terminal in audio/ · `o` Ordner · `h` Hilfe · `c` prüfen – siehe Hörbuch: Das Menü
-`w` weitere | `l` Leseprobe · `k` Korrektur · `p` nur-pdf · `e` nur E-Book · `co` Cover rechnen (wie `sh build.sh covers`) · `m` Stand merken · `s` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` Stichwortdatei öffnen) · `i` ISBN … (alle Ausgaben ansehen und eintragen – Druck/E-Book, normal/UZ; Enter = bleibt, `-` = leeren; speichert in der Variablen-Datei, dann Prüfziffer und Strichcode-PNG wie `sh build.sh isbn`) · `a` aufräumen (wie `sh cleanup.sh`, fragt `[j/N]`)
+`w` weitere | `l` Leseprobe · `k` Korrektur · `p` nur-pdf · `e` nur E-Book · `co` Cover rechnen (wie `sh build.sh covers`) · `m` Stand merken · `s` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` Stichwortdatei öffnen) · `i` ISBN … (alle Ausgaben ansehen und eintragen – Druck/E-Book, normal/UZ; Enter = bleibt, `-` = leeren; speichert in der Variablen-Datei, dann Prüfziffer und Strichcode-PNG wie `sh build.sh isbn`) · `in` Initialen … (Zeilen 0–4, Schrift, Kapitälchen; z. B. `2 c` = 2 Zeilen Cinzel, `v` = Vorschau) · `a` aufräumen (wie `sh cleanup.sh`, fragt `[j/N]`)
 `p` PDF öffnen | `n` normal · `u` unzensiert · `l` Leseprobe · `k` Korrektur …
 `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten · `t` tabellen · `a` audio … · `p` Pfad Buchordner kopieren · dazu Taste + `t` = Terminal dort (`bt`, `at` …), + `p` = Pfad kopieren (`ap` …)
 `n` neu | `b` neues Buch · `h` Hallo-Buch · `e` einrichten · `m` Motor-Selbsttest · `v` Verknüpfung
@@ -727,7 +727,7 @@ E-Book | `ebook-epub2` (ja = zusätzlich EPUB 2), `ebook-rueckseite` (bild / tex
 Shop | `shop-beschreibung`, `shop-schlagwoerter`, `shop-kategorie`, `shop-link`, `sprache` (Standard `de`, steht in den Shop-Angaben)
 Leseprobe | `leseprobe`, `leseprobe-seiten`, `leseprobe-seiten-uz`, `leseprobe-text`
 Technik | `kurz-normal` / `-uz` (Kürzel vorne an den Druckdateien, z. B. L123), `datei-normal` / `-uz` (Name der Lese-PDFs und E-Books), `ordner-normal` / `-uz` (Ausgabeordner)
-Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt|anschauung), `zier`, `zier-hell`, `initial` (ja · nein), `initial-farbe` (akzent · haupt), `initial-stil` (normal · rand · feld), `initial-zeilen` (3 · 4), `initial-schrift` (fett · datei.ttf), `kapitaelchen` (ja · nein), `absatz-einzug` (ja · nein), `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund`
+Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt|anschauung), `zier`, `zier-hell`, `initial` (ja · nein), `initial-farbe` (akzent · haupt), `initial-stil` (normal · rand · feld), `initial-zeilen` (0 · 1 · 2 · 3 · 4), `initial-schrift` (fett · cinzel · uncial · fraktur · datei.ttf), `kapitaelchen` (ja · nein), `absatz-einzug` (ja · nein), `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund`
 Sicherung | `sicherung-lokal`, `sicherung-cloud`, `sicherung-behalten`
 Layout | `farbschema`, `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `blocksatz` · Inhaltsverzeichnis: `inhalt-tiefe`, `inhalt-dichte`, `inhalt-teile`, `inhalt-punkte`, `inhalt-schrift`
 
@@ -768,8 +768,8 @@ eine kleine Verzierung | `@ZIER 12` (Breite in mm)
 eine Verzierung unten, danach neue Seite | `@ZIER-UNTEN 10`
 eine Verzierung zwischen zwei Abschnitten | `@ZIER-TRENNER`
 ein eigenes Zierbild | in der Variablen-Datei `{zier}: meine-zier.png` (Bild in `bilder/`)
-einen grossen Anfangsbuchstaben am Kapitelanfang (Initial, drei Zeilen hoch) | `{initial}: ja` – Farbe: `{initial-farbe}: akzent` (Gold) oder `haupt` (Blau). Ist der erste Absatz kürzer als drei Zeilen, läuft der nächste daneben weiter; folgt gleich ein Titel oder Foto, beginnt das Kapitel ohne Initial
-das Initial anders: im Rand, im Feld, grösser, fett oder in einer Zierschrift | `{initial-stil}: rand` (links im Rand, Text volle Breite) oder `feld` (helles Feld mit Goldrahmen) · `{initial-zeilen}: 4` · `{initial-schrift}: fett` · Zierschrift aus dem Motor: `cinzel` (klassisch), `uncial` (keltisch, kleiner), `fraktur` (das I sieht aus wie ein J) · oder eine eigene TTF-Datei aus `fonts/` im Buch (frei z. B. auf fonts.google.com)
+einen grossen Anfangsbuchstaben am Kapitelanfang (Initial, drei Zeilen hoch) | Menü `w` → `in` Initialen … (Zeilen, Schrift, Kapitälchen, Vorschau) oder `{initial}: ja` – Farbe: `{initial-farbe}: akzent` (Gold) oder `haupt` (Blau). Ist der erste Absatz kürzer als drei Zeilen, läuft der nächste daneben weiter; folgt gleich ein Titel oder Foto, beginnt das Kapitel ohne Initial
+das Initial anders: im Rand, im Feld, grösser, fett oder in einer Zierschrift | `{initial-stil}: rand` (links im Rand, Text volle Breite) oder `feld` (helles Feld mit Goldrahmen) · `{initial-zeilen}:` `1` erhöht (steht auf der ersten Zeile und ragt nach oben, Text in voller Breite) · `2` · `3` · `4` · `0` = aus · `{initial-schrift}: fett` · Ä, Ö, Ü werden etwas kleiner gesetzt, damit die Punkte nicht an den Titel stossen · Zierschrift aus dem Motor: `cinzel` (klassisch), `uncial` (keltisch, kleiner), `fraktur` (das I sieht aus wie ein J) · oder eine eigene TTF-Datei aus `fonts/` im Buch (frei z. B. auf fonts.google.com)
 die ersten Wörter jedes Kapitels in Kapitälchen | `{kapitaelchen}: ja` – mit oder ohne Initial
 Absätze eingerückt statt mit Abstand (wie viele Romane) | `{absatz-einzug}: ja` – der erste Absatz nach einem Titel bleibt bündig
 

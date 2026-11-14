@@ -136,8 +136,8 @@
 > {initial}: ja = grosser Anfangsbuchstabe über drei Zeilen am Anfang jedes Kapitels · nein (Standard)
 > {initial-farbe}: akzent (Gold, Standard) | haupt (Blau)
 > {initial-stil}: normal = im Text · rand = links im Rand, Text in voller Breite · feld = im hellen Feld mit Goldrahmen
-> {initial-zeilen}: 3 | 4 (so hoch ist der Buchstabe)
-> {initial-schrift}: leer = Textschrift · fett · oder eine eigene Schrift (TTF-Datei in fonts/ oder bilder/, z. B. CinzelDecorative-Bold.ttf von fonts.google.com)
+> {initial-zeilen}: 0 aus | 1 erhöht (ragt nach oben) | 2 | 3 | 4 (so hoch ist der Buchstabe) – bequem im Menü: w → in
+> {initial-schrift}: leer = Textschrift · fett · cinzel · uncial · fraktur · oder eine eigene Schrift (TTF-Datei in fonts/ oder bilder/, z. B. CinzelDecorative-Bold.ttf von fonts.google.com)
 > {kapitaelchen}: ja = die ersten zwei Wörter jedes Kapitels in Kapitälchen (auch ohne Initial)
 > {absatz-einzug}: ja = Absätze ohne Abstand, ab dem zweiten eingerückt (wie viele Romane) · nein = mit Abstand (Standard)
 > {kopfzeile}: ohne-autor (Teil · Kapitel, Standard) | autor (Autor · Teil · Kapitel) | wechselnd (links Teil, rechts Kapitel)

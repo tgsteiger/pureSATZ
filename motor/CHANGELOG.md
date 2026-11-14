@@ -3,6 +3,13 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.82.8 (November 2026)
+- Initialen: `{initial-zeilen}: 0 | 1 | 2 | 3 | 4` – `0` = aus, `1` = erhöhtes Initial (steht auf der ersten Zeile, ragt
+  nach oben, Text in voller Breite), `2` = klein und ruhig. E-Book passend.
+- Ä, Ö, Ü als Initial etwas kleiner (Faktor 0,8): die Punkte stossen nicht mehr an den Titel darüber.
+- Menü `w` → `in` **Initialen …**: Zeilen, Schrift (Textschrift, fett, Cinzel, Uncial, Fraktur – mit Bemerkung) und
+  Kapitälchen wählen, z. B. `2 c`; `v` = Vorschau (schnell bauen, PDF öffnen). Speichert in der Variablen-Datei.
+
 ## 2.82.7 (November 2026)
 - Menü `w` → `i` **ISBN …**: zeigt die ISBN aller Ausgaben (Druck normal, Druck UZ, E-Book normal, E-Book UZ) und
   fragt sie ab (Enter = bleibt, `-` = leeren). Gespeichert wird nur in der Variablen-Datei («{isbn}:» unter

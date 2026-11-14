@@ -128,7 +128,8 @@ teilnr = 0
 seitennr = 0
 
 
-INITIAL = (bk.V("initial", "nein") or "").strip().lower() in ("ja", "j")          # ab 2.77
+INITIAL_Z = (bk.V("initial-zeilen", "3") or "3").strip()           # 2.82.8: 0 = aus · 1 = erhöht · 2 · 3 · 4
+INITIAL = (bk.V("initial", "nein") or "").strip().lower() in ("ja", "j") and INITIAL_Z != "0"          # ab 2.77
 EINZUG = (bk.V("absatz-einzug", "nein") or "").strip().lower() in ("ja", "j")
 KAP = (bk.V("kapitaelchen", "nein") or "").strip().lower() in ("ja", "j")                # ab 2.80
 NACH_KAPITEL = [False]
@@ -650,8 +651,8 @@ p.tabquelle { font-size: 0.8em; font-style: italic; margin: 0.3em 0 0 0; text-in
 """
 CSS = CSS.replace("@@akzenttext@@", AKZENT_TEXT)
 _ist = (bk.V("initial-stil", "normal") or "").strip().lower()
-CSS = CSS.replace("@@initialgroesse@@", "4.2em" if (bk.V("initial-zeilen", "3") or "").strip() == "4" else "3.2em")
-CSS = CSS.replace("@@initialextra@@", (" font-weight: bold;" if (bk.V("initial-schrift", "") or "").strip().lower() == "fett" else "")
+CSS = CSS.replace("@@initialgroesse@@", {"1": "2em", "2": "2.2em", "4": "4.2em"}.get(INITIAL_Z, "3.2em"))
+CSS = CSS.replace("@@initialextra@@", (" float: none; line-height: 1;" if INITIAL_Z == "1" else "") + (" font-weight: bold;" if (bk.V("initial-schrift", "") or "").strip().lower() == "fett" else "")
                   + (" background: @@kasten@@; border: 1px solid @@akzent@@; padding: 0.05em 0.15em;" if _ist == "feld" else ""))
 CSS = CSS.replace("@@initialfarbe@@", bk.hexfarbe("haupt") if (bk.V("initial-farbe", "akzent") or "").strip().lower() == "haupt"
                   else AKZENT_TEXT)

@@ -97,6 +97,12 @@ sh import/import-text.sh manuskript.odt --autor "Vorname Nachname"    # auch .do
 Legt wie `setup/setup.sh` ein Buch an, aber mit dem Text, den Bildern und einem `IMPORT-BERICHT.txt`. Noch nicht voll
 ausgereift – Regeln für das Dokument und Einschränkungen in `INSTALLATION.md`.
 
+## Kapitelanfang (Initial)
+
+Grosser Anfangsbuchstabe am Kapitelanfang: im Menü `w` → `in` **Initialen …** wählen – Zeilen `0` aus, `1` erhöht,
+`2`, `3`, `4`, Schrift (Textschrift, fett, Cinzel, Uncial, Fraktur) und Kapitälchen; `v` zeigt eine Vorschau.
+Oder in der Variablen-Datei: `{initial}: ja`, `{initial-zeilen}: 2`, `{initial-schrift}: cinzel`.
+
 ## Weitere Aufrufe
 
 ```sh

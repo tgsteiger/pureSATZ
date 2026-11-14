@@ -5,6 +5,7 @@ Aufruf (im Buchordner):  python3 motor/build.py      -> normale Ausgabe
 Alles zum Buch steht in der Buch-MD (Variablen oben, dann der Text) und in <buch>-umschlag.md.
 Das Aussehen (Schriften, Farben) steht in layout.py.
 """
+import copy
 import os
 import re
 import sys
@@ -912,11 +913,12 @@ h2 = _stil("h2", L.KAPITEL, keepWithNext=1)
 h3 = _stil("h3", L.ZWISCHENTITEL, keepWithNext=1)
 h4 = _stil("h4", dict(L.ZWISCHENTITEL, groesse=L.ZWISCHENTITEL.get("groesse", 11.5) - 1, zeilenabstand=14,
                       abstand_vor=12, abstand_nach=4), keepWithNext=1)
-INITIAL = (V("initial", "nein") or "nein").strip().lower() in ("ja", "j")          # ab 2.77
+_iz = (V("initial-zeilen", "3") or "3").strip()
+INITIAL_ZEILEN = int(_iz) if _iz in ("0", "1", "2", "3", "4") else 3   # 2.82.8: 0 = aus · 1 = erhöht · 2 · 3 · 4
+INITIAL = (V("initial", "nein") or "nein").strip().lower() in ("ja", "j") and INITIAL_ZEILEN > 0     # ab 2.77
 INITIAL_FARBE = farbe("haupt" if (V("initial-farbe", "akzent") or "").strip().lower() == "haupt" else "akzent")
 EINZUG = (V("absatz-einzug", "nein") or "nein").strip().lower() in ("ja", "j")
 INITIAL_STIL = (V("initial-stil", "normal") or "normal").strip().lower()                # ab 2.80: normal | rand | feld
-INITIAL_ZEILEN = 4 if (V("initial-zeilen", "3") or "3").strip() == "4" else 3
 KAPITAELCHEN = (V("kapitaelchen", "nein") or "nein").strip().lower() in ("ja", "j")
 body_e0 = ParagraphStyle("body_e0", parent=body, spaceAfter=0)                         # Absatz-Einzug: erster Absatz
 body_e = ParagraphStyle("body_e", parent=body_e0, firstLineIndent=5 * mm)              # folgende Absätze eingerückt
@@ -1244,6 +1246,46 @@ def initial_schrift():
     return "Initial-Eigen"
 
 
+UMLAUTE, UMLAUT_FAKTOR = "ÄÖÜÅ", 0.8
+
+
+class ErhoehtesInitial(Flowable):
+    """{initial-zeilen}: 1 (2.82.8) – erhöhtes Initial: steht auf der ersten Zeile und ragt nach oben (etwa 1,5 Zeilen hoch),
+    der Text läuft ab der zweiten Zeile in voller Breite."""
+    def __init__(self, buchstabe, farbe_, text, stil, font=None):
+        super().__init__()
+        self.b, self.f = buchstabe, farbe_
+        self.font = font or schrift("text")
+        cap = (getattr(pdfmetrics.getFont(self.font).face, "capHeight", 700) or 700) / 1000
+        self.gr = (0.6 * TEXT_ZEILE + TEXT_GROESSE * cap) / cap      # etwa 1,5 Zeilen hoch
+        if buchstabe in UMLAUTE:
+            self.gr *= UMLAUT_FAKTOR
+        self.ueber = self.gr * cap - TEXT_GROESSE * cap          # so weit ragt es über die erste Zeile
+        if buchstabe in UMLAUTE:
+            self.ueber += self.gr * cap * 0.25                     # Punkte
+        lw = pdfmetrics.stringWidth(buchstabe, self.font, self.gr)
+        self.p = Paragraph(text, ParagraphStyle("ini1", parent=stil, firstLineIndent=lw + 1.2 * mm))
+        self.style = stil
+    def wrap(self, aw, ah):
+        self.w, self.ph = self.p.wrap(aw, ah)
+        return self.w, self.ph + self.ueber
+    def split(self, aw, ah):
+        if ah < self.ueber + 2 * TEXT_ZEILE:
+            return []
+        teile = self.p.split(aw, ah - self.ueber)
+        if len(teile) < 2:
+            return []
+        erst = copy.copy(self); erst.p = teile[0]
+        return [erst] + teile[1:]
+    def getSpaceAfter(self):
+        return self.p.getSpaceAfter()
+    def draw(self):
+        self.p.drawOn(self.canv, 0, 0)
+        grund = self.ph - self.p.style.fontSize        # Grundlinie der ersten Zeile
+        self.canv.setFillColor(self.f); self.canv.setFont(self.font, self.gr)
+        self.canv.drawString(0, grund, self.b)
+
+
 class Initial(Flowable):
     """Grosser Anfangsbuchstabe am Kapitelanfang ({initial}: ja, ab 2.77; Stil, Zeilen, Schrift ab 2.80).
     stil: normal = im Text · rand = links im Rand, Text in voller Breite · feld = im hellen Feld mit Goldrahmen."""
@@ -1254,6 +1296,8 @@ class Initial(Flowable):
         cap = (getattr(pdfmetrics.getFont(self.font).face, "capHeight", 700) or 700) / 1000
         self.cap = cap
         self.gr = ((zeilen - 1) * TEXT_ZEILE + TEXT_GROESSE * cap) / cap      # Buchstabe: oben Zeile 1 bis Grundlinie
+        if buchstabe in UMLAUTE:          # Punkte/Ring über dem Buchstaben: etwas kleiner, damit sie Platz haben (2.82.8)
+            self.gr *= UMLAUT_FAKTOR
         if stil == "feld":
             self.gr *= 0.7
         self.lw = pdfmetrics.stringWidth(self.b, self.font, self.gr)
@@ -2176,6 +2220,11 @@ def _build(out, ausgleich=None):
                 p = Paragraph(inline(text), ParagraphStyle("ini2", parent=stil, allowOrphans=1, allowWidows=1))
                 ini["paras"].append(p); ini["h"] += neben(p)
                 initial_ausgeben(erzwungen=False)
+                return
+            if INITIAL and INITIAL_ZEILEN == 1 and nach_kapitel and not schwebe and re.match(r"[A-ZÄÖÜ]", text):
+                rest = kapitaelchen(text[1:]) if KAPITAELCHEN else text[1:]     # erhöhtes Initial (2.82.8)
+                story.append(ErhoehtesInitial(text[0], INITIAL_FARBE, inline(rest), stil, initial_schrift()))
+                nach_kapitel = False
                 return
             if INITIAL and nach_kapitel and not schwebe and re.match(r"[A-ZÄÖÜ]", text):   # nur Grossbuchstaben (2.81)
                 ohne = inline(kapitaelchen(text[1:]) if KAPITAELCHEN else text[1:])

@@ -637,6 +637,70 @@ def cover_menue():
           "  einfügen (alten ersetzen). Dann w → co: der Motor liest die Werte und baut den Umschlag neu.")
 
 
+INITIAL_SCHRIFTEN = (("t", "", "Textschrift", "schlicht, wie der Text"), ("f", "fett", "fett", "kräftig"),
+                     ("c", "cinzel", "Cinzel", "elegant, römisch"), ("u", "uncial", "Uncial", "keltisch, verspielt"),
+                     ("r", "fraktur", "Fraktur", "alt, schwerer lesbar"))
+
+
+def initialen_menue():
+    """w → in (ab 2.82.8): Initial am Kapitelanfang – Zeilen 0–4, Schrift, Kapitälchen. Eingabe z. B. «2 c»; «v» = Vorschau.
+    Schreibt {initial}, {initial-zeilen}, {initial-schrift}, {kapitaelchen} in die Variablen-Datei (fehlende Zeilen kommen
+    nach der ersten «{initial…}»-Zeile oder ans Ende von «## Gestaltung»/der Datei)."""
+    pfad = next(iter(sorted(glob.glob(os.path.join(BASE, "*-variablen.md")))), None)
+    if not pfad:
+        return
+    while True:
+        zeilen = open(pfad, encoding="utf-8").read().split("\n")
+        wert = lambda n, s="": next((z.split(":", 1)[1].strip() for z in zeilen if z.startswith("{" + n + "}:")), s)
+        an = wert("initial", "nein").lower() in ("ja", "j")
+        zahl = wert("initial-zeilen", "3") if an else "0"
+        schrift = wert("initial-schrift", "").lower()
+        kap = wert("kapitaelchen", "nein").lower() in ("ja", "j")
+        name = next((n for _, w, n, _ in INITIAL_SCHRIFTEN if w == schrift), schrift or "Textschrift")
+        jetzt = "aus" if zahl == "0" else ("erhöht" if zahl == "1" else zahl + " Zeilen") + " · " + name
+        print(f"\n {FETT('Initialen …')}   " + GRAU(f"jetzt: {jetzt} · Kapitälchen {'ja' if kap else 'nein'}"))
+        print(f"  {FETT('Zeilen')}   0 aus · 1 erhöht (ragt nach oben) · 2 · 3 · 4")
+        for i, (t, _, n, b) in enumerate(INITIAL_SCHRIFTEN):
+            print(f"  {FETT('Schrift') if i == 0 else '       '}  {FETT(t)} {n:<12} {GRAU(b)}")
+        print(f"  {FETT('k')}  Kapitälchen ein/aus  " + GRAU("(erste Wörter in GROSSBUCHSTABEN)"))
+        print(f"  {FETT('v')}  Vorschau: schnell bauen, PDF öffnen")
+        e = frage(" Wahl (z. B. «2 c» = 2 Zeilen Cinzel · ↵ = zurück): ").lower().split()
+        if not e or e == ["q"]:
+            return
+        neu = {}
+        for t in e:
+            if t in ("0", "1", "2", "3", "4"):
+                neu["initial"] = "ja" if t != "0" else "nein"
+                if t != "0":
+                    neu["initial-zeilen"] = t
+            elif t == "k":
+                neu["kapitaelchen"] = "nein" if kap else "ja"
+            elif t == "v":
+                if bauen("schnell") == 0:
+                    liste = pdfs()
+                    if liste:
+                        oeffnen(next(iter(liste.values()))[1])
+            elif any(t == x[0] for x in INITIAL_SCHRIFTEN):
+                neu["initial-schrift"] = next(w for x, w, _, _ in INITIAL_SCHRIFTEN if x == t)
+                neu.setdefault("initial", "ja")
+            else:
+                print(ROT(f"  ✗ Unbekannt: {t}"))
+        if not neu:
+            continue
+        for n, w in neu.items():
+            z = "{" + n + "}:" + (" " + w if w else "")
+            i = next((i for i, x in enumerate(zeilen) if x.startswith("{" + n + "}:")), None)
+            if i is not None:
+                zeilen[i] = z
+            else:
+                j = next((i for i, x in enumerate(zeilen) if x.startswith("{initial")), None)
+                if j is None:
+                    j = next((i for i, x in enumerate(zeilen) if x.strip() == "## Gestaltung"), len(zeilen) - 1)
+                zeilen.insert(j + 1, z)
+        open(pfad, "w", encoding="utf-8").write("\n".join(zeilen))
+        print(GRUEN("  ✓ gespeichert") + GRAU(" – v = Vorschau"))
+
+
 ISBN_AUSGABEN = (("Druck normal", "Druck normal"), ("Druck unzensiert", "Druck UZ"),
                  ("E-Book", "E-Book normal"), ("E-Book unzensiert", "E-Book UZ"))
 
@@ -919,12 +983,15 @@ def main():
             elif w == "w":
                 k = untermenue("weitere …", {"l": ("Leseprobe", 0), "k": ("Korrektur", 0), "p": ("nur-pdf", 0),
                                              "e": ("nur E-Book", 0), "co": ("Cover rechnen", 0), "m": ("Stand merken", 0),
-                                             "s": ("Stichworte …", 0), "i": ("ISBN …", 0), "a": ("aufräumen …", 0)})
+                                             "s": ("Stichworte …", 0), "i": ("ISBN …", 0), "in": ("Initialen …", 0),
+                                             "a": ("aufräumen …", 0)})
                 if k == "m":
                     name = frage(" Name des Stands: ")
                     bauen("stand", *([name] if name else []))
                 elif k == "s":
                     stichworte_menue()
+                elif k == "in":                   # Initialen: Zeilen, Schrift, Kapitälchen (ab 2.82.8)
+                    initialen_menue()
                 elif k == "i":                    # ISBN eintragen und prüfen, Strichcode-PNG öffnen (ab 2.82.7)
                     isbn_menue()
                 elif k == "a":                    # wie sh cleanup.sh: zeigt die Liste, fragt [j/N]
