@@ -10,7 +10,8 @@ Im Ordner pureSATZ (Windows: setup\\setup.bat statt sh setup/setup.sh):
     sh setup/setup.sh ../Buch          ergänzt in einem bestehenden Buchordner, was fehlt
     --kette                            Schritt 4 von START-…: kurze Erklärung, ruhige Ausgabe, Ordner öffnet sich
 
-Das neue Buch liegt danach neben «pureSATZ» (z. B. ../Mein-Buch/) mit:
+Das neue Buch liegt danach neben «pureSATZ» (z. B. ../Mein-Buch/) – gibt es daneben einen Ordner
+«buecher», dann dort (../buecher/Mein-Buch/) – mit:
   Mein-Buch-variablen.md  Angaben, Technik, Layout
   Mein-Buch-buch.md       Titelei und ein Demo-Kapitel mit allen Möglichkeiten
   Mein-Buch-umschlag.md   Vorderseite, Buchrücken, Rückseite
@@ -232,7 +233,8 @@ def buchpfad(p):
     """Buchordner: zuerst ab dem aktuellen Ordner, sonst ab pureSATZ (z. B. ../MeinBuch)."""
     if os.path.isabs(p) or os.path.isdir(p):
         return p
-    return os.path.normpath(os.path.join(HIER, p))
+    b = os.path.join(plattform.buecher(HIER), os.path.basename(os.path.normpath(p)))   # z. B. buecher/MeinBuch
+    return b if os.path.isdir(b) else os.path.normpath(os.path.join(HIER, p))
 
 
 def main():
@@ -265,7 +267,7 @@ def main():
     w = lese_werte(datei)
     if kette:
         import glob
-        if glob.glob(os.path.join(HIER, "..", "Hallo-Buch", "ausgabe-normal", "*.pdf")):
+        if glob.glob(os.path.join(plattform.buecher(HIER), "Hallo-Buch", "ausgabe-normal", "*.pdf")):
             print("So einfach entsteht ein Buch – das Hallo-Buch-PDF ist offen.\n"
                   "Jetzt dein eigenes: nur Titel, Untertitel, Autor und Format.")
         else:
@@ -292,7 +294,7 @@ def main():
         if not w[k] and vorgabe is None:
             raise SystemExit(f"{text} fehlt.")
     w["NAME"] = slug(w["NAME"])
-    ordner = os.path.normpath(os.path.join(HIER, "..", w["NAME"]))
+    ordner = os.path.join(plattform.buecher(HIER), w["NAME"])
 
     print("\nZusammenfassung:")
     for k, _, _ in FRAGEN:

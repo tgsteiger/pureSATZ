@@ -3,6 +3,19 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.82.6 (November 2026)
+- Bücher dürfen eine Ebene tiefer liegen (z. B. `pureWORLD/buecher/Leben123`): Menü, `update.sh lokal`, Handbuch und
+  Hilfe finden pureSATZ unter `../pureSATZ` oder `../../pureSATZ`. Neue Bücher (auch Hallo-Buch) kommen in den Ordner
+  `buecher` neben pureSATZ, wenn es ihn gibt.
+- Menü `w` weitere: `m` Stand merken · `s` Stichworte … · `i` ISBN prüfen (neu: Prüfziffer, Strichcode-PNG öffnen).
+- `sh build.sh isbn`: ISBN je Fassung prüfen und Strichcode-PNG machen (`_druckbilder/isbn-<ziffern>.png`).
+
+## 2.82.5 (November 2026)
+- `{isbn-bild}: auto` – der Motor macht das Strichcode-Bild (EAN-13, Ziffern darunter) selbst aus `{isbn}` und setzt
+  es wie das PNG einer Druckerei ein (Feld, Bergkette schneidet die Striche). Kein SVG/PNG mehr nötig.
+- Zierschriften im Motor (SIL OFL): `{initial-schrift}: cinzel | uncial | fraktur` (Cinzel Decorative, Uncial Antiqua,
+  UnifrakturMaguntia in motor/fonts).
+
 ## 2.82.4 (November 2026)
 - Hilfe: «Überblick: was es braucht, in Schritten» (Buch schreiben, Teile und Kapitel, Geschichten, Inhalts- und
   Stichwortverzeichnis, Drucken lassen) am Anfang von «Schreiben»; «Skripte und Kurzbefehle» mit allen Skripten,

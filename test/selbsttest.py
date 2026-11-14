@@ -47,8 +47,10 @@ def main():
     shutil.copytree(HIER, lb, ignore=shutil.ignore_patterns(".git", ".venv", "__pycache__"))
     with open(os.path.join(lb, "test-start.txt"), "w", encoding="utf-8") as f:
         f.write(START)
+    unten = os.path.join(tmp, "buecher") if os.environ.get("SELBSTTEST_BUECHER") else tmp    # Bücher in buecher/ (2.82.6)
+    os.makedirs(unten, exist_ok=True)
     lauf([sys.executable, os.path.join("setup", "setup.py"), "test-start.txt"] + (["--ohne-venv"] if OHNE_VENV else []), lb)
-    buch = os.path.join(tmp, "Testbuch")
+    buch = os.path.join(unten, "Testbuch")
     # Hallo-Buch (2.14): erster Blick, ohne Fragen
     lauf([sys.executable, os.path.join("setup", "hallo.py"), "--nicht-oeffnen"] + (["--ohne-venv"] if OHNE_VENV else []), lb)
     lauf([sys.executable, os.path.join("motor", "hilfe.py")], lb)
@@ -142,7 +144,7 @@ def main():
         name = f"Import-{endung}"
         lauf([py, os.path.join("import", "import-text.py"), os.path.join(lb, "test", f"import-test.{endung}"), "--name", name,
               "--ohne-venv"], lb)
-        ib = os.path.join(tmp, name)
+        ib = os.path.join(unten, name)
         lauf([py, os.path.join("motor", "bauen.py"), "schnell"], ib)
         importiert.append(os.path.join(ib, "ausgabe-normal", f"{name}.pdf"))
         importiert.append(os.path.join(ib, "fotos"))
@@ -156,7 +158,7 @@ def main():
     erwartet += [os.path.join(zweite, "Testbuch_Directors-Cut.pdf"), os.path.join(zweite, "Testbuch_Directors-Cut.epub")]
     erwartet.append(os.path.join(normal, "Testbuch_EPUB2.epub"))          # epub2-light, auch für EPUBCheck
     fehlt = [os.path.relpath(p, buch) for p in erwartet if not os.path.exists(p) or os.path.getsize(p) == 0]
-    fehlt += [os.path.relpath(p, tmp) for p in importiert if not os.path.exists(p)]
+    fehlt += [os.path.relpath(p, unten) for p in importiert if not os.path.exists(p)]
     fehlt += [f for f in ("update.sh", "update.bat", "neu.sh", "neu.bat", os.path.join("motor", "update.py"),
                           os.path.join("geschichten", "erste-geschichte.md"), os.path.join("geschichten", "UEBERSICHT.md"),
                           "geschichten-uebersicht.html", os.path.join("ausgabe-normal", "Testbuch_Geschichten.pdf"),
@@ -171,13 +173,13 @@ def main():
             fehlt.append("Tabelle «breit» fehlt im PDF")
     except ImportError:
         pass
-    if not os.path.exists(os.path.join(tmp, "Hallo-Buch", "ausgabe-normal", "Hallo-Buch.pdf")):
+    if not os.path.exists(os.path.join(unten, "Hallo-Buch", "ausgabe-normal", "Hallo-Buch.pdf")):
         fehlt.append("Hallo-Buch/ausgabe-normal/Hallo-Buch.pdf")
     else:
         try:
             from pypdf import PdfReader
             hallo_text = "".join(p.extract_text() or "" for p in PdfReader(
-                os.path.join(tmp, "Hallo-Buch", "ausgabe-normal", "Hallo-Buch.pdf")).pages)
+                os.path.join(unten, "Hallo-Buch", "ausgabe-normal", "Hallo-Buch.pdf")).pages)
             if "Ein Buch entsteht" not in hallo_text:
                 fehlt.append("Hallo-Buch: Muster-Tabelle «Ein Buch entsteht» fehlt im PDF")
             if not re.search(r"3\.\s*Dritter Schritt", hallo_text):
@@ -205,16 +207,16 @@ def main():
     if not pruef_rot:
         fehlt.append("_druckbilder/pruefen.txt nach dem Tippfehler nicht «fehler» (Menü bp rot)")
     for endung in ("odt", "docx"):
-        md = open(os.path.join(tmp, f"Import-{endung}", f"Import-{endung}-buch.md"), encoding="utf-8").read()
+        md = open(os.path.join(unten, f"Import-{endung}", f"Import-{endung}-buch.md"), encoding="utf-8").read()
         for muss in ("# Teil 1|Erster Teil|", "## Ein Kapitel", "**fettem Wort**", "- Punkt eins",
                      "text: Eine Sonne am Himmel", "> Alles ist bereits in dir."):
             if muss not in md:
                 fehlt.append(f"Import-{endung}: «{muss}» fehlt in der Buch-MD")
-    zips = [f for f in os.listdir(os.path.join(tmp, "Sicherungen"))] if os.path.isdir(os.path.join(tmp, "Sicherungen")) else []
+    zips = [f for f in os.listdir(os.path.join(unten, "Sicherungen"))] if os.path.isdir(os.path.join(unten, "Sicherungen")) else []
     if not zips:
         fehlt.append("../Sicherungen/Testbuch_*.zip")
     else:
-        with zipfile.ZipFile(os.path.join(tmp, "Sicherungen", zips[0])) as z:
+        with zipfile.ZipFile(os.path.join(unten, "Sicherungen", zips[0])) as z:
             if "Testbuch/Testbuch-buch.md" not in z.namelist():
                 fehlt.append("Testbuch-buch.md in der Sicherung")
     bod = os.path.join(buch, "ausgabe-test", "bod-a5-hardcover")

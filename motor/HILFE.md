@@ -78,7 +78,7 @@ Untermenüs («…» = nur was es gibt):
 | `t` Tabellen | `e` bearbeiten … (Liste mit Kürzel) · `n` neue Tabelle (öffnet die CSV, `@#name` kommt in den Block «## Noch einordnen» im Buch) · `o` Ordner |
 | `c` check / gegenlesen | `n` Liste neu (personen-seiten.txt) · `c` check-PDF für eine Person (öffnet sich danach) · `t` Textdatei |
 | `hb` Hörbuch (Linux) | `p` Probe hören · `w` Wörter hören · `t` Texte aus dem Buch · `v` vertonen · `k` Kapitel vertonen … · `e` Wörter/Probe/Einstellungen öffnen · `s` Azure-Schlüssel · `$` Terminal in audio/ · `o` Ordner · `h` Hilfe · `c` prüfen – siehe [Hörbuch: Das Menü](#Hörbuch-Das-Menü-hb) |
-| `w` weitere | `l` Leseprobe · `k` Korrektur · `p` nur-pdf · `e` nur E-Book · `co` Cover rechnen (wie `sh build.sh covers`) · `s` Stand merken · `i` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` Stichwortdatei öffnen) · `a` aufräumen (wie `sh cleanup.sh`, fragt `[j/N]`) |
+| `w` weitere | `l` Leseprobe · `k` Korrektur · `p` nur-pdf · `e` nur E-Book · `co` Cover rechnen (wie `sh build.sh covers`) · `m` Stand merken · `s` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` Stichwortdatei öffnen) · `i` ISBN prüfen (Prüfziffer, Strichcode-PNG öffnen, wie `sh build.sh isbn`) · `a` aufräumen (wie `sh cleanup.sh`, fragt `[j/N]`) |
 | `p` PDF öffnen | `n` normal · `u` unzensiert · `l` Leseprobe · `k` Korrektur … |
 | `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten · `t` tabellen · `a` audio … · `p` Pfad Buchordner kopieren · dazu Taste + `t` = Terminal dort (`bt`, `at` …), + `p` = Pfad kopieren (`ap` …) |
 | `n` neu | `b` neues Buch · `h` Hallo-Buch · `e` einrichten · `m` Motor-Selbsttest · `v` Verknüpfung |
@@ -168,8 +168,8 @@ das PDF ansehen und mit der MD vergleichen – danach das Demo löschen und schr
 
 ## Ein neues Buch anlegen
 
-Im Ordner pureSATZ: zuerst den neuesten Stand holen, dann das Buch anlegen. Es entsteht neben pureSATZ;
-ein leerer Ordner mit demselben Namen wird einfach gefüllt, bestehende Dateien bleiben unberührt.
+Im Ordner pureSATZ: zuerst den neuesten Stand holen, dann das Buch anlegen. Es entsteht neben pureSATZ
+(gibt es daneben einen Ordner `buecher`, dann dort); ein leerer Ordner mit demselben Namen wird einfach gefüllt, bestehende Dateien bleiben unberührt.
 
 ```sh
 cd ../pureSATZ
@@ -706,7 +706,7 @@ Nach einer Änderung `sh build.sh schnell` und ansehen.
 | eine Verzierung zwischen zwei Abschnitten | `@ZIER-TRENNER` |
 | ein eigenes Zierbild | in der Variablen-Datei `{zier}: meine-zier.png` (Bild in `bilder/`) |
 | einen grossen Anfangsbuchstaben am Kapitelanfang (Initial, drei Zeilen hoch) | `{initial}: ja` – Farbe: `{initial-farbe}: akzent` (Gold) oder `haupt` (Blau). Ist der erste Absatz kürzer als drei Zeilen, läuft der nächste daneben weiter; folgt gleich ein Titel oder Foto, beginnt das Kapitel ohne Initial |
-| das Initial anders: im Rand, im Feld, grösser, fett oder in einer Zierschrift | `{initial-stil}: rand` (links im Rand, Text volle Breite) oder `feld` (helles Feld mit Goldrahmen) · `{initial-zeilen}: 4` · `{initial-schrift}: fett` oder eine TTF-Datei aus `fonts/` (z. B. Cinzel Decorative, UnifrakturMaguntia, Playfair Display – frei auf fonts.google.com) |
+| das Initial anders: im Rand, im Feld, grösser, fett oder in einer Zierschrift | `{initial-stil}: rand` (links im Rand, Text volle Breite) oder `feld` (helles Feld mit Goldrahmen) · `{initial-zeilen}: 4` · `{initial-schrift}: fett` · Zierschrift aus dem Motor: `cinzel` (klassisch), `uncial` (keltisch, kleiner), `fraktur` (das I sieht aus wie ein J) · oder eine eigene TTF-Datei aus `fonts/` im Buch (frei z. B. auf fonts.google.com) |
 | die ersten Wörter jedes Kapitels in Kapitälchen | `{kapitaelchen}: ja` – mit oder ohne Initial |
 | Absätze eingerückt statt mit Abstand (wie viele Romane) | `{absatz-einzug}: ja` – der erste Absatz nach einem Titel bleibt bündig |
 
@@ -743,7 +743,7 @@ Das Verzeichnis am Schluss des Buchs listet Begriffe mit ihren Seiten. Es brauch
 `{stichworte}: ja` in der Variablen-Datei, eine eigene Zeile `@STICHWORTE` in der Buchdatei (meist vor `@RUECKSEITE`)
 und die Liste `stichworte-<buch>.txt`. Neue Bücher (auch das Hallo-Buch) haben alles schon, mit Beispielen aus dem Demo.
 
-**In 4 Schritten** (Menü: `w` → `i` Stichworte …):
+**In 4 Schritten** (Menü: `w` → `s` Stichworte …):
 
 ```sh
 sh build.sh stichworte              # 1. prüft die drei Dinge, schreibt stichworte-vorschlag.txt
@@ -791,6 +791,7 @@ sh build.sh nur-pdf         # nur die Bildschirm-PDFs (mit Booklet und Statistik
 sh build.sh nur-pdf final   # nur Bildschirm-PDFs als Druckfassung
 sh build.sh nur-druck       # nur Buchblock und Umschlag
 sh build.sh covers          # Cover neu berechnen: Rohdaten des Coverrechners lesen, Buchblock + Umschlag (final)
+sh build.sh isbn            # ISBN prüfen (Prüfziffer) und Strichcode-PNG machen (_druckbilder/isbn-….png)
 sh build.sh nur-ebook       # nur die E-Books (mit «final» ohne offene Stellen)
 sh build.sh sicherung       # nur die MD-Dateien nach md-history/ sichern (ohne Bau)
 sh build.sh final druck=bod-a5-normal       # Test: nur Druckdateien mit einer anderen Datei aus druck/ → ausgabe-test/
@@ -946,7 +947,7 @@ Lese-PDF, E-Book, Leseprobe, Korrektur und Mockup bleiben beim `{format}` der Va
 | `beschnitt-buchblock`, `beschnitt-hardcover`, `beschnitt-softcover`, `deckel-hardcover` | Masse in mm (BoD: Buchblock 0, Deckel 153x216, Einschlag 17) |
 | `isbn-position` | `links` · `mitte` · `rechts` (leer: epubli links frei, BoD rechts) |
 | `isbn-groesse` | z. B. `40x20` (mm, 16 mm vom Rand seitlich, 8 mm von unten); leer = 60 × 35 mm ab der Ecke frei |
-| `isbn-bild` | PNG aus `bilder/` auf weissem Feld; leer = nichts zeichnen (BoD: Strichcode aus der ISBN) |
+| `isbn-bild` | `auto` = der Motor macht das Strichcode-Bild selbst aus `{isbn}` (wie das PNG einer Druckerei, mit Bergkette) · PNG aus `bilder/` auf weissem Feld · leer = nichts zeichnen (BoD: Strichcode aus der ISBN) |
 | `isbn-rahmen` | leer = kein Rahmen · `gold` = Goldrahmen · `berge` = Goldrahmen, oben als Bergkette. Mit `isbn-bild` werden die Striche oben zu Gipfeln geschnitten (unten bleiben über 70 % frei, bleibt lesbar); beim eigenen BoD-Strichcode liegt die Bergkette darüber; bei epubli rahmt sie das freie Feld (Lage nach dem ersten Probedruck prüfen). Farbe = Akzentfarbe |
 | `isbn-rahmen-farbe` | leer = `gold` (Akzentfarbe) · `schwarz` |
 | `isbn-rahmen-abstand` | mm weiss zwischen Strichen und Linie, z. B. `2` – dann besteht der Code nur aus schwarzen Strichen auf Weiss (Vorgabe mancher Plattformen, z. B. tredition); leer = 0 |
@@ -1017,8 +1018,10 @@ lesbar dunkel gesetzt (Kontrast 4,5:1); eigene Farbe mit `farbe-akzent-ebook:`.
 - **Hardcover:** Einschlag und Deckel laut Coverrechner, z. B. `{beschnitt-hardcover}: 17` und `{deckel-hardcover}: 153x216`.
 - **Coverrechner** von tredition: Seitenzahl aus `w` → `co` eingeben, den Text in der Druckdatei unter
   `## Coverrechner (Rohdaten)` einfügen, nochmals `w` → `co` («Umschlag: Rücken und Seitenzahl»).
-- **ISBN und Strichcode:** tredition gibt jedem Buch eine ISBN und den Strichcode als SVG. Als PNG in `bilder/` legen
-  und bei `{isbn-bild}:` eintragen. `{isbn-rahmen}: berge` und `{isbn-rahmen-abstand}: 2` setzen die Bergkette darüber,
+- **ISBN und Strichcode:** tredition gibt jedem Buch eine ISBN. Die ISBN unter `## Ausgabe: Druck …` bei `{isbn}:`
+  eintragen und in der Druckdatei `{isbn-bild}: auto` – der Motor macht den Strichcode selbst. Prüfen und
+  ansehen: Menü `w` → `i` (`sh build.sh isbn`). (Oder das SVG von tredition
+  als PNG in `bilder/` legen und dort eintragen.) `{isbn-rahmen}: berge` und `{isbn-rahmen-abstand}: 2` setzen die Bergkette darüber,
   ohne dass Gold die Striche berührt.
 - **Hochladen:** `<kurz>_Buchblock.pdf` und `<kurz>_Umschlag_Hardcover.pdf` – `00-UEBERSICHT.txt` zeigt sie.
 - **Impressum:** tredition verlangt Druckerei und Kontakt nach EU-Produktsicherheit: `{impressum-herstellung}` und
@@ -1575,7 +1578,7 @@ sh update.sh lokal      # aus dem Ordner ../pureSATZ statt von GitHub
 Ersetzt wird nur der Ordner `motor/` – deine MD-Dateien, Stichworte, Fotos und Bilder bleiben unberührt.
 Der alte Motor bleibt als `motor-alt-…` liegen. Braucht git und Internet, aber keine Anmeldung –
 pureSATZ ist öffentlich. Danach `sh build.sh schnell` und, wenn das Buch auf mehreren Computern liegt, `sh sync.sh`.
-Ohne Internet, aus dem Ordner `pureSATZ` neben dem Buch: `sh update.sh lokal`
+Ohne Internet, aus dem Ordner `pureSATZ` neben dem Buch (oder eine Ebene höher, z. B. bei `buecher/Buch`): `sh update.sh lokal`
 (oder im Ordner pureSATZ: `sh setup/setup.sh motor ../<buch>`).
 
 ## Windows

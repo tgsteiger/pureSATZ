@@ -53,7 +53,7 @@
 {isbn-rahmen-abstand}:
 > {isbn-position}: default: leer = epubli links frei, bod rechts · optional: links | mitte | rechts
 > {isbn-groesse}: default: leer = 60 x 35 mm frei ab Ecke · optional: Breite x Höhe in mm, z. B. 40x20
-> {isbn-bild}: default: leer = nichts zeichnen (bod: Strichcode aus der ISBN) · optional: PNG aus bilder/
+> {isbn-bild}: default: leer = nichts zeichnen (bod: Strichcode aus der ISBN) · optional: auto = Strichcode-Bild aus {isbn} | PNG aus bilder/
 > {isbn-rahmen}: default: leer = kein Rahmen · optional: gold = Goldrahmen · berge = Goldrahmen, oben als Bergkette (Striche eines PNG werden oben zu Gipfeln geschnitten)
 > {isbn-rahmen-farbe}: default: leer = gold · optional: schwarz
 > {isbn-rahmen-abstand}: default: leer = 0 (Linie berührt die Striche) · optional: mm weiss dazwischen, z. B. 2 (tredition: nur schwarze Striche auf Weiss)

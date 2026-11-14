@@ -86,10 +86,11 @@ def einschalten(basis):
 
 
 def quelle(basis):
-    p = os.path.normpath(os.path.join(basis, "..", "pureSATZ"))
+    import plattform
+    p = plattform.puresatz(basis)
     if not (os.path.exists(os.path.join(p, "START.md")) and os.path.isdir(os.path.join(p, "handbuch"))):
         raise SystemExit("Handbuch: Ordner pureSATZ (mit START.md und handbuch/) nicht gefunden – "
-                         f"er muss neben dem Buchordner liegen: {p}")
+                         f"er muss neben dem Buchordner oder eine Ebene höher liegen: {p}")
     return p
 
 

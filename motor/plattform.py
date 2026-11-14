@@ -43,3 +43,18 @@ def windows_befehle():
         s = getattr(sys, name)
         if s is not None and not isinstance(s, _Strom):
             setattr(sys, name, _Strom(s))
+
+
+def puresatz(buch):
+    """Ordner pureSATZ zu einem Buch: daneben (../pureSATZ) oder eine Ebene höher (../../pureSATZ,
+    z. B. pureWORLD/buecher/Leben123 → pureWORLD/pureSATZ). Ohne Fund: ../pureSATZ."""
+    for p in (os.path.join(buch, "..", "pureSATZ"), os.path.join(buch, "..", "..", "pureSATZ")):
+        if os.path.isdir(os.path.join(p, "motor")):
+            return os.path.normpath(os.path.abspath(p))
+    return os.path.normpath(os.path.abspath(os.path.join(buch, "..", "pureSATZ")))
+
+
+def buecher(puresatz_ordner):
+    """Wohin neue Bücher kommen: in den Ordner buecher neben pureSATZ, wenn es ihn gibt, sonst neben pureSATZ."""
+    b = os.path.join(puresatz_ordner, "..", "buecher")
+    return os.path.normpath(os.path.abspath(b if os.path.isdir(b) else os.path.join(puresatz_ordner, "..")))

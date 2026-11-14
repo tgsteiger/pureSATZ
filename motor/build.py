@@ -1226,12 +1226,15 @@ def inline(t):
 
 
 def initial_schrift():
-    """{initial-schrift}: leer = Textschrift · fett = Textschrift fett · datei.ttf = eigene Schrift (fonts/ oder bilder/)."""
+    """{initial-schrift}: leer = Textschrift · fett = Textschrift fett · cinzel | uncial | fraktur = Zierschrift aus dem Motor ·
+    datei.ttf = eigene Schrift (fonts/ oder bilder/ im Buch)."""
     w = (V("initial-schrift", "") or "").strip()
     if not w:
         return schrift("text")
     if w.lower() == "fett":
         return schrift("text_fett")
+    w = {"cinzel": "CinzelDecorative-Bold.ttf", "uncial": "UncialAntiqua-Regular.ttf",          # Zierschriften im Motor
+         "fraktur": "UnifrakturMaguntia-Regular.ttf"}.get(w.lower(), w)                         # (motor/fonts, ab 2.82.5)
     if "Initial-Eigen" not in pdfmetrics.getRegisteredFontNames():
         pfad = finde(w, ("fonts", "bilder", ""))
         if not pfad:
@@ -1680,11 +1683,44 @@ def barcode_feld():
         b, h, rand, unten = 60 * mm, 35 * mm, 0, 0
     x = {"links": rand, "mitte": (W - b) / 2, "rechts": W - rand - b}[pos]
     pfad = None
-    if bd:
+    if bd.lower() == "auto":             # Strichcode-Bild aus {isbn} selbst machen (ab 2.82.5)
+        pfad = isbn_png()
+    elif bd:
         pfad = finde(bd, ("bilder",))
         if not pfad or not os.path.exists(pfad):
             raise SystemExit(f"Variable «barcode-bild»: {bd} fehlt im Ordner bilder/.")
     return dict(position=pos, x=x, y=unten, b=b, h=h, bild=pfad)
+
+
+def isbn_ok(isbn):
+    """ISBN-13: 13 Ziffern und die letzte stimmt (Prüfziffer, Gewichte 1 und 3)."""
+    z = re.sub(r"\D", "", isbn or "")
+    return len(z) == 13 and sum(int(c) * (3 if i % 2 else 1) for i, c in enumerate(z)) % 10 == 0
+
+
+def isbn_png(isbn=None):
+    """{isbn-bild}: auto (ab 2.82.5) – Strichcode als PNG aus {isbn} (EAN-13, Ziffern darunter), gleich verwendet wie das
+    PNG einer Druckerei (Feld, Bergkette). Liegt in _druckbilder/isbn-<13 Ziffern>.png; fehlt die ISBN: None.
+    isbn: andere ISBN als die des laufenden Baus (w → i im Menü, ab 2.82.6)."""
+    ziffern = re.sub(r"\D", "", isbn or ISBN or "")
+    if len(ziffern) != 13:
+        print("Hinweis: «isbn-bild: auto» braucht eine ISBN mit 13 Ziffern ({isbn} unter «## Ausgabe: Druck …»).")
+        return None
+    ziel = os.path.join(BASE, "_druckbilder", f"isbn-{ziffern}.png")
+    if not os.path.exists(ziel):
+        from reportlab.graphics.barcode.eanbc import Ean13BarcodeWidget
+        from reportlab.graphics.shapes import Group
+        from reportlab.graphics import renderPDF
+        import pypdfium2
+        bc = Ean13BarcodeWidget(ziffern[:12]); bc.barWidth = 0.33 * mm; bc.barHeight = 17.5 * mm
+        bc.fontName, bc.fontSize = "Helvetica", 8
+        b = bc.getBounds(); g = Group(bc); g.translate(0.3 * mm - b[0], 0.3 * mm - b[1])
+        dr = Drawing(b[2] - b[0] + 0.6 * mm, b[3] - b[1] + 0.6 * mm); dr.add(g)
+        os.makedirs(os.path.dirname(ziel), exist_ok=True)
+        renderPDF.drawToFile(dr, ziel[:-4] + ".pdf")
+        pypdfium2.PdfDocument(ziel[:-4] + ".pdf")[0].render(scale=1200 / 72).to_pil().save(ziel)
+        os.remove(ziel[:-4] + ".pdf")
+    return ziel
 
 
 def barcode(c, x, y):

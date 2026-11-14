@@ -18,7 +18,8 @@ import sys
 
 DOCS = os.path.dirname(os.path.abspath(__file__))
 HIER = os.path.dirname(DOCS)
-HALLO = os.path.normpath(os.path.join(HIER, "..", "Hallo-Buch"))
+HALLO = next((os.path.normpath(p) for p in (os.path.join(HIER, "..", "buecher", "Hallo-Buch"),
+              os.path.join(HIER, "..", "Hallo-Buch")) if os.path.isdir(p)), os.path.normpath(os.path.join(HIER, "..", "Hallo-Buch")))
 REPO = "https://github.com/tgsteiger/pureSATZ"
 ZIP = REPO + "/archive/refs/heads/main.zip"
 

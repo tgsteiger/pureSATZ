@@ -232,7 +232,7 @@ def druck_pruefen():
             bk.format_angaben(v("format"), v("seite"))
             for n in ("barcode-groesse", "deckel-hardcover"):
                 bk.masse_mm(v(n), n)
-            if v("barcode-bild") and not bk.finde(v("barcode-bild"), ("bilder",)):
+            if v("barcode-bild") and v("barcode-bild").lower() != "auto" and not bk.finde(v("barcode-bild"), ("bilder",)):
                 fehler.append(f"{d}: isbn-bild {v('barcode-bild')} fehlt im Ordner bilder/")
             if v("impressum-logo") and not bk.finde(v("impressum-logo"), ("bilder",)):
                 fehler.append(f"{d}: impressum-logo {v('impressum-logo')} fehlt im Ordner bilder/")
@@ -250,6 +250,28 @@ def druck_pruefen():
 
 def name(a):
     return bk.AUSGABEN["B" if a == "uz" else "A"]["name"]
+
+
+def isbn_zeigen():
+    """sh build.sh isbn (ab 2.82.6): je Fassung die ISBN aus der Druckdatei, Prüfziffer, Strichcode-PNG wie bei
+    {isbn-bild}: auto. Die PNG-Pfade stehen danach in _druckbilder/isbn.txt (das Menü öffnet sie)."""
+    import re
+    pngs = []
+    for a in ausgaben():
+        nr = bk.druck_V("isbn", "", a).strip()
+        if len(re.sub(r"\D", "", nr)) != 13:
+            print(f"  {name(a)}: keine ISBN mit 13 Ziffern ({nr or 'leer'}) – {{isbn}} in der Druckdatei eintragen")
+        elif not bk.isbn_ok(nr):
+            print(f"  {name(a)}: ISBN {nr} ✗ Prüfziffer stimmt nicht – Tippfehler?")
+        else:
+            p = bk.isbn_png(nr)
+            pngs.append(p)
+            print(f"  {name(a)}: ISBN {nr} ✓  Strichcode: {os.path.relpath(p, BASE)}")
+    if pngs:
+        print("  Im Umschlag: {isbn-bild}: auto in der Druckdatei (druck/…md)")
+    os.makedirs(os.path.join(BASE, "_druckbilder"), exist_ok=True)
+    with open(os.path.join(BASE, "_druckbilder", "isbn.txt"), "w", encoding="utf-8") as f:
+        f.write("".join(p + "\n" for p in pngs))
 
 
 def parallel(schritte, env):
@@ -744,6 +766,8 @@ def main():
         art = "nur-druck"                   # Testlauf: nur Druckdateien, nach ausgabe-test/<datei>/
     if art == "sicherung":
         sicherung(); return
+    if art == "isbn":                       # «sh build.sh isbn»: ISBN prüfen, Strichcode-PNG (ab 2.82.6)
+        isbn_zeigen(); return
     if art == "pruefen":
         pruefen(); return
     if art == "personen":                   # Personen und Seiten, Check-PDFs zum Gegenlesen (personen.py)

@@ -42,7 +42,7 @@ def main():
     kette = "--kette" in sys.argv
     sys.path.insert(0, SETUP)
     import setup as S
-    ordner = os.path.normpath(os.path.join(HIER, "..", NAME))
+    ordner = os.path.join(plattform.buecher(HIER), NAME)
     if kette:
         print("""Ein Beispielbuch: Kapitel, Fotos, Tabellen, Umschlag.
 Erstes Mal ca. 1 Minute (Internet). Darf später weg.

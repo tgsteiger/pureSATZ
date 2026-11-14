@@ -6,7 +6,7 @@ update.py – prüft, ob es einen neueren Motor gibt, und setzt ihn ins Buch ein
     sh update.sh pruefen    nur prüfen, nichts ändern
     sh update.sh ja         ohne Rückfrage aktualisieren
 
-    sh update.sh lokal      aus dem Ordner ../pureSATZ neben dem Buch holen (ohne GitHub)
+    sh update.sh lokal      aus dem Ordner pureSATZ holen (../pureSATZ oder ../../pureSATZ, ohne GitHub)
 
 Der neue Motor kommt direkt von GitHub (Repository «pureSATZ»). Ein lokaler Ordner pureSATZ
 ist dafür nicht nötig. Geholt wird mit git und der eigenen GitHub-Anmeldung, also klappt es auch bei
@@ -115,7 +115,7 @@ def main():
     global QUELLE
     a = [x.lower() for x in sys.argv[1:]]
     if "lokal" in a:
-        QUELLE = os.path.join(os.path.dirname(BASE), "pureSATZ")
+        QUELLE = plattform.puresatz(BASE)
     nur_pruefen = "pruefen" in a or "prüfen" in a
     ohne_frage = "ja" in a
     if not os.path.isdir(QUELLE) and not shutil.which("git"):

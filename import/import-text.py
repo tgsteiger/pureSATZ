@@ -519,7 +519,7 @@ def main():
     werte = dict(TITEL=titel.replace("**", ""), UNTERTITEL=untertitel.replace("**", ""), AUTOR=autor, NAME=name,
                  FORMAT=opt.get("format", "a5"), BINDUNG=opt.get("bindung", "hardcover"),
                  ZWEITE_AUSGABE="nein", ORT="", JAHR=str(date.today().year), WEBSITE="", ADRESSE="")
-    ordner = os.path.abspath(opt.get("ziel") or os.path.join(HIER, "..", name))
+    ordner = os.path.abspath(opt.get("ziel") or os.path.join(plattform.buecher(HIER), name))
     if os.path.exists(os.path.join(ordner, f"{name}-buch.md")):
         sys.exit(f"Es gibt schon ein Buch in {ordner} – nichts überschrieben. Anderer Name: --name Neuer-Name")
 

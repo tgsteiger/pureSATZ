@@ -81,9 +81,11 @@ def kopf(bereich="", rechts=""):
     sichtbar = len(re.sub(r"\033\[[0-9;]*m", "", rechts))                       # rechts darf Farben haben (Klang (!))
     return zeile + " " * max(2, 66 - len(links) - sichtbar) + rechts + " " + GOLDFEIN("══")   # endet bei Spalte 71 (RAND)
 EINST = os.path.join(BASE, ".menu")
-PURESATZ = os.path.join(os.path.dirname(BASE), "pureSATZ")
+sys.path.insert(0, MOTOR)
+import plattform                        # noqa: E402
+PURESATZ = plattform.puresatz(BASE)    # ../pureSATZ oder ../../pureSATZ (z. B. buecher/Buch)
 LOKAL = os.path.isdir(os.path.join(PURESATZ, "motor"))
-BEFEHLE = ("schnell", "komplett", "final", "entwurf", "leseprobe", "korrektur", "nur-pdf", "nur-druck", "nur-ebook", "covers",
+BEFEHLE = ("schnell", "komplett", "final", "entwurf", "leseprobe", "korrektur", "nur-pdf", "nur-druck", "nur-ebook", "covers", "isbn",
            "pruefen", "personen", "stichworte", "stand", "aenderungen", "änderungen", "geschichten", "hilfe", "mockup", "sicherung")
 MD = {"b": ("Buch", "*-buch.md"), "v": ("Variablen", "*-variablen.md"), "u": ("Umschlag", "*-umschlag.md"),
       "s": ("Stichworte", "stichworte-*.txt"), "h": ("meine Hilfe", "meine-hilfe.md")}
@@ -248,7 +250,7 @@ def untermenue(titel, eintraege, zusatz=""):
 
 
 def stichworte_menue():
-    """w → i: Vorschläge machen (und öffnen), mit [+] markierte übernehmen, Stichwortdatei öffnen."""
+    """w → s: Vorschläge machen (und öffnen), mit [+] markierte übernehmen, Stichwortdatei öffnen."""
     k = untermenue("Stichworte …", {"v": ("Vorschläge", 0), "u": ("übernehmen [+]", 0), "o": ("Stichwortdatei öffnen", 0)})
     if k == "v":
         if bauen("stichworte") == 0:
@@ -863,13 +865,20 @@ def main():
                 bauen("komplett")
             elif w == "w":
                 k = untermenue("weitere …", {"l": ("Leseprobe", 0), "k": ("Korrektur", 0), "p": ("nur-pdf", 0),
-                                             "e": ("nur E-Book", 0), "co": ("Cover rechnen", 0), "s": ("Stand merken", 0),
-                                             "i": ("Stichworte …", 0), "a": ("aufräumen …", 0)})
-                if k == "s":
+                                             "e": ("nur E-Book", 0), "co": ("Cover rechnen", 0), "m": ("Stand merken", 0),
+                                             "s": ("Stichworte …", 0), "i": ("ISBN prüfen", 0), "a": ("aufräumen …", 0)})
+                if k == "m":
                     name = frage(" Name des Stands: ")
                     bauen("stand", *([name] if name else []))
-                elif k == "i":
+                elif k == "s":
                     stichworte_menue()
+                elif k == "i":                    # ISBN prüfen, Strichcode-PNG öffnen (ab 2.82.6)
+                    if bauen("isbn") == 0:
+                        try:
+                            for p in open(os.path.join(BASE, "_druckbilder", "isbn.txt"), encoding="utf-8").read().split():
+                                oeffnen(p)
+                        except OSError:
+                            pass
                 elif k == "a":                    # wie sh cleanup.sh: zeigt die Liste, fragt [j/N]
                     lauf([sys.executable, os.path.join(MOTOR, "aufraeumen.py")], titel="aufräumen")
                 elif k:
@@ -981,15 +990,16 @@ def main():
                 if k == "v":
                     verknuepfung()
                 elif k:
-                    vorher = set(os.listdir(os.path.dirname(BASE)))
+                    neu_in = plattform.buecher(PURESATZ)
+                    vorher = set(os.listdir(neu_in))
                     {"b": lambda: skript(os.path.join("setup", "setup"), ordner=PURESATZ),
                      "h": lambda: skript("hallo", ordner=PURESATZ),
                      "m": lambda: lauf([sys.executable, os.path.join("test", "selbsttest.py")], PURESATZ,
                                        dict(os.environ, SELBSTTEST_OHNE_VENV="1")),
                      "e": lambda: skript("START-Windows" if WIN else "START-Linux", ordner=PURESATZ,
                                          mac="START-Mac-imTerminal.sh")}[k]()
-                    for d in sorted(set(os.listdir(os.path.dirname(BASE))) - vorher):
-                        print(f"  Neues Buch: ../{d} – dort sh menu.sh")
+                    for d in sorted(set(os.listdir(neu_in)) - vorher):
+                        print(f"  Neues Buch: {os.path.relpath(os.path.join(neu_in, d), BASE)} – dort sh menu.sh")
             elif w in ("h", "?"):
                 bauen("hilfe")
             elif w.split()[0] in ("xdg-open", "open", "start"):   # wie im Terminal: Datei öffnen, ohne zu warten
