@@ -249,6 +249,36 @@ def untermenue(titel, eintraege, zusatz=""):
     return e if e in eintraege else None
 
 
+def druck_dateien():
+    """{Taste: (Text, Pfad)} der Druckdateien aus der Variablen-Datei («## Ausgabe: Druck …» → {druck-datei}).
+    n = normal, u = unzensiert, weitere Ausgaben 1, 2, … (2.82.12)"""
+    var = next(iter(glob.glob(os.path.join(BASE, "*-variablen.md"))), None)
+    if not var:
+        return {}
+    aus, ziel = None, {}
+    for z in open(var, encoding="utf-8"):
+        if z.startswith("## "):
+            aus = z[3:].strip() if z.lower().startswith("## ausgabe: druck") else None
+        elif aus and z.startswith("{druck-datei}:"):
+            name = z.split(":", 1)[1].strip()
+            pfad = os.path.join(BASE, "druck", name + ".md")
+            if name and os.path.isfile(pfad):
+                art = aus.split("Druck", 1)[1].strip() or "normal"
+                taste = "u" if "unzensiert" in art.lower() else "n" if art.lower() == "normal" else str(len(ziel) + 1)
+                ziel[taste] = (f"{art} · {name}", pfad)
+    return ziel
+
+
+def druck_oeffnen():
+    """m → d: Druckdatei öffnen – bei mehreren Fassungen (normal / unzensiert) zuerst wählen."""
+    liste = druck_dateien()
+    if len(liste) == 1:
+        return oeffnen(next(iter(liste.values()))[1])
+    k = untermenue("Druck …", liste)
+    if k:
+        oeffnen(liste[k][1])
+
+
 def stichworte_menue():
     """st: Vorschläge machen (und öffnen), mit [+] markierte übernehmen, Stichwortdatei öffnen."""
     k = untermenue("Stichworte …", {"v": ("Vorschläge", 0), "u": ("übernehmen [+]", 0), "o": ("Stichwortdatei öffnen", 0)})
@@ -1061,11 +1091,15 @@ def main():
                 if os.path.isdir(os.path.join(BASE, "geschichten")):
                     md["g"] = ("Geschichten …", "g")
                 md["t"] = ("Tabellen …", "t")
+                if druck_dateien():
+                    md["d"] = ("Druck …", "d")                # 2.82.12: Druckdatei(en) der Ausgaben
                 k = untermenue("MD öffnen …", {k: v for k, v in md.items() if v[1]})
                 if k == "g":
                     geschichte_oeffnen()
                 elif k == "t":
                     tabellen_menue()
+                elif k == "d":
+                    druck_oeffnen()
                 elif k:
                     oeffnen(md[k][1])
             elif w == "p":
