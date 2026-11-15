@@ -677,49 +677,81 @@ INITIAL_FARBEN = (("g", "akzent", "gold", "Akzentfarbe, wie Zierlinien und Lotus
                   ("ü", "ueberschrift", "Überschrift", "jede Stufe in der Farbe ihrer Überschrift"))
 
 
+INITIAL_SCHLUESSEL = ("initial", "initial-stufen", "initial-zeilen", "initial-schrift", "initial-farbe", "kapitaelchen",
+                      "absatz-einzug")
+
+
 def initialen_menue():
-    """in (ab 2.82.8; bis 2.82.10 w → in, Titel und Farbe 2.82.9): Initial am Kapitelanfang – wo (0–4 Zeilen im Text, ti = im Titel),
-    Schrift, Farbe, Kapitälchen. Eingabe z. B. «ti c b»; «v» = Vorschau. Schreibt {initial}, {initial-zeilen},
-    {initial-schrift}, {initial-farbe}, {kapitaelchen} in die Variablen-Datei (fehlende Zeilen kommen nach der ersten
-    «{initial…}»-Zeile oder ans Ende von «## Gestaltung»/der Datei)."""
+    """in (ab 2.82.8; getrennt normal/unzensiert ab 2.82.14): Initial am Kapitelanfang – wo (0–4 Zeilen im Text, ti = im
+    Titel), Schrift, Farbe, Kapitälchen, Einzug. Eingabe z. B. «n ti c b k1» · «uz 0» · «e1» (ohne n/uz = beide);
+    «n0» / «uz0» = alles aus; «v» = Vorschau. Sind normal und unzensiert gleich, steht eine Zeile {name}: in der
+    Variablen-Datei, sonst zwei: {name-normal}: und {name-uz}: (der Motor liest beides, manuskript.Ausgabe.wert)."""
     pfad = next(iter(sorted(glob.glob(os.path.join(BASE, "*-variablen.md")))), None)
     if not pfad:
         return
+    standard = {"initial": "nein", "initial-stufen": "2", "initial-zeilen": "3", "initial-schrift": "",
+                "initial-farbe": "akzent", "kapitaelchen": "nein", "absatz-einzug": "nein"}
     while True:
         zeilen = open(pfad, encoding="utf-8").read().split("\n")
-        wert = lambda n, s="": next((z.split(":", 1)[1].strip() for z in zeilen if z.startswith("{" + n + "}:")), s)
-        art = wert("initial", "nein").lower()
-        stufen = " ".join(sorted(set(re.findall(r"[234]", wert("initial-stufen", "2"))))) or "2"
-        zahl = wert("initial-zeilen", "3")
-        schrift = wert("initial-schrift", "").lower()
-        farbe_ = {"blau": "haupt", "schwarz": "text", "gold": "akzent"}.get(wert("initial-farbe", "akzent").lower(),
-                                                                        wert("initial-farbe", "akzent").lower())
-        kap = wert("kapitaelchen", "nein").lower() in ("ja", "j")
-        einzug = wert("absatz-einzug", "nein").lower() in ("ja", "j")
-        name = next((n for _, w, n, _ in INITIAL_SCHRIFTEN if w == schrift), schrift or "Textschrift")
-        if art == "titel":
-            name = "Titelschrift" if not schrift else name
-        fname = next((n for _, w, n, _ in INITIAL_FARBEN if w == farbe_), "gold")
-        wo = f"im Titel ({stufen.replace(' ', ', ')})" if art == "titel" else "aus" if art not in ("ja", "j") or zahl == "0" else \
-            "erhöht" if zahl == "1" else zahl + " Zeilen"
-        jetzt = wo if wo == "aus" else f"{wo} · {name} · {fname}"
-        print(f"\n {FETT('Initialen …')}   " + GRAU(f"jetzt: {jetzt} · Kapitälchen {'ja' if kap else 'nein'}"
-                                                         f" · Einzug {'ja' if einzug else 'nein'}"))
-        print(f"  {FETT('Wo')}       0 aus · 1 erhöht (ragt nach oben) · 2 · 3 · 4 Zeilen")
-        print(f"           {FETT('ti')} im Titel (Kapitel ##) · {FETT('ti3')} nur Zwischentitel ### · "
-              f"{FETT('ti23')} / {FETT('ti234')} mehrere Stufen")
-        for i, (t, _, n, b) in enumerate(INITIAL_SCHRIFTEN):
-            print(f"  {FETT('Schrift') if i == 0 else '       '}  {FETT(t)} {n:<12} {GRAU(b)}")
-        for i, (t, _, n, b) in enumerate(INITIAL_FARBEN):
-            print(f"  {FETT('Farbe') if i == 0 else '     '}    {FETT(t)} {n:<12} {GRAU(b)}")
-        print(f"  {FETT('k')}  Kapitälchen ein/aus  " + GRAU("(erste Wörter in GROSSBUCHSTABEN)"))
-        print(f"  {FETT('e')}  Einzug ein/aus       " + GRAU("(Absätze beginnen eingerückt statt mit Abstand dazwischen)"))
-        print(f"  {FETT('v')}  Vorschau: schnell bauen, PDF öffnen")
-        print(GRAU("  z. B. «ti23 c ü» = Kapitel + Zwischentitel, Cinzel, wie Überschrift · ↵ = zurück"))
+        roh = lambda n: next((z.split(":", 1)[1].strip() for z in zeilen if z.startswith("{" + n + "}:")), None)
+        hat_uz = any(z.startswith("## Ausgabe:") and "unzensiert" in z for z in zeilen) or \
+            any(re.match(r"\{[a-z0-9-]+-uz\}:", z) for z in zeilen)
+        fassungen = ("normal", "uz") if hat_uz else ("normal",)
+
+        def wert(n, f):                                # {n-f}: vor {n}: (gleich wie beim Bauen, wenn {n}: fehlt)
+            w = roh(f"{n}-{f}")
+            if w is None:
+                w = roh(n)
+            return (w if w is not None else standard[n]).lower()
+
+        def stand(f):
+            art, zahl, schrift = wert("initial", f), wert("initial-zeilen", f), wert("initial-schrift", f)
+            stufen = " ".join(sorted(set(re.findall(r"[234]", wert("initial-stufen", f))))) or "2"
+            farbe_ = {"blau": "haupt", "schwarz": "text", "gold": "akzent"}.get(wert("initial-farbe", f), wert("initial-farbe", f))
+            aus = art not in ("ja", "j", "titel") or (art != "titel" and zahl == "0")
+            name = next((n for _, w, n, _ in INITIAL_SCHRIFTEN if w == schrift), schrift or "Textschrift")
+            if art == "titel" and not schrift:
+                name = "Titelschrift"
+            return {"wo": "aus" if aus else f"im Titel ({stufen.replace(' ', ', ')})" if art == "titel" else
+                    "erhöht" if zahl == "1" else zahl + " Zeilen",
+                    "schrift": "–" if aus else name,
+                    "farbe": "–" if aus else next((n for _, w, n, _ in INITIAL_FARBEN if w == farbe_), "gold"),
+                    "kap": "ja" if wert("kapitaelchen", f) in ("ja", "j") else "nein",
+                    "einzug": "ja" if wert("absatz-einzug", f) in ("ja", "j") else "nein", "aus": aus}
+
+        st = {f: stand(f) for f in fassungen}
+        print("\n " + FETT("Initialen …".ljust(27)) + "".join(FETT(("normal" if f == "normal" else "unzensiert").ljust(17))
+                                                            for f in fassungen))
+        for titel, k in (("Wo", "wo"), ("Schrift", "schrift"), ("Farbe", "farbe"), ("Kapitälchen", "kap"),
+                         ("Einzug", "einzug")):
+            print(f"  {titel:<26}" + "".join(f"{st[f][k]:<17}" for f in fassungen))
+        print(GRAU(" " + "─" * 54))
+        print(f"  {FETT('Wo')}       0 aus · 1 erhöht · 2 · 3 · 4 Zeilen")
+        print(f"           {FETT('ti')} im Titel · {FETT('ti3')} · {FETT('ti23')} · {FETT('ti234')} " + GRAU("(Stufen)"))
+        print(f"  {FETT('Schrift')}  " + " · ".join(f"{FETT(t)} {n}" for t, _, n, _ in INITIAL_SCHRIFTEN).replace("Textschrift", "Text"))
+        print(f"  {FETT('Farbe')}    " + " · ".join(f"{FETT(t)} {n}" for t, _, n, _ in INITIAL_FARBEN).replace("Überschrift", "wie Überschrift"))
+        print(f"  {FETT('k1')} / {FETT('k0')}  Kapitälchen ein / aus  " + GRAU("(erste Wörter in GROSSBUCHSTABEN)"))
+        print(f"  {FETT('e1')} / {FETT('e0')}  Einzug ein / aus       " + GRAU("(Absätze eingerückt statt mit Abstand)"))
+        print(f"  {FETT('v')}        Vorschau " + GRAU("(schnell bauen, PDF öffnen)"))
+        print(GRAU(" " + "─" * 54))
+        if hat_uz:
+            print(f"  {FETT('n')} … = nur normal · {FETT('uz')} … = nur unzensiert · ohne = beide")
+            print(f"  {FETT('n0')} / {FETT('uz0')} = alles aus " + GRAU("(Initial, Kapitälchen, Einzug)"))
+            print(GRAU("  z. B.  n ti c b k1   ·   uz 0   ·   e1   ·   ↵ = zurück"))
+        else:
+            print(GRAU("  z. B.  ti c b k1   ·   0   ·   e1   ·   ↵ = zurück"))
         e = frage(" Wahl: ").lower().split()
         if not e or e == ["q"]:
             return
+        ziel = list(fassungen)
+        if e[0] in ("n", "uz", "n0", "uz0") and hat_uz:
+            ziel = ["normal" if e[0].startswith("n") else "uz"]
+            if e[0].endswith("0"):
+                e[0:1] = ["0", "k0", "e0"]
+            else:
+                e = e[1:]
         neu = {}
+        vorschau = False
         for t in e:
             if t in ("0", "1", "2", "3", "4"):
                 neu["initial"] = "ja" if t != "0" else "nein"
@@ -728,15 +760,14 @@ def initialen_menue():
             elif re.fullmatch(r"ti[234]*", t):
                 neu["initial"] = "titel"
                 neu["initial-stufen"] = " ".join(sorted(set(t[2:]))) or "2"
-            elif t == "k":
-                neu["kapitaelchen"] = "nein" if kap else "ja"
-            elif t == "e":
-                neu["absatz-einzug"] = "nein" if einzug else "ja"
+            elif t in ("k1", "k0"):
+                neu["kapitaelchen"] = "ja" if t == "k1" else "nein"
+            elif t in ("e1", "e0"):
+                neu["absatz-einzug"] = "ja" if t == "e1" else "nein"
+            elif t in ("k", "e"):
+                print(ROT(f"  ✗ {t}1 = ein · {t}0 = aus"))
             elif t == "v":
-                if bauen("schnell") == 0:
-                    liste = pdfs()
-                    if liste:
-                        oeffnen(next(iter(liste.values()))[1])
+                vorschau = True
             elif any(t == x[0] for x in INITIAL_SCHRIFTEN):
                 neu["initial-schrift"] = next(w for x, w, _, _ in INITIAL_SCHRIFTEN if x == t)
             elif t == "ue":
@@ -745,22 +776,36 @@ def initialen_menue():
                 neu["initial-farbe"] = next(w for x, w, _, _ in INITIAL_FARBEN if x == t)
             else:
                 print(ROT(f"  ✗ Unbekannt: {t}"))
-        if not neu:
-            continue
-        if art not in ("ja", "j", "titel") and "initial" not in neu and ({"initial-schrift", "initial-farbe"} & set(neu)):
-            neu["initial"] = "ja"                         # Schrift oder Farbe gewählt, Initial war aus: einschalten
-        for n, w in neu.items():
-            z = "{" + n + "}:" + (" " + w if w else "")
-            i = next((i for i, x in enumerate(zeilen) if x.startswith("{" + n + "}:")), None)
-            if i is not None:
-                zeilen[i] = z
-            else:
-                j = next((i for i, x in enumerate(zeilen) if x.startswith("{initial")), None)
-                if j is None:
-                    j = next((i for i, x in enumerate(zeilen) if x.strip() == "## Gestaltung"), len(zeilen) - 1)
-                zeilen.insert(j + 1, z)
-        open(pfad, "w", encoding="utf-8").write("\n".join(zeilen))
-        print(GRUEN("  ✓ gespeichert") + GRAU(" – v = Vorschau"))
+        if neu:
+            werte = {f: {n: wert(n, f) for n in INITIAL_SCHLUESSEL} for f in fassungen}
+            geaendert = set(neu)
+            for f in ziel:
+                if st[f]["aus"] and "initial" not in neu and ({"initial-schrift", "initial-farbe"} & set(neu)):
+                    werte[f]["initial"] = "ja"            # Schrift oder Farbe gewählt, Initial war aus: einschalten
+                    if werte[f]["initial-zeilen"] == "0":
+                        werte[f]["initial-zeilen"] = "3"
+                    geaendert |= {"initial", "initial-zeilen"}
+                werte[f].update(neu)
+            for n in (n for n in INITIAL_SCHLUESSEL if n in geaendert):
+                gleich = len({werte[f][n] for f in fassungen}) == 1
+                soll = {n: werte[fassungen[0]][n]} if gleich else {f"{n}-{f}": werte[f][n] for f in fassungen}
+                alt = [i for i, x in enumerate(zeilen)
+                       if any(x.startswith("{" + k + "}:") for k in [n] + [f"{n}-{f}" for f in ("normal", "uz")])]
+                pos = alt[0] if alt else next((i + 1 for i, x in enumerate(zeilen) if x.startswith("{initial")),
+                                              next((i + 1 for i, x in enumerate(zeilen) if x.strip() == "## Gestaltung"),
+                                                   len(zeilen)))
+                for i in reversed(alt):
+                    del zeilen[i]
+                for j, (k, w) in enumerate(soll.items()):
+                    zeilen.insert(pos + j, "{" + k + "}:" + (" " + w if w else ""))
+            open(pfad, "w", encoding="utf-8").write("\n".join(zeilen))
+            wer = "beide" if len(ziel) > 1 else ("normal" if ziel == ["normal"] else "unzensiert")
+            print(GRUEN(f"  ✓ gespeichert ({wer})") + GRAU(" – v = Vorschau"))
+        if vorschau and bauen("schnell") == 0:
+            liste = pdfs()
+            if liste:
+                oeffnen(next(iter(liste.values()))[1])
+
 
 ISBN_AUSGABEN = (("Druck normal", "Druck normal"), ("Druck unzensiert", "Druck UZ"),
                  ("E-Book", "E-Book normal"), ("E-Book unzensiert", "E-Book UZ"))

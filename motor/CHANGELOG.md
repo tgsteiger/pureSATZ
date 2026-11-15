@@ -3,6 +3,15 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.82.15 (November 2026)
+- Neue Nummer, damit `update` das Initialen-Menü von 2.82.14 sicher übernimmt (2.82.14 kam zuerst unvollständig an).
+
+## 2.82.14 (November 2026)
+- Menü `in` Initialen: Tabelle **normal / unzensiert** nebeneinander (Wo, Schrift, Farbe, Kapitälchen, Einzug).
+  Vorne `n` = nur normal, `uz` = nur unzensiert, ohne = beide · `n0` / `uz0` = alles aus · `k1`/`k0`, `e1`/`e0`
+  statt Umschalten. Sind beide gleich, bleibt eine Zeile `{initial}:`, sonst zwei: `{initial-normal}:` und
+  `{initial-uz}:` (gilt für alle Initial-Werte, Kapitälchen und Einzug). Am Bauen ändert sich nichts.
+
 ## 2.82.13 (November 2026)
 - Menü Bauen: `s` schnell · **`w` weitergeben** (Leseprobe + Korrektur nacheinander, zum Gegenlesen und Weitergeben) ·
   `k` komplett. `f` final steht nicht mehr im Menü, die Taste geht weiter. Das alte versteckte Untermenü `w` «weitere»
