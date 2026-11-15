@@ -41,8 +41,8 @@ Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `h
  ══ Buch · pureSATZ                                     Klang (!) aus ══
  ── Schreiben ─────────────────────   ── Bauen ────────────────────────
   m  MD öffnen …                      s  schnell  (Lese-PDF)
-  g  Geschichten …                    k  komplett (vor dem Druck)
-  t  Tabellen …                       f  final    (Druckdateien)
+  g  Geschichten …                    w  weitergeben (lp + ko)
+  t  Tabellen …                       k  komplett (vor dem Druck)
   c  check / gegenlesen …             hb Hörbuch … (Linux)
  ── Ansehen ───────────────────────   ── Abgleichen / Prüfen ──────────
   p  PDF öffnen …                     sy sync   (GitHub)
@@ -195,7 +195,8 @@ Für jede Aufgabe: was im Buch stehen muss, die Schritte und wo es genauer steht
 
 **Ein Buch schreiben** – braucht die drei Dateien `<buch>-buch.md`, `-variablen.md`, `-umschlag.md` (macht `setup`).\
 Schritte: Titel, Autor usw. in der Variablen-Datei › Text in der Buch-Datei › `s` schnell, Lese-PDF ansehen ›
-`k` komplett vor dem Druck.\
+`w` weitergeben = Leseprobe und Korrektur (zum Gegenlesen) · `k` komplett vor dem Druck · `f` final (nur Druckdateien) gibt
+es weiter, steht aber nicht im Menü.\
 → [Ein neues Buch anlegen](#Ein-neues-Buch-anlegen)
 
 **Teile und Kapitel** – Überschriften in der Buch-Datei: `# Teil 1|Titel|Untertitel`, `## Kapitel`, `### Zwischentitel`.\

@@ -3,6 +3,11 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.82.13 (November 2026)
+- Menü Bauen: `s` schnell · **`w` weitergeben** (Leseprobe + Korrektur nacheinander, zum Gegenlesen und Weitergeben) ·
+  `k` komplett. `f` final steht nicht mehr im Menü, die Taste geht weiter. Das alte versteckte Untermenü `w` «weitere»
+  fällt weg (alles hat eigene Tasten). Am Bauen selbst ändert sich nichts.
+
 ## 2.82.12 (November 2026)
 - Menü `m` MD öffnen: neu `d` **Druck …** – öffnet die Druckdatei (druck/…md) aus der Variablen-Datei
   («## Ausgabe: Druck …» → `{druck-datei}`); bei zwei Fassungen zuerst wählen: `n` normal · `u` unzensiert

@@ -859,7 +859,7 @@ def zeige():
         print(ROT(" ✗ Buch prüfen: Fehler gefunden") + GRAU("  → bp"))
     spalten = [("Schreiben", [("m", "MD öffnen …"), ("g", "Geschichten …"), ("t", "Tabellen …"),
                              ("c", "check / gegenlesen …")]),
-               ("Bauen", [("s", "schnell  (Lese-PDF)"), ("k", "komplett (vor dem Druck)"), ("f", "final    (Druckdateien)")]
+               ("Bauen", [("s", "schnell  (Lese-PDF)"), ("w", "weitergeben (lp + ko)"), ("k", "komplett (vor dem Druck)")]
                 + ([("hb", "Hörbuch … (Linux)")] if LINUX else [])),
                ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen (a|ä)"),
                             ("db", "Druckbericht")]),
@@ -1066,25 +1066,9 @@ def main():
                 bauen("stand", *([name] if name else []))
             elif w == "au":
                 lauf([sys.executable, os.path.join(MOTOR, "aufraeumen.py")], titel="aufräumen")
-            elif w == "w":
-                k = untermenue("weitere …", {"l": ("Leseprobe", 0), "k": ("Korrektur", 0), "p": ("nur-pdf", 0),
-                                             "e": ("nur E-Book", 0), "co": ("Cover rechnen", 0), "m": ("Stand merken", 0),
-                                             "s": ("Stichworte …", 0), "i": ("ISBN …", 0), "in": ("Initialen …", 0),
-                                             "a": ("aufräumen …", 0)})
-                if k == "m":
-                    name = frage(" Name des Stands: ")
-                    bauen("stand", *([name] if name else []))
-                elif k == "s":
-                    stichworte_menue()
-                elif k == "in":                   # Initialen: Zeilen, Schrift, Kapitälchen (ab 2.82.8)
-                    initialen_menue()
-                elif k == "i":                    # ISBN eintragen und prüfen, Strichcode-PNG öffnen (ab 2.82.7)
-                    isbn_menue()
-                elif k == "a":                    # wie sh cleanup.sh: zeigt die Liste, fragt [j/N]
-                    lauf([sys.executable, os.path.join(MOTOR, "aufraeumen.py")], titel="aufräumen")
-                elif k:
-                    bauen(*{"l": ["leseprobe"], "k": ["korrektur"], "p": ["nur-pdf"], "e": ["nur-ebook"],
-                            "co": ["covers"]}[k])
+            elif w == "w":                                  # 2.82.13: weitergeben = Leseprobe + Korrektur (ex «weitere»)
+                if bauen("leseprobe") == 0:
+                    bauen("korrektur")
             elif w == "m":
                 md = {k: (t, next((p for p in sorted(glob.glob(os.path.join(BASE, m)))
                                       if not p.endswith("stichworte-vorschlag.txt")), None)) for k, (t, m) in MD.items()}
