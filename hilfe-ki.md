@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.82.23
+# pureSATZ Hilfe · pureSATZ · Motor 2.82.25
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -532,6 +532,18 @@ Steuerzeichen | Wirkung
 
 Kursiv mitten im Satz (`*Wort*`) gibt es noch nicht – ein einzelner Stern bleibt als Stern stehen. Tipp: Fett sparsam einsetzen. Eine Leerzeile vor einem kurzen Satz betont oft schon genug.
 
+## Suchen und Ersetzen mit Regex
+
+Viele gleiche Änderungen auf einmal: im Editor Suchen und Ersetzen (Ctrl+H), Häkchen Regulärer Ausdruck setzen. `(…)` merkt sich einen Teil, im Ersetzen holt `\1` ihn zurück (VS Code und Kate: `$1`). Zuerst einmal «Suchen», dann «Alle ersetzen».
+
+Was | Suchen | Ersetzen
+Fett entfernen, Text behalten | `\*\*(.+?)\*\*` | `\1`
+Fett nur mitten im Satz entfernen (Absatzanfang bleibt) | `(?<=\S )\*\*(.+?)\*\*` | `\1`
+doppelte Leerzeichen | `  +` | ` ` (ein Leerzeichen)
+Jahreszahl vor einem Punkt finden, z. B. «2018.» | `\b(19|20)\d\d\.` | – nur suchen
+
+Wichtig: `.` `*` `(` `?` haben eine Bedeutung – als Zeichen mit `\` davor (`\.` = Punkt). Nach dem Ersetzen `s` bauen und kurz anschauen.
+
 ## Bilder und Fotos
 
 ← Gestalten: Ich will … · Zum Kopieren
@@ -747,7 +759,7 @@ E-Book | `ebook-epub2` (ja = zusätzlich EPUB 2), `ebook-rueckseite` (bild / tex
 Shop | `shop-beschreibung`, `shop-schlagwoerter`, `shop-kategorie`, `shop-link`, `sprache` (Standard `de`, steht in den Shop-Angaben)
 Leseprobe | `leseprobe`, `leseprobe-seiten`, `leseprobe-seiten-uz`, `leseprobe-text`
 Technik | `kurz-normal` / `-uz` (Kürzel vorne an den Druckdateien, z. B. L123), `datei-normal` / `-uz` (Name der Lese-PDFs und E-Books), `ordner-normal` / `-uz` (Ausgabeordner)
-Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt|anschauung), `zier`, `zier-hell`, `initial` (ja · titel · nein), `initial-farbe` (akzent · haupt · text · ueberschrift), `initial-stufen` (2 · 3 · 4), `initial-stil` (normal · rand · feld), `initial-zeilen` (0 · 1 · 2 · 3 · 4), `initial-schrift` (fett · cinzel · uncial · fraktur · datei.ttf), `kapitaelchen` (ja · nein), `absatz-einzug` (ja · nein), `liste-blocksatz` (nein · ja: Listen im Blocksatz), `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund`
+Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt|anschauung), `zier`, `zier-hell`, `initial` (ja · titel · nein), `initial-farbe` (akzent · haupt · text · ueberschrift), `fett-anfang-farbe` (leer · haupt · akzent: Fett ganz am Absatzanfang farbig, z. B. «Tantra. Seit …»), `initial-stufen` (2 · 3 · 4), `initial-stil` (normal · rand · feld), `initial-zeilen` (0 · 1 · 2 · 3 · 4), `initial-schrift` (fett · cinzel · uncial · fraktur · datei.ttf), `kapitaelchen` (ja · nein), `absatz-einzug` (ja · nein), `liste-blocksatz` (nein · ja: Listen im Blocksatz), `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund`
 Sicherung | `sicherung-lokal`, `sicherung-cloud`, `sicherung-behalten`
 Layout | `farbschema`, `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `blocksatz` · Inhaltsverzeichnis: `inhalt-tiefe`, `inhalt-dichte`, `inhalt-teile`, `inhalt-punkte`, `inhalt-schrift`
 

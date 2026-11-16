@@ -969,10 +969,10 @@ class Liste:
         ebene, art, text = self.num.punkt(m)
         if art == "-":
             st = self.stil.get("-", bullet) if ebene == 0 else bullet2
-            self.punkte.append(Paragraph(inline(text), st, bulletText="•"))
+            self.punkte.append(Paragraph(inline(absatz_anfang(text)), st, bulletText="•"))
         else:
             st = self.stil.get("1", nummer) if ebene == 0 else nummer2
-            self.punkte.append(Paragraph(inline(text), st, bulletText=f"{art}."))
+            self.punkte.append(Paragraph(inline(absatz_anfang(text)), st, bulletText=f"{art}."))
             self.nummeriert = True
 
     def ende(self):
@@ -2259,7 +2259,7 @@ def _build(out, ausgleich=None):
             if KAPITAELCHEN and nach_kapitel and not schwebe:     # Kapitälchen auch ohne Initial (J5)
                 text = kapitaelchen(text)
             nach_kapitel = False
-            p = Paragraph(inline(text), stil)
+            p = Paragraph(inline(absatz_anfang(text)), stil)
             if schwebe:
                 schwebe["paras"].append(p)
                 if len(schwebe["paras"]) >= 5:
@@ -2794,6 +2794,16 @@ def tabelle(zeile):
     if len(reihen) <= 12:                     # kleine Tabelle nie trennen (lieber ganz auf die nächste Seite)
         return [Spacer(1, 4), KeepTogether([t]), Spacer(1, 8)]
     return [Spacer(1, 4), t, Spacer(1, 8)]
+
+
+def absatz_anfang(t):
+    """{fett-anfang-farbe}: haupt (blau) · akzent (gold) · leer = schwarz – Fett ganz am Anfang eines Absatzes oder
+    Listenpunkts («**Tantra.** Seit …») in dieser Farbe; Fett mitten im Satz bleibt schwarz (2.82.25)."""
+    w = (V("fett-anfang-farbe") or "").strip().lower()
+    w = {"blau": "haupt", "gold": "akzent"}.get(w, w)
+    if w not in ("haupt", "akzent"):
+        return t
+    return re.sub(r"^\*\*(.+?)\*\*", lambda m: f'<font color="{hexfarbe(w)}">**{m.group(1)}**</font>', t)
 
 
 def inline_einfach(t):

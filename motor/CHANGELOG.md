@@ -3,6 +3,13 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.82.25 (November 2026)
+- Neu `{fett-anfang-farbe}: haupt` (blau) oder `akzent` (gold): Fett ganz am Anfang eines Absatzes oder Listenpunkts
+  («**Tantra.** Seit …») in dieser Farbe – für «Pseudo-Blöcke». Fett mitten im Satz bleibt schwarz. Leer = wie bisher.
+
+## 2.82.24 (November 2026)
+- Hilfe: «Suchen und Ersetzen mit Regex» – Fett entfernen, doppelte Leerzeichen, Jahreszahlen finden (mit Beispielen).
+
 ## 2.82.23 (November 2026)
 - Hilfe: Bild des Menüs als Beispiel (`motor/bilder/menu.png`). Neu in HILFE.md: `![Text](bilder/x.png)` bettet ein Bild ein.
 
