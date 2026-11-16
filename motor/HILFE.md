@@ -442,6 +442,7 @@ Suchwörter: fett, kursiv, hervorheben, betonen, Absatzanfang, Pseudo-Block. Bau
 | `~ Satz` | Randbemerkung: klein, kursiv, leicht eingerückt |
 | `@ZITAT Satz` | Zitat: kursiv, zentriert, schlicht |
 | `> Satz` oder `@ZITAT-ZIER Satz` | Zitat: kursiv, zentriert, mit Verzierung oben und unten |
+| `::: mitte` … `:::` | wie `@ZITAT-ZIER`, aber senkrecht in der Mitte des Seitenrests (Abschluss eines Teils); `::: mitte aufrecht` = aufrecht |
 | `text:` beim Foto | Bildunterschrift, automatisch kursiv |
 
 Kursiv mitten im Satz (`*Wort*`) gibt es noch nicht – ein einzelner Stern bleibt als Stern stehen.
@@ -702,7 +703,7 @@ diesen Zeilen der Buch-MD:
 | Shop | `shop-beschreibung`, `shop-schlagwoerter`, `shop-kategorie`, `shop-link`, `sprache` (Standard `de`, steht in den Shop-Angaben) |
 | Leseprobe | `leseprobe`, `leseprobe-seiten`, `leseprobe-seiten-uz`, `leseprobe-text` |
 | Technik | `kurz-normal` / `-uz` (Kürzel vorne an den Druckdateien, z. B. L123), `datei-normal` / `-uz` (Name der Lese-PDFs und E-Books), `ordner-normal` / `-uz` (Ausgabeordner) |
-| Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt\|anschauung), `zier`, `zier-hell`, `initial` (ja · titel · nein), `initial-farbe` (akzent · haupt · text · ueberschrift), `fett-anfang-farbe` (leer · haupt · akzent: Fett ganz am Absatzanfang farbig, z. B. «**Tantra.** Seit …»), `fett-anfang-stil` (leer · kapitaelchen), `fett-anfang-zeichen` (leer · zier = Lotus · ein Zeichen wie ◆ · bild.png), `initial-stufen` (2 · 3 · 4), `initial-stil` (normal · rand · feld), `initial-zeilen` (0 · 1 · 2 · 3 · 4), `initial-schrift` (fett · cinzel · uncial · fraktur · datei.ttf), `kapitaelchen` (ja · nein), `absatz-einzug` (ja · nein), `liste-blocksatz` (nein · ja: Listen im Blocksatz), `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund` |
+| Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt\|anschauung), `zier`, `zier-hell`, `initial` (ja · titel · nein), `initial-farbe` (akzent · haupt · text · ueberschrift), `fett-anfang-farbe` (leer · haupt · akzent: Fett ganz am Absatzanfang farbig, z. B. «**Tantra.** Seit …»), `fett-anfang-stil` (leer · kapitaelchen), `mitte-stil` (zitat = wie @ZITAT-ZIER, Standard · aufrecht), `fett-anfang-zeichen` (leer · zier = Lotus · ein Zeichen wie ◆ · bild.png), `initial-stufen` (2 · 3 · 4), `initial-stil` (normal · rand · feld), `initial-zeilen` (0 · 1 · 2 · 3 · 4), `initial-schrift` (fett · cinzel · uncial · fraktur · datei.ttf), `kapitaelchen` (ja · nein), `absatz-einzug` (ja · nein), `liste-blocksatz` (nein · ja: Listen im Blocksatz), `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund` |
 | Sicherung | `sicherung-lokal`, `sicherung-cloud`, `sicherung-behalten` |
 | Layout | `farbschema`, `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `blocksatz` · Inhaltsverzeichnis: `inhalt-tiefe`, `inhalt-dichte`, `inhalt-teile`, `inhalt-punkte`, `inhalt-schrift` |
 
@@ -738,6 +739,8 @@ Nach einer Änderung `sh build.sh schnell` und ansehen.
 | Ich will … | So |
 |---|---|
 | eine neue Seite | `---` auf eigener Zeile (davor eine Leerzeile) oder `@UMBRUCH` |
+| ein Zitat mit Zierlinien mitten im Kapitel, der Text geht danach weiter | `@ZITAT-ZIER Satz.<br/>Zweiter Satz.` (kurz `> Satz`) |
+| einen Abschluss am Ende eines Teils, senkrecht in der Mitte der restlichen Seite | `::: mitte` … `:::` (mehrere Absätze möglich) – sieht aus wie `@ZITAT-ZIER` (kursiv, Zitatfarbe); `::: mitte aufrecht` = nur dieser Block aufrecht und schwarz (z. B. lange Texte), `{mitte-stil}: aufrecht` = alle |
 | eine neue Seite, im Druck immer rechts (z. B. vor einem Kapitel) | `@UMBRUCH-RECHTS` |
 | eine neue Seite nur, wenn unten zu wenig Platz bleibt | `@PLATZ 60` (mm) – gut vor einem Foto oder Zwischentitel |
 | einen Abschnitt nie trennen | `::: zusammen` … `:::` |

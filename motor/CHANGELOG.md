@@ -3,6 +3,12 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.82.27 (November 2026)
+- `::: mitte` sieht jetzt aus wie `@ZITAT-ZIER` (kursiv, Zitatfarbe, schmaler) – beide Zierden einheitlich.
+  `::: mitte aufrecht` = dieser Block wie früher; `{mitte-stil}: aufrecht` = alle wie früher.
+- Fett am Absatzanfang gilt auch im Mitte-Block («**Rückblick aus heutiger Sicht**»).
+- Hilfe: Seitengestaltung erklärt `@ZITAT-ZIER` und `::: mitte` – wann was.
+
 ## 2.82.26 (November 2026)
 - Fett am Absatzanfang: `{fett-anfang-stil}: kapitaelchen` und `{fett-anfang-zeichen}: zier | ◆ | bild.png` (Zeichen davor).
 - Menü `in` heisst «Initialen + Fett …»: neu `fb` `fg` `fs` (Farbe) und `fk1`/`fk0` (Kapitälchen).

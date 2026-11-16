@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.82.26
+# pureSATZ Hilfe · pureSATZ · Motor 2.82.27
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -529,6 +529,7 @@ Steuerzeichen | Wirkung
 `~ Satz` | Randbemerkung: klein, kursiv, leicht eingerückt
 `@ZITAT Satz` | Zitat: kursiv, zentriert, schlicht
 `> Satz` oder `@ZITAT-ZIER Satz` | Zitat: kursiv, zentriert, mit Verzierung oben und unten
+`::: mitte` … `:::` | wie `@ZITAT-ZIER`, aber senkrecht in der Mitte des Seitenrests (Abschluss eines Teils); `::: mitte aufrecht` = aufrecht
 `text:` beim Foto | Bildunterschrift, automatisch kursiv
 
 Kursiv mitten im Satz (`*Wort*`) gibt es noch nicht – ein einzelner Stern bleibt als Stern stehen. Ein Zeichen davor (Lotus oder ◆): `{fett-anfang-zeichen}: zier` bzw. `◆` – siehe Variablen. Tipp: Fett sparsam einsetzen. Eine Leerzeile vor einem kurzen Satz betont oft schon genug.
@@ -760,7 +761,7 @@ E-Book | `ebook-epub2` (ja = zusätzlich EPUB 2), `ebook-rueckseite` (bild / tex
 Shop | `shop-beschreibung`, `shop-schlagwoerter`, `shop-kategorie`, `shop-link`, `sprache` (Standard `de`, steht in den Shop-Angaben)
 Leseprobe | `leseprobe`, `leseprobe-seiten`, `leseprobe-seiten-uz`, `leseprobe-text`
 Technik | `kurz-normal` / `-uz` (Kürzel vorne an den Druckdateien, z. B. L123), `datei-normal` / `-uz` (Name der Lese-PDFs und E-Books), `ordner-normal` / `-uz` (Ausgabeordner)
-Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt|anschauung), `zier`, `zier-hell`, `initial` (ja · titel · nein), `initial-farbe` (akzent · haupt · text · ueberschrift), `fett-anfang-farbe` (leer · haupt · akzent: Fett ganz am Absatzanfang farbig, z. B. «Tantra. Seit …»), `fett-anfang-stil` (leer · kapitaelchen), `fett-anfang-zeichen` (leer · zier = Lotus · ein Zeichen wie ◆ · bild.png), `initial-stufen` (2 · 3 · 4), `initial-stil` (normal · rand · feld), `initial-zeilen` (0 · 1 · 2 · 3 · 4), `initial-schrift` (fett · cinzel · uncial · fraktur · datei.ttf), `kapitaelchen` (ja · nein), `absatz-einzug` (ja · nein), `liste-blocksatz` (nein · ja: Listen im Blocksatz), `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund`
+Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt|anschauung), `zier`, `zier-hell`, `initial` (ja · titel · nein), `initial-farbe` (akzent · haupt · text · ueberschrift), `fett-anfang-farbe` (leer · haupt · akzent: Fett ganz am Absatzanfang farbig, z. B. «Tantra. Seit …»), `fett-anfang-stil` (leer · kapitaelchen), `mitte-stil` (zitat = wie @ZITAT-ZIER, Standard · aufrecht), `fett-anfang-zeichen` (leer · zier = Lotus · ein Zeichen wie ◆ · bild.png), `initial-stufen` (2 · 3 · 4), `initial-stil` (normal · rand · feld), `initial-zeilen` (0 · 1 · 2 · 3 · 4), `initial-schrift` (fett · cinzel · uncial · fraktur · datei.ttf), `kapitaelchen` (ja · nein), `absatz-einzug` (ja · nein), `liste-blocksatz` (nein · ja: Listen im Blocksatz), `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund`
 Sicherung | `sicherung-lokal`, `sicherung-cloud`, `sicherung-behalten`
 Layout | `farbschema`, `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `blocksatz` · Inhaltsverzeichnis: `inhalt-tiefe`, `inhalt-dichte`, `inhalt-teile`, `inhalt-punkte`, `inhalt-schrift`
 
@@ -791,6 +792,8 @@ Nach einer Änderung `sh build.sh schnell` und ansehen.
 
 Ich will … | So
 eine neue Seite | `---` auf eigener Zeile (davor eine Leerzeile) oder `@UMBRUCH`
+ein Zitat mit Zierlinien mitten im Kapitel, der Text geht danach weiter | `@ZITAT-ZIER Satz.<br/>Zweiter Satz.` (kurz `> Satz`)
+einen Abschluss am Ende eines Teils, senkrecht in der Mitte der restlichen Seite | `::: mitte` … `:::` (mehrere Absätze möglich) – sieht aus wie `@ZITAT-ZIER` (kursiv, Zitatfarbe); `::: mitte aufrecht` = nur dieser Block aufrecht und schwarz (z. B. lange Texte), `{mitte-stil}: aufrecht` = alle
 eine neue Seite, im Druck immer rechts (z. B. vor einem Kapitel) | `@UMBRUCH-RECHTS`
 eine neue Seite nur, wenn unten zu wenig Platz bleibt | `@PLATZ 60` (mm) – gut vor einem Foto oder Zwischentitel
 einen Abschnitt nie trennen | `::: zusammen` … `:::`
