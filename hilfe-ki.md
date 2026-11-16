@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.82.17
+# pureSATZ Hilfe · pureSATZ · Motor 2.82.18
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -190,24 +190,27 @@ Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `h
 
 ## Menü
 
-`sh menu.sh` (Windows: `menu.bat`) zeigt die häufigsten Befehle, nach Arbeitsschritten geordnet. Ein Buchstabe genügt:
+`sh menu.sh` (Windows: `menu.bat`) zeigt die häufigsten Befehle in der Reihenfolge des Buchablaufs (1–6). Ein Buchstabe genügt. Die graue Zeile oben zeigt den Stand: Seiten je Fassung, letzter Bau, Cover:
 
 ```
  ══ Buch · pureSATZ                                     Klang (!) aus ══
- ── Schreiben ─────────────────────   ── Bauen ────────────────────────
-  m  MD öffnen …                      s  schnell  (Lese-PDF)
-  g  Geschichten …                    w  weitergeben (lp + ko)
-  t  Tabellen …                       k  komplett (vor dem Druck)
-  c  check / gegenlesen …             hb Hörbuch … (Linux)
- ── Ansehen ───────────────────────   ── Abgleichen / Prüfen ──────────
-  p  PDF öffnen …                     sy sync   (GitHub)
-  o  Ordner öffnen …                  u  update (ul lokal)
-  a  änderungen (a|ä)                 bp Buch prüfen  N ✓  UZ ✗
-  db Druckbericht                     co Coverrechner prüfen
- ── Einstellen ────────────────────   ── Weitere Ausgaben ─────────────
-  in Initialen …                      lp Leseprobe    ko Korrektur
-  is ISBN …                           np nur-pdf      ne nur E-Book
-  st Stichworte …                     sm Stand merken au aufräumen …
+ Leben123 · N 68 S. · UZ 86 S. · komplett 16.11. 10:21 · Cover ✓
+ ── 1 Schreiben ───────────────────   ── 2 Einstellen ─────────────────
+  m  MD öffnen …                      in Initialen …
+  g  Geschichten …                    tr Trennstellen …
+  t  Tabellen …                       st Stichworte …
+  c  check / gegenlesen …             is ISBN …
+ ── 3 Bauen ───────────────────────   ── 4 Ansehen ────────────────────
+  s  schnell  (Lese-PDF)              p  PDF öffnen …
+  w  weitergeben (lp + ko)            o  Ordner öffnen …
+  k  komplett (vor dem Druck)         a  änderungen (a|ä)
+  hb Hörbuch … (Linux)                db Druckbericht
+ ── 5 Prüfen ──────────────────────   ── 6 Weitere Ausgaben ───────────
+  bp Buch prüfen  N ✓  UZ ✗           lp Leseprobe    ko Korrektur
+  co Coverrechner prüfen              np nur-pdf      ne nur E-Book
+ ── Abgleichen ────────────────────   ── Aufräumen ────────────────────
+  sy sync   (GitHub)                  sm Stand merken
+  u  update (ul lokal)                au aufräumen …
  ── Weiteres ──────────────────────────────────────────────────────────
   n neu · $ Terminal · : Befehle · h hilfe · hf finden
  Wahl oder Befehl (z. B. final · ↑ = letzte · ↵ = beenden):
@@ -233,7 +236,7 @@ Untermenüs («…» = nur was es gibt):
 `hb` Hörbuch (Linux) | `p` Probe hören · `w` Wörter hören · `t` Texte aus dem Buch · `v` vertonen · `k` Kapitel vertonen … · `e` Wörter/Probe/Einstellungen öffnen · `s` Azure-Schlüssel · `$` Terminal in audio/ · `o` Ordner · `h` Hilfe · `c` prüfen – siehe Hörbuch: Das Menü
 `f` final | Druckdateien für die Druckerei (wie `sh build.sh final`); danach öffnet sich der Druckbericht (`db`): Seitenbilanz, Umschlag, Coverrechner, ISBN, CMYK, Warnungen – jedes Mal neu, `ausgabe-…/00-Druckbericht.pdf` (`{druckbericht}: nein` in den Variablen = nicht öffnen)
 `co` Coverrechner prüfen | baut nichts: pro Fassung Buchblock-Seiten vom letzten Druck-Bau, eingetragene Werte, ob die Rohdaten passen, und was zu tun ist (`cv` öffnet die Druckdatei)
-Einstellen · Weitere Ausgaben (bis 2.82.10 unter `w` weitere) | `lp` Leseprobe · `ko` Korrektur · `np` nur-pdf · `ne` nur E-Book · `sm` Stand merken · `st` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` Stichwortdatei öffnen) · `is` ISBN … (alle Ausgaben ansehen und eintragen – Druck/E-Book, normal/UZ; Enter = bleibt, `-` = leeren; speichert in der Variablen-Datei, dann Prüfziffer und Strichcode-PNG wie `sh build.sh isbn`) · `in` Initialen … (Tabelle normal / unzensiert; wo: 0–4 Zeilen oder `ti` im Titel – `ti3`, `ti23`, `ti234` = weitere Stufen; Schrift; Farbe `g` gold · `b` blau · `s` schwarz · `ü` wie die Überschrift; `k1`/`k0` Kapitälchen, `e1`/`e0` Einzug; vorne `n` = nur normal, `uz` = nur unzensiert, ohne = beide; `n0`/`uz0` = alles aus; z. B. `n ti c b k1` · `uz 0`; `v` = Vorschau) · `au` aufräumen (wie `sh cleanup.sh`, fragt `[j/N]`)
+Einstellen · Weitere Ausgaben (bis 2.82.10 unter `w` weitere) | `lp` Leseprobe · `ko` Korrektur · `np` nur-pdf · `ne` nur E-Book · `sm` Stand merken · `st` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` Stichwortdatei öffnen) · `is` ISBN … (alle Ausgaben ansehen und eintragen – Druck/E-Book, normal/UZ; Enter = bleibt, `-` = leeren; speichert in der Variablen-Datei, dann Prüfziffer und Strichcode-PNG wie `sh build.sh isbn`) · `tr` Trennstellen … (Liste aus `{trennstellen}`; `Re | vi | ta | ler` = ergänzen, `-Revitaler` = entfernen; wirkt beim nächsten Bau) · `in` Initialen … (Tabelle normal / unzensiert; wo: 0–4 Zeilen oder `ti` im Titel – `ti3`, `ti23`, `ti234` = weitere Stufen; Schrift; Farbe `g` gold · `b` blau · `s` schwarz · `ü` wie die Überschrift; `k1`/`k0` Kapitälchen, `e1`/`e0` Einzug; vorne `n` = nur normal, `uz` = nur unzensiert, ohne = beide; `n0`/`uz0` = alles aus; z. B. `n ti c b k1` · `uz 0`; `v` = Vorschau) · `au` aufräumen (wie `sh cleanup.sh`, fragt `[j/N]`)
 `p` PDF öffnen | `n` normal · `u` unzensiert · `l` Leseprobe · `k` Korrektur …
 `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten · `t` tabellen · `a` audio … · `p` Pfad Buchordner kopieren · dazu Taste + `t` = Terminal dort (`bt`, `at` …), + `p` = Pfad kopieren (`ap` …)
 `n` neu | `b` neues Buch · `h` Hallo-Buch · `e` einrichten · `m` Motor-Selbsttest · `v` Verknüpfung
@@ -781,6 +784,7 @@ das Initial anders: im Rand, im Feld, grösser, fett oder in einer Zierschrift |
 die ersten Wörter jedes Kapitels in Kapitälchen | `{kapitaelchen}: ja` – mit oder ohne Initial
 Absätze eingerückt statt mit Abstand (wie viele Romane) | `{absatz-einzug}: ja` – der erste Absatz nach einem Titel bleibt bündig
 Listen (• und 1.) im Blocksatz wie der Fliesstext | `{liste-blocksatz}: ja` – Standard `nein` = linksbündig; Randbemerkungen (`~`) bleiben linksbündig
+Grosse Lücken im Blocksatz, langes Wort wird nicht getrennt | Menü `tr` Trennstellen …: Wort mit `|` eintragen, wo getrennt werden darf, z. B. `Re|vi|ta|ler` (`-Revitaler` = entfernen) – oder direkt in der Variablen-Datei `{trennstellen}:`; danach `s` bauen
 
 Wann umbrechen? Teile (`# Teil …`) und Kapitel oberster Ebene (`# Titel`) beginnen von selbst auf einer neuen Seite. Sonst erst umbrechen, wenn der Text fertig ist – jede Änderung verschiebt die Seiten. Lieber `@PLATZ` als `---`: es wirkt nur, wenn es nötig ist.
 

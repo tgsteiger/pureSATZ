@@ -303,6 +303,60 @@ def druck_oeffnen():
         oeffnen(liste[k][1])
 
 
+def status_zeile():
+    """Eine Zeile über dem Menü: Buchblock-Seiten je Fassung, letzter Bau, Cover (aus 00-UEBERSICHT.txt, 2.82.18)."""
+    teile, bau = [], ""
+    for f in sorted(glob.glob(os.path.join(BASE, "ausgabe-*", "00-UEBERSICHT.txt"))):
+        name = os.path.basename(os.path.dirname(f))[8:]
+        kurz = {"normal": "N", "unzensiert": "UZ"}.get(name, name[:3].upper())
+        text = open(f, encoding="utf-8").read()
+        m = re.search(r"_Buchblock\.pdf\s.*?(\d+) S\.", text)
+        teile.append(f"{kurz} {m.group(1)} S." if m else f"{kurz} –")
+        b = re.search(r"Letzter Bau: .*?«([^»]+)» · (\d\d\.\d\d)\.\d{4} (\d\d:\d\d)", text)
+        if b and (not bau or b.group(2) + b.group(3) > bau[0]):
+            bau = (b.group(2) + b.group(3), f"{b.group(1)} {b.group(2)}. {b.group(3)}")
+    if not teile:
+        return ""
+    cover = "Cover ⚠ → co" if cover_faellig() else "Cover ✓"
+    return GRAU(" " + " · ".join([os.path.basename(BASE)] + teile + ([bau[1]] if bau else []) + [cover]))
+
+
+def trennstellen_menue():
+    """tr: {trennstellen} der Variablen-Datei zeigen, Wort mit | ergänzen, «-wort» entfernen (2.82.18)."""
+    pfad = next(iter(sorted(glob.glob(os.path.join(BASE, "*-variablen.md")))), None)
+    if not pfad:
+        return
+    while True:
+        zeilen = open(pfad, encoding="utf-8").read().split("\n")
+        i = next((n for n, z in enumerate(zeilen) if z.startswith("{trennstellen}:")), None)
+        liste = [w.strip() for w in zeilen[i].split(":", 1)[1].split(",") if w.strip()] if i is not None else []
+        print("\n " + FETT("Trennstellen …") + GRAU(f"  {len(liste)} Wörter · | = hier darf getrennt werden"))
+        zeile = " "
+        for w in liste:
+            if len(zeile) + len(w) + 3 > RAND:
+                print(zeile); zeile = " "
+            zeile += " " + w + " ·"
+        print(zeile.rstrip(" ·"))
+        print(GRAU("  z. B.  Re|vi|ta|ler  = ergänzen   ·   -Revitaler  = entfernen   ·   ↵ = zurück"))
+        e = frage(" Wahl: ").strip()
+        if not e or e == "q":
+            return
+        if e.startswith("-"):
+            neu = [w for w in liste if w.replace("|", "") != e[1:].replace("|", "")]
+        elif "|" in e:
+            neu = [w for w in liste if w.replace("|", "") != e.replace("|", "")] + [e]
+        else:
+            print(ROT("  ✗ Mit | zeigen, wo getrennt werden darf, z. B. Re|vi|ta|ler"))
+            continue
+        z = "{trennstellen}: " + ", ".join(neu)
+        if i is None:
+            zeilen.append(z)
+        else:
+            zeilen[i] = z
+        open(pfad, "w", encoding="utf-8").write("\n".join(zeilen))
+        print(GRUEN("  ✓ gespeichert") + GRAU(" – wirkt beim nächsten Bau (s)"))
+
+
 def stichworte_menue():
     """st: Vorschläge machen (und öffnen), mit [+] markierte übernehmen, Stichwortdatei öffnen."""
     k = untermenue("Stichworte …", {"v": ("Vorschläge", 0), "u": ("übernehmen [+]", 0), "o": ("Stichwortdatei öffnen", 0)})
@@ -927,17 +981,21 @@ def zeige():
         print(FETT(f" ⚠ Coverrechner {k}: {n} Seiten, eingetragen für {b}") + GRAU(f"  ({g}) → co"))
     if pruef_stand() == "fehler":
         print(ROT(" ✗ Buch prüfen: Fehler gefunden") + GRAU("  → bp"))
-    spalten = [("Schreiben", [("m", "MD öffnen …"), ("g", "Geschichten …"), ("t", "Tabellen …"),
-                             ("c", "check / gegenlesen …")]),
-               ("Bauen", [("s", "schnell  (Lese-PDF)"), ("w", "weitergeben (lp + ko)"), ("k", "komplett (vor dem Druck)")]
+    status = status_zeile()                           # 2.82.18: Stand auf einen Blick (Seiten, letzter Bau, Cover)
+    if status:
+        print(status)
+    spalten = [("1 Schreiben", [("m", "MD öffnen …"), ("g", "Geschichten …"), ("t", "Tabellen …"),   # 2.82.18:
+                               ("c", "check / gegenlesen …")]),                                      # Blöcke im Buchablauf,
+               ("2 Einstellen", [("in", "Initialen …"), ("tr", "Trennstellen …"), ("st", "Stichworte …"),  # Tasten gleich
+                                 ("is", "ISBN …")]),
+               ("3 Bauen", [("s", "schnell  (Lese-PDF)"), ("w", "weitergeben (lp + ko)"), ("k", "komplett (vor dem Druck)")]
                 + ([("hb", "Hörbuch … (Linux)")] if LINUX else [])),
-               ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen (a|ä)"),
-                            ("db", "Druckbericht")]),
-               ("Abgleichen / Prüfen", [("sy", "sync   (GitHub)"), ("u", "update" + (" (ul lokal)" if LOKAL else "")),
-                                        ("bp", bp), ("co", "Coverrechner prüfen")]),
-               ("Einstellen", [("in", "Initialen …"), ("is", "ISBN …"), ("st", "Stichworte …")]),     # 2.82.11: ex «w weitere»
-               ("Weitere Ausgaben", [("lp", "Leseprobe    ko Korrektur"), ("np", "nur-pdf      ne nur E-Book"),
-                                     ("sm", "Stand merken au aufräumen …")])]
+               ("4 Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen (a|ä)"),
+                              ("db", "Druckbericht")]),
+               ("5 Prüfen", [("bp", bp), ("co", "Coverrechner prüfen")]),
+               ("6 Weitere Ausgaben", [("lp", "Leseprobe    ko Korrektur"), ("np", "nur-pdf      ne nur E-Book")]),
+               ("Abgleichen", [("sy", "sync   (GitHub)"), ("u", "update" + (" (ul lokal)" if LOKAL else ""))]),
+               ("Aufräumen", [("sm", "Stand merken"), ("au", "aufräumen …")])]
     spalten_zeigen(spalten, "n neu · $ Terminal · : Befehle · h hilfe · hf finden")
     if os.path.exists(ALLE):
         print(SPERRE)
@@ -1129,6 +1187,8 @@ def main():
                 isbn_menue()
             elif w == "st":
                 stichworte_menue()
+            elif w == "tr":                                 # Trennstellen (ab 2.82.18)
+                trennstellen_menue()
             elif w in ("lp", "ko", "np", "ne"):
                 bauen({"lp": "leseprobe", "ko": "korrektur", "np": "nur-pdf", "ne": "nur-ebook"}[w])
             elif w == "sm":
