@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.82.18
+# pureSATZ Hilfe · pureSATZ · Motor 2.82.19
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -199,15 +199,16 @@ Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `h
   m  MD öffnen …                      in Initialen …
   g  Geschichten …                    tr Trennstellen …
   t  Tabellen …                       st Stichworte …
-  c  check / gegenlesen …             is ISBN …
- ── 3 Bauen ───────────────────────   ── 4 Ansehen ────────────────────
-  s  schnell  (Lese-PDF)              p  PDF öffnen …
-  w  weitergeben (lp + ko)            o  Ordner öffnen …
-  k  komplett (vor dem Druck)         a  änderungen (a|ä)
-  hb Hörbuch … (Linux)                db Druckbericht
- ── 5 Prüfen ──────────────────────   ── 6 Weitere Ausgaben ───────────
-  bp Buch prüfen  N ✓  UZ ✗           lp Leseprobe    ko Korrektur
-  co Coverrechner prüfen              np nur-pdf      ne nur E-Book
+                                      is ISBN …
+ ── 3 Bauen ───────────────────────   ── 4 Prüfen ─────────────────────
+  s  schnell  (Lese-PDF)              bp Buch prüfen  N ✓  UZ ✗
+  k  komplett (Druck + E-Book)        co Coverrechner prüfen
+  hb Hörbuch … (Linux)
+ ── 5 Ansehen ─────────────────────   ── 6 Weitergeben ───────────────
+  p  PDF öffnen …                     w  beides: Leseprobe + Korrektur
+  o  Ordner öffnen …                  c  check / gegenlesen …
+  a  änderungen (a|ä)                 lp Leseprobe    ko Korrektur
+  db Druckbericht                     np nur-pdf      ne nur E-Book
  ── Abgleichen ────────────────────   ── Aufräumen ────────────────────
   sy sync   (GitHub)                  sm Stand merken
   u  update (ul lokal)                au aufräumen …
@@ -215,6 +216,16 @@ Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `h
   n neu · $ Terminal · : Befehle · h hilfe · hf finden
  Wahl oder Befehl (z. B. final · ↑ = letzte · ↵ = beenden):
 ```
+
+Welche Taste wofür?
+
+Taste | baut | wann
+`s` schnell | Lese-PDF als Entwurf (offene Stellen sichtbar) | beim Schreiben, oft
+`k` komplett | Lese-PDF, Druckdateien, E-Book, Mockup, Shop, Druckbericht (= `final`) | vor dem Druck
+`w` weitergeben | Leseprobe + Korrektur-PDF | Buch weitergeben: Webseite, Shop, Leser
+`c` check / gegenlesen | check_NAME.pdf mit Markierungen pro Person | für Gegenleser
+
+Im Terminal baut `sh build.sh komplett` weiterhin alles zusammen (final + Leseprobe + Korrektur).
 
 `bp` Buch prüfen = `sh build.sh pruefen`: Variablen, Druckdateien, Befehle, Fotos, Geschichten, Tabellen (ohne Bau). Dahinter steht der Stand pro Fassung (N = normal, UZ = zweite Fassung; bei nur einer Fassung nur das Zeichen): ✓ = in Ordnung · ✗ (rot) = Fehler beim Prüfen – dann steht oben «✗ Buch prüfen: Fehler gefunden», `bp` drücken, die Meldung nennt Datei und Zeile – oder der Umschlag dieser Fassung passt nicht (oben «⚠ Coverrechner …», `cv`) · ? = noch nicht geprüft. Nach einer Änderung an den MD-Dateien prüft das Menü beim Anzeigen kurz selbst (ab 2.82.3).
 

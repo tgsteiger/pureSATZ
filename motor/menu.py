@@ -984,16 +984,17 @@ def zeige():
     status = status_zeile()                           # 2.82.18: Stand auf einen Blick (Seiten, letzter Bau, Cover)
     if status:
         print(status)
-    spalten = [("1 Schreiben", [("m", "MD öffnen …"), ("g", "Geschichten …"), ("t", "Tabellen …"),   # 2.82.18:
-                               ("c", "check / gegenlesen …")]),                                      # Blöcke im Buchablauf,
+    spalten = [("1 Schreiben", [("m", "MD öffnen …"), ("g", "Geschichten …"), ("t", "Tabellen …")]),  # 2.82.18:
+                                                                                                    # Blöcke im Buchablauf,
                ("2 Einstellen", [("in", "Initialen …"), ("tr", "Trennstellen …"), ("st", "Stichworte …"),  # Tasten gleich
                                  ("is", "ISBN …")]),
-               ("3 Bauen", [("s", "schnell  (Lese-PDF)"), ("w", "weitergeben (lp + ko)"), ("k", "komplett (vor dem Druck)")]
+               ("3 Bauen", [("s", "schnell  (Lese-PDF)"), ("k", "komplett (Druck + E-Book)")]   # 2.82.19: k = final
                 + ([("hb", "Hörbuch … (Linux)")] if LINUX else [])),
-               ("4 Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen (a|ä)"),
+               ("4 Prüfen", [("bp", bp), ("co", "Coverrechner prüfen")]),        # 2.82.19: Prüfen neben Bauen
+               ("5 Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen (a|ä)"),
                               ("db", "Druckbericht")]),
-               ("5 Prüfen", [("bp", bp), ("co", "Coverrechner prüfen")]),
-               ("6 Weitere Ausgaben", [("lp", "Leseprobe    ko Korrektur"), ("np", "nur-pdf      ne nur E-Book")]),
+               ("6 Weitergeben", [("w", "beides: Leseprobe + Korrektur"), ("c", "check / gegenlesen …"),
+                                  ("lp", "Leseprobe    ko Korrektur"), ("np", "nur-pdf      ne nur E-Book")]),
                ("Abgleichen", [("sy", "sync   (GitHub)"), ("u", "update" + (" (ul lokal)" if LOKAL else ""))]),
                ("Aufräumen", [("sm", "Stand merken"), ("au", "aufräumen …")])]
     spalten_zeigen(spalten, "n neu · $ Terminal · : Befehle · h hilfe · hf finden")
@@ -1173,8 +1174,8 @@ def main():
                 finde_hilfe(e[2:].strip())
             elif w == "s":
                 bauen("schnell")
-            elif w == "k":
-                bauen("komplett")
+            elif w == "k":                                  # 2.82.19: ohne Leseprobe/Korrektur (dafür w)
+                bauen("final")
             elif w == "f":
                 bauen("final")
             elif w == "db":                                 # Druckbericht des letzten Druck-Baus (ab 2.82.11)

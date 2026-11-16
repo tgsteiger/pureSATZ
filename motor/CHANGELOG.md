@@ -3,6 +3,13 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.82.19 (November 2026)
+- Menü: `k` komplett baut ohne Leseprobe und Korrektur (= `final`, schneller). Dafür `w` weitergeben.
+- Neuer Block «6 Weitergeben»: `w` weitergeben (Leseprobe + Korrektur) und `c` check / gegenlesen nebeneinander,
+  dazu `lp` `ko` `np` `ne`. Tasten unverändert. `sh build.sh komplett` im Terminal unverändert.
+- Menü: «4 Prüfen» steht neben «3 Bauen», danach «5 Ansehen» · «6 Weitergeben» (weniger Leerzeilen).
+- Hilfe: Tabelle «Welche Taste wofür?» (s · k · w · c).
+
 ## 2.82.18 (November 2026)
 - Hauptmenü im Buchablauf: 1 Schreiben · 2 Einstellen · 3 Bauen · 4 Ansehen · 5 Prüfen · 6 Weitere Ausgaben ·
   Abgleichen · Aufräumen. Alle Tasten bleiben gleich.

@@ -44,15 +44,16 @@ Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `h
   m  MD öffnen …                      in Initialen …
   g  Geschichten …                    tr Trennstellen …
   t  Tabellen …                       st Stichworte …
-  c  check / gegenlesen …             is ISBN …
- ── 3 Bauen ───────────────────────   ── 4 Ansehen ────────────────────
-  s  schnell  (Lese-PDF)              p  PDF öffnen …
-  w  weitergeben (lp + ko)            o  Ordner öffnen …
-  k  komplett (vor dem Druck)         a  änderungen (a|ä)
-  hb Hörbuch … (Linux)                db Druckbericht
- ── 5 Prüfen ──────────────────────   ── 6 Weitere Ausgaben ───────────
-  bp Buch prüfen  N ✓  UZ ✗           lp Leseprobe    ko Korrektur
-  co Coverrechner prüfen              np nur-pdf      ne nur E-Book
+                                      is ISBN …
+ ── 3 Bauen ───────────────────────   ── 4 Prüfen ─────────────────────
+  s  schnell  (Lese-PDF)              bp Buch prüfen  N ✓  UZ ✗
+  k  komplett (Druck + E-Book)        co Coverrechner prüfen
+  hb Hörbuch … (Linux)
+ ── 5 Ansehen ─────────────────────   ── 6 Weitergeben ───────────────
+  p  PDF öffnen …                     w  beides: Leseprobe + Korrektur
+  o  Ordner öffnen …                  c  check / gegenlesen …
+  a  änderungen (a|ä)                 lp Leseprobe    ko Korrektur
+  db Druckbericht                     np nur-pdf      ne nur E-Book
  ── Abgleichen ────────────────────   ── Aufräumen ────────────────────
   sy sync   (GitHub)                  sm Stand merken
   u  update (ul lokal)                au aufräumen …
@@ -60,6 +61,17 @@ Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `h
   n neu · $ Terminal · : Befehle · h hilfe · hf finden
  Wahl oder Befehl (z. B. final · ↑ = letzte · ↵ = beenden):
 ```
+
+**Welche Taste wofür?**
+
+| Taste | baut | wann |
+|---|---|---|
+| `s` schnell | Lese-PDF als Entwurf (offene Stellen sichtbar) | beim Schreiben, oft |
+| `k` komplett | Lese-PDF, Druckdateien, E-Book, Mockup, Shop, Druckbericht (= `final`) | vor dem Druck |
+| `w` weitergeben | Leseprobe + Korrektur-PDF | Buch weitergeben: Webseite, Shop, Leser |
+| `c` check / gegenlesen | check_NAME.pdf mit Markierungen pro Person | für Gegenleser |
+
+Im Terminal baut `sh build.sh komplett` weiterhin alles zusammen (final + Leseprobe + Korrektur).
 
 `bp` Buch prüfen = `sh build.sh pruefen`: Variablen, Druckdateien, Befehle, Fotos, Geschichten, Tabellen (ohne Bau).
 Dahinter steht der Stand pro Fassung (N = normal, UZ = zweite Fassung; bei nur einer Fassung nur das Zeichen):
