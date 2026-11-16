@@ -758,7 +758,8 @@ INITIAL_FARBEN = (("g", "akzent", "gold", "Akzentfarbe, wie Zierlinien und Lotus
 
 
 INITIAL_SCHLUESSEL = ("initial", "initial-stufen", "initial-zeilen", "initial-schrift", "initial-farbe", "kapitaelchen",
-                      "absatz-einzug", "fett-anfang-farbe", "fett-anfang-stil")      # fett-anfang: 2.82.26
+                      "absatz-einzug", "fett-anfang-farbe", "fett-anfang-stil",       # fett-anfang: 2.82.26
+                      "mitte-stil", "qr-farbe", "farbschema")                       # Gestaltung: 2.82.29
 
 
 def initialen_menue():
@@ -771,7 +772,8 @@ def initialen_menue():
         return
     standard = {"initial": "nein", "initial-stufen": "2", "initial-zeilen": "3", "initial-schrift": "",
                 "initial-farbe": "akzent", "kapitaelchen": "nein", "absatz-einzug": "nein",
-                "fett-anfang-farbe": "", "fett-anfang-stil": ""}
+                "fett-anfang-farbe": "", "fett-anfang-stil": "", "mitte-stil": "zitat", "qr-farbe": "",
+                "farbschema": "1"}
     while True:
         zeilen = open(pfad, encoding="utf-8").read().split("\n")
         roh = lambda n: next((z.split(":", 1)[1].strip() for z in zeilen if z.startswith("{" + n + "}:")), None)
@@ -801,13 +803,18 @@ def initialen_menue():
                     "einzug": "ja" if wert("absatz-einzug", f) in ("ja", "j") else "nein", "aus": aus,
                     "fa": {"haupt": "blau", "blau": "blau", "akzent": "gold", "gold": "gold"}.get(
                         wert("fett-anfang-farbe", f), "schwarz")
-                    + (" · Kapitälchen" if wert("fett-anfang-stil", f) in ("kapitaelchen", "ja") else "")}
+                    + (" · Kapitälchen" if wert("fett-anfang-stil", f) in ("kapitaelchen", "ja") else ""),
+                    "mi": {"aufrecht": "aufrecht", "blau": "blau aufrecht"}.get(wert("mitte-stil", f), "wie Zitat"),
+                    "qr": "blau" if wert("qr-farbe", f) in ("haupt", "blau") else "schwarz",
+                    "sc": (wert("farbschema", f) + " " + next((re.sub(r"^### Farbschema \d+:?\s*", "", z) for z in zeilen
+                           if z.startswith(f"### Farbschema {wert('farbschema', f)}")), ""))[:16]}
 
         st = {f: stand(f) for f in fassungen}
-        print("\n " + FETT("Initialen + Fett …".ljust(27)) + "".join(FETT(("normal" if f == "normal" else "unzensiert").ljust(17))
+        print("\n " + FETT("Gestaltung …".ljust(27)) + "".join(FETT(("normal" if f == "normal" else "unzensiert").ljust(17))
                                                             for f in fassungen))
         for titel, k in (("Wo", "wo"), ("Schrift", "schrift"), ("Farbe", "farbe"), ("Kapitälchen", "kap"),
-                         ("Einzug", "einzug"), ("Fett am Absatzanfang", "fa")):
+                         ("Einzug", "einzug"), ("Fett am Absatzanfang", "fa"), ("Mitte-Block", "mi"),
+                         ("QR-Codes", "qr"), ("Farbschema", "sc")):
             print(f"  {titel:<26}" + "".join(f"{st[f][k]:<17}" for f in fassungen))
         print(GRAU(" " + "─" * 54))
         print(f"  {FETT('Wo')}       0 aus · 1 erhöht · 2 · 3 · 4 Zeilen")
@@ -818,6 +825,9 @@ def initialen_menue():
         print(f"  {FETT('e1')} / {FETT('e0')}  Einzug ein / aus       " + GRAU("(Absätze eingerückt statt mit Abstand)"))
         print(f"  {FETT('fb')} {FETT('fg')} {FETT('fs')} Fett am Absatzanfang blau · gold · schwarz  " + GRAU("(«**Tantra.** Seit …»)"))
         print(f"  {FETT('fk1')} / {FETT('fk0')} Fett am Absatzanfang in Kapitälchen ein / aus")
+        print(f"  {FETT('mz')} {FETT('mb')} {FETT('ma')} Mitte-Block wie Zitat · blau aufrecht · aufrecht   " + GRAU("(::: mitte)"))
+        print(f"  {FETT('qb')} / {FETT('qs')}  QR-Codes blau / schwarz · {FETT('sc1')} {FETT('sc2')} {FETT('sc3')} Farbschema")
+        print(f"  {FETT('o')}        Variablen-Datei öffnen " + GRAU("(alle Farben und Werte)"))
         print(f"  {FETT('v')}        Vorschau " + GRAU("(schnell bauen, PDF öffnen)"))
         print(GRAU(" " + "─" * 54))
         if hat_uz:
@@ -855,6 +865,14 @@ def initialen_menue():
                 neu["fett-anfang-farbe"] = {"fb": "haupt", "fg": "akzent", "fs": ""}[t]
             elif t in ("fk1", "fk0"):
                 neu["fett-anfang-stil"] = "kapitaelchen" if t == "fk1" else ""
+            elif t in ("mz", "mb", "ma"):
+                neu["mitte-stil"] = {"mz": "zitat", "mb": "blau", "ma": "aufrecht"}[t]
+            elif t in ("qb", "qs"):
+                neu["qr-farbe"] = "haupt" if t == "qb" else ""
+            elif re.fullmatch(r"sc\d", t):
+                neu["farbschema"] = t[2:]
+            elif t == "o":
+                oeffnen(pfad)
             elif t in ("k", "e"):
                 print(ROT(f"  ✗ {t}1 = ein · {t}0 = aus"))
             elif t == "v":
@@ -998,7 +1016,7 @@ def zeige():
         print(status)
     spalten = [("1 Schreiben", [("m", "MD öffnen …"), ("g", "Geschichten …"), ("t", "Tabellen …")]),  # 2.82.18:
                                                                                                     # Blöcke im Buchablauf,
-               ("Einstellen", [("in", "Initialen + Fett …"), ("tr", "Trennstellen …"), ("st", "Stichworte …"),  # Tasten gleich
+               ("Einstellen", [("in", "Gestaltung …"), ("tr", "Trennstellen …"), ("st", "Stichworte …"),  # Tasten gleich
                                  ("is", "ISBN …")]),
                ("2 Bauen", [("s", "schnell  (Lese-PDF)"), ("k", "komplett (Druck + E-Book)")]   # 2.82.19: k = final
                 + ([("hb", "Hörbuch … (Linux)")] if LINUX else [])),

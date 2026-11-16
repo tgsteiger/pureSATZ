@@ -2026,9 +2026,13 @@ class MottoSeite(Flowable):
 
 def mitte(titel, inhalt):
     """Zentrierter Block zwischen zwei kleinen Lotusblüten (z. B. der Dank am Schluss). Ab 2.82.27 wie @ZITAT-ZIER
-    (kursiv, Zitatfarbe, schmaler); {mitte-stil}: aufrecht = wie früher, «::: mitte aufrecht» = nur dieser Block."""
-    zitat = (V("mitte-stil") or "zitat").strip().lower() != "aufrecht" and (titel or "").strip().lower() != "aufrecht"
-    st = ParagraphStyle("mitte", parent=quote if zitat else body, alignment=TA_CENTER, spaceBefore=0, spaceAfter=7)
+    (kursiv, Zitatfarbe, schmaler); {mitte-stil}: blau = aufrecht in der Hauptfarbe · aufrecht = wie früher;
+    «::: mitte blau» / «::: mitte aufrecht» = nur dieser Block (2.82.29)."""
+    art = (titel or "").strip().lower()
+    if art not in ("zitat", "blau", "aufrecht"):
+        art = (V("mitte-stil") or "zitat").strip().lower()                # zitat · blau (aufrecht, Hauptfarbe) · aufrecht
+    st = ParagraphStyle("mitte", parent=quote if art == "zitat" else body, alignment=TA_CENTER, spaceBefore=0,
+                        spaceAfter=7, **({"textColor": farbe("haupt")} if art == "blau" else {}))
     teile, para = [Spacer(1, 10), Ornament(), Spacer(1, 8)], []
     for z in inhalt + [""]:
         if z.strip():

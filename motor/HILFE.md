@@ -47,7 +47,7 @@ Als Text (zum Suchen):
  ══ Buch · pureSATZ                                     Klang (!) aus ══
  Leben123 · N 68 S. · UZ 86 S. · komplett 16.11. 10:21 · Cover ✓
  ── 1 Schreiben ───────────────────   ── Einstellen ───────────────────
-  m  MD öffnen …                      in Initialen + Fett …
+  m  MD öffnen …                      in Gestaltung …
   g  Geschichten …                    tr Trennstellen …
   t  Tabellen …                       st Stichworte …
  ── 2 Bauen ───────────────────────   is ISBN …
@@ -103,7 +103,7 @@ Untermenüs («…» = nur was es gibt):
 | `hb` Hörbuch (Linux) | `p` Probe hören · `w` Wörter hören · `t` Texte aus dem Buch · `v` vertonen · `k` Kapitel vertonen … · `e` Wörter/Probe/Einstellungen öffnen · `s` Azure-Schlüssel · `$` Terminal in audio/ · `o` Ordner · `h` Hilfe · `c` prüfen – siehe [Hörbuch: Das Menü](#Hörbuch-Das-Menü-hb) |
 | `f` final | Druckdateien für die Druckerei (wie `sh build.sh final`); danach öffnet sich der **Druckbericht** (`db`): Seitenbilanz, Umschlag, Coverrechner, ISBN, CMYK, Warnungen – jedes Mal neu, `ausgabe-…/00-Druckbericht.pdf` (`{druckbericht}: nein` in den Variablen = nicht öffnen) |
 | `co` Coverrechner prüfen | baut **nichts**: pro Fassung Buchblock-Seiten vom letzten Druck-Bau, eingetragene Werte, ob die Rohdaten passen, und was zu tun ist (`cv` öffnet die Druckdatei) |
-| Einstellen · Weitere Ausgaben (bis 2.82.10 unter `w` weitere) | `lp` Leseprobe · `ko` Korrektur · `np` nur-pdf · `ne` nur E-Book · `sm` Stand merken · `st` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` Stichwortdatei öffnen) · `is` ISBN … (alle Ausgaben ansehen und eintragen – Druck/E-Book, normal/UZ; Enter = bleibt, `-` = leeren; speichert in der Variablen-Datei, dann Prüfziffer und Strichcode-PNG wie `sh build.sh isbn`) · `tr` Trennstellen … (Liste aus `{trennstellen}`; `Re|vi|ta|ler` = ergänzen, `-Revitaler` = entfernen; wirkt beim nächsten Bau) · `in` Initialen + Fett … (Tabelle normal / unzensiert; wo: 0–4 Zeilen oder `ti` im Titel – `ti3`, `ti23`, `ti234` = weitere Stufen; Schrift; Farbe `g` gold · `b` blau · `s` schwarz · `ü` wie die Überschrift; `k1`/`k0` Kapitälchen, `e1`/`e0` Einzug; `fb` `fg` `fs` Fett am Absatzanfang blau · gold · schwarz, `fk1`/`fk0` in Kapitälchen; vorne `n` = nur normal, `uz` = nur unzensiert, ohne = beide; `n0`/`uz0` = alles aus; z. B. `n ti c b k1` · `uz 0`; `v` = Vorschau) · `au` aufräumen (wie `sh cleanup.sh`, fragt `[j/N]`) |
+| Einstellen · Weitere Ausgaben (bis 2.82.10 unter `w` weitere) | `lp` Leseprobe · `ko` Korrektur · `np` nur-pdf · `ne` nur E-Book · `sm` Stand merken · `st` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` Stichwortdatei öffnen) · `is` ISBN … (alle Ausgaben ansehen und eintragen – Druck/E-Book, normal/UZ; Enter = bleibt, `-` = leeren; speichert in der Variablen-Datei, dann Prüfziffer und Strichcode-PNG wie `sh build.sh isbn`) · `tr` Trennstellen … (Liste aus `{trennstellen}`; `Re|vi|ta|ler` = ergänzen, `-Revitaler` = entfernen; wirkt beim nächsten Bau) · `in` Gestaltung … (Tabelle normal / unzensiert; wo: 0–4 Zeilen oder `ti` im Titel – `ti3`, `ti23`, `ti234` = weitere Stufen; Schrift; Farbe `g` gold · `b` blau · `s` schwarz · `ü` wie die Überschrift; `k1`/`k0` Kapitälchen, `e1`/`e0` Einzug; `fb` `fg` `fs` Fett am Absatzanfang blau · gold · schwarz, `fk1`/`fk0` in Kapitälchen; vorne `n` = nur normal, `uz` = nur unzensiert, ohne = beide; `n0`/`uz0` = alles aus; z. B. `n ti c b k1` · `uz 0`; `v` = Vorschau) · `au` aufräumen (wie `sh cleanup.sh`, fragt `[j/N]`) |
 | `p` PDF öffnen | `n` normal · `u` unzensiert · `l` Leseprobe · `k` Korrektur … |
 | `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten · `t` tabellen · `a` audio … · `p` Pfad Buchordner kopieren · dazu Taste + `t` = Terminal dort (`bt`, `at` …), + `p` = Pfad kopieren (`ap` …) |
 | `n` neu | `b` neues Buch · `h` Hallo-Buch · `e` einrichten · `m` Motor-Selbsttest · `v` Verknüpfung |
@@ -438,7 +438,7 @@ Suchwörter: fett, kursiv, hervorheben, betonen, Absatzanfang, Pseudo-Block. Bau
 | Steuerzeichen | Wirkung |
 |---|---|
 | `**Wort**` | **fett**, mitten im Text (PDF und E-Book) |
-| `**Tantra.** Seit …` (Fett ganz am Absatzanfang oder Listenpunkt) | Stichwort-Absatz («Pseudo-Block»): im Druck und Lese-PDF farbig und/oder in Kapitälchen – Menü `in` Initialen + Fett … (`fb` blau · `fg` gold · `fs` schwarz · `fk1`/`fk0` Kapitälchen) oder `{fett-anfang-farbe}` / `{fett-anfang-stil}`. Fett mitten im Satz bleibt schwarz |
+| `**Tantra.** Seit …` (Fett ganz am Absatzanfang oder Listenpunkt) | Stichwort-Absatz («Pseudo-Block»): im Druck und Lese-PDF farbig und/oder in Kapitälchen – Menü `in` Gestaltung … (`fb` blau · `fg` gold · `fs` schwarz · `fk1`/`fk0` Kapitälchen) oder `{fett-anfang-farbe}` / `{fett-anfang-stil}`. Fett mitten im Satz bleibt schwarz |
 | `~ Satz` | Randbemerkung: klein, kursiv, leicht eingerückt |
 | `@ZITAT Satz` | Zitat: kursiv, zentriert, schlicht |
 | `> Satz` oder `@ZITAT-ZIER Satz` | Zitat: kursiv, zentriert, mit Verzierung oben und unten |
@@ -703,7 +703,7 @@ diesen Zeilen der Buch-MD:
 | Shop | `shop-beschreibung`, `shop-schlagwoerter`, `shop-kategorie`, `shop-link`, `sprache` (Standard `de`, steht in den Shop-Angaben) |
 | Leseprobe | `leseprobe`, `leseprobe-seiten`, `leseprobe-seiten-uz`, `leseprobe-text` |
 | Technik | `kurz-normal` / `-uz` (Kürzel vorne an den Druckdateien, z. B. L123), `datei-normal` / `-uz` (Name der Lese-PDFs und E-Books), `ordner-normal` / `-uz` (Ausgabeordner) |
-| Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt\|anschauung), `zier`, `zier-hell`, `initial` (ja · titel · nein), `initial-farbe` (akzent · haupt · text · ueberschrift), `fett-anfang-farbe` (leer · haupt · akzent: Fett ganz am Absatzanfang farbig, z. B. «**Tantra.** Seit …»), `fett-anfang-stil` (leer · kapitaelchen), `mitte-stil` (zitat = wie @ZITAT-ZIER, Standard · aufrecht), `qr-farbe` (leer = schwarz · haupt = blau; Gold zu schwach, mit dem Handy prüfen), `fett-anfang-zeichen` (leer · zier = Lotus · ein Zeichen wie ◆ · bild.png), `initial-stufen` (2 · 3 · 4), `initial-stil` (normal · rand · feld), `initial-zeilen` (0 · 1 · 2 · 3 · 4), `initial-schrift` (fett · cinzel · uncial · fraktur · datei.ttf), `kapitaelchen` (ja · nein), `absatz-einzug` (ja · nein), `liste-blocksatz` (nein · ja: Listen im Blocksatz), `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund` |
+| Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt\|anschauung), `zier`, `zier-hell`, `initial` (ja · titel · nein), `initial-farbe` (akzent · haupt · text · ueberschrift), `fett-anfang-farbe` (leer · haupt · akzent: Fett ganz am Absatzanfang farbig, z. B. «**Tantra.** Seit …»), `fett-anfang-stil` (leer · kapitaelchen), `mitte-stil` (zitat = wie @ZITAT-ZIER, Standard · blau · aufrecht), `qr-farbe` (leer = schwarz · haupt = blau; Gold zu schwach, mit dem Handy prüfen), `fett-anfang-zeichen` (leer · zier = Lotus · ein Zeichen wie ◆ · bild.png), `initial-stufen` (2 · 3 · 4), `initial-stil` (normal · rand · feld), `initial-zeilen` (0 · 1 · 2 · 3 · 4), `initial-schrift` (fett · cinzel · uncial · fraktur · datei.ttf), `kapitaelchen` (ja · nein), `absatz-einzug` (ja · nein), `liste-blocksatz` (nein · ja: Listen im Blocksatz), `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund` |
 | Sicherung | `sicherung-lokal`, `sicherung-cloud`, `sicherung-behalten` |
 | Layout | `farbschema`, `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `blocksatz` · Inhaltsverzeichnis: `inhalt-tiefe`, `inhalt-dichte`, `inhalt-teile`, `inhalt-punkte`, `inhalt-schrift` |
 
@@ -732,6 +732,23 @@ anderem Namen sichern – jeder Bau überschreibt es). Zurück auf `1`: beim nä
 Der Bau zeigt am Anfang und am Ende, welches gilt (z. B. «Farben: Farbschema 2: dunkler für den Druck»). Fehlt das gewählte Schema, meldet der Bau «Farbschema … fehlt – nehme Schema 1». Ohne `{farbschema}` gelten
 die `{farbe-…}`-Zeilen direkt unter `## Farben`.
 
+## Farben und Aussehen auf einen Blick
+
+Suchwörter: Farbe, Aussehen, blau, gold, Gestaltung. Fast alles im Menü `in` Gestaltung … – `o` öffnet dort die Variablen-Datei.
+
+| Was | Variable | Werte | Menü `in` |
+|---|---|---|---|
+| alle Farben auf einmal | `{farbschema}` | 1 · 2 · 3 (Schemas unter `## Farben`) | `sc1` `sc2` `sc3` |
+| Überschriften, Links im Text | `{farbe-haupt}` | #RRGGBB (Blau) | – (im Farbschema) |
+| Gold: Zierlinien, Jahre, Links | `{farbe-akzent}` | #RRGGBB | – (im Farbschema) |
+| Fliesstext, Kopfzeile | `{farbe-text}`, `{farbe-leise}` | #RRGGBB | – (im Farbschema) |
+| Initial am Kapitelanfang | `{initial}`, `{initial-farbe}` … | ja · titel · nein / akzent · haupt · text | `0`–`4` `ti` · `g` `b` `s` `ü` |
+| Fett am Absatzanfang («**Tantra.** …») | `{fett-anfang-farbe}`, `{fett-anfang-stil}` | haupt · akzent · leer / kapitaelchen | `fb` `fg` `fs` · `fk1` `fk0` |
+| Zierzitat und Mitte-Block | `{mitte-stil}` | zitat · blau · aufrecht | `mz` `mb` `ma` |
+| QR-Codes | `{qr-farbe}` | haupt · leer (schwarz) | `qb` `qs` |
+
+Danach `v` (Vorschau) oder `s` bauen. Farben am Bildschirm nur grob beurteilen – der Probedruck zählt.
+
 ## Seitengestaltung: neue Seite, Umbruch, Zierde
 
 Nach einer Änderung `sh build.sh schnell` und ansehen.
@@ -740,7 +757,7 @@ Nach einer Änderung `sh build.sh schnell` und ansehen.
 |---|---|
 | eine neue Seite | `---` auf eigener Zeile (davor eine Leerzeile) oder `@UMBRUCH` |
 | ein Zitat mit Zierlinien mitten im Kapitel, der Text geht danach weiter | `@ZITAT-ZIER Satz.<br/>Zweiter Satz.` (kurz `> Satz`) |
-| einen Abschluss am Ende eines Teils, senkrecht in der Mitte der restlichen Seite | `::: mitte` … `:::` (mehrere Absätze möglich) – sieht aus wie `@ZITAT-ZIER` (kursiv, Zitatfarbe); `::: mitte aufrecht` = nur dieser Block aufrecht und schwarz (z. B. lange Texte), `{mitte-stil}: aufrecht` = alle |
+| einen Abschluss am Ende eines Teils, senkrecht in der Mitte der restlichen Seite | `::: mitte` … `:::` (mehrere Absätze möglich) – sieht aus wie `@ZITAT-ZIER` (kursiv, Zitatfarbe); `::: mitte blau` = aufrecht in Blau, normale Textgrösse (lange Texte) · `::: mitte aufrecht` = aufrecht schwarz · für alle: `{mitte-stil}` oder Menü `in` (`mz` `mb` `ma`) |
 | eine neue Seite, im Druck immer rechts (z. B. vor einem Kapitel) | `@UMBRUCH-RECHTS` |
 | eine neue Seite nur, wenn unten zu wenig Platz bleibt | `@PLATZ 60` (mm) – gut vor einem Foto oder Zwischentitel |
 | einen Abschnitt nie trennen | `::: zusammen` … `:::` |
