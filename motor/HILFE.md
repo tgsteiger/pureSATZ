@@ -109,7 +109,8 @@ Untermenüs («…» = nur was es gibt):
   `:` Befehle zeigt diese Befehle zum Tippen (aus dem Spickzettel der Hilfe), danach gleich eingeben. `?` = hilfe.
   Datei öffnen wie im Terminal: `xdg-open ausgabe-normal/….pdf` (Mac `open`, Windows `start`) – Pfad ab dem
   Buchordner, das Menü wartet nicht. Die Zeilen am Schluss eines Baus lassen sich so direkt einfügen.
-- Nach einem Bau bleiben die Meldungen stehen: statt des Menüs nur «Eingabe (Enter = Menü · ↑ = s)», mit dem letzten Befehl. Neu gebaute
+- Nach einem Bau bleiben die Meldungen stehen: statt des Menüs nur «Eingabe (Enter = Menü)». Die Schlusslinie
+  zeigt Befehl und Dauer: «✓ s fertig · 0 Min. 34 s». Neu gebaute
   Lese-PDFs öffnen sich gleich (bei komplett nur normal und unzensiert).
 - MD, PDF und Ordner öffnen im eigenen Programm, das Menü bleibt bereit. Bauen läuft im Menüfenster;
   am Schluss «Fertig» mit Dauer und Klang. Oben links der Buchname als goldenes Schild (auch im Fenster-/Tab-Titel),

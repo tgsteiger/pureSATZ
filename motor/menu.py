@@ -213,8 +213,9 @@ def lauf(cmd, ordner=BASE, env=None, titel=None):
         r = 1
     d = int(time.time() - t)
     zeit = f" · {d // 60} Min. {d % 60} s"
-    text = (GRUEN("✓") + GOLDFEIN(" Fertig" + zeit)) if r == 0 else (ROT("✗ Fehler – siehe oben") + GOLDFEIN(zeit))
-    print(linie(text, len(zeit) + (12 if r == 0 else 25)) + "\n")   # Schlusslinie, dann Leerzeile
+    text = (GRUEN("✓ ") + FETT(name) + GOLDFEIN(" fertig" + zeit)) if r == 0 \
+        else (ROT("✗ ") + FETT(name) + ROT(" Fehler – siehe oben") + GOLDFEIN(zeit))      # 2.82.21: mit Befehl
+    print(linie(text, len(name) + len(zeit) + (13 if r == 0 else 26)) + "\n")   # Schlusslinie, dann Leerzeile
     klang()
     return r
 
@@ -1165,7 +1166,7 @@ def main():
                 e, naechste = naechste, ""
             elif gelaufen:                                # Meldungen stehen lassen, kein neues Menü
                 gelaufen = False
-                e = frage(f" Eingabe (Enter = Menü{' · ↑ = ' + zuletzt if zuletzt else ''}): ", merken=True)   # 2.82.21
+                e = frage(" Eingabe (Enter = Menü): ", merken=True)
                 if not e:
                     continue
             else:
