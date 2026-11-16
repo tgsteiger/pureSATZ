@@ -1165,7 +1165,7 @@ def main():
                 e, naechste = naechste, ""
             elif gelaufen:                                # Meldungen stehen lassen, kein neues Menü
                 gelaufen = False
-                e = frage(" Eingabe (Enter = Menü): ", merken=True)
+                e = frage(f" Eingabe (Enter = Menü{' · ↑ = ' + zuletzt if zuletzt else ''}): ", merken=True)   # 2.82.21
                 if not e:
                     continue
             else:
