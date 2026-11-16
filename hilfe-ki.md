@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.82.22
+# pureSATZ Hilfe · pureSATZ · Motor 2.82.23
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -190,7 +190,9 @@ Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `h
 
 ## Menü
 
-`sh menu.sh` (Windows: `menu.bat`) zeigt die häufigsten Befehle in der Reihenfolge des Buchablaufs (1–6). Ein Buchstabe genügt. Die graue Zeile oben zeigt den Stand: Seiten je Fassung, letzter Bau, Cover:
+`sh menu.sh` (Windows: `menu.bat`) zeigt die häufigsten Befehle: links der Buchablauf (1 Schreiben · 2 Bauen · 3 Ansehen), rechts was dazugehört. Ein Buchstabe genügt. Die graue Zeile oben zeigt den Stand: Seiten je Fassung, letzter Bau, Cover.
+
+Als Text (zum Suchen):
 
 ```
  ══ Buch · pureSATZ                                     Klang (!) aus ══

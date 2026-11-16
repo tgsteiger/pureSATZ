@@ -284,6 +284,17 @@ def md_html(text):
             if bloecke:
                 bloecke.pop()
             absatz_ende(); liste_ende(); out.append("</div>"); i += 1; continue
+        m = re.match(r"^!\[([^\]]*)\]\(([^)\s]+)\)$", s)     # ![Text](bilder/x.png) – Bild aus motor/, eingebettet (2.82.22)
+        if m:
+            absatz_ende(); liste_ende()
+            p = os.path.join(os.path.dirname(os.path.abspath(__file__)), m.group(2))
+            if os.path.exists(p):
+                import base64
+                art = "jpeg" if p.lower().endswith((".jpg", ".jpeg")) else "png"
+                daten = base64.b64encode(open(p, "rb").read()).decode()
+                out.append(f'<p><img src="data:image/{art};base64,{daten}" alt="{html.escape(m.group(1))}" '
+                           f'title="{html.escape(m.group(1))}" style="max-width:100%;border-radius:6px"></p>')
+            i += 1; continue
         if s.startswith(">"):
             absatz_ende(); liste_ende()
             out.append(f"<blockquote>{_inline(s.lstrip('> '))}</blockquote>"); i += 1; continue

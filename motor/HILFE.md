@@ -35,7 +35,13 @@ Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `h
 
 ## Menü
 
-`sh menu.sh` (Windows: `menu.bat`) zeigt die häufigsten Befehle in der Reihenfolge des Buchablaufs (1–6). Ein Buchstabe genügt. Die graue Zeile oben zeigt den Stand: Seiten je Fassung, letzter Bau, Cover:
+`sh menu.sh` (Windows: `menu.bat`) zeigt die häufigsten Befehle: links der Buchablauf (1 Schreiben · 2 Bauen · 3 Ansehen), rechts was dazugehört. Ein Buchstabe genügt. Die graue Zeile oben zeigt den Stand: Seiten je Fassung, letzter Bau, Cover.
+
+::: nur-webhilfe
+![Menü nach dem Bauen mit s – oben die Schlusslinie mit Befehl und Dauer](bilder/menu.png)
+:::
+
+Als Text (zum Suchen):
 
 ```
  ══ Buch · pureSATZ                                     Klang (!) aus ══
