@@ -2797,13 +2797,34 @@ def tabelle(zeile):
 
 
 def absatz_anfang(t):
-    """{fett-anfang-farbe}: haupt (blau) · akzent (gold) · leer = schwarz – Fett ganz am Anfang eines Absatzes oder
-    Listenpunkts («**Tantra.** Seit …») in dieser Farbe; Fett mitten im Satz bleibt schwarz (2.82.25)."""
-    w = (V("fett-anfang-farbe") or "").strip().lower()
-    w = {"blau": "haupt", "gold": "akzent"}.get(w, w)
-    if w not in ("haupt", "akzent"):
+    """Fett ganz am Anfang eines Absatzes oder Listenpunkts («**Tantra.** Seit …», 2.82.25/26) – Fett mitten im Satz
+    bleibt, wie es ist. {fett-anfang-farbe}: haupt (blau) · akzent (gold) · leer = Textfarbe ·
+    {fett-anfang-stil}: kapitaelchen · leer · {fett-anfang-zeichen}: zier (Lotus wie {zier}) · ein Zeichen (z. B. ◆) ·
+    datei.png (bilder/) · leer."""
+    m = re.match(r"\*\*(.+?)\*\*", t)
+    if not m:
         return t
-    return re.sub(r"^\*\*(.+?)\*\*", lambda m: f'<font color="{hexfarbe(w)}">**{m.group(1)}**</font>', t)
+    farbe_ = (V("fett-anfang-farbe") or "").strip().lower()
+    farbe_ = {"blau": "haupt", "gold": "akzent"}.get(farbe_, farbe_)
+    stil = (V("fett-anfang-stil") or "").strip().lower()
+    zeichen = (V("fett-anfang-zeichen") or "").strip()
+    wort = m.group(1)
+    if stil in ("kapitaelchen", "kapitälchen", "ja"):
+        wort = f'<font size="{TEXT_GROESSE * 0.82:.1f}">{wort.upper().replace("ß", "SS")}</font>'
+    wort = f"**{wort}**"
+    if farbe_ in ("haupt", "akzent"):
+        wort = f'<font color="{hexfarbe(farbe_)}">{wort}</font>'
+    vor = ""
+    if zeichen:
+        bild = LOTUS if zeichen.lower() in ("zier", "lotus") else \
+            finde(zeichen) if zeichen.lower().endswith((".png", ".jpg", ".jpeg")) else None
+        if bild:
+            h = TEXT_GROESSE * 0.85
+            r = LOTUS_RATIO if bild == LOTUS else seitenverhaeltnis(bild)
+            vor = f'<img src="{bild}" width="{h / r:.1f}" height="{h:.1f}" valign="middle"/>&#160;'
+        else:
+            vor = f'<font color="{hexfarbe("akzent")}">{zeichen}</font>&#160;'
+    return vor + wort + t[m.end():]
 
 
 def inline_einfach(t):

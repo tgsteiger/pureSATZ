@@ -758,7 +758,7 @@ INITIAL_FARBEN = (("g", "akzent", "gold", "Akzentfarbe, wie Zierlinien und Lotus
 
 
 INITIAL_SCHLUESSEL = ("initial", "initial-stufen", "initial-zeilen", "initial-schrift", "initial-farbe", "kapitaelchen",
-                      "absatz-einzug")
+                      "absatz-einzug", "fett-anfang-farbe", "fett-anfang-stil")      # fett-anfang: 2.82.26
 
 
 def initialen_menue():
@@ -770,7 +770,8 @@ def initialen_menue():
     if not pfad:
         return
     standard = {"initial": "nein", "initial-stufen": "2", "initial-zeilen": "3", "initial-schrift": "",
-                "initial-farbe": "akzent", "kapitaelchen": "nein", "absatz-einzug": "nein"}
+                "initial-farbe": "akzent", "kapitaelchen": "nein", "absatz-einzug": "nein",
+                "fett-anfang-farbe": "", "fett-anfang-stil": ""}
     while True:
         zeilen = open(pfad, encoding="utf-8").read().split("\n")
         roh = lambda n: next((z.split(":", 1)[1].strip() for z in zeilen if z.startswith("{" + n + "}:")), None)
@@ -797,13 +798,16 @@ def initialen_menue():
                     "schrift": "–" if aus else name,
                     "farbe": "–" if aus else next((n for _, w, n, _ in INITIAL_FARBEN if w == farbe_), "gold"),
                     "kap": "ja" if wert("kapitaelchen", f) in ("ja", "j") else "nein",
-                    "einzug": "ja" if wert("absatz-einzug", f) in ("ja", "j") else "nein", "aus": aus}
+                    "einzug": "ja" if wert("absatz-einzug", f) in ("ja", "j") else "nein", "aus": aus,
+                    "fa": {"haupt": "blau", "blau": "blau", "akzent": "gold", "gold": "gold"}.get(
+                        wert("fett-anfang-farbe", f), "schwarz")
+                    + (" · Kapitälchen" if wert("fett-anfang-stil", f) in ("kapitaelchen", "ja") else "")}
 
         st = {f: stand(f) for f in fassungen}
-        print("\n " + FETT("Initialen …".ljust(27)) + "".join(FETT(("normal" if f == "normal" else "unzensiert").ljust(17))
+        print("\n " + FETT("Initialen + Fett …".ljust(27)) + "".join(FETT(("normal" if f == "normal" else "unzensiert").ljust(17))
                                                             for f in fassungen))
         for titel, k in (("Wo", "wo"), ("Schrift", "schrift"), ("Farbe", "farbe"), ("Kapitälchen", "kap"),
-                         ("Einzug", "einzug")):
+                         ("Einzug", "einzug"), ("Fett am Absatzanfang", "fa")):
             print(f"  {titel:<26}" + "".join(f"{st[f][k]:<17}" for f in fassungen))
         print(GRAU(" " + "─" * 54))
         print(f"  {FETT('Wo')}       0 aus · 1 erhöht · 2 · 3 · 4 Zeilen")
@@ -812,6 +816,8 @@ def initialen_menue():
         print(f"  {FETT('Farbe')}    " + " · ".join(f"{FETT(t)} {n}" for t, _, n, _ in INITIAL_FARBEN).replace("Überschrift", "wie Überschrift"))
         print(f"  {FETT('k1')} / {FETT('k0')}  Kapitälchen ein / aus  " + GRAU("(erste Wörter in GROSSBUCHSTABEN)"))
         print(f"  {FETT('e1')} / {FETT('e0')}  Einzug ein / aus       " + GRAU("(Absätze eingerückt statt mit Abstand)"))
+        print(f"  {FETT('fb')} {FETT('fg')} {FETT('fs')} Fett am Absatzanfang blau · gold · schwarz  " + GRAU("(«**Tantra.** Seit …»)"))
+        print(f"  {FETT('fk1')} / {FETT('fk0')} Fett am Absatzanfang in Kapitälchen ein / aus")
         print(f"  {FETT('v')}        Vorschau " + GRAU("(schnell bauen, PDF öffnen)"))
         print(GRAU(" " + "─" * 54))
         if hat_uz:
@@ -845,6 +851,10 @@ def initialen_menue():
                 neu["kapitaelchen"] = "ja" if t == "k1" else "nein"
             elif t in ("e1", "e0"):
                 neu["absatz-einzug"] = "ja" if t == "e1" else "nein"
+            elif t in ("fb", "fg", "fs"):
+                neu["fett-anfang-farbe"] = {"fb": "haupt", "fg": "akzent", "fs": ""}[t]
+            elif t in ("fk1", "fk0"):
+                neu["fett-anfang-stil"] = "kapitaelchen" if t == "fk1" else ""
             elif t in ("k", "e"):
                 print(ROT(f"  ✗ {t}1 = ein · {t}0 = aus"))
             elif t == "v":
@@ -988,7 +998,7 @@ def zeige():
         print(status)
     spalten = [("1 Schreiben", [("m", "MD öffnen …"), ("g", "Geschichten …"), ("t", "Tabellen …")]),  # 2.82.18:
                                                                                                     # Blöcke im Buchablauf,
-               ("Einstellen", [("in", "Initialen …"), ("tr", "Trennstellen …"), ("st", "Stichworte …"),  # Tasten gleich
+               ("Einstellen", [("in", "Initialen + Fett …"), ("tr", "Trennstellen …"), ("st", "Stichworte …"),  # Tasten gleich
                                  ("is", "ISBN …")]),
                ("2 Bauen", [("s", "schnell  (Lese-PDF)"), ("k", "komplett (Druck + E-Book)")]   # 2.82.19: k = final
                 + ([("hb", "Hörbuch … (Linux)")] if LINUX else [])),

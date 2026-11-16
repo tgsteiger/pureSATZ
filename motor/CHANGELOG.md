@@ -3,6 +3,11 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.82.26 (November 2026)
+- Fett am Absatzanfang: `{fett-anfang-stil}: kapitaelchen` und `{fett-anfang-zeichen}: zier | ◆ | bild.png` (Zeichen davor).
+- Menü `in` heisst «Initialen + Fett …»: neu `fb` `fg` `fs` (Farbe) und `fk1`/`fk0` (Kapitälchen).
+- Hilfe: «Text hervorheben» zeigt den Stichwort-Absatz («Pseudo-Block»).
+
 ## 2.82.25 (November 2026)
 - Neu `{fett-anfang-farbe}: haupt` (blau) oder `akzent` (gold): Fett ganz am Anfang eines Absatzes oder Listenpunkts
   («**Tantra.** Seit …») in dieser Farbe – für «Pseudo-Blöcke». Fett mitten im Satz bleibt schwarz. Leer = wie bisher.
