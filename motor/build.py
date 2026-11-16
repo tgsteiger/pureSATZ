@@ -930,8 +930,9 @@ body_e = ParagraphStyle("body_e", parent=body_e0, firstLineIndent=5 * mm)       
 quote = _stil("quote", L.ZITAT, alignment=TA_CENTER, spaceBefore=10, spaceAfter=12, leftIndent=8 * mm,
               rightIndent=8 * mm)
 note = _stil("note", L.NOTIZ, parent=body, leftIndent=6 * mm, rightIndent=6 * mm, alignment=TA_LEFT)
+LISTE_BLOCKSATZ = (V("liste-blocksatz", "nein") or "nein").strip().lower() in ("ja", "j")   # 2.82.17
 bullet = ParagraphStyle("bullet", parent=body, leftIndent=5 * mm, bulletIndent=0,
-                        alignment=TA_LEFT, spaceAfter=5)
+                        alignment=TA_JUSTIFY if LISTE_BLOCKSATZ else TA_LEFT, spaceAfter=5)
 bullet2 = ParagraphStyle("bullet2", parent=bullet, leftIndent=11 * mm, bulletIndent=6.5 * mm)
 nummer = ParagraphStyle("nummer", parent=bullet, leftIndent=7 * mm, bulletIndent=5 * mm, bulletAnchor="end",
                         bulletFontName=schrift("text"), bulletFontSize=TEXT_GROESSE)
@@ -1874,7 +1875,7 @@ uz_kopf = ParagraphStyle("uzk", fontName=schrift("titel"), fontSize=7.2, leading
 uz_titel = ParagraphStyle("uzt", fontName=schrift("titel"), fontSize=11, leading=15, textColor=DEEP)
 uz_body = ParagraphStyle("uzb", parent=body, fontSize=9.6, leading=14.2, spaceAfter=0)
 uz_note = ParagraphStyle("uzn", parent=uz_body, fontName=schrift("text_kursiv"), textColor=SOFT)
-uz_bullet = ParagraphStyle("uzbl", parent=uz_body, leftIndent=5 * mm, alignment=TA_LEFT)
+uz_bullet = ParagraphStyle("uzbl", parent=uz_body, leftIndent=5 * mm, alignment=TA_JUSTIFY if LISTE_BLOCKSATZ else TA_LEFT)
 uz_nummer = ParagraphStyle("uznr", parent=uz_bullet, leftIndent=7 * mm, bulletIndent=5 * mm, bulletAnchor="end",
                            bulletFontName=uz_bullet.fontName, bulletFontSize=uz_bullet.fontSize)
 

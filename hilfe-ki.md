@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.82.11
+# pureSATZ Hilfe · pureSATZ · Motor 2.82.17
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -196,8 +196,8 @@ Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `h
  ══ Buch · pureSATZ                                     Klang (!) aus ══
  ── Schreiben ─────────────────────   ── Bauen ────────────────────────
   m  MD öffnen …                      s  schnell  (Lese-PDF)
-  g  Geschichten …                    k  komplett (vor dem Druck)
-  t  Tabellen …                       f  final    (Druckdateien)
+  g  Geschichten …                    w  weitergeben (lp + ko)
+  t  Tabellen …                       k  komplett (vor dem Druck)
   c  check / gegenlesen …             hb Hörbuch … (Linux)
  ── Ansehen ───────────────────────   ── Abgleichen / Prüfen ──────────
   p  PDF öffnen …                     sy sync   (GitHub)
@@ -233,7 +233,7 @@ Untermenüs («…» = nur was es gibt):
 `hb` Hörbuch (Linux) | `p` Probe hören · `w` Wörter hören · `t` Texte aus dem Buch · `v` vertonen · `k` Kapitel vertonen … · `e` Wörter/Probe/Einstellungen öffnen · `s` Azure-Schlüssel · `$` Terminal in audio/ · `o` Ordner · `h` Hilfe · `c` prüfen – siehe Hörbuch: Das Menü
 `f` final | Druckdateien für die Druckerei (wie `sh build.sh final`); danach öffnet sich der Druckbericht (`db`): Seitenbilanz, Umschlag, Coverrechner, ISBN, CMYK, Warnungen – jedes Mal neu, `ausgabe-…/00-Druckbericht.pdf` (`{druckbericht}: nein` in den Variablen = nicht öffnen)
 `co` Coverrechner prüfen | baut nichts: pro Fassung Buchblock-Seiten vom letzten Druck-Bau, eingetragene Werte, ob die Rohdaten passen, und was zu tun ist (`cv` öffnet die Druckdatei)
-Einstellen · Weitere Ausgaben (bis 2.82.10 unter `w` weitere) | `lp` Leseprobe · `ko` Korrektur · `np` nur-pdf · `ne` nur E-Book · `sm` Stand merken · `st` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` Stichwortdatei öffnen) · `is` ISBN … (alle Ausgaben ansehen und eintragen – Druck/E-Book, normal/UZ; Enter = bleibt, `-` = leeren; speichert in der Variablen-Datei, dann Prüfziffer und Strichcode-PNG wie `sh build.sh isbn`) · `in` Initialen … (wo: 0–4 Zeilen oder `ti` im Titel – `ti3`, `ti23`, `ti234` = weitere Stufen; Schrift; Farbe `g` gold · `b` blau · `s` schwarz · `ü` wie die Überschrift; `k` Kapitälchen, `e` Einzug; z. B. `ti c b` = im Titel, Cinzel, blau; `v` = Vorschau) · `au` aufräumen (wie `sh cleanup.sh`, fragt `[j/N]`)
+Einstellen · Weitere Ausgaben (bis 2.82.10 unter `w` weitere) | `lp` Leseprobe · `ko` Korrektur · `np` nur-pdf · `ne` nur E-Book · `sm` Stand merken · `st` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` Stichwortdatei öffnen) · `is` ISBN … (alle Ausgaben ansehen und eintragen – Druck/E-Book, normal/UZ; Enter = bleibt, `-` = leeren; speichert in der Variablen-Datei, dann Prüfziffer und Strichcode-PNG wie `sh build.sh isbn`) · `in` Initialen … (Tabelle normal / unzensiert; wo: 0–4 Zeilen oder `ti` im Titel – `ti3`, `ti23`, `ti234` = weitere Stufen; Schrift; Farbe `g` gold · `b` blau · `s` schwarz · `ü` wie die Überschrift; `k1`/`k0` Kapitälchen, `e1`/`e0` Einzug; vorne `n` = nur normal, `uz` = nur unzensiert, ohne = beide; `n0`/`uz0` = alles aus; z. B. `n ti c b k1` · `uz 0`; `v` = Vorschau) · `au` aufräumen (wie `sh cleanup.sh`, fragt `[j/N]`)
 `p` PDF öffnen | `n` normal · `u` unzensiert · `l` Leseprobe · `k` Korrektur …
 `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten · `t` tabellen · `a` audio … · `p` Pfad Buchordner kopieren · dazu Taste + `t` = Terminal dort (`bt`, `at` …), + `p` = Pfad kopieren (`ap` …)
 `n` neu | `b` neues Buch · `h` Hallo-Buch · `e` einrichten · `m` Motor-Selbsttest · `v` Verknüpfung
@@ -314,7 +314,7 @@ Danach im neuen Buchordner `sh build.sh`. Mit GitHub: dort `git init -b main` un
 
 Für jede Aufgabe: was im Buch stehen muss, die Schritte und wo es genauer steht.
 
-Ein Buch schreiben – braucht die drei Dateien `<buch>-buch.md`, `-variablen.md`, `-umschlag.md` (macht `setup`).\ Schritte: Titel, Autor usw. in der Variablen-Datei › Text in der Buch-Datei › `s` schnell, Lese-PDF ansehen › `k` komplett vor dem Druck.\ → Ein neues Buch anlegen
+Ein Buch schreiben – braucht die drei Dateien `<buch>-buch.md`, `-variablen.md`, `-umschlag.md` (macht `setup`).\ Schritte: Titel, Autor usw. in der Variablen-Datei › Text in der Buch-Datei › `s` schnell, Lese-PDF ansehen › `w` weitergeben = Leseprobe und Korrektur (zum Gegenlesen) · `k` komplett vor dem Druck · `f` final (nur Druckdateien) gibt es weiter, steht aber nicht im Menü.\ → Ein neues Buch anlegen
 
 Teile und Kapitel – Überschriften in der Buch-Datei: `# Teil 1|Titel|Untertitel`, `## Kapitel`, `### Zwischentitel`.\ Schritte: Teil-Zeile (neue Seite mit Teil-Seite) › darunter Kapitel mit `##` › `s` schnell.\ → Aufbau eines Buchs
 
@@ -734,7 +734,7 @@ E-Book | `ebook-epub2` (ja = zusätzlich EPUB 2), `ebook-rueckseite` (bild / tex
 Shop | `shop-beschreibung`, `shop-schlagwoerter`, `shop-kategorie`, `shop-link`, `sprache` (Standard `de`, steht in den Shop-Angaben)
 Leseprobe | `leseprobe`, `leseprobe-seiten`, `leseprobe-seiten-uz`, `leseprobe-text`
 Technik | `kurz-normal` / `-uz` (Kürzel vorne an den Druckdateien, z. B. L123), `datei-normal` / `-uz` (Name der Lese-PDFs und E-Books), `ordner-normal` / `-uz` (Ausgabeordner)
-Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt|anschauung), `zier`, `zier-hell`, `initial` (ja · titel · nein), `initial-farbe` (akzent · haupt · text · ueberschrift), `initial-stufen` (2 · 3 · 4), `initial-stil` (normal · rand · feld), `initial-zeilen` (0 · 1 · 2 · 3 · 4), `initial-schrift` (fett · cinzel · uncial · fraktur · datei.ttf), `kapitaelchen` (ja · nein), `absatz-einzug` (ja · nein), `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund`
+Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt|anschauung), `zier`, `zier-hell`, `initial` (ja · titel · nein), `initial-farbe` (akzent · haupt · text · ueberschrift), `initial-stufen` (2 · 3 · 4), `initial-stil` (normal · rand · feld), `initial-zeilen` (0 · 1 · 2 · 3 · 4), `initial-schrift` (fett · cinzel · uncial · fraktur · datei.ttf), `kapitaelchen` (ja · nein), `absatz-einzug` (ja · nein), `liste-blocksatz` (nein · ja: Listen im Blocksatz), `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund`
 Sicherung | `sicherung-lokal`, `sicherung-cloud`, `sicherung-behalten`
 Layout | `farbschema`, `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `blocksatz` · Inhaltsverzeichnis: `inhalt-tiefe`, `inhalt-dichte`, `inhalt-teile`, `inhalt-punkte`, `inhalt-schrift`
 
@@ -780,6 +780,7 @@ den ersten Buchstaben des Kapiteltitels hervorheben (statt eines Initials im Tex
 das Initial anders: im Rand, im Feld, grösser, fett oder in einer Zierschrift | `{initial-stil}: rand` (links im Rand, Text volle Breite) oder `feld` (helles Feld mit Goldrahmen) · `{initial-zeilen}:` `1` erhöht (steht auf der ersten Zeile und ragt nach oben, Text in voller Breite) · `2` · `3` · `4` · `0` = aus · `{initial-schrift}: fett` · Ä, Ö, Ü werden etwas kleiner gesetzt, damit die Punkte nicht an den Titel stossen · Zierschrift aus dem Motor: `cinzel` (klassisch), `uncial` (keltisch, kleiner), `fraktur` (das I sieht aus wie ein J) · oder eine eigene TTF-Datei aus `fonts/` im Buch (frei z. B. auf fonts.google.com)
 die ersten Wörter jedes Kapitels in Kapitälchen | `{kapitaelchen}: ja` – mit oder ohne Initial
 Absätze eingerückt statt mit Abstand (wie viele Romane) | `{absatz-einzug}: ja` – der erste Absatz nach einem Titel bleibt bündig
+Listen (• und 1.) im Blocksatz wie der Fliesstext | `{liste-blocksatz}: ja` – Standard `nein` = linksbündig; Randbemerkungen (`~`) bleiben linksbündig
 
 Wann umbrechen? Teile (`# Teil …`) und Kapitel oberster Ebene (`# Titel`) beginnen von selbst auf einer neuen Seite. Sonst erst umbrechen, wenn der Text fertig ist – jede Änderung verschiebt die Seiten. Lieber `@PLATZ` als `---`: es wirkt nur, wenn es nötig ist.
 

@@ -3,6 +3,10 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.82.17 (November 2026)
+- `{liste-blocksatz}: ja` – Listen (• und 1.) im Blocksatz wie der Fliesstext (Standard `nein` = linksbündig).
+  Randbemerkungen (`~`) bleiben linksbündig.
+
 ## 2.82.16 (November 2026)
 - Menü `in` Initialen: ↑ ↓ holt die letzten Eingaben dieses Menüs zurück (eigener Verlauf, die letzten 20, bleibt
   nach dem Neustart erhalten). Im Hauptmenü gilt weiter der Verlauf der Befehle.
