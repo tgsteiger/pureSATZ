@@ -10,6 +10,7 @@ sh menu.sh verknuepfung = Starter mit Lotus auf den Schreibtisch (n → v im Men
 """
 import glob
 import os
+import itertools
 import re
 import shlex
 import shutil
@@ -986,28 +987,37 @@ def zeige():
         print(status)
     spalten = [("1 Schreiben", [("m", "MD öffnen …"), ("g", "Geschichten …"), ("t", "Tabellen …")]),  # 2.82.18:
                                                                                                     # Blöcke im Buchablauf,
-               ("2 Einstellen", [("in", "Initialen …"), ("tr", "Trennstellen …"), ("st", "Stichworte …"),  # Tasten gleich
+               ("Einstellen", [("in", "Initialen …"), ("tr", "Trennstellen …"), ("st", "Stichworte …"),  # Tasten gleich
                                  ("is", "ISBN …")]),
-               ("3 Bauen", [("s", "schnell  (Lese-PDF)"), ("k", "komplett (Druck + E-Book)")]   # 2.82.19: k = final
+               ("2 Bauen", [("s", "schnell  (Lese-PDF)"), ("k", "komplett (Druck + E-Book)")]   # 2.82.19: k = final
                 + ([("hb", "Hörbuch … (Linux)")] if LINUX else [])),
-               ("4 Prüfen", [("bp", bp), ("co", "Coverrechner prüfen")]),        # 2.82.19: Prüfen neben Bauen
-               ("5 Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen (a|ä)"),
+               ("Prüfen", [("bp", bp), ("co", "Coverrechner prüfen")]),        # 2.82.19: Prüfen neben Bauen
+               ("3 Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen (a|ä)"),
                               ("db", "Druckbericht")]),
-               ("6 Weitergeben", [("w", "beides: Leseprobe + Korrektur"), ("c", "check / gegenlesen …"),
-                                  ("lp", "Leseprobe    ko Korrektur"), ("np", "nur-pdf      ne nur E-Book")]),
-               ("Abgleichen", [("sy", "sync   (GitHub)"), ("u", "update" + (" (ul lokal)" if LOKAL else ""))]),
-               ("Aufräumen", [("sm", "Stand merken"), ("au", "aufräumen …")])]
-    spalten_zeigen(spalten, "n neu · $ Terminal · : Befehle · h hilfe · hf finden")
+               ("Weitergeben", [("w", "beides: Leseprobe + Korrektur"), ("c", "check / gegenlesen …"),
+                                  ("lp", "Leseprobe    ko Korrektur"), ("np", "nur-pdf      ne nur E-Book")])]
+    spalten_zeigen(spalten, "sy sync · u update" + (" (ul lokal)" if LOKAL else "")      # 2.82.19: Abgleichen +
+                   + " · sm Stand merken · au aufräumen … · n neu · $ Terminal · : Befehle · h hilfe · hf finden",
+                   fliessend=True)  # Aufräumen in Weiteres
     if os.path.exists(ALLE):
         print(SPERRE)
 
 
-def spalten_zeigen(spalten, weiteres):
+def spalten_zeigen(spalten, weiteres, fliessend=False):
     """Gruppen paarweise in zwei Spalten (Haupt- und Hörbuch-Menü gleich) und «── Weiteres ──» mit den übrigen Tasten."""
     taste = lambda k: FETT(k) + " " * (3 - len(k))                 # Taste gold, danach auf 3 Zeichen aufgefüllt
     zweite = lambda t: re.sub(r"(\s{1,})([a-zäöü]{2}) ", lambda m: m.group(1) + FETT(m.group(2)) + " ", t, count=1) \
         if re.search(r"\s[a-z]{2} [A-ZÄÖÜa-z]", t[12:]) else t   # «Leseprobe    ko Korrektur»: zweite Taste gold
     linie = lambda t, n=30: GRAU("── ") + t + " " + GRAU("─" * (n - len(t)))
+    if fliessend:                                                     # 2.82.20: Hauptmenü – jede Spalte rückt
+        seite = [[], []]                                              # für sich nach oben, keine Leerzeilen
+        for n, (t, z) in enumerate(spalten):
+            seite[n % 2] += [("─", t)] + z
+        for a, b in itertools.zip_longest(*seite):
+            links = " " * 38 if not a else f" {linie(a[1])}   " if a[0] == "─" else f"  {taste(a[0])}{a[1]:<33}"
+            rechts = "" if not b else linie(b[1], 29) if b[0] == "─" else f"{taste(b[0])}{zweite(b[1])}"
+            print((links + rechts).rstrip())
+        spalten = []
     for (t1, z1), (t2, z2) in zip(spalten[0::2], spalten[1::2]):     # Gruppen paarweise nebeneinander
         print(f" {linie(t1)}   {linie(t2, 29)}")                  # rechte Linie endet bei RAND
         for a, b in zip(z1 + [("", "")] * 3, z2 + [("", "")] * 3):

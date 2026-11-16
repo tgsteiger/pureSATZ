@@ -40,24 +40,21 @@ Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `h
 ```
  ══ Buch · pureSATZ                                     Klang (!) aus ══
  Leben123 · N 68 S. · UZ 86 S. · komplett 16.11. 10:21 · Cover ✓
- ── 1 Schreiben ───────────────────   ── 2 Einstellen ─────────────────
+ ── 1 Schreiben ───────────────────   ── Einstellen ───────────────────
   m  MD öffnen …                      in Initialen …
   g  Geschichten …                    tr Trennstellen …
   t  Tabellen …                       st Stichworte …
-                                      is ISBN …
- ── 3 Bauen ───────────────────────   ── 4 Prüfen ─────────────────────
-  s  schnell  (Lese-PDF)              bp Buch prüfen  N ✓  UZ ✗
-  k  komplett (Druck + E-Book)        co Coverrechner prüfen
-  hb Hörbuch … (Linux)
- ── 5 Ansehen ─────────────────────   ── 6 Weitergeben ───────────────
+ ── 2 Bauen ───────────────────────   is ISBN …
+  s  schnell  (Lese-PDF)              ── Prüfen ───────────────────────
+  k  komplett (Druck + E-Book)        bp Buch prüfen  N ✓  UZ ✗
+  hb Hörbuch … (Linux)                co Coverrechner prüfen
+ ── 3 Ansehen ─────────────────────   ── Weitergeben ──────────────────
   p  PDF öffnen …                     w  beides: Leseprobe + Korrektur
   o  Ordner öffnen …                  c  check / gegenlesen …
   a  änderungen (a|ä)                 lp Leseprobe    ko Korrektur
   db Druckbericht                     np nur-pdf      ne nur E-Book
- ── Abgleichen ────────────────────   ── Aufräumen ────────────────────
-  sy sync   (GitHub)                  sm Stand merken
-  u  update (ul lokal)                au aufräumen …
  ── Weiteres ──────────────────────────────────────────────────────────
+  sy sync · u update (ul lokal) · sm Stand merken · au aufräumen …
   n neu · $ Terminal · : Befehle · h hilfe · hf finden
  Wahl oder Befehl (z. B. final · ↑ = letzte · ↵ = beenden):
 ```
