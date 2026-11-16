@@ -2422,7 +2422,7 @@ def _build(out, ausgleich=None):
             if "www." in text:
                 w = text[text.index("www."):].split()[0]
                 text = text.replace(w, f'<a href="{url}" color="{hexfarbe("akzent")}">{w}</a>')
-            qr = QrCodeWidget(url); qb = qr.getBounds(); qs = 23 * mm
+            qr = qr_code(url); qb = qr.getBounds(); qs = 23 * mm
             dq = Drawing(qs, qs, transform=[qs / (qb[2] - qb[0]), 0, 0, qs / (qb[3] - qb[1]), 0, 0]); dq.add(qr)
             story.append(KeepTogether([Spacer(1, 4), dq, Spacer(1, 2),
                                        Paragraph(text, ParagraphStyle("qrt", parent=body, alignment=TA_LEFT))]))
@@ -2973,8 +2973,18 @@ def seite_kopf(titel, _):
     return [PageBreak(), p]
 
 
-def qrbox(url, label):
+def qr_code(url):
+    """QR-Code in {qr-farbe}: haupt (blau) · akzent · leer = schwarz (2.82.28; Kontrast prüfen, Gold rät die Hilfe ab)."""
     qr = QrCodeWidget(url)
+    w = (V("qr-farbe") or "").strip().lower()
+    w = {"blau": "haupt", "gold": "akzent"}.get(w, w)
+    if w in ("haupt", "akzent", "text"):
+        qr.barFillColor = farbe(w)
+    return qr
+
+
+def qrbox(url, label):
+    qr = qr_code(url)
     b = qr.getBounds(); s = 23 * mm
     d = Drawing(s, s, transform=[s / (b[2] - b[0]), 0, 0, s / (b[3] - b[1]), 0, 0]); d.add(qr)
     return [d, Paragraph(label, ParagraphStyle("ql", parent=small, alignment=TA_CENTER, fontSize=8, leading=10.5))]

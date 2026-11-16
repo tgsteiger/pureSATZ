@@ -3,6 +3,9 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.82.28 (November 2026)
+- Neu `{qr-farbe}: haupt` – QR-Codes (@QR, @QR-PAAR, qr-Reihen) in der Hauptfarbe; leer = schwarz wie bisher.
+
 ## 2.82.27 (November 2026)
 - `::: mitte` sieht jetzt aus wie `@ZITAT-ZIER` (kursiv, Zitatfarbe, schmaler) – beide Zierden einheitlich.
   `::: mitte aufrecht` = dieser Block wie früher; `{mitte-stil}: aufrecht` = alle wie früher.
