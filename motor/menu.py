@@ -93,6 +93,7 @@ WEG = ("check_", "_Buchblock", "_Cover", "_Umschlag", "_booklet", "_Inhalt", "_A
        "_tmp")
 ton = True
 gelaufen = False                       # hat der letzte Menüpunkt etwas ausgeführt (Meldungen stehen lassen)?
+INITIAL_VERLAUF = []                   # ↑ ↓ im Initialen-Menü (2.82.16), in EINST als «in:…»
 
 
 def einstellungen(speichern=False):
@@ -101,12 +102,15 @@ def einstellungen(speichern=False):
         n = readline.get_current_history_length() if readline else 0
         verlauf = [readline.get_history_item(i) for i in range(max(1, n - 49), n + 1)] if readline else []
         with open(EINST, "w", encoding="utf-8") as f:
-            f.write("ton=" + ("ein" if ton else "aus") + "\n" + "".join(v + "\n" for v in verlauf if v))
+            f.write("ton=" + ("ein" if ton else "aus") + "\n" + "".join(v + "\n" for v in verlauf if v)
+                    + "".join("in:" + v + "\n" for v in INITIAL_VERLAUF[-20:]))
     elif os.path.exists(EINST):
         zeilen = open(EINST, encoding="utf-8").read().splitlines()
         ton = not (zeilen and zeilen[0] == "ton=aus")
         for z in zeilen[1:]:
-            if readline:
+            if z.startswith("in:"):
+                INITIAL_VERLAUF.append(z[3:])
+            elif readline:
                 readline.add_history(z)
 
 
@@ -130,6 +134,26 @@ def frage(text, merken=False):
             readline.remove_history_item(n)
         elif merken and not neu:
             readline.add_history(e)
+    return e
+
+
+def frage_verlauf(text, verlauf):
+    """Eingabe mit eigenem Verlauf (↑ ↓ nur Eingaben dieses Untermenüs); danach gilt wieder der Hauptmenü-Verlauf."""
+    haupt = [readline.get_history_item(i) for i in range(1, readline.get_current_history_length() + 1)] if readline else []
+    if readline:
+        readline.clear_history()
+        for v in verlauf:
+            readline.add_history(v)
+    try:
+        e = frage(text)
+    finally:
+        if readline:
+            readline.clear_history()
+            for v in haupt:
+                readline.add_history(v)
+    if e and e.lower() != "q" and (not verlauf or verlauf[-1] != e):
+        verlauf.append(e)
+        del verlauf[:-20]
     return e
 
 
@@ -740,8 +764,9 @@ def initialen_menue():
             print(GRAU("  z. B.  n ti c b k1   ·   uz 0   ·   e1   ·   ↵ = zurück"))
         else:
             print(GRAU("  z. B.  ti c b k1   ·   0   ·   e1   ·   ↵ = zurück"))
-        e = frage(" Wahl: ").lower().split()
+        e = frage_verlauf(" Wahl: ", INITIAL_VERLAUF).lower().split()
         if not e or e == ["q"]:
+            einstellungen(speichern=True)                 # Verlauf gleich sichern
             return
         ziel = list(fassungen)
         if e[0] in ("n", "uz", "n0", "uz0") and hat_uz:
