@@ -2031,7 +2031,9 @@ def mitte(titel, inhalt):
     """Zentrierter Block zwischen zwei kleinen Lotusblüten (z. B. der Dank am Schluss). Ab 2.82.27 wie @ZITAT-ZIER
     (kursiv, Zitatfarbe, schmaler); {mitte-stil}: blau = aufrecht in der Hauptfarbe · aufrecht = wie früher;
     «::: mitte blau» / «::: mitte aufrecht» = nur dieser Block (2.82.29)."""
-    art = (titel or "").strip().lower()
+    woerter = (titel or "").strip().lower().split()
+    oben = "oben" in woerter                                # 2.84.5: «::: mitte oben» = Zier nur oben
+    art = next((w for w in woerter if w in ("zitat", "blau", "aufrecht")), "")
     if art not in ("zitat", "blau", "aufrecht"):
         art = (V("mitte-stil") or "zitat").strip().lower()                # zitat · blau (aufrecht, Hauptfarbe) · aufrecht
     st = ParagraphStyle("mitte", parent=quote if art == "zitat" else body, alignment=TA_CENTER, spaceBefore=0,
@@ -2042,7 +2044,7 @@ def mitte(titel, inhalt):
             para.append(z.strip())
         elif para:
             teile.append(Paragraph(inline(absatz_anfang(" ".join(para))), st)); para = []
-    teile += [Spacer(1, 4), Ornament(), Spacer(1, 6)]
+    teile += [Spacer(1, 6)] if oben else [Spacer(1, 4), Ornament(), Spacer(1, 6)]
     return [MitteBlock(teile)]
 
 
