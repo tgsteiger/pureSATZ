@@ -2118,6 +2118,21 @@ class LotusTrenner(Flowable):
         self.canv.drawImage(bild(LOTUS), (self.aw - self.b) / 2, -h / 2 - 2, self.b, h, mask="auto")
 
 
+class UmflossenesBild(ImageAndFlowables):
+    """2.85.0: wie ImageAndFlowables, aber mit normalem Absatzabstand nach dem Text neben dem Bild
+    (vor dem ersten Absatz in voller Breite) und nach dem ganzen Block."""
+    def wrap(self, aw, ah):
+        w, h = super().wrap(aw, ah)
+        if self._C0 and self._C1 and any(self._C1[0] is c for c in self._content):   # neuer Absatz, kein Rest
+            bild_h = self._itpad + self._hI + self._ibpad
+            luft = body.spaceAfter if self._aH > bild_h + 0.1 else max(0, body.spaceAfter - self._ibpad)
+            self._aH += luft; self.height += luft; h += luft
+        return w, h
+
+    def getSpaceAfter(self):
+        return max(super().getSpaceAfter(), body.spaceAfter)
+
+
 class BildMitText(Flowable):
     """Bild + Bildtext als ein Block, der von Text umflossen werden kann (für ImageAndFlowables)."""
     def __init__(self, teile, bw):
@@ -2246,13 +2261,10 @@ def _build(out, ausgleich=None):
         initial_ausgeben()
         if schwebe:
             bildblock = BildMitText(schwebe["teile"], schwebe["bw"])
-            story.append(ImageAndFlowables(bildblock, schwebe["paras"], imageSide=schwebe["seite"],
+            story.append(UmflossenesBild(bildblock, schwebe["paras"], imageSide=schwebe["seite"],
                                            imageLeftPadding=5 * mm if schwebe["seite"] == "right" else 0,
                                            imageRightPadding=0 if schwebe["seite"] == "right" else 5 * mm,
                                            imageTopPadding=2, imageBottomPadding=4))
-            # 2.84.13: danach gleicher Abstand wie zwischen Absätzen (ReportLab gibt 0 zurück,
-            # wenn der ganze Text neben dem Bild Platz hat)
-            story[-1].getSpaceAfter = lambda b=story[-1]: max(ImageAndFlowables.getSpaceAfter(b), body.spaceAfter)
             schwebe.clear()
 
     def flush():

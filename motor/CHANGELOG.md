@@ -3,6 +3,9 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.85.0 (November 2026)
+- Umflossenes Bild: Abstand jetzt auch zwischen dem Text neben dem Bild und dem ersten Absatz in voller Breite (2.84.13 wirkte nur nach dem ganzen Block).
+
 ## 2.84.13 (November 2026)
 - Nach einem umflossenen Bild (`fluss:`, `@QR-FLUSS`) folgt der gleiche Abstand wie zwischen zwei Absätzen.
 
