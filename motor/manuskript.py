@@ -533,7 +533,7 @@ BEFEHLE = {             # Befehl: (Schreibweise im Buch, Wirkung)
     "@PORTRAIT":           ("@PORTRAIT bild.png | Bildtext", "rundes Foto mit Ring"),
     "@QR":                 ("@QR https://… | Text", "QR-Code mit Link"),
     "@QR-PAAR":            ("@QR-PAAR url | Text ;; url | Text", "zwei QR-Codes nebeneinander"),
-    "@QR-FLUSS":           ("@QR-FLUSS url | Text", "QR-Code rechts, der nächste Absatz fliesst herum"),
+    "@QR-FLUSS":           ("@QR-FLUSS url | Text", "QR-Code rechts, der nächste Absatz fliesst herum (ohne | Text: ohne Bildtext)"),
     "@#name":              ("@#name", "Tabelle tabellen/name.csv; «@#name quer» / «@#name hoch» = Ausrichtung"),
     "@@name":              ("@@name", "Geschichte geschichten/name.md einbinden"),
     "@STICHWORTE":         ("@STICHWORTE", "Stichwortverzeichnis (Liste: stichworte-<buch>.txt)"),

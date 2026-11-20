@@ -2250,6 +2250,9 @@ def _build(out, ausgleich=None):
                                            imageLeftPadding=5 * mm if schwebe["seite"] == "right" else 0,
                                            imageRightPadding=0 if schwebe["seite"] == "right" else 5 * mm,
                                            imageTopPadding=2, imageBottomPadding=4))
+            # 2.84.13: danach gleicher Abstand wie zwischen Absätzen (ReportLab gibt 0 zurück,
+            # wenn der ganze Text neben dem Bild Platz hat)
+            story[-1].getSpaceAfter = lambda b=story[-1]: max(ImageAndFlowables.getSpaceAfter(b), body.spaceAfter)
             schwebe.clear()
 
     def flush():
@@ -2441,9 +2444,9 @@ def _build(out, ausgleich=None):
             story += qr_reihe(None, s[9:].split(";;"))
         elif s.startswith("@QR-FLUSS "):
             # 2.84.11: @QR-FLUSS url | Text : QR-Code rechts, die folgenden Absätze fliessen darum herum
-            url, _, label = s[10:].partition("|")
+            url, _, label = s[10:].partition("|")      # 2.84.12: ohne «| Text» = ohne Bildtext
             flush(); ausgeben()
-            schwebe.update(teile=qrbox(url.strip(), inline_einfach(label.strip() or url.strip())),
+            schwebe.update(teile=qrbox(url.strip(), inline_einfach(label.strip()))[:1 if not label.strip() else 2],
                            seite="right", bw=23 * mm, paras=[])
         elif s.startswith("@QR "):
             # @QR url | Text : QR-Code mit klickbarem Link darunter
