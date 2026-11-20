@@ -3,6 +3,10 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.84.6 (November 2026)
+- `::: mitte … fest` (z. B. `::: mitte oben fest`): Block steht nicht in der Mitte des Rests, sondern fest 60 mm über dem
+  Seitenende (`fest 50` = 50 mm) – so stehen Abschlüsse auf zwei Seiten genau gleich hoch. Zu wenig Platz: wie bisher mittig.
+
 ## 2.84.5 (November 2026)
 - `::: mitte oben` = Zier nur oben (statt oben und unten), Block wie gewohnt senkrecht in der Mitte des Seitenrests.
   Ohne Text darin steht nur die Zier mittig im freien Platz.

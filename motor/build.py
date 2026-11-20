@@ -2033,6 +2033,12 @@ def mitte(titel, inhalt):
     «::: mitte blau» / «::: mitte aufrecht» = nur dieser Block (2.82.29)."""
     woerter = (titel or "").strip().lower().split()
     oben = "oben" in woerter                                # 2.84.5: «::: mitte oben» = Zier nur oben
+    fest = None                                             # 2.84.6: «fest [mm]» = Oberkante fest über dem Seitenende
+    if "fest" in woerter:
+        try:
+            fest = float(woerter[woerter.index("fest") + 1])
+        except (IndexError, ValueError):
+            fest = 60
     art = next((w for w in woerter if w in ("zitat", "blau", "aufrecht")), "")
     if art not in ("zitat", "blau", "aufrecht"):
         art = (V("mitte-stil") or "zitat").strip().lower()                # zitat · blau (aufrecht, Hauptfarbe) · aufrecht
@@ -2045,13 +2051,13 @@ def mitte(titel, inhalt):
         elif para:
             teile.append(Paragraph(inline(absatz_anfang(" ".join(para))), st)); para = []
     teile += [Spacer(1, 6)] if oben else [Spacer(1, 4), Ornament(), Spacer(1, 6)]
-    return [MitteBlock(teile)]
+    return [MitteBlock(teile, fest)]
 
 
 class MitteBlock(Flowable):
     """Hält den Block zusammen und setzt ihn senkrecht in die Mitte des restlichen Platzes der Seite."""
-    def __init__(self, teile):
-        super().__init__(); self.teile = teile
+    def __init__(self, teile, fest=None):
+        super().__init__(); self.teile, self.fest = teile, fest
 
     def wrap(self, aw, ah):
         self.aw = aw
@@ -2072,6 +2078,8 @@ class MitteBlock(Flowable):
 
     def draw(self):
         y = self.platz - 0.5 - (self.platz - self.h) / 2 + 8 * mm   # optisch leicht über der Mitte
+        if self.fest and self.h <= self.fest * mm <= self.platz:   # 2.84.6: auf allen Seiten gleiche Höhe
+            y = self.fest * mm
         y = min(y, self.platz - 0.5)
         for t, h in zip(self.teile, self.hs):
             y -= h

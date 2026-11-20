@@ -451,7 +451,7 @@ Suchwörter: fett, kursiv, hervorheben, betonen, Absatzanfang, Pseudo-Block. Bau
 | `~ Satz` | Randbemerkung: klein, kursiv, leicht eingerückt |
 | `@ZITAT Satz` | Zitat: kursiv, zentriert, schlicht |
 | `> Satz` oder `@ZITAT-ZIER Satz` | Zitat: kursiv, zentriert, mit Verzierung oben und unten |
-| `::: mitte` … `:::` | wie `@ZITAT-ZIER`, aber senkrecht in der Mitte des Seitenrests (Abschluss eines Teils); `::: mitte aufrecht` = aufrecht · `::: mitte oben` = Zier nur oben (ohne Text: nur die Zier, mittig) |
+| `::: mitte` … `:::` | wie `@ZITAT-ZIER`, aber senkrecht in der Mitte des Seitenrests (Abschluss eines Teils); `::: mitte aufrecht` = aufrecht · `::: mitte oben` = Zier nur oben (ohne Text: nur die Zier, mittig) · `fest` = fest 60 mm über dem Seitenende (`fest 50`), z. B. gleiche Höhe auf einer Doppelseite |
 | `text:` beim Foto | Bildunterschrift, automatisch kursiv |
 
 Kursiv mitten im Satz (`*Wort*`) gibt es noch nicht – ein einzelner Stern bleibt als Stern stehen.

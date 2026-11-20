@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.84.5
+# pureSATZ Hilfe · pureSATZ · Motor 2.84.6
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -534,7 +534,7 @@ Steuerzeichen | Wirkung
 `~ Satz` | Randbemerkung: klein, kursiv, leicht eingerückt
 `@ZITAT Satz` | Zitat: kursiv, zentriert, schlicht
 `> Satz` oder `@ZITAT-ZIER Satz` | Zitat: kursiv, zentriert, mit Verzierung oben und unten
-`::: mitte` … `:::` | wie `@ZITAT-ZIER`, aber senkrecht in der Mitte des Seitenrests (Abschluss eines Teils); `::: mitte aufrecht` = aufrecht · `::: mitte oben` = Zier nur oben (ohne Text: nur die Zier, mittig)
+`::: mitte` … `:::` | wie `@ZITAT-ZIER`, aber senkrecht in der Mitte des Seitenrests (Abschluss eines Teils); `::: mitte aufrecht` = aufrecht · `::: mitte oben` = Zier nur oben (ohne Text: nur die Zier, mittig) · `fest` = fest 60 mm über dem Seitenende (`fest 50`), z. B. gleiche Höhe auf einer Doppelseite
 `text:` beim Foto | Bildunterschrift, automatisch kursiv
 
 Kursiv mitten im Satz (`*Wort*`) gibt es noch nicht – ein einzelner Stern bleibt als Stern stehen. Ein Zeichen davor (Lotus oder ◆): `{fett-anfang-zeichen}: zier` bzw. `◆` – siehe Variablen. Tipp: Fett sparsam einsetzen. Eine Leerzeile vor einem kurzen Satz betont oft schon genug.
