@@ -3,6 +3,9 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.84.10 (November 2026)
+- `@ZIER-UNTEN 10 mitte` (auch `@LOTUS-UNTEN`): Verzierung mitten in den freien Platz der Seite statt ganz unten.
+
 ## 2.84.9 (November 2026)
 - Hilfe «Wie mache ich …»: zwei Zitate oder Zierden auf einer Doppelseite gleich hoch stellen (`fest`, `@ABSTAND`).
 

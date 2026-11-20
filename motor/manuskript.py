@@ -526,7 +526,7 @@ BEFEHLE = {             # Befehl: (Schreibweise im Buch, Wirkung)
     "@UNTEN":              ("@UNTEN Satz", "kursiv unten auf die Seite"),
     "@MOTTO":              ("@MOTTO Satz", "eigene Seite, der Satz in der Mitte"),
     "@ZIER":               ("@ZIER 12", "kleine Verzierung, zentriert, 12 mm breit (Bild: Variable {zier})"),
-    "@ZIER-UNTEN":         ("@ZIER-UNTEN 10", "Verzierung unten auf die Seite, danach neue Seite"),
+    "@ZIER-UNTEN":         ("@ZIER-UNTEN 10", "Verzierung unten auf die Seite, danach neue Seite (… 10 mitte = in den freien Platz)"),
     "@ZIER-TRENNER":       ("@ZIER-TRENNER", "kleine Verzierung in die Lücke vor der nächsten Überschrift"),
     "@ZIER-LINIE":         ("@ZIER-LINIE", "eine Zier mit goldenen Linien und Lotus, ohne Text (wie bei «> Satz»)"),
     "@FOTO":               ("#### @FOTO Titel", "Foto; darunter «datei: …», «text: …» usw., Ende = erste Leerzeile; @FOTO-UZ = nur zweite Ausgabe"),

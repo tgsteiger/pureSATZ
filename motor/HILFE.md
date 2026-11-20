@@ -775,6 +775,7 @@ Nach einer Änderung `sh build.sh schnell` und ansehen.
 | einen Satz allein auf einer Seite | `## @KERNSATZ Satz` oder `@MOTTO Satz` |
 | eine kleine Verzierung | `@ZIER 12` (Breite in mm) |
 | eine Verzierung unten, danach neue Seite | `@ZIER-UNTEN 10` |
+| eine Verzierung mitten in den freien Platz, danach neue Seite | `@ZIER-UNTEN 10 mitte` |
 | eine Verzierung zwischen zwei Abschnitten | `@ZIER-TRENNER` |
 | eine Zier mit goldenen Linien und Lotus (ohne Text) | `@ZIER-LINIE` |
 | ein eigenes Zierbild | in der Variablen-Datei `{zier}: meine-zier.png` (Bild in `bilder/`) |

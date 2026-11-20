@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.84.9
+# pureSATZ Hilfe · pureSATZ · Motor 2.84.10
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -823,6 +823,7 @@ den Inhalt einer Seite senkrecht in die Mitte | `@SEITENMITTE`
 einen Satz allein auf einer Seite | `## @KERNSATZ Satz` oder `@MOTTO Satz`
 eine kleine Verzierung | `@ZIER 12` (Breite in mm)
 eine Verzierung unten, danach neue Seite | `@ZIER-UNTEN 10`
+eine Verzierung mitten in den freien Platz, danach neue Seite | `@ZIER-UNTEN 10 mitte`
 eine Verzierung zwischen zwei Abschnitten | `@ZIER-TRENNER`
 eine Zier mit goldenen Linien und Lotus (ohne Text) | `@ZIER-LINIE`
 ein eigenes Zierbild | in der Variablen-Datei `{zier}: meine-zier.png` (Bild in `bilder/`)
@@ -1779,7 +1780,7 @@ Schreibweise | Wirkung
 ### Verzierung
 Schreibweise | Wirkung
 `@ZIER 12` | kleine Verzierung, zentriert, 12 mm breit (Bild: Variable {zier})
-`@ZIER-UNTEN 10` | Verzierung unten auf die Seite, danach neue Seite
+`@ZIER-UNTEN 10` | Verzierung unten auf die Seite, danach neue Seite (… 10 mitte = in den freien Platz)
 `@ZIER-TRENNER` | kleine Verzierung in die Lücke vor der nächsten Überschrift
 
 ### Bilder, Links, Tabellen, Geschichten

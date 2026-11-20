@@ -2091,9 +2091,10 @@ class MitteBlock(Flowable):
 
 
 class LotusUnten(Flowable):
-    """@LOTUS-UNTEN: füllt den Rest der Seite und setzt eine Lotusblüte zentriert an den unteren Rand."""
-    def __init__(self, breite):
-        super().__init__(); self.b = breite
+    """@LOTUS-UNTEN: füllt den Rest der Seite und setzt eine Lotusblüte zentriert an den unteren Rand.
+    2.84.10: «@LOTUS-UNTEN 10 mitte» = mitten in den freien Platz."""
+    def __init__(self, breite, mitte=False):
+        super().__init__(); self.b, self.mitte = breite, mitte
     def wrap(self, aw, ah):
         self.aw, self.ah = aw, ah
         return aw, ah - 0.5
@@ -2102,7 +2103,8 @@ class LotusUnten(Flowable):
     def draw(self):
         h = self.b * LOTUS_RATIO
         if self.ah > h + 6 * mm:
-            self.canv.drawImage(bild(LOTUS), (self.aw - self.b) / 2, 2 * mm, self.b, h, mask="auto")
+            y = (self.ah - 0.5 - h) / 2 if self.mitte else 2 * mm
+            self.canv.drawImage(bild(LOTUS), (self.aw - self.b) / 2, y, self.b, h, mask="auto")
 
 
 class LotusTrenner(Flowable):
@@ -2460,7 +2462,9 @@ def _build(out, ausgleich=None):
             story.append(Spacer(1, float((s.split() + ["8"])[1]) * mm))
         elif s.startswith(("@LOTUS-UNTEN", "@ZIER-UNTEN")):
             # Lotusblüte zentriert ganz unten auf die aktuelle Seite; danach geht es auf der nächsten Seite weiter
-            flush(); story.append(LotusUnten(float(s.split()[1]) * mm if len(s.split()) > 1 else 10 * mm))
+            w_ = s.split()[1:]
+            zahl = next((float(x) for x in w_ if x.replace(".", "", 1).isdigit()), 10)
+            flush(); story.append(LotusUnten(zahl * mm, "mitte" in w_))
         elif s.strip() == "@ZIER-LINIE":
             # 2.84.4: eine Zier wie bei «> Satz» (goldene Linien, Lotus in der Mitte), ohne Text
             flush(); story += [Spacer(1, 10), Ornament(), Spacer(1, 6)]
