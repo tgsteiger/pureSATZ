@@ -1020,9 +1020,22 @@ def bp_marke():
     return "Buch prüfen  " + "  ".join(("N " if f == "normal" else "UZ ") + marke(f) for f in fassungen)
 
 
+def motor_bereit():
+    """Version des Motors in pureSATZ, wenn sie neuer ist als die im Buch (sonst leer, 2.84.1)."""
+    try:
+        v = lambda p: tuple(int(x) for x in open(os.path.join(p, "VERSION"), encoding="utf-8").read().split("."))
+        neu = v(os.path.join(PURESATZ, "motor"))
+        return ".".join(map(str, neu)) if LOKAL and neu > v(MOTOR) else ""
+    except (OSError, ValueError):
+        return ""
+
+
 def zeige():
     bp = bp_marke()                                   # zuerst: prüft bei Bedarf still (Stand für die Zeile unten)
     print("\n" + kopf(rechts=f"Klang ({FETT('!')}) {'ein' if ton else 'aus'}"))
+    motor_neu = motor_bereit()                         # 2.84.1: neuerer Motor in pureSATZ daneben?
+    if motor_neu:
+        print(FETT(f" ⚠ Motor {motor_neu} bereit") + GRAU("  → ul"))
     for k, d, n, b, g, _ in cover_faellig():
         print(FETT(f" ⚠ Coverrechner {k}: {n} Seiten, eingetragen für {b}") + GRAU(f"  ({g}) → co"))
     if pruef_stand() == "fehler":
@@ -1041,8 +1054,7 @@ def zeige():
                               ("db", "Druckbericht")]),
                ("Weitergeben", [("w", "beides: Leseprobe + Korrektur"), ("c", "check / gegenlesen …"),
                                   ("lp", "Leseprobe    ko Korrektur"), ("np", "nur-pdf      ne nur E-Book")])]
-    spalten_zeigen(spalten, "sy sync · u update" + (" (ul lokal)" if LOKAL else "")      # 2.82.19: Abgleichen +
-                   + " · ss neues Gerät (u+sy+s)"                                         # 2.84: Supersync
+    spalten_zeigen(spalten, "sy sync · ss neues Gerät (u+sy+s) · u update" + (" (ul lokal)" if LOKAL else "")
                    + " · sm Stand merken · au aufräumen … · n neu · $ Terminal · : Befehle · h hilfe · hf finden",
                    fliessend=True)  # Aufräumen in Weiteres
     if os.path.exists(ALLE):
