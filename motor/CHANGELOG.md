@@ -3,6 +3,9 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.86.0 (November 2026)
+- **Neuer Standard wie im Buchsatz:** `{seitenausgleich}: nein` – die letzte Seite vor einem neuen Teil oder Mittel-Block wird nicht mehr gestreckt oder zentriert, der Rest bleibt unten frei. Wer den alten Ausgleich will: `{seitenausgleich}: ja`. `@SEITENMITTE`, `::: mitte`, `fest` und `@ZIER-UNTEN … mitte` wirken wie bisher. `{seite-zentrieren}` (2.85.2) entfällt.
+
 ## 2.85.2 (November 2026)
 - `{seite-zentrieren}: nein`: Die letzte Seite vor einem neuen Teil oder Mittel-Block beginnt oben (die Absätze bekommen weiterhin etwas Luft). Einzelne Seiten bleiben mit `@SEITENMITTE` mittig.
 

@@ -2614,6 +2614,8 @@ def seitenausgleich(doc, story):
             if frei > 6 * mm:
                 ausgleich[sm[0]] = (frei - 4) / 2
             continue
+        if not ja("seitenausgleich", "nein"):   # 2.86.0: Standard wie im Buchsatz – Rest der Seite bleibt unten frei
+            continue
         if frei < 15 or frei > 0.75 * (H - TOP - BOT):
             continue
         def deko(i):
@@ -2649,8 +2651,7 @@ def seitenausgleich(doc, story):
             if v > 0.5: ausgleich[i] = v
         # Bleibt noch Platz und beginnt die Seite nicht mit einer Überschrift: Inhalt senkrecht zentrieren
         erste = [i for i in inhalt if info[i][0] == seite and i not in luecken]
-        if rest > 6 * mm and erste and not getattr(story[erste[0]], "_toc", None) \
-                and ja("seite-zentrieren", "ja"):          # 2.85.2: {seite-zentrieren}: nein = Seite beginnt oben
+        if rest > 6 * mm and erste and not getattr(story[erste[0]], "_toc", None):
             j = vorgaenger(erste[0])
             if j is not None and info[j][1] < seite:
                 ausgleich[erste[0]] = ausgleich.get(erste[0], 0) + rest / 2
