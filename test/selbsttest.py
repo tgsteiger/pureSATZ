@@ -273,6 +273,11 @@ def main():
                 fehlt.append("BoD-Umschlag: erwartet 250 mm hoch (Deckel 216 + 2 x 17 mm)")
     except ImportError:
         pass
+    if subprocess.run([py, "-c", "import pyphen"], capture_output=True).returncode:      # Silbentrennung (2.83)
+        if OHNE_VENV:
+            print("\n⚠ pyphen fehlt – Silbentrennung aus. Installieren: sudo apt install python3-pyphen")
+        else:
+            fehlt.append("pyphen (Silbentrennung) nicht in der Python-Umgebung – motor/einrichten.py prüfen")
     if fehlt:
         print("\nVorhanden:", *sorted(os.listdir(normal)), sep="\n  ")
         sys.exit("FEHLER – es fehlt:\n  " + "\n  ".join(fehlt))

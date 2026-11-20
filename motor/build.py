@@ -892,6 +892,8 @@ try:                       # Silbentrennung, falls python3-pyphen installiert is
     TRENNUNG = getattr(E, "TRENNUNG", "de_CH")
 except ImportError:
     TRENNUNG = None
+if not ja("silbentrennung"):  # {silbentrennung}: nein = aus, nur {trennstellen} (2.82.30)
+    TRENNUNG = None
 def _stil(name, d, **k):
     """ParagraphStyle aus einem layout.py-Eintrag (schrift, groesse, zeilenabstand, farbe, abstand_*)."""
     a = dict(k)
@@ -908,6 +910,7 @@ body = ParagraphStyle("body", fontName=schrift("text"), fontSize=TEXT_GROESSE, l
                       textColor=farbe(L.TEXT["farbe"]),
                       alignment=TA_JUSTIFY if L.TEXT.get("blocksatz", True) else TA_LEFT,
                       spaceAfter=L.TEXT["abstand_nach"], hyphenationLang=TRENNUNG,
+                      embeddedHyphenation=1,          # 2.82.30: auch am Bindestrich trennen (Informatik-Ausbildung)
                       allowWidows=0, allowOrphans=0)
 h2 = _stil("h2", L.KAPITEL, keepWithNext=1)
 h3 = _stil("h3", L.ZWISCHENTITEL, keepWithNext=1)

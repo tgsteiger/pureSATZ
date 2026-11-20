@@ -323,6 +323,21 @@ def status_zeile():
     return GRAU(" " + " · ".join([os.path.basename(BASE)] + teile + ([bau[1]] if bau else []) + [cover]))
 
 
+def silbentrennung_zeile(zeilen):
+    """Zeigt, ob die automatische Silbentrennung (pyphen) läuft (2.83)."""
+    aus = any(z.replace(" ", "").lower().startswith("{silbentrennung}:nein") for z in zeilen)
+    try:
+        import pyphen  # noqa: F401
+        da = True
+    except ImportError:
+        da = False
+    if da and not aus:
+        return GRUEN("  ✓ Silbentrennung automatisch") + GRAU("  ·  aus: {silbentrennung}: nein")
+    if da:
+        return GRAU("  Silbentrennung aus ({silbentrennung}: nein) – nur die Wörter unten")
+    return ROT("  ✗ Silbentrennung fehlt (pyphen)") + GRAU(" – nachinstallieren: python3 motor/einrichten.py")
+
+
 def trennstellen_menue():
     """tr: {trennstellen} der Variablen-Datei zeigen, Wort mit | ergänzen, «-wort» entfernen (2.82.18)."""
     pfad = next(iter(sorted(glob.glob(os.path.join(BASE, "*-variablen.md")))), None)
@@ -333,6 +348,7 @@ def trennstellen_menue():
         i = next((n for n, z in enumerate(zeilen) if z.startswith("{trennstellen}:")), None)
         liste = [w.strip() for w in zeilen[i].split(":", 1)[1].split(",") if w.strip()] if i is not None else []
         print("\n " + FETT("Trennstellen …") + GRAU(f"  {len(liste)} Wörter · | = hier darf getrennt werden"))
+        print(silbentrennung_zeile(zeilen))
         zeile = " "
         for w in liste:
             if len(zeile) + len(w) + 3 > RAND:

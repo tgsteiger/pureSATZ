@@ -3,6 +3,18 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.83.0 (November 2026)
+- Silbentrennung immer dabei: pyphen gehört jetzt zur Python-Umgebung (`motor/einrichten.py`). Bestehende Bücher
+  bekommen es beim nächsten `sh update.sh` (nur nachinstalliert, keine neue Umgebung). Aus: `{silbentrennung}: nein`.
+- Selbsttest prüft pyphen; ohne Umgebung (`SELBSTTEST_OHNE_VENV=1`) nur ein Hinweis mit dem Befehl.
+
+## 2.82.30 (November 2026)
+- Trennen am Bindestrich: Wörter wie «Informatik-Ausbildung» oder «Emotionscode-Anwender» dürfen jetzt am
+  Bindestrich umbrechen (vorher rutschten sie ganz auf die nächste Zeile → grosse Lücken im Blocksatz).
+- Neu `{silbentrennung}: nein` – automatische Silbentrennung (pyphen) ausschalten, nur `{trennstellen}` gelten.
+  Standard: an, sobald pyphen installiert ist.
+- Menü `tr` zeigt, ob die Silbentrennung läuft, und wie man pyphen installiert.
+
 ## 2.82.29 (November 2026)
 - Menü `in` heisst «Gestaltung …»: dazu Mitte-Block (`mz` `mb` `ma`), QR-Farbe (`qb` `qs`), Farbschema (`sc1`–`sc3`)
   und `o` = Variablen-Datei öffnen.

@@ -17,7 +17,7 @@ except ImportError:
 
 MOTOR = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.dirname(MOTOR)
-PAKETE = ["reportlab==5.0.1", "pillow", "pypdf<8", "pypdfium2"]     # pypdf 5–7 geprüft (2.69.17)
+PAKETE = ["reportlab==5.0.1", "pillow", "pypdf<8", "pypdfium2", "pyphen"]   # pyphen = Silbentrennung (2.83)     # pypdf 5–7 geprüft (2.69.17)
 
 
 def venv_python(base=BASE):
@@ -29,7 +29,7 @@ def venv_python(base=BASE):
 def bereit(py):
     if not os.path.exists(py):
         return False
-    r = subprocess.run([py, "-c", "import reportlab, PIL, pypdf, pypdfium2, sys; sys.exit(reportlab.Version != '5.0.1')"],
+    r = subprocess.run([py, "-c", "import reportlab, PIL, pypdf, pypdfium2, pyphen, sys; sys.exit(reportlab.Version != '5.0.1')"],
                        capture_output=True)
     return r.returncode == 0
 
@@ -39,6 +39,13 @@ def einrichten(base=BASE):
     if bereit(py):
         print("Python-Umgebung ist bereit (.venv).")
     else:
+        if os.path.exists(py):                  # bestehende Umgebung: nur Fehlendes nachinstallieren (2.83)
+            print("=== Python-Umgebung ergänzen (neue Pakete) ===")
+            if subprocess.run([py, "-m", "pip", "install", "--quiet"] + PAKETE).returncode == 0 and bereit(py):
+                print("Umgebung bereit.")
+            else:                               # offline: alte Umgebung behalten, baut weiter (ohne Neues)
+                print("Hinweis: Pakete nicht nachinstalliert (Internet?). Später: python3 motor/einrichten.py")
+            return py
         print("=== Python-Umgebung einrichten (.venv, einmalig, ca. 1 Minute) ===")
         shutil.rmtree(os.path.join(base, ".venv"), ignore_errors=True)
         try:
