@@ -70,12 +70,20 @@ Als Text (zum Suchen):
 
 | Taste | baut | wann |
 |---|---|---|
-| `s` schnell | Lese-PDF als Entwurf (offene Stellen sichtbar) | beim Schreiben, oft |
+| `s` schnell | zuerst sync (wenn das Buch bei GitHub ist), dann Lese-PDF als Entwurf und gleich öffnen | beim Schreiben, oft |
 | `k` komplett | Lese-PDF, Druckdateien, E-Book, Mockup, Shop, Druckbericht (= `final`) | vor dem Druck |
 | `w` weitergeben | Leseprobe + Korrektur-PDF | Buch weitergeben: Webseite, Shop, Leser |
 | `c` check / gegenlesen | check_NAME.pdf mit Markierungen pro Person | für Gegenleser |
 
 Im Terminal baut `sh build.sh komplett` weiterhin alles zusammen (final + Leseprobe + Korrektur).
+
+**Abgleichen und zurückholen** (ab 2.84): `sy` sync allein · `ss` Supersync für ein neues oder anderes Gerät
+(Motor holen + sync + schnell) · `u`/`ul` nur den Motor · `zh` Stand zurückholen: die letzten 5 verschiedenen Stände
+der Buch-MD aus md-history/ (`v` Variablen, `u` Umschlag), Nummer = zurückholen, der jetzige Stand wird vorher gesichert.
+Oben «⚠ Motor x bereit → ul»: in pureSATZ daneben liegt ein neuerer Motor.
+
+**Neue Motor-Version freigeben** (im Ordner pureSATZ, ab 2.84): `sh release.sh` – zeigt Version, CHANGELOG und Dateien,
+fragt (↵ = Empfehlung), Selbsttest, Hilfe neu, git push, danach alle Bücher daneben aktualisieren.
 
 `bp` Buch prüfen = `sh build.sh pruefen`: Variablen, Druckdateien, Befehle, Fotos, Geschichten, Tabellen (ohne Bau).
 Dahinter steht der Stand pro Fassung (N = normal, UZ = zweite Fassung; bei nur einer Fassung nur das Zeichen):

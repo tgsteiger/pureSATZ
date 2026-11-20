@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.82.29
+# pureSATZ Hilfe · pureSATZ · Motor 2.84.4
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -202,7 +202,7 @@ Als Text (zum Suchen):
   g  Geschichten …                    tr Trennstellen …
   t  Tabellen …                       st Stichworte …
  ── 2 Bauen ───────────────────────   is ISBN …
-  s  schnell  (Lese-PDF)              ── Prüfen ───────────────────────
+  s  schnell  (sync + Lese-PDF)       ── Prüfen ───────────────────────
   k  komplett (Druck + E-Book)        bp Buch prüfen  N ✓  UZ ✗
   hb Hörbuch … (Linux)                co Coverrechner prüfen
  ── 3 Ansehen ─────────────────────   ── Weitergeben ──────────────────
@@ -210,21 +210,26 @@ Als Text (zum Suchen):
   o  Ordner öffnen …                  c  check / gegenlesen …
   a  änderungen (a|ä)                 lp Leseprobe    ko Korrektur
   db Druckbericht                     np nur-pdf      ne nur E-Book
+  zh Stand zurückholen …
  ── Weiteres ──────────────────────────────────────────────────────────
-  sy sync · u update (ul lokal) · sm Stand merken · au aufräumen …
-  n neu · $ Terminal · : Befehle · h hilfe · hf finden
+  sy sync · ss neues Gerät (u+sy+s) · u update (ul lokal) · sm Stand merken
+  au aufräumen … · n neu · $ Terminal · : Befehle · h hilfe · hf finden
  Wahl oder Befehl (z. B. final · ↑ = letzte · ↵ = beenden):
 ```
 
 Welche Taste wofür?
 
 Taste | baut | wann
-`s` schnell | Lese-PDF als Entwurf (offene Stellen sichtbar) | beim Schreiben, oft
+`s` schnell | zuerst sync (wenn das Buch bei GitHub ist), dann Lese-PDF als Entwurf und gleich öffnen | beim Schreiben, oft
 `k` komplett | Lese-PDF, Druckdateien, E-Book, Mockup, Shop, Druckbericht (= `final`) | vor dem Druck
 `w` weitergeben | Leseprobe + Korrektur-PDF | Buch weitergeben: Webseite, Shop, Leser
 `c` check / gegenlesen | check_NAME.pdf mit Markierungen pro Person | für Gegenleser
 
 Im Terminal baut `sh build.sh komplett` weiterhin alles zusammen (final + Leseprobe + Korrektur).
+
+Abgleichen und zurückholen (ab 2.84): `sy` sync allein · `ss` Supersync für ein neues oder anderes Gerät (Motor holen + sync + schnell) · `u`/`ul` nur den Motor · `zh` Stand zurückholen: die letzten 5 verschiedenen Stände der Buch-MD aus md-history/ (`v` Variablen, `u` Umschlag), Nummer = zurückholen, der jetzige Stand wird vorher gesichert. Oben «⚠ Motor x bereit → ul»: in pureSATZ daneben liegt ein neuerer Motor.
+
+Neue Motor-Version freigeben (im Ordner pureSATZ, ab 2.84): `sh release.sh` – zeigt Version, CHANGELOG und Dateien, fragt (↵ = Empfehlung), Selbsttest, Hilfe neu, git push, danach alle Bücher daneben aktualisieren.
 
 `bp` Buch prüfen = `sh build.sh pruefen`: Variablen, Druckdateien, Befehle, Fotos, Geschichten, Tabellen (ohne Bau). Dahinter steht der Stand pro Fassung (N = normal, UZ = zweite Fassung; bei nur einer Fassung nur das Zeichen): ✓ = in Ordnung · ✗ (rot) = Fehler beim Prüfen – dann steht oben «✗ Buch prüfen: Fehler gefunden», `bp` drücken, die Meldung nennt Datei und Zeile – oder der Umschlag dieser Fassung passt nicht (oben «⚠ Coverrechner …», `cv`) · ? = noch nicht geprüft. Nach einer Änderung an den MD-Dateien prüft das Menü beim Anzeigen kurz selbst (ab 2.82.3).
 
@@ -517,7 +522,7 @@ Satz und Begleitung: `{impressum-satz1}` und `{impressum-satz2}` sind zwei freie
 
 Seiten: `---` oder `@UMBRUCH` neue Seite · `@UMBRUCH-RECHTS` im Druck rechts · `@PLATZ 60` neue Seite, wenn weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen · `@SEITENMITTE`.
 
-Weiteres: `@TITEL`, `@IMPRESSUM`, `@HINWEIS`, `@WIDMUNG`, `@KERNSATZ`, `@INHALTSVERZEICHNIS`, `@ZITAT`, `@ZITAT-ZIER`, `@MOTTO`, `@UNTEN`, `@ZIER 12`, `@ZIER-UNTEN`, `@ZIER-TRENNER`, `@QR url | Text`, `@QR-PAAR … ;; …`, `@PORTRAIT bild | Text`, `@KOPF`, `@STICHWORTE`, `@RUECKSEITE`. Vollständige Liste: `python3 motor/manuskript.py`.
+Weiteres: `@TITEL`, `@IMPRESSUM`, `@HINWEIS`, `@WIDMUNG`, `@KERNSATZ`, `@INHALTSVERZEICHNIS`, `@ZITAT`, `@ZITAT-ZIER`, `@MOTTO`, `@UNTEN`, `@ZIER 12`, `@ZIER-UNTEN`, `@ZIER-TRENNER`, `@ZIER-LINIE`, `@QR url | Text`, `@QR-PAAR … ;; …`, `@PORTRAIT bild | Text`, `@KOPF`, `@STICHWORTE`, `@RUECKSEITE`. Vollständige Liste: `python3 motor/manuskript.py`.
 
 ## Text hervorheben: fett und kursiv
 
@@ -761,7 +766,7 @@ E-Book | `ebook-epub2` (ja = zusätzlich EPUB 2), `ebook-rueckseite` (bild / tex
 Shop | `shop-beschreibung`, `shop-schlagwoerter`, `shop-kategorie`, `shop-link`, `sprache` (Standard `de`, steht in den Shop-Angaben)
 Leseprobe | `leseprobe`, `leseprobe-seiten`, `leseprobe-seiten-uz`, `leseprobe-text`
 Technik | `kurz-normal` / `-uz` (Kürzel vorne an den Druckdateien, z. B. L123), `datei-normal` / `-uz` (Name der Lese-PDFs und E-Books), `ordner-normal` / `-uz` (Ausgabeordner)
-Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt|anschauung), `zier`, `zier-hell`, `initial` (ja · titel · nein), `initial-farbe` (akzent · haupt · text · ueberschrift), `fett-anfang-farbe` (leer · haupt · akzent: Fett ganz am Absatzanfang farbig, z. B. «Tantra. Seit …»), `fett-anfang-stil` (leer · kapitaelchen), `mitte-stil` (zitat = wie @ZITAT-ZIER, Standard · blau · aufrecht), `qr-farbe` (leer = schwarz · haupt = blau; Gold zu schwach, mit dem Handy prüfen), `fett-anfang-zeichen` (leer · zier = Lotus · ein Zeichen wie ◆ · bild.png), `initial-stufen` (2 · 3 · 4), `initial-stil` (normal · rand · feld), `initial-zeilen` (0 · 1 · 2 · 3 · 4), `initial-schrift` (fett · cinzel · uncial · fraktur · datei.ttf), `kapitaelchen` (ja · nein), `absatz-einzug` (ja · nein), `liste-blocksatz` (nein · ja: Listen im Blocksatz), `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund`
+Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt|anschauung), `silbentrennung` (ja · nein: automatisch mit pyphen), `zier`, `zier-hell`, `initial` (ja · titel · nein), `initial-farbe` (akzent · haupt · text · ueberschrift), `fett-anfang-farbe` (leer · haupt · akzent: Fett ganz am Absatzanfang farbig, z. B. «Tantra. Seit …»), `fett-anfang-stil` (leer · kapitaelchen), `mitte-stil` (zitat = wie @ZITAT-ZIER, Standard · blau · aufrecht), `qr-farbe` (leer = schwarz · haupt = blau; Gold zu schwach, mit dem Handy prüfen), `fett-anfang-zeichen` (leer · zier = Lotus · ein Zeichen wie ◆ · bild.png), `initial-stufen` (2 · 3 · 4), `initial-stil` (normal · rand · feld), `initial-zeilen` (0 · 1 · 2 · 3 · 4), `initial-schrift` (fett · cinzel · uncial · fraktur · datei.ttf), `kapitaelchen` (ja · nein), `absatz-einzug` (ja · nein), `liste-blocksatz` (nein · ja: Listen im Blocksatz), `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund`
 Sicherung | `sicherung-lokal`, `sicherung-cloud`, `sicherung-behalten`
 Layout | `farbschema`, `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `blocksatz` · Inhaltsverzeichnis: `inhalt-tiefe`, `inhalt-dichte`, `inhalt-teile`, `inhalt-punkte`, `inhalt-schrift`
 
@@ -819,6 +824,7 @@ einen Satz allein auf einer Seite | `## @KERNSATZ Satz` oder `@MOTTO Satz`
 eine kleine Verzierung | `@ZIER 12` (Breite in mm)
 eine Verzierung unten, danach neue Seite | `@ZIER-UNTEN 10`
 eine Verzierung zwischen zwei Abschnitten | `@ZIER-TRENNER`
+eine Zier mit goldenen Linien und Lotus (ohne Text) | `@ZIER-LINIE`
 ein eigenes Zierbild | in der Variablen-Datei `{zier}: meine-zier.png` (Bild in `bilder/`)
 einen grossen Anfangsbuchstaben am Kapitelanfang (Initial, drei Zeilen hoch) | Menü `in` Initialen … (wo, Schrift, Farbe, Kapitälchen, Vorschau) oder `{initial}: ja` – Farbe: `{initial-farbe}: akzent` (Gold), `haupt` (Blau wie die Überschriften) oder `text` (Schwarz). Ist der erste Absatz kürzer als drei Zeilen, läuft der nächste daneben weiter; folgt gleich ein Titel oder Foto, beginnt das Kapitel ohne Initial
 den ersten Buchstaben des Kapiteltitels hervorheben (statt eines Initials im Text) | `{initial}: titel` – Buchstabe 1,45-mal so gross wie die Überschrift, welche Stufen: `{initial-stufen}: 2` (Kapitel `##`, Standard), `2 3` oder `2 3 4` (nie `#`, die Teil-Seite), Farbe `{initial-farbe}` (`ueberschrift` = jede Stufe in ihrer eigenen Farbe), Schrift `{initial-schrift}` (leer = Titelschrift, z. B. `cinzel`). Seitenzahl kann sich um 1–2 ändern → Coverrechner prüfen
@@ -826,7 +832,7 @@ das Initial anders: im Rand, im Feld, grösser, fett oder in einer Zierschrift |
 die ersten Wörter jedes Kapitels in Kapitälchen | `{kapitaelchen}: ja` – mit oder ohne Initial
 Absätze eingerückt statt mit Abstand (wie viele Romane) | `{absatz-einzug}: ja` – der erste Absatz nach einem Titel bleibt bündig
 Listen (• und 1.) im Blocksatz wie der Fliesstext | `{liste-blocksatz}: ja` – Standard `nein` = linksbündig; Randbemerkungen (`~`) bleiben linksbündig
-Grosse Lücken im Blocksatz, langes Wort wird nicht getrennt | Menü `tr` Trennstellen …: Wort mit `|` eintragen, wo getrennt werden darf, z. B. `Re|vi|ta|ler` (`-Revitaler` = entfernen) – oder direkt in der Variablen-Datei `{trennstellen}:`; danach `s` bauen
+Grosse Lücken im Blocksatz, langes Wort wird nicht getrennt | Menü `tr` Trennstellen …: Wort mit `|` eintragen, wo getrennt werden darf, z. B. `Re|vi|ta|ler` (`-Revitaler` = entfernen) – oder direkt in der Variablen-Datei `{trennstellen}:`; danach `s` bauen. Automatische Silbentrennung: pyphen installieren (Menü `tr` zeigt den Befehl)
 
 Wann umbrechen? Teile (`# Teil …`) und Kapitel oberster Ebene (`# Titel`) beginnen von selbst auf einer neuen Seite. Sonst erst umbrechen, wenn der Text fertig ist – jede Änderung verschiebt die Seiten. Lieber `@PLATZ` als `---`: es wirkt nur, wenn es nötig ist.
 
@@ -1791,6 +1797,7 @@ Schreibweise | Wirkung
 `@RUECKSEITE` | Rückseite (nur Bildschirm-PDF)
 
 ### Weitere
+`@ZIER-LINIE` | eine Zier mit goldenen Linien und Lotus, ohne Text (wie bei «> Satz»)
 `@BILDERVERZEICHNIS` | Bilderverzeichnis an dieser Stelle (sonst mit {bilderverzeichnis}: ja automatisch vor den Stichworten)
 `@TABELLENVERZEICHNIS` | Tabellenverzeichnis an dieser Stelle (sonst mit {tabellenverzeichnis}: ja automatisch)
 

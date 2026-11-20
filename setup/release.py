@@ -77,6 +77,7 @@ def main():
             sys.exit(1)
         print("✓ " + zeilen[-1])
 
+    subprocess.run([sys.executable, os.path.join("motor", "hilfe.py")], cwd=HIER)   # hilfe.html + hilfe-ki.md neu
     titel = next((z[2:].strip() for z in eintrag if z.startswith("- ")), "")
     text = f"{version}: {titel}"[:90]
     git("add", "-A")
