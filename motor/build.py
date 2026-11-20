@@ -2132,6 +2132,12 @@ class UmflossenesBild(ImageAndFlowables):
     def getSpaceAfter(self):
         return max(super().getSpaceAfter(), body.spaceAfter)
 
+    def split(self, aw, ah):
+        r = super().split(aw, ah)          # 2.85.1: ReportLab macht beim Seitenumbruch wieder ein normales
+        if r and type(r[0]) is ImageAndFlowables:   # ImageAndFlowables daraus – Abstand behalten
+            r[0].__class__ = UmflossenesBild
+        return r
+
 
 class BildMitText(Flowable):
     """Bild + Bildtext als ein Block, der von Text umflossen werden kann (für ImageAndFlowables)."""
