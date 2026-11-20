@@ -3,6 +3,9 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.84.9 (November 2026)
+- Hilfe «Wie mache ich …»: zwei Zitate oder Zierden auf einer Doppelseite gleich hoch stellen (`fest`, `@ABSTAND`).
+
 ## 2.84.8 (November 2026)
 - Menü `s1` = schnell nur die normale Fassung, `s2` = nur die zweite (unzensiert); `s` wie bisher beide.
   Im Terminal: `sh build.sh schnell normal` / `sh build.sh schnell uz`.

@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.84.8
+# pureSATZ Hilfe · pureSATZ · Motor 2.84.9
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -832,7 +832,8 @@ das Initial anders: im Rand, im Feld, grösser, fett oder in einer Zierschrift |
 die ersten Wörter jedes Kapitels in Kapitälchen | `{kapitaelchen}: ja` – mit oder ohne Initial
 Absätze eingerückt statt mit Abstand (wie viele Romane) | `{absatz-einzug}: ja` – der erste Absatz nach einem Titel bleibt bündig
 Listen (• und 1.) im Blocksatz wie der Fliesstext | `{liste-blocksatz}: ja` – Standard `nein` = linksbündig; Randbemerkungen (`~`) bleiben linksbündig
-Grosse Lücken im Blocksatz, langes Wort wird nicht getrennt | Menü `tr` Trennstellen …: Wort mit `|` eintragen, wo getrennt werden darf, z. B. `Re|vi|ta|ler` (`-Revitaler` = entfernen) – oder direkt in der Variablen-Datei `{trennstellen}:`; danach `s` bauen. Automatische Silbentrennung: pyphen installieren (Menü `tr` zeigt den Befehl)
+auf einer Doppelseite zwei Zitate / Zierden gleich hoch stellen (links und rechts) | Am Seitenende (Abschluss): beide Blöcke `::: mitte oben fest 42` … `:::` – Oberkante steht 42 mm über dem Seitenende, auf beiden Seiten gleich (Zahl so wählen, dass auf beiden Seiten genug Platz ist; sonst setzt der Motor mittig). Mitten auf der Seite: im PDF messen, wie viel höher der eine Block steht, und davor einen unsichtbaren Abstand einfügen: `@ABSTAND 9` (mm) – nur für eine Fassung in `::: nur-normal` … `:::` (die UZ bricht anders um). Erst ganz am Schluss machen: ändert sich davor noch Text, muss die Zahl nachgestellt werden
+Grosse Lücken im Blocksatz, langes Wort wird nicht getrennt | Menü `tr` Trennstellen …: Wort mit `|` eintragen, wo getrennt werden darf, z. B. `Re|vi|ta|ler` (`-Revitaler` = entfernen) – oder direkt in der Variablen-Datei `{trennstellen}:`; danach `s` bauen. Automatische Silbentrennung: läuft ab 2.83 von selbst (ab 10 Buchstaben, Menü `tr`: Zahl ändern)
 
 Wann umbrechen? Teile (`# Teil …`) und Kapitel oberster Ebene (`# Titel`) beginnen von selbst auf einer neuen Seite. Sonst erst umbrechen, wenn der Text fertig ist – jede Änderung verschiebt die Seiten. Lieber `@PLATZ` als `---`: es wirkt nur, wenn es nötig ist.
 
