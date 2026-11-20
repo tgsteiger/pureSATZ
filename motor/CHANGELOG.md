@@ -3,6 +3,10 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.84.8 (November 2026)
+- Menü `s1` = schnell nur die normale Fassung, `s2` = nur die zweite (unzensiert); `s` wie bisher beide.
+  Im Terminal: `sh build.sh schnell normal` / `sh build.sh schnell uz`.
+
 ## 2.84.7 (November 2026)
 - Silbentrennung nur noch für lange Wörter: Standard ab 10 Buchstaben (vorher 5 – fast jede Zeile hatte einen Strich).
   `{silbentrennung}: 12` = ab 12 Buchstaben · `nein` = aus. Im Menü `tr`: Zahl eingeben, `aus`, `an`.

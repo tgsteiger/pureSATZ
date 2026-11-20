@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.84.7
+# pureSATZ Hilfe · pureSATZ · Motor 2.84.8
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -220,7 +220,7 @@ Als Text (zum Suchen):
 Welche Taste wofür?
 
 Taste | baut | wann
-`s` schnell | zuerst sync (wenn das Buch bei GitHub ist), dann Lese-PDF als Entwurf und gleich öffnen | beim Schreiben, oft
+`s` schnell (`s1` nur normal, `s2` nur zweite Fassung) | zuerst sync (wenn das Buch bei GitHub ist), dann Lese-PDF als Entwurf und gleich öffnen | beim Schreiben, oft
 `k` komplett | Lese-PDF, Druckdateien, E-Book, Mockup, Shop, Druckbericht (= `final`) | vor dem Druck
 `w` weitergeben | Leseprobe + Korrektur-PDF | Buch weitergeben: Webseite, Shop, Leser
 `c` check / gegenlesen | check_NAME.pdf mit Markierungen pro Person | für Gegenleser

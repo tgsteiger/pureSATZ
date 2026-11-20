@@ -920,6 +920,7 @@ def main():
         start = time.time()
         sicherung()
         env = dict(os.environ, BUCH_FINAL="1" if final else "0", BUCH_BOOKLET="", BUCH_SCHNELL="1")
+        NUR_FASSUNG = next((a for a in args if a in ("normal", "uz")), None)   # 2.84.8: «schnell normal|uz»
         parallel([(f"Schnell · {name(a)}", "build.py", a) for a in ausgaben()], env)
         ausgabe_uebersicht(art, final)
         print(f"\nFertig in {time.time() - start:.0f} Sekunden (schnell: ohne Seitenausgleich – für den Druck: final).")

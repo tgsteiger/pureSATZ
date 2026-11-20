@@ -257,6 +257,14 @@ def pdfs():
     return out
 
 
+def fassungen_zwei():
+    """Hat das Buch eine zweite Fassung (UZ)? Dann gibt es s1 / s2 (2.84.8)."""
+    try:
+        return len(open(os.path.join(BASE, "_druckbilder", "pruefen.txt"), encoding="utf-8").read().split()[1:]) > 1
+    except OSError:
+        return False
+
+
 def zurueckholen_menue():
     """zh: früheren Stand einer MD aus md-history/ zurückholen; der jetzige wird vorher gesichert (2.84.3)."""
     muster, wahl = {"b": "*-buch.md", "v": "*-variablen.md", "u": "*-umschlag.md"}, "b"
@@ -1102,8 +1110,8 @@ def zeige():
                                                                                                     # Blöcke im Buchablauf,
                ("Einstellen", [("in", "Gestaltung …"), ("tr", "Trennstellen …"), ("st", "Stichworte …"),  # Tasten gleich
                                  ("is", "ISBN …")]),
-               ("2 Bauen", [("s", "schnell  (sync + Lese-PDF)" if os.path.isdir(os.path.join(BASE, ".git"))
-                                  else "schnell  (Lese-PDF)"), ("k", "komplett (Druck + E-Book)")]   # 2.82.19: k = final
+               ("2 Bauen", [("s", ("schnell  (sync + Lese-PDF)" if os.path.isdir(os.path.join(BASE, ".git"))
+                                   else "schnell  (Lese-PDF)") + ("  s1/2" if fassungen_zwei() else "")), ("k", "komplett (Druck + E-Book)")]   # 2.82.19: k = final
                 + ([("hb", "Hörbuch … (Linux)")] if LINUX else [])),
                ("Prüfen", [("bp", bp), ("co", "Coverrechner prüfen")]),        # 2.82.19: Prüfen neben Bauen
                ("3 Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen (a|ä)"), ("zh", "Stand zurückholen …"),
@@ -1296,11 +1304,13 @@ def main():
                 cover_menue()
             elif w == "hf" or w.startswith("hf "):          # hilfe finden: hf isbn
                 finde_hilfe(e[2:].strip())
-            elif w == "s":                                  # 2.84.2: zuerst abgleichen (Buch bei GitHub), dann bauen
+            elif w in ("s", "s1", "s2"):                    # 2.84.2: zuerst abgleichen (Buch bei GitHub), dann bauen
                 if os.path.isdir(os.path.join(BASE, ".git")) and skript("sync") != 0:
                     print(GRAU("  ⚠ sync nicht möglich – baue trotzdem"))
-                if bauen("schnell") == 0 and "n" in pdfs():          # 2.84.3: Lese-PDF gleich öffnen
-                    oeffnen(pdfs()["n"][1])
+                nur = {"s1": ["normal"], "s2": ["uz"]}.get(w, [])      # 2.84.8: s1 = nur normal, s2 = nur unzensiert
+                k = "u" if w == "s2" else "n"
+                if bauen("schnell", *nur) == 0 and k in pdfs():       # 2.84.3: Lese-PDF gleich öffnen
+                    oeffnen(pdfs()[k][1])
             elif w == "k":                                  # 2.82.19: ohne Leseprobe/Korrektur (dafür w)
                 bauen("final")
             elif w == "f":

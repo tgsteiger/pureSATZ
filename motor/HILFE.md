@@ -70,7 +70,7 @@ Als Text (zum Suchen):
 
 | Taste | baut | wann |
 |---|---|---|
-| `s` schnell | zuerst sync (wenn das Buch bei GitHub ist), dann Lese-PDF als Entwurf und gleich öffnen | beim Schreiben, oft |
+| `s` schnell (`s1` nur normal, `s2` nur zweite Fassung) | zuerst sync (wenn das Buch bei GitHub ist), dann Lese-PDF als Entwurf und gleich öffnen | beim Schreiben, oft |
 | `k` komplett | Lese-PDF, Druckdateien, E-Book, Mockup, Shop, Druckbericht (= `final`) | vor dem Druck |
 | `w` weitergeben | Leseprobe + Korrektur-PDF | Buch weitergeben: Webseite, Shop, Leser |
 | `c` check / gegenlesen | check_NAME.pdf mit Markierungen pro Person | für Gegenleser |
