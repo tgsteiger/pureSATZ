@@ -3,6 +3,12 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.84.0 (November 2026)
+- Menü `ss` Supersync (für ein neues oder anderes Gerät): Motor von GitHub holen, Buch abgleichen (sync), schnell bauen.
+  Bricht ab, wenn ein Schritt nicht klappt. Einzeln wie bisher: `u`, `sy`, `s`.
+- Neu in pureSATZ: `sh release.sh` – zeigt Version, CHANGELOG und geänderte Dateien, fragt, Selbsttest, git push,
+  danach alle Bücher daneben aktualisieren (`update.sh lokal ja`). Nur Menü/Hilfe geändert: Selbsttest auf Wunsch überspringen.
+
 ## 2.83.0 (November 2026)
 - Silbentrennung immer dabei: pyphen gehört jetzt zur Python-Umgebung (`motor/einrichten.py`). Bestehende Bücher
   bekommen es beim nächsten `sh update.sh` (nur nachinstalliert, keine neue Umgebung). Aus: `{silbentrennung}: nein`.

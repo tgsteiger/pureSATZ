@@ -60,8 +60,8 @@ Als Text (zum Suchen):
   a  änderungen (a|ä)                 lp Leseprobe    ko Korrektur
   db Druckbericht                     np nur-pdf      ne nur E-Book
  ── Weiteres ──────────────────────────────────────────────────────────
-  sy sync · u update (ul lokal) · sm Stand merken · au aufräumen …
-  n neu · $ Terminal · : Befehle · h hilfe · hf finden
+  sy sync · u update (ul lokal) · ss neues Gerät (u+sy+s) · sm Stand merken
+  au aufräumen … · n neu · $ Terminal · : Befehle · h hilfe · hf finden
  Wahl oder Befehl (z. B. final · ↑ = letzte · ↵ = beenden):
 ```
 

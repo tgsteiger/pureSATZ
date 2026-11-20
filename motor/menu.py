@@ -1042,6 +1042,7 @@ def zeige():
                ("Weitergeben", [("w", "beides: Leseprobe + Korrektur"), ("c", "check / gegenlesen …"),
                                   ("lp", "Leseprobe    ko Korrektur"), ("np", "nur-pdf      ne nur E-Book")])]
     spalten_zeigen(spalten, "sy sync · u update" + (" (ul lokal)" if LOKAL else "")      # 2.82.19: Abgleichen +
+                   + " · ss neues Gerät (u+sy+s)"                                         # 2.84: Supersync
                    + " · sm Stand merken · au aufräumen … · n neu · $ Terminal · : Befehle · h hilfe · hf finden",
                    fliessend=True)  # Aufräumen in Weiteres
     if os.path.exists(ALLE):
@@ -1342,6 +1343,20 @@ def main():
                 hoerbuch_menue()
             elif w == "sy":
                 skript("sync")
+            elif w == "ss":                                 # 2.84: Supersync – Motor holen, Buch abgleichen, schnell bauen
+                vorher = open(os.path.join(MOTOR, "VERSION"), encoding="utf-8").read().strip()
+                for name, schritt in (("Motor", lambda: skript("update", "ja")), ("Sync", lambda: skript("sync")),
+                                      ("Bauen", lambda: bauen("schnell"))):
+                    if schritt() != 0:
+                        print(ROT(f"  ✗ {name} – Supersync abgebrochen"))
+                        break
+                else:
+                    print(GRUEN("  ✓ Supersync fertig"))
+                if open(os.path.join(MOTOR, "VERSION"), encoding="utf-8").read().strip() != vorher:
+                    einstellungen(speichern=True)                       # neuer Motor: Menü neu laden
+                    if WIN:
+                        sys.exit(subprocess.call([sys.executable, os.path.abspath(__file__)]))
+                    os.execv(sys.executable, [sys.executable, os.path.abspath(__file__)])
             elif w in ("u", "ul"):
                 if skript("update", *(["lokal"] if w == "ul" else [])) == 0:
                     einstellungen(speichern=True)
