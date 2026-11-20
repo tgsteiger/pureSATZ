@@ -51,7 +51,7 @@ Als Text (zum Suchen):
   g  Geschichten …                    tr Trennstellen …
   t  Tabellen …                       st Stichworte …
  ── 2 Bauen ───────────────────────   is ISBN …
-  s  schnell  (Lese-PDF)              ── Prüfen ───────────────────────
+  s  schnell  (sync + Lese-PDF)       ── Prüfen ───────────────────────
   k  komplett (Druck + E-Book)        bp Buch prüfen  N ✓  UZ ✗
   hb Hörbuch … (Linux)                co Coverrechner prüfen
  ── 3 Ansehen ─────────────────────   ── Weitergeben ──────────────────
@@ -59,6 +59,7 @@ Als Text (zum Suchen):
   o  Ordner öffnen …                  c  check / gegenlesen …
   a  änderungen (a|ä)                 lp Leseprobe    ko Korrektur
   db Druckbericht                     np nur-pdf      ne nur E-Book
+  zh Stand zurückholen …
  ── Weiteres ──────────────────────────────────────────────────────────
   sy sync · ss neues Gerät (u+sy+s) · u update (ul lokal) · sm Stand merken
   au aufräumen … · n neu · $ Terminal · : Befehle · h hilfe · hf finden

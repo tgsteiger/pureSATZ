@@ -3,6 +3,15 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.84.3 (November 2026)
+- Menü `zh` Stand zurückholen: die letzten 5 verschiedenen Stände der Buch-MD (`v` Variablen, `u` Umschlag)
+  aus md-history/, Nummer = zurückholen. Der jetzige Stand wird vorher gesichert.
+- Menü `s`: nach dem Bauen öffnet sich das Lese-PDF (offenes PDF wird überschrieben, der Betrachter lädt neu).
+
+## 2.84.2 (November 2026)
+- Menü `s`: zuerst abgleichen (sync, nur wenn das Buch bei GitHub ist), dann schnell bauen. Ohne Internet baut es trotzdem.
+- `sh release.sh`: ↵ = Empfehlung (Übernehmen ja; nur Menü/Hilfe geändert: Selbsttest überspringen).
+
 ## 2.84.1 (November 2026)
 - Menü: Liegt in pureSATZ daneben ein neuerer Motor, steht oben «⚠ Motor x bereit → ul».
 - Menü «Weiteres»: Abgleichen vorne (`sy` · `ss` · `u`).

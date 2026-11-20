@@ -257,6 +257,49 @@ def pdfs():
     return out
 
 
+def zurueckholen_menue():
+    """zh: früheren Stand einer MD aus md-history/ zurückholen; der jetzige wird vorher gesichert (2.84.3)."""
+    muster, wahl = {"b": "*-buch.md", "v": "*-variablen.md", "u": "*-umschlag.md"}, "b"
+    while True:
+        datei = next(iter(sorted(glob.glob(os.path.join(BASE, muster[wahl])))), None)
+        if not datei:
+            print("  Datei nicht gefunden.")
+            return
+        name = os.path.basename(datei)
+        stamm = name[:-3]
+        jetzt = open(datei, encoding="utf-8").read()
+        staende, gesehen = [], {jetzt}                  # nur Stände, die anders sind (gleiche überspringen)
+        for p in sorted(glob.glob(os.path.join(BASE, "md-history", stamm + "_*.md")), reverse=True):
+            t = open(p, encoding="utf-8").read()
+            if t not in gesehen:
+                gesehen.add(t)
+                staende.append((p, t))
+            if len(staende) == 5:
+                break
+        print(f"\n {FETT('Stand zurückholen …')}  {name}")
+        if not staende:
+            print(GRAU("  Keine früheren Stände in md-history/, die anders sind als jetzt."))
+        for i, (p, t) in enumerate(staende, 1):
+            m = re.search(r"_(\d{4})(\d\d)(\d\d)-(\d\d)-(\d\d)", os.path.basename(p))
+            zeit = f"{m.group(3)}.{m.group(2)}. {m.group(4)}:{m.group(5)}" if m else os.path.basename(p)
+            print(f"  {i}  {zeit}   {t.count(chr(10)) - jetzt.count(chr(10)):+d} Zeilen gegenüber jetzt")
+        print(GRAU("  Nummer = zurückholen (jetziger Stand wird vorher gesichert) · b Buch · v Variablen · u Umschlag"
+                   " · ↵ zurück"))
+        e = frage(" Wahl: ").strip().lower()
+        if e in muster:
+            wahl = e
+            continue
+        if not e.isdigit() or not 1 <= int(e) <= len(staende):
+            return
+        p, t = staende[int(e) - 1]
+        sicher = os.path.join(BASE, "md-history", f"{stamm}_{time.strftime('%Y%m%d-%H-%M-%S')}.md")
+        shutil.copy2(datei, sicher)
+        open(datei, "w", encoding="utf-8").write(t)
+        print(GRUEN(f"  ✓ {name} zurückgeholt") + GRAU(f" – vorher gesichert: md-history/{os.path.basename(sicher)}"
+                                                         " · jetzt s bauen"))
+        return
+
+
 def untermenue(titel, eintraege, zusatz=""):
     """eintraege: {Taste: (Text, Pfad oder None)} – gibt die gewählte Taste zurück, None = zurück.
     zusatz: z. B. "tp" – dann geht auch Taste + t / p (bt, ap …) und eine Hinweiszeile steht darunter."""
@@ -1047,10 +1090,11 @@ def zeige():
                                                                                                     # Blöcke im Buchablauf,
                ("Einstellen", [("in", "Gestaltung …"), ("tr", "Trennstellen …"), ("st", "Stichworte …"),  # Tasten gleich
                                  ("is", "ISBN …")]),
-               ("2 Bauen", [("s", "schnell  (Lese-PDF)"), ("k", "komplett (Druck + E-Book)")]   # 2.82.19: k = final
+               ("2 Bauen", [("s", "schnell  (sync + Lese-PDF)" if os.path.isdir(os.path.join(BASE, ".git"))
+                                  else "schnell  (Lese-PDF)"), ("k", "komplett (Druck + E-Book)")]   # 2.82.19: k = final
                 + ([("hb", "Hörbuch … (Linux)")] if LINUX else [])),
                ("Prüfen", [("bp", bp), ("co", "Coverrechner prüfen")]),        # 2.82.19: Prüfen neben Bauen
-               ("3 Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen (a|ä)"),
+               ("3 Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen (a|ä)"), ("zh", "Stand zurückholen …"),
                               ("db", "Druckbericht")]),
                ("Weitergeben", [("w", "beides: Leseprobe + Korrektur"), ("c", "check / gegenlesen …"),
                                   ("lp", "Leseprobe    ko Korrektur"), ("np", "nur-pdf      ne nur E-Book")])]
@@ -1240,8 +1284,11 @@ def main():
                 cover_menue()
             elif w == "hf" or w.startswith("hf "):          # hilfe finden: hf isbn
                 finde_hilfe(e[2:].strip())
-            elif w == "s":
-                bauen("schnell")
+            elif w == "s":                                  # 2.84.2: zuerst abgleichen (Buch bei GitHub), dann bauen
+                if os.path.isdir(os.path.join(BASE, ".git")) and skript("sync") != 0:
+                    print(GRAU("  ⚠ sync nicht möglich – baue trotzdem"))
+                if bauen("schnell") == 0 and "n" in pdfs():          # 2.84.3: Lese-PDF gleich öffnen
+                    oeffnen(pdfs()["n"][1])
             elif w == "k":                                  # 2.82.19: ohne Leseprobe/Korrektur (dafür w)
                 bauen("final")
             elif w == "f":
@@ -1285,6 +1332,8 @@ def main():
                     druck_oeffnen()
                 elif k:
                     oeffnen(md[k][1])
+            elif w == "zh":
+                zurueckholen_menue()
             elif w == "p":
                 liste = pdfs()
                 if not liste:

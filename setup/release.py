@@ -24,11 +24,13 @@ def git(*a):
     return subprocess.run(["git"] + list(a), cwd=HIER, capture_output=True, text=True).stdout
 
 
-def ja(text):
+def ja(text, standard=False):
+    """Frage mit Empfehlung: ↵ = standard (grosser Buchstabe in [J/n] bzw. [j/N])."""
     try:
-        return input(text).strip().lower() in ("j", "ja", "y")
+        a = input(text + (" [J/n]: " if standard else " [j/N]: ")).strip().lower()
     except EOFError:
-        return False
+        return standard
+    return standard if not a else a in ("j", "ja", "y")
 
 
 def main():
@@ -50,12 +52,12 @@ def main():
     print(f"\npureSATZ {alt} → {version}" + ("   ⚠ Version nicht erhöht: Bücher werden nicht aktualisiert" if version == alt else ""))
     print("\n".join(eintrag).strip())
     print("\nGeändert:\n  " + "\n  ".join(dateien))
-    if not ja("\nÜbernehmen? [j/N]: "):
+    if not ja("\nÜbernehmen? (empfohlen: ↵)", True):
         print("Nichts gemacht.")
         return
 
     leicht = all(d in LEICHT or d.startswith(("_backup/", "docs/")) for d in dateien)
-    if leicht and ja("Nur Menü/Hilfe/Texte geändert – Selbsttest überspringen? [j/N]: "):
+    if leicht and not ja("Nur Menü/Hilfe/Texte geändert – Selbsttest nicht nötig (empfohlen: ↵). Trotzdem testen?"):
         print("Selbsttest übersprungen.")
     else:
         print("\nSelbsttest läuft (ca. 2 Minuten) …", flush=True)
