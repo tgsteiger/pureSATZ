@@ -3,6 +3,9 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.84.11 (November 2026)
+- `@QR-FLUSS url | Text`: QR-Code rechts neben dem folgenden Absatz, der Text fliesst herum (wie `fluss: rechts` bei Fotos). Im E-Book weggelassen.
+
 ## 2.84.10 (November 2026)
 - `@ZIER-UNTEN 10 mitte` (auch `@LOTUS-UNTEN`): Verzierung mitten in den freien Platz der Seite statt ganz unten.
 

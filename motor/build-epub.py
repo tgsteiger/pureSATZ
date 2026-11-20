@@ -502,6 +502,8 @@ for zeile in bk.text_zeilen():
         if name:
             aktuell["html"].append(f'<div class="bild"><img class="portrait" src="img/{name}" alt="{esc(text.strip() or PORTRAIT_ALT)}"/></div>'
                                    + (f'<p class="bildtext">{esc(text.strip())}</p>' if text.strip() else ""))
+    elif s.startswith("@QR-FLUSS "):              # 2.84.11: im E-Book weglassen (Link steht im Text)
+        flush_absatz()
     elif s.startswith(("@QR-PAAR ", "@QR ")):     # im E-Book: Links statt QR-Codes
         flush_absatz()
         for x in s.split(" ", 1)[1].split(";;"):

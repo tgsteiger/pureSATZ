@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.84.10
+# pureSATZ Hilfe · pureSATZ · Motor 2.84.11
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -522,7 +522,7 @@ Satz und Begleitung: `{impressum-satz1}` und `{impressum-satz2}` sind zwei freie
 
 Seiten: `---` oder `@UMBRUCH` neue Seite · `@UMBRUCH-RECHTS` im Druck rechts · `@PLATZ 60` neue Seite, wenn weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen · `@SEITENMITTE`.
 
-Weiteres: `@TITEL`, `@IMPRESSUM`, `@HINWEIS`, `@WIDMUNG`, `@KERNSATZ`, `@INHALTSVERZEICHNIS`, `@ZITAT`, `@ZITAT-ZIER`, `@MOTTO`, `@UNTEN`, `@ZIER 12`, `@ZIER-UNTEN`, `@ZIER-TRENNER`, `@ZIER-LINIE`, `@QR url | Text`, `@QR-PAAR … ;; …`, `@PORTRAIT bild | Text`, `@KOPF`, `@STICHWORTE`, `@RUECKSEITE`. Vollständige Liste: `python3 motor/manuskript.py`.
+Weiteres: `@TITEL`, `@IMPRESSUM`, `@HINWEIS`, `@WIDMUNG`, `@KERNSATZ`, `@INHALTSVERZEICHNIS`, `@ZITAT`, `@ZITAT-ZIER`, `@MOTTO`, `@UNTEN`, `@ZIER 12`, `@ZIER-UNTEN`, `@ZIER-TRENNER`, `@ZIER-LINIE`, `@QR url | Text`, `@QR-PAAR … ;; …`, `@QR-FLUSS url | Text`, `@PORTRAIT bild | Text`, `@KOPF`, `@STICHWORTE`, `@RUECKSEITE`. Vollständige Liste: `python3 motor/manuskript.py`.
 
 ## Text hervorheben: fett und kursiv
 
@@ -824,6 +824,7 @@ einen Satz allein auf einer Seite | `## @KERNSATZ Satz` oder `@MOTTO Satz`
 eine kleine Verzierung | `@ZIER 12` (Breite in mm)
 eine Verzierung unten, danach neue Seite | `@ZIER-UNTEN 10`
 eine Verzierung mitten in den freien Platz, danach neue Seite | `@ZIER-UNTEN 10 mitte`
+einen QR-Code rechts neben einen Absatz stellen (Text fliesst herum, im E-Book weggelassen) | `@QR-FLUSS url | Text` direkt vor den Absatz
 eine Verzierung zwischen zwei Abschnitten | `@ZIER-TRENNER`
 eine Zier mit goldenen Linien und Lotus (ohne Text) | `@ZIER-LINIE`
 ein eigenes Zierbild | in der Variablen-Datei `{zier}: meine-zier.png` (Bild in `bilder/`)
@@ -1800,6 +1801,7 @@ Schreibweise | Wirkung
 
 ### Weitere
 `@ZIER-LINIE` | eine Zier mit goldenen Linien und Lotus, ohne Text (wie bei «> Satz»)
+`@QR-FLUSS url | Text` | QR-Code rechts, der nächste Absatz fliesst herum
 `@BILDERVERZEICHNIS` | Bilderverzeichnis an dieser Stelle (sonst mit {bilderverzeichnis}: ja automatisch vor den Stichworten)
 `@TABELLENVERZEICHNIS` | Tabellenverzeichnis an dieser Stelle (sonst mit {tabellenverzeichnis}: ja automatisch)
 

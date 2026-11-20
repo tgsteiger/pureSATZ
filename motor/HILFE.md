@@ -437,7 +437,7 @@ Leseprobe …); leer = Zeile fällt weg.
 weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen · `@SEITENMITTE`.
 
 **Weiteres:** `@TITEL`, `@IMPRESSUM`, `@HINWEIS`, `@WIDMUNG`, `@KERNSATZ`, `@INHALTSVERZEICHNIS`, `@ZITAT`, `@ZITAT-ZIER`, `@MOTTO`, `@UNTEN`,
-`@ZIER 12`, `@ZIER-UNTEN`, `@ZIER-TRENNER`, `@ZIER-LINIE`, `@QR url | Text`, `@QR-PAAR … ;; …`, `@PORTRAIT bild | Text`,
+`@ZIER 12`, `@ZIER-UNTEN`, `@ZIER-TRENNER`, `@ZIER-LINIE`, `@QR url | Text`, `@QR-PAAR … ;; …`, `@QR-FLUSS url | Text`, `@PORTRAIT bild | Text`,
 `@KOPF`, `@STICHWORTE`, `@RUECKSEITE`. Vollständige Liste: `python3 motor/manuskript.py`.
 
 ## Text hervorheben: fett und kursiv
@@ -776,6 +776,7 @@ Nach einer Änderung `sh build.sh schnell` und ansehen.
 | eine kleine Verzierung | `@ZIER 12` (Breite in mm) |
 | eine Verzierung unten, danach neue Seite | `@ZIER-UNTEN 10` |
 | eine Verzierung mitten in den freien Platz, danach neue Seite | `@ZIER-UNTEN 10 mitte` |
+| einen QR-Code rechts neben einen Absatz stellen (Text fliesst herum, im E-Book weggelassen) | `@QR-FLUSS url \| Text` direkt vor den Absatz |
 | eine Verzierung zwischen zwei Abschnitten | `@ZIER-TRENNER` |
 | eine Zier mit goldenen Linien und Lotus (ohne Text) | `@ZIER-LINIE` |
 | ein eigenes Zierbild | in der Variablen-Datei `{zier}: meine-zier.png` (Bild in `bilder/`) |

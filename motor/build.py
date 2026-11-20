@@ -2439,6 +2439,12 @@ def _build(out, ausgleich=None):
         elif s.startswith("@QR-PAAR "):
             # @QR-PAAR url | Text ;; url | Text : zwei (oder drei) QR-Codes nebeneinander
             story += qr_reihe(None, s[9:].split(";;"))
+        elif s.startswith("@QR-FLUSS "):
+            # 2.84.11: @QR-FLUSS url | Text : QR-Code rechts, die folgenden Absätze fliessen darum herum
+            url, _, label = s[10:].partition("|")
+            flush(); ausgeben()
+            schwebe.update(teile=qrbox(url.strip(), inline_einfach(label.strip() or url.strip())),
+                           seite="right", bw=23 * mm, paras=[])
         elif s.startswith("@QR "):
             # @QR url | Text : QR-Code mit klickbarem Link darunter
             url, _, text = s[4:].partition("|"); url = url.strip(); text = (text or url).strip()
