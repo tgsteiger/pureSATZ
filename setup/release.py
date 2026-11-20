@@ -57,7 +57,11 @@ def main():
         return
 
     leicht = all(d in LEICHT or d.startswith(("_backup/", "docs/")) for d in dateien)
-    if leicht and not ja("Nur Menü/Hilfe/Texte geändert – Selbsttest nicht nötig (empfohlen: ↵). Trotzdem testen?"):
+    if leicht:                                          # immer fragen, nur die Empfehlung (↵) ändert sich
+        testen = ja("Nur Menü/Hilfe/Texte geändert – Selbsttest? (empfohlen: ↵ = überspringen)", False)
+    else:
+        testen = ja("Motor geändert – Selbsttest? (empfohlen: ↵ = testen)", True)
+    if not testen:
         print("Selbsttest übersprungen.")
     else:
         print("\nSelbsttest läuft (ca. 2 Minuten) …", flush=True)

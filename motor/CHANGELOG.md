@@ -3,6 +3,9 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.84.4 (November 2026)
+- Neu `@ZIER-LINIE`: eine Zier mit goldenen Linien und Lotus, ohne Text (wie bei «> Satz», aber nur einmal). Im E-Book weggelassen.
+
 ## 2.84.3 (November 2026)
 - Menü `zh` Stand zurückholen: die letzten 5 verschiedenen Stände der Buch-MD (`v` Variablen, `u` Umschlag)
   aus md-history/, Nummer = zurückholen. Der jetzige Stand wird vorher gesichert.

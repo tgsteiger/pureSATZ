@@ -429,7 +429,7 @@ Leseprobe …); leer = Zeile fällt weg.
 weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen · `@SEITENMITTE`.
 
 **Weiteres:** `@TITEL`, `@IMPRESSUM`, `@HINWEIS`, `@WIDMUNG`, `@KERNSATZ`, `@INHALTSVERZEICHNIS`, `@ZITAT`, `@ZITAT-ZIER`, `@MOTTO`, `@UNTEN`,
-`@ZIER 12`, `@ZIER-UNTEN`, `@ZIER-TRENNER`, `@QR url | Text`, `@QR-PAAR … ;; …`, `@PORTRAIT bild | Text`,
+`@ZIER 12`, `@ZIER-UNTEN`, `@ZIER-TRENNER`, `@ZIER-LINIE`, `@QR url | Text`, `@QR-PAAR … ;; …`, `@PORTRAIT bild | Text`,
 `@KOPF`, `@STICHWORTE`, `@RUECKSEITE`. Vollständige Liste: `python3 motor/manuskript.py`.
 
 ## Text hervorheben: fett und kursiv
@@ -768,6 +768,7 @@ Nach einer Änderung `sh build.sh schnell` und ansehen.
 | eine kleine Verzierung | `@ZIER 12` (Breite in mm) |
 | eine Verzierung unten, danach neue Seite | `@ZIER-UNTEN 10` |
 | eine Verzierung zwischen zwei Abschnitten | `@ZIER-TRENNER` |
+| eine Zier mit goldenen Linien und Lotus (ohne Text) | `@ZIER-LINIE` |
 | ein eigenes Zierbild | in der Variablen-Datei `{zier}: meine-zier.png` (Bild in `bilder/`) |
 | einen grossen Anfangsbuchstaben am Kapitelanfang (Initial, drei Zeilen hoch) | Menü `in` Initialen … (wo, Schrift, Farbe, Kapitälchen, Vorschau) oder `{initial}: ja` – Farbe: `{initial-farbe}: akzent` (Gold), `haupt` (Blau wie die Überschriften) oder `text` (Schwarz). Ist der erste Absatz kürzer als drei Zeilen, läuft der nächste daneben weiter; folgt gleich ein Titel oder Foto, beginnt das Kapitel ohne Initial |
 | den ersten Buchstaben des Kapiteltitels hervorheben (statt eines Initials im Text) | `{initial}: titel` – Buchstabe 1,45-mal so gross wie die Überschrift, welche Stufen: `{initial-stufen}: 2` (Kapitel `##`, Standard), `2 3` oder `2 3 4` (nie `#`, die Teil-Seite), Farbe `{initial-farbe}` (`ueberschrift` = jede Stufe in ihrer eigenen Farbe), Schrift `{initial-schrift}` (leer = Titelschrift, z. B. `cinzel`). Seitenzahl kann sich um 1–2 ändern → Coverrechner prüfen |

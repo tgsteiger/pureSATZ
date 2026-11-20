@@ -2447,6 +2447,9 @@ def _build(out, ausgleich=None):
         elif s.startswith(("@LOTUS-UNTEN", "@ZIER-UNTEN")):
             # Lotusblüte zentriert ganz unten auf die aktuelle Seite; danach geht es auf der nächsten Seite weiter
             flush(); story.append(LotusUnten(float(s.split()[1]) * mm if len(s.split()) > 1 else 10 * mm))
+        elif s.strip() == "@ZIER-LINIE":
+            # 2.84.4: eine Zier wie bei «> Satz» (goldene Linien, Lotus in der Mitte), ohne Text
+            flush(); story += [Spacer(1, 10), Ornament(), Spacer(1, 6)]
         elif s.startswith(("@LOTUS-TRENNER", "@ZIER-TRENNER")):
             # kleine Lotusblüte ohne eigenen Platzbedarf, mittig in die Lücke vor der nächsten Überschrift
             flush(); story.append(LotusTrenner(float(s.split()[1]) * mm if len(s.split()) > 1 else 6 * mm))
