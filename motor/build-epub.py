@@ -55,6 +55,7 @@ def esc(t):
     t = re.sub(r"\[([^\]]+)\]\((https?://[^)\s]+)\)", r'<a href="\2">\1</a>', t)
     t = re.sub(r"\[([^\]]+)\]\(#([^)\s]+)\)", r'<a href="#@@\2@@">\1</a>', t)   # Verweis im Buch (ab 2.81)
     t = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", t)
+    t = re.sub(r"(?<![\w*])\*(?=\S)([^*\n]+?)(?<=\S)\*(?![\w*])", r"<em>\1</em>", t)            # 2.84.7: *kursiv*
     return re.sub(r"\x00(\d+)\x00", lambda m: "<code>" + html.escape(codes[int(m.group(1))], quote=False) + "</code>", t)
 
 

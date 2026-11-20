@@ -3,6 +3,11 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 2.84.7 (November 2026)
+- Silbentrennung nur noch für lange Wörter: Standard ab 10 Buchstaben (vorher 5 – fast jede Zeile hatte einen Strich).
+  `{silbentrennung}: 12` = ab 12 Buchstaben · `nein` = aus. Im Menü `tr`: Zahl eingeben, `aus`, `an`.
+- `*kursiv*` mitten im Text (PDF und E-Book), z. B. Liedtitel.
+
 ## 2.84.6 (November 2026)
 - `::: mitte … fest` (z. B. `::: mitte oben fest`): Block steht nicht in der Mitte des Rests, sondern fest 60 mm über dem
   Seitenende (`fest 50` = 50 mm) – so stehen Abschlüsse auf zwei Seiten genau gleich hoch. Zu wenig Platz: wie bisher mittig.

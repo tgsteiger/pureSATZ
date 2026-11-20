@@ -368,16 +368,18 @@ def status_zeile():
 
 def silbentrennung_zeile(zeilen):
     """Zeigt, ob die automatische Silbentrennung (pyphen) läuft (2.83)."""
-    aus = any(z.replace(" ", "").lower().startswith("{silbentrennung}:nein") for z in zeilen)
+    wert = next((z.split(":", 1)[1].strip().lower() for z in zeilen if z.startswith("{silbentrennung}:")), "ja")
+    aus = wert in ("nein", "aus", "0")
+    ab = wert if wert.isdigit() else "10"
     try:
         import pyphen  # noqa: F401
         da = True
     except ImportError:
         da = False
     if da and not aus:
-        return GRUEN("  ✓ Silbentrennung automatisch") + GRAU("  ·  aus: {silbentrennung}: nein")
+        return GRUEN(f"  ✓ Silbentrennung ab {ab} Buchstaben") + GRAU("  ·  Zahl = ändern (z. B. 12) · aus · an")
     if da:
-        return GRAU("  Silbentrennung aus ({silbentrennung}: nein) – nur die Wörter unten")
+        return GRAU("  Silbentrennung aus – nur die Wörter unten  ·  an = einschalten")
     return ROT("  ✗ Silbentrennung fehlt (pyphen)") + GRAU(" – nachinstallieren: python3 motor/einrichten.py")
 
 
@@ -402,6 +404,16 @@ def trennstellen_menue():
         e = frage(" Wahl: ").strip()
         if not e or e == "q":
             return
+        if e.isdigit() or e.lower() in ("aus", "an"):              # 2.84.7: {silbentrennung} setzen
+            wert = {"aus": "nein", "an": "ja"}.get(e.lower(), e)
+            k = next((n for n, z in enumerate(zeilen) if z.startswith("{silbentrennung}:")), None)
+            if k is None:
+                zeilen.insert(i + 1 if i is not None else len(zeilen), "{silbentrennung}: " + wert)
+            else:
+                zeilen[k] = "{silbentrennung}: " + wert
+            open(pfad, "w", encoding="utf-8").write("\n".join(zeilen))
+            print(GRUEN("  ✓ gespeichert") + GRAU(" – wirkt beim nächsten Bau (s)"))
+            continue
         if e.startswith("-"):
             neu = [w for w in liste if w.replace("|", "") != e[1:].replace("|", "")]
         elif "|" in e:

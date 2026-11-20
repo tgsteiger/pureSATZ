@@ -892,8 +892,10 @@ try:                       # Silbentrennung, falls python3-pyphen installiert is
     TRENNUNG = getattr(E, "TRENNUNG", "de_CH")
 except ImportError:
     TRENNUNG = None
-if not ja("silbentrennung"):  # {silbentrennung}: nein = aus, nur {trennstellen} (2.82.30)
+_st = (V("silbentrennung", "ja") or "ja").strip().lower()   # ja · nein · Zahl = trennen ab so vielen Buchstaben
+if _st in ("nein", "aus", "0"):                             # {silbentrennung}: nein = aus, nur {trennstellen} (2.82.30)
     TRENNUNG = None
+TRENNEN_AB = int(_st) if _st.isdigit() else 10              # 2.84.7: nur lange Wörter trennen (weniger Striche)
 def _stil(name, d, **k):
     """ParagraphStyle aus einem layout.py-Eintrag (schrift, groesse, zeilenabstand, farbe, abstand_*)."""
     a = dict(k)
@@ -911,6 +913,7 @@ body = ParagraphStyle("body", fontName=schrift("text"), fontSize=TEXT_GROESSE, l
                       alignment=TA_JUSTIFY if L.TEXT.get("blocksatz", True) else TA_LEFT,
                       spaceAfter=L.TEXT["abstand_nach"], hyphenationLang=TRENNUNG,
                       embeddedHyphenation=1,          # 2.82.30: auch am Bindestrich trennen (Informatik-Ausbildung)
+                      hyphenationMinWordLength=TRENNEN_AB,
                       allowWidows=0, allowOrphans=0)
 h2 = _stil("h2", L.KAPITEL, keepWithNext=1)
 h3 = _stil("h3", L.ZWISCHENTITEL, keepWithNext=1)
@@ -1233,6 +1236,7 @@ def inline(t):
         t = t.replace(wort, getrennt)
     t = re.sub(r"&(?!amp;|lt;|gt;|quot;|#)", "&amp;", t)
     t = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", t)
+    t = re.sub(r"(?<![\w*])\*(?=\S)([^*\n]+?)(?<=\S)\*(?![\w*])", r"<i>\1</i>", t)              # 2.84.7: *kursiv*
     return re.sub(r"\x00(\d+)\x00", lambda m: code_text(codes[int(m.group(1))]), t)
 
 
@@ -2852,7 +2856,8 @@ def absatz_anfang(t):
 def inline_einfach(t):
     """Wie inline(), aber ohne Stichwortmarken (Titelei, Impressum, Zeitstrahl, QR-Texte)."""
     t = re.sub(r"&(?!amp;|lt;|gt;|quot;|#)", "&amp;", links(t))
-    return re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", t)
+    t = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", t)
+    return re.sub(r"(?<![\w*])\*(?=\S)([^*\n]+?)(?<=\S)\*(?![\w*])", r"<i>\1</i>", t)            # 2.84.7: *kursiv*
 
 
 def zeilen_html(zeilen):
