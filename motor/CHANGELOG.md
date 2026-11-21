@@ -3,6 +3,10 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 3.6.1 (November 2026)
+- Handbuch baute nicht (3.6.0): die Lösungstabelle der Hilfe enthielt «{absatz-mitnehmen}» mit Klammern – jetzt ohne.
+- Menü `ss` (Supersync): ein Buch ohne GitHub wird nicht abgeglichen (keine Meldung «nicht mit GitHub verbunden»), wie bei `s`.
+
 ## 3.6.0 (November 2026) – Befehlsübersicht, Absatz mitnehmen, ein Leser auch fürs Hörbuch
 - Hilfe «Befehle (@)»: oben «So liest du einen Befehl» (Bauplan mit Beispiel), danach «Nur in einer Fassung»,
   neue Gruppe «Text» (@ASIDE), ⇄ bei Befehlen mit Fassung hinten (aus dem Code). Gleich im Handbuch.

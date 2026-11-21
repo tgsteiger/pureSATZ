@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 3.6.0
+# pureSATZ Hilfe · pureSATZ · Motor 3.6.1
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -1874,7 +1874,7 @@ Schreibweise | Wirkung
 
 ### Seite sieht nicht gut aus? – Lösungen
 Problem | Lösung
-Ein einzelner Satz rutscht allein auf die nächste Seite | in den Variablen «{absatz-mitnehmen}: ja» (der Absatz davor geht mit, wirkt mit f/k) – oder «@NEWPAGE-70» vor die letzte Überschrift davor – oder den Absatz kürzen
+Ein einzelner Satz rutscht allein auf die nächste Seite | in den Variablen «absatz-mitnehmen: ja» (der Absatz davor geht mit, wirkt mit f/k) – oder «@NEWPAGE-70» vor die letzte Überschrift davor – oder den Absatz kürzen
 Neue Seite erzwingen | «@NEWPAGE»
 Kapitel soll auf einer rechten Seite beginnen | «@NEWPAGE-RIGHT» davor
 Überschrift steht allein unten auf der Seite | «@NEWPAGE-50» vor die Überschrift

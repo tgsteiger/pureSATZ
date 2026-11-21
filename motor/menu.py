@@ -1458,7 +1458,7 @@ def main():
                 skript("sync")
             elif w == "ss":                                 # Supersync – Motor holen, Buch abgleichen, schnell bauen
                 vorher = open(os.path.join(MOTOR, "VERSION"), encoding="utf-8").read().strip()
-                for name, schritt in (("Motor", lambda: skript("update", "ja")), ("Sync", lambda: skript("sync")),
+                for name, schritt in (("Motor", lambda: skript("update", "ja")), ("Sync", lambda: skript("sync") if os.path.isdir(os.path.join(BASE, ".git")) else 0),   # ohne GitHub: überspringen
                                       ("Bauen", lambda: bauen("schnell"))):
                     if schritt() != 0:
                         print(ROT(f"  ✗ {name} – Supersync abgebrochen"))

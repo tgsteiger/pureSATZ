@@ -89,3 +89,5 @@ Ist Teil des Selbsttests. Ohne dieses Netz keinen Umbau beginnen. Neue Fälle hi
 - Fassung vor einem Befehl hat schon eine Bedeutung (alles nur dort) – nie still umdeuten, sonst verschwinden oder
   erscheinen Texte. Neue Bedeutung bekommt eine neue Schreibweise (z. B. Fassung hinten).
 - Bilder werden beim Übertragen neu verpackt: Pixel vergleichen, nicht Bytes.
+- Bau-Protokolle immer lesen, nicht nur Ausgaben zählen: ein Abbruch kann alte Dateien stehen lassen (3.6.0: Handbuch
+  brach wegen «{name}» in einem Hilfetext ab – Text der Hilfe wird im Handbuch als Variable gelesen; dort keine Klammern).

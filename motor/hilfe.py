@@ -389,7 +389,7 @@ def befehle_teile():
 
 LOESUNGEN = [
     ("Ein einzelner Satz rutscht allein auf die nächste Seite",
-     "in den Variablen «{absatz-mitnehmen}: ja» (der Absatz davor geht mit, wirkt mit f/k) – oder «@NEWPAGE-70» vor die "
+     "in den Variablen «absatz-mitnehmen: ja» (der Absatz davor geht mit, wirkt mit f/k) – oder «@NEWPAGE-70» vor die "
      "letzte Überschrift davor – oder den Absatz kürzen"),
     ("Neue Seite erzwingen", "«@NEWPAGE»"),
     ("Kapitel soll auf einer rechten Seite beginnen", "«@NEWPAGE-RIGHT» davor"),
