@@ -226,11 +226,13 @@ Ganze Bausteine: [Zum Kopieren](#Zum-Kopieren).
 |---|---|
 | Text **hervorheben** | `**fett**` · `*kursiv*` mitten im Text. [→ fett und kursiv](#Text-hervorheben) |
 | eine **Zeile umbrechen**, ohne neuen Absatz | `\` am Zeilenende (in Variablen: `<br/>`) |
-| eine **Randbemerkung** | `@ASIDE Satz` (klein, kursiv) |
+| eine **Randbemerkung** | `@ASIDE Satz` (klein, kursiv, eingerückt) · nur in UC als Randbemerkung, in normal als Absatz: `@ASIDE-UC Satz` |
 | einen **Zwischentitel** | `### Titel`, kleiner `#### Titel` (ins Inhaltsverzeichnis mit `{inhalt-tiefe}: 3` bzw. `4`) |
 | eine **Aufzählung** | `- Punkt` oder `1. Schritt`, Unterpunkt zwei Leerzeichen eingerückt |
 
 ![Text, Liste und Randbemerkung](bilder/hilfe/text.png)
+
+![@ASIDE: Randbemerkung](bilder/hilfe/aside.png)
 
 ### Sätze mit Linie und Logo (DECORATE)
 

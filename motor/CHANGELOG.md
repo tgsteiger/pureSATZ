@@ -3,6 +3,21 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 3.6.0 (November 2026) – Befehlsübersicht, Absatz mitnehmen, ein Leser auch fürs Hörbuch
+- Hilfe «Befehle (@)»: oben «So liest du einen Befehl» (Bauplan mit Beispiel), danach «Nur in einer Fassung»,
+  neue Gruppe «Text» (@ASIDE), ⇄ bei Befehlen mit Fassung hinten (aus dem Code). Gleich im Handbuch.
+- **`{absatz-mitnehmen}: ja`** (Standard nein): steht vor einem Seitenwechsel nur ein einzeiliger Absatz allein auf der
+  Seite, geht der Absatz davor mit. Wirkt mit final/komplett (zweiter Durchgang), nicht bei schnell.
+- **Hörbuch liest mit demselben Leser wie PDF und E-Book** (manuskript.zeilen): Fassungen, Fassung hinten und Variablen
+  wie im Buch; md2txt.sh teilt nur noch in Kapitel. Leben123: 3 Kapiteltexte ändern sich (Zeitstrahl heisst jetzt
+  «Zeitstrahl», Zeilenumbruch in «Erschöpft nach jedem Geben» als Pause, Leerzeilen in «Arbeitsweise und Blog»).
+
+## 3.5.2 (November 2026) – Fassung hinten auch für Randbemerkung und Zusammenhalten
+- Fassung **hinten** geht jetzt bei `@DECORATE`, `@DECORATE-TEXT`, `@ASIDE` und `@KEEP-TOGETHER`: der Text steht in beiden
+  Fassungen, die Gestaltung nur in der genannten – z. B. `@ASIDE-UC Satz` (in normal ein gewöhnlicher Absatz),
+  `@KEEP-TOGETHER-N` … `@END` (zusammengehalten nur in normal). PDF, E-Book, Hörbuch, `bp` prüft die Schreibweise.
+- Hilfe: eigenes Bild für `@ASIDE`.
+
 ## 3.5.1 (November 2026) – Starter für die Hilfe
 - `n` → `v` Verknüpfung (`sh menu.sh verknuepfung`) legt jetzt zwei Starter an: «Buch Menü» wie bisher und
   **«Buch Hilfe»** (neues Icon: Lotus mit Schild HILFE) – baut die Hilfe neu und öffnet sie im Browser.

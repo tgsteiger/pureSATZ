@@ -1,14 +1,12 @@
 #!/bin/bash
 # Macht aus der Buch-MD je Kapitel eine vorlesbare txt-Datei
-# Aufruf über hoerbuch.py (setzt MD, ZIEL, PLATZHALTER aus dem Buch); von Hand: MD=… ZIEL=… bash md2txt.sh
+# Aufruf über hoerbuch.py: MD = Text aus hoerbuch.hoer_md() (normale Fassung, Variablen eingesetzt), ZIEL, PLATZHALTER
 MD="${MD:-../../buch.md}"                 # Quelle (hoerbuch.py: Buch-MD mit eingesetzten Geschichten)
 ZIEL="${ZIEL:-./txt-md}"                  # Zielordner
-VERSION="${VERSION:-normal}"              # normal | uz
 TIEFE="${TIEFE:-3}"                       # bis zu dieser Ebene eine eigene Datei (3 = ###)
 TABELLEN="${TABELLEN:-lesen}"             # lesen = Zeile für Zeile, kurz = nur "Tabelle."
 PLATZHALTER="${PLATZHALTER:-}"            # {name}=Text;… (hoerbuch.py: Variablen des Buchs), unbekannte fallen weg
 
-[ "$VERSION" = "unzensiert" ] && VERSION="uz"
 [ -f "$MD" ] || { echo "Nicht gefunden: $MD"; exit 1; }
 mkdir -p "$ZIEL"
 if ls "$ZIEL"/*.txt >/dev/null 2>&1; then
@@ -17,7 +15,7 @@ fi
 GESAMT="${ZIEL%/}/../buch.txt"             # alles, was vorgelesen wird
 ENTFERNT="${ZIEL%/}/../buch-entfernt.txt"  # alles, was weggelassen wurde
 
-awk -v ziel="${ZIEL%/}" -v tab="$TABELLEN" -v maxt="$TIEFE" -v ver="$VERSION" \
+awk -v ziel="${ZIEL%/}" -v tab="$TABELLEN" -v maxt="$TIEFE" \
     -v ph="$PLATZHALTER" -v gesamt="$GESAMT" -v entfernt="$ENTFERNT" '
 BEGIN { n=split(ph,a,";")
         for (i=1;i<=n;i++) { q=index(a[i],"="); if (q) P[substr(a[i],1,q-1)]=substr(a[i],q+1) }
@@ -50,7 +48,7 @@ function neu(L, T, N,   j, fn) {
   out(punkt(T)); out("") }
 function fotoaus() {
   if (foto && datei) { out("Bild: " punkt(ftitel) (ftxt!="" ? " " punkt(ftxt) : "")); out("") }
-  foto=0; fskip=0; ftxt="" }
+  foto=0; ftxt="" }
 
 FNR==NR { if (/^#+ / && !/^#+ @/) { l=index($0," ")-1; if (l<=maxt && l>tief) tief=l }; next }
 FNR==1 && /^---$/ { yaml=1; next }
@@ -61,41 +59,17 @@ kom   { if (/-->/) kom=0; next }
 /<!--/ && !/-->/ { kom=1; next }
 { gsub(/<!--[^>]*-->/,"") }
 
-# Fassung (pureSATZ 3.0): @UC … @END, Vorsilbe @UC-…  ·  ver = normal | uz (PRINT/SCREEN: gilt auch fürs Hörbuch)
-function fass(w) { return (w=="UC" ? "uz" : (w=="NORMAL" || w=="N") ? "normal" : w=="EBOOK" ? "ebook" : "") }
-function auf(v)  { halt[++d]=(v=="" || v==ver); weg=0; for (i=1;i<=d;i++) if (!halt[i]) weg=1 }
-/^@END *$/ { if (weg) entf($0); if (d>0) d--
-             weg=0; for (i=1;i<=d;i++) if (!halt[i]) weg=1; next }
-/^@(UC|NORMAL|N|EBOOK|PRINT|SCREEN) *$/ { fotoaus(); k=$0; sub(/ .*/,"",k); sub(/^@/,"",k)
-         auf(fass(k)); if (weg) entf($0); next }
-# Bereiche @UC-BLOCK Titel, @DRAFT, @NOTE (nie vorgelesen), @KEEP-TOGETHER, @TIMELINE, @DECORATE-REST/-ABOVE-…
-/^@((UC|NORMAL|N|EBOOK|PRINT|SCREEN)-)?(BLOCK|DRAFT|NOTE|KEEP-TOGETHER|TIMELINE)( |$)/ ||
-/^@((UC|NORMAL|N|EBOOK|PRINT|SCREEN)-)?DECORATE(-ABOVE)?-(REST|BOTTOM)[-A-Z0-9]* *$/ {
-         fotoaus(); kw=$0; sub(/ .*/,"",kw); ti=$0; sub(/^[^ ]+ */,"",ti); if (ti==$0) ti=""
-         v=""; if (match(kw, /^@(UC|NORMAL|N|EBOOK|PRINT|SCREEN)-/)) { v=substr(kw,2,RLENGTH-2); v=fass(v) }
-         if (kw ~ /BLOCK$/) v="uz"
-         auf(v); if (kw ~ /NOTE$/) { halt[d]=0; weg=1 }
-         if (weg) { entf($0); next }
-         if (kw ~ /BLOCK$/ && datei) { out(punkt(ti!="" ? ersetze(ti) : "Unzensiert")); out("") }
-         next }
-weg { entf($0); next }
-# Eine Zeile mit Vorsilbe (@UC-ASIDE Text): andere Fassung weg, sonst ohne Vorsilbe weiter
-/^@(UC|NORMAL|N|EBOOK|PRINT|SCREEN)-[A-Z]/ { v=$0; sub(/-.*/,"",v); sub(/^@/,"",v)
-         if (fass(v)!="" && fass(v)!=ver) { entf($0); next }
-         sub(/^@(UC|NORMAL|N|EBOOK|PRINT|SCREEN)-/,"@") }
+# Fassungen, Bereiche und Variablen löst hoerbuch.py vorher auf (manuskript.zeilen, wie PDF und E-Book, 3.6).
 /^@DECORATE(-ABOVE)?-(REST|BOTTOM)[-A-Z0-9]* / { sub(/^[^ ]+ +/,""); out(ersetze($0)); next }   # Bereich mit einem Satz
 
-# Bilder  #### @PICTURE-60 Titel / #### @UC-PICTURE Titel  mit text: ...
-/^#+ +@((UC|NORMAL|N|EBOOK|PRINT|SCREEN)-)?PICTURE([-0-9A-Z.]*)?( |$)/ && !/PICTURE-CREDITS/ {
+# Bilder  #### @PICTURE-60 Titel  mit text: ...
+/^#+ +@PICTURE([-0-9A-Z.]*)?( |$)/ && !/PICTURE-CREDITS/ {
                   fotoaus(); s=$0; sub(/^#+ +/,"",s)
-                  kw=s; sub(/ .*/,"",kw); ftitel=s; sub(/^[^ ]+ */,"",ftitel); if (ftitel==s) ftitel=""
-                  fv=""; if (match(kw, /^@(UC|NORMAL|N|EBOOK|PRINT|SCREEN)-/)) { fv=substr(kw,2,RLENGTH-2); fv=fass(fv) }
-                  if (fv!="" && fv!=ver) { fskip=1; entf($0) } else foto=1
-                  next }
-(foto || fskip) && /^[a-z]+: / { if (fskip) entf($0)
-                                  else if (/^text: /) { ftxt=$0; sub(/^text: */,"",ftxt); ftxt=ersetze(ftxt) }
-                                  next }
-(foto || fskip) { fotoaus() }
+                  ftitel=s; sub(/^[^ ]+ */,"",ftitel); if (ftitel==s) ftitel=""
+                  foto=1; next }
+foto && /^[a-z]+: / { if (/^text: /) { ftxt=$0; sub(/^text: */,"",ftxt); ftxt=ersetze(ftxt) }
+                      next }
+foto { fotoaus() }
 
 # Überschriften
 /^#+ / { l=index($0," ")-1; t=substr($0,l+2)
@@ -115,8 +89,8 @@ atsek  { entf($0); next }
 !datei { next }                                          # Text vor 1. Überschrift
 
 # Steuerbefehle
-/^@DECORATE-TEXT /  { s=$0; sub(/^[^ ]+ +/,"",s); out(punkt(ersetze(s))); out(""); next }
-/^@(DECORATE(-(UC|NORMAL|N|EBOOK|PRINT|SCREEN))*|ASIDE) / { s=$0; sub(/^[^ ]+ +/,"",s); out(ersetze(s)); next }
+/^@DECORATE-TEXT(-(UC|NORMAL|N|EBOOK|PRINT|SCREEN))? /  { s=$0; sub(/^[^ ]+ +/,"",s); out(punkt(ersetze(s))); out(""); next }
+/^@(DECORATE|ASIDE)(-(UC|NORMAL|N|EBOOK|PRINT|SCREEN))* / { s=$0; sub(/^[^ ]+ +/,"",s); out(ersetze(s)); next }
 /^@PORTRAIT/ { s=$0; sub(/^[^|]*\| */,"",s); if (s!=$0) { out("Bild: " punkt(ersetze(s))); out("") }; next }
 /^@/         { entf($0); next }
 

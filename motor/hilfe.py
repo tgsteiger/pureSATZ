@@ -301,7 +301,15 @@ def md_html(text):
 
 
 # --- Automatische Abschnitte ---------------------------------------------------------------
-BEFEHL_GRUPPEN = [      # Gruppen in hilfe.html und im Handbuch: (Schreibweise, Wirkung) – pureSATZ 3.0
+BEFEHL_GRUPPEN = [      # Gruppen in hilfe.html und im Handbuch: (Schreibweise, Wirkung); ⇄ setzt befehle_teile() selbst
+    ("Nur in einer Fassung", [("@UC-…", "vorne: Befehl oder Bereich samt Text nur in der Fassung UC, z. B. @UC-SPACER-14, "
+                                        "#### @UC-PICTURE, @UC-DRAFT"),
+                              ("@NORMAL-… (@N-…) · @EBOOK-… · @PRINT-… · @SCREEN-…", "nur normal · nur E-Book · nur Druck · nur Lese-PDF"),
+                              ("@DECORATE-…-UC · @ASIDE-UC · @KEEP-TOGETHER-UC", "hinten: der Text steht in beiden Fassungen, die Gestaltung "
+                                                  "gilt nur in UC (-NORMAL, -N: nur normal). Geht bei @DECORATE, @DECORATE-TEXT, @ASIDE "
+                                                  "und @KEEP-TOGETHER, z. B. @DECORATE-REST-UPRIGHT-UC … @END")]),
+    ("Text", [("@ASIDE Satz", "Randbemerkung: klein, kursiv, eingerückt"),
+              ("**fett** · *kursiv* · \\ am Zeilenende", "Markdown: fett, kursiv, Zeilenumbruch im Absatz")]),
     ("Titelei", [("## @TITLE", "Titelseite; die Zeilen darunter: Titel, Untertitel, Zusatz"),
                  ("## @IMPRINT", "Impressum; leer = der Motor setzt es je Ausgabe zusammen"),
                  ("## @NOTICE", "Hinweis unten im Impressum (z. B. ersetzt keine Beratung)"),
@@ -315,7 +323,6 @@ BEFEHL_GRUPPEN = [      # Gruppen in hilfe.html und im Handbuch: (Schreibweise, 
                                    ("@PAGE-CENTER", "Inhalt dieser Seite senkrecht mittig (wirkt beim Bauen mit k)"),
                                    ("@HEADER Text", "Kopfzeile ab hier ersetzen; «@HEADER» allein beendet es")]),
     ("Sätze mit Linie und Logo (DECORATE)", [
-        ("@ASIDE Satz", "Randbemerkung, klein, kursiv"),
         ("@DECORATE-TEXT Satz", "Satz kursiv, zentriert, ohne Linien"),
         ("@DECORATE Satz", "Satz zwischen zwei Linien mit Logo"),
         ("@DECORATE-LOGO", "nur Linie mit Logo, ohne Text"),
@@ -348,17 +355,42 @@ BEFEHL_GRUPPEN = [      # Gruppen in hilfe.html und im Handbuch: (Schreibweise, 
         ("@DRAFT … @END", "noch offen: mit «s» gelb, im Druck normal"),
         ("@NOTE Titel … @END", "Notiz an dich: nur im Entwurf sichtbar, nie gedruckt"),
         ("@TIMELINE … @END", "Zeilen «Jahr | Text» als Zeitstrahl")]),
-    ("Nur in einer Fassung", [("@UC-…", "vorne: Befehl oder Bereich samt Text nur in der Fassung UC, z. B. @UC-SPACER-14, "
-                                        "#### @UC-PICTURE, @UC-DRAFT"),
-                              ("@NORMAL-… (@N-…) · @EBOOK-… · @PRINT-… · @SCREEN-…", "nur normal · nur E-Book · nur Druck · nur Lese-PDF"),
-                              ("@DECORATE-…-UC", "hinten: der Text steht in beiden Fassungen, verziert nur in UC (-NORMAL, -N: nur normal). "
-                                                  "Geht bei @DECORATE, auch als Bereich: @DECORATE-REST-UPRIGHT-UC … @END")]),
 ]
 BEFEHL_VERSTECKT = set()
 
+# So liest du einen Befehl (B1) – Beispiel und Teile, gleich in hilfe.html und im Handbuch
+BAUPLAN_BEISPIEL = "@DECORATE-ABOVE-BOTTOM-34-UC Schön, dass du da bist."
+BAUPLAN = [("@", "jeder Befehl beginnt mit @ und steht auf einer eigenen Zeile"),
+           ("UC- · N- …", "Fassung vorne (wenn nötig): alles nur in dieser Fassung"),
+           ("DECORATE", "der Name, GROSS – z. B. NEWPAGE, LOGO, ASIDE"),
+           ("-34 · -12", "Grösse oder Höhe in mm (wenn nötig)"),
+           ("-REST · -BOTTOM · -GAP · -RIGHT · -LEFT", "Ort (wenn nötig): Mitte des Rests, unten, Lücke, daneben"),
+           ("-UPRIGHT · -ITALIC · -ABOVE", "Stil (wenn nötig): aufrecht, kursiv, Linie nur oben"),
+           ("-UC · -N", "Fassung hinten ⇄ (wenn nötig): Text in beiden Fassungen, Gestaltung nur dort"),
+           ("Text", "nach dem ersten Leerzeichen")]
+BAUPLAN_HINWEIS = ("Nur angeben, was vom Standard abweicht. Bereiche: Befehl allein auf der Zeile, Ende mit @END. "
+                   "⇄ = Fassung hinten möglich.")
+try:
+    from manuskript import HINTEN as _HINTEN, NAMEN as _NAMEN
+except ImportError:
+    _HINTEN, _NAMEN = ("DECORATE", "DECORATE-TEXT", "ASIDE", "KEEP-TOGETHER"), ()
+
+
+def befehle_teile():
+    """BEFEHL_GRUPPEN mit ⇄ bei Befehlen, die die Fassung hinten können (aus manuskript.HINTEN)."""
+    def name(k):
+        m = re.match(r"(?:#+ )?@([A-Z][A-Z-]*)", k)
+        if not m:
+            return ""
+        r = m.group(1).rstrip("-")
+        return next((n for n in _NAMEN if r == n or r.startswith(n + "-")), "")
+    return [(t, [(k, ("⇄ " if name(k) in _HINTEN and t != "Nur in einer Fassung" else "") + v) for k, v in e])
+            for t, e in BEFEHL_GRUPPEN] if _NAMEN else BEFEHL_GRUPPEN
+
 LOESUNGEN = [
     ("Ein einzelner Satz rutscht allein auf die nächste Seite",
-     "«@NEWPAGE-70» vor die letzte Überschrift davor (sie geht dann mit auf die neue Seite) – oder den Absatz kürzen"),
+     "in den Variablen «{absatz-mitnehmen}: ja» (der Absatz davor geht mit, wirkt mit f/k) – oder «@NEWPAGE-70» vor die "
+     "letzte Überschrift davor – oder den Absatz kürzen"),
     ("Neue Seite erzwingen", "«@NEWPAGE»"),
     ("Kapitel soll auf einer rechten Seite beginnen", "«@NEWPAGE-RIGHT» davor"),
     ("Überschrift steht allein unten auf der Seite", "«@NEWPAGE-50» vor die Überschrift"),
@@ -372,18 +404,18 @@ LOESUNGEN = [
 def befehle_html():
     def reihe(k, v):
         return f"<tr><td><code>{html.escape(k)}</code></td><td>{html.escape(v)}</td></tr>"
-    out = ["<p>Jeder Befehl steht auf einer eigenen Zeile: <code>@NAME-GRÖSSE-ORT Text</code> – alles vor dem ersten "
-           "Leerzeichen ist der Befehl (GROSS), danach der Text. Zahlen in mm. Links steht die ganze Zeile, wie sie im Buch steht.</p>",
-           "<h3>Seite sieht nicht gut aus? – Lösungen</h3>",
-           "<table><thead><tr><th>Problem</th><th>Lösung</th></tr></thead><tbody>"
-           + "".join(f"<tr><td>{html.escape(p)}</td><td>{html.escape(l)}</td></tr>" for p, l in LOESUNGEN)
-           + "</tbody></table>"]
-    for titel, eintraege in BEFEHL_GRUPPEN:
-        reihen = []
-        for e in eintraege:
-            reihen.append(reihe(*e))
+    out = ["<h3>So liest du einen Befehl</h3>",
+           f"<p>Beispiel: <code>{html.escape(BAUPLAN_BEISPIEL)}</code></p>",
+           "<table><thead><tr><th>Teil</th><th>Bedeutung</th></tr></thead><tbody>"
+           + "".join(reihe(k, v) for k, v in BAUPLAN) + "</tbody></table>",
+           f"<p>{html.escape(BAUPLAN_HINWEIS)}</p>"]
+    for titel, eintraege in befehle_teile():
         out.append(f"<h3>{html.escape(titel)}</h3><table><thead><tr><th>Schreibweise</th><th>Wirkung</th></tr></thead>"
-                   f"<tbody>{''.join(reihen)}</tbody></table>")
+                   f"<tbody>{''.join(reihe(*e) for e in eintraege)}</tbody></table>")
+    out.append("<h3>Seite sieht nicht gut aus? – Lösungen</h3>"
+               "<table><thead><tr><th>Problem</th><th>Lösung</th></tr></thead><tbody>"
+               + "".join(f"<tr><td>{html.escape(p)}</td><td>{html.escape(l)}</td></tr>" for p, l in LOESUNGEN)
+               + "</tbody></table>")
     return "\n".join(out)
 
 

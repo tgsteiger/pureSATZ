@@ -2539,6 +2539,8 @@ def _build(out, ausgleich=None):
     for i, f in enumerate(story):
         if i in ausgleich:
             neu.append(Spacer(1, ausgleich[i]))
+        if i in MITNEHMEN:                      # {absatz-mitnehmen}: Absatz geht mit dem einzeiligen Schluss auf die neue Seite
+            f.keepWithNext = 1
         neu.append(f)
     doc.multiBuild(neu, **({"canvasmaker": mache} if mache else {}))
     return doc.page   # Seitenzahl des fertigen PDFs
@@ -2645,11 +2647,39 @@ def seitenausgleich(doc, story):
     return ausgleich
 
 
+MITNEHMEN = set()
+
+
+def absatz_mitnehmen(doc, story):
+    """{absatz-mitnehmen}: ja – steht vor einem Seitenwechsel (neuer Teil, @NEWPAGE …) nur ein einzeiliger Absatz allein
+    auf der letzten Seite, geht der Absatz davor mit. Wirkt im zweiten Durchgang (final/komplett, nicht bei schnell)."""
+    if not ja("absatz-mitnehmen", "nein"):
+        return set()
+    from reportlab.platypus.doctemplate import ActionFlowable
+    info, mit = doc.lr_info, set()
+    ziele = [i for i, f in enumerate(story) if isinstance(f, (PartMarker, MottoSeite, Umbruch, MitteBlock, PageBreak))]
+    for z in ziele:
+        inhalt = [i for i in range(z) if i in info
+                  and not isinstance(story[i], (PageBreak, CondPageBreak, Spacer, ActionFlowable))]
+        if len(inhalt) < 2:
+            continue
+        letzte, davor = inhalt[-1], inhalt[-2]
+        f, seite = story[letzte], info[letzte][0]
+        allein = info[letzte][1] == seite and info[davor][1] < seite
+        einzeilig = isinstance(f, Paragraph) and len(getattr(getattr(f, "blPara", None), "lines", [0, 0])) == 1
+        if allein and einzeilig and type(story[davor]) is Paragraph and davor == letzte - 1:
+            mit.add(davor)
+    return mit
+
+
 def build(out):
+    global MITNEHMEN
     if os.environ.get("BUCH_SCHNELL") == "1":       # sh build.sh schnell: ein Durchgang, kein Seitenausgleich
         return _build(out)[0].page
     doc, story = _build(out)
+    MITNEHMEN = absatz_mitnehmen(doc, story)
     n = _build(out, seitenausgleich(doc, story))
+    MITNEHMEN = set()
     falsch = [a for a, s in ANKER_GENUTZT.items() if s != ANKER_SEITE.get(a)]
     if falsch:                                     # Verweise im Druck: Seite hat sich im zweiten Lauf verschoben
         print(f"Hinweis: {len(falsch)} Verweis(e) mit verschobener Seitenzahl ({', '.join(falsch[:3])}) – "

@@ -282,15 +282,11 @@ def _md_tabelle(kopf, reihen):
 def motor_teile():
     teile = [("Spickzettel", "Die häufigsten Befehle im Buchordner.\n\n"
               + _md_tabelle(["Befehl", "Wofür"], [(f"`{b}`", t) for b, t in H.SPICKZETTEL]))]
-    b = ["Jeder Befehl steht auf einer eigenen Zeile: `@NAME-GRÖSSE-ORT Text` – alles vor dem ersten Leerzeichen ist "
-         "der Befehl (GROSS), danach der Text. Zahlen in mm.",
-         "", "### Seite sieht nicht gut aus? – Lösungen", "",
-         _md_tabelle(["Problem", "Lösung"], H.LOESUNGEN)]
-    for titel, eintraege in H.BEFEHL_GRUPPEN:
-        reihen = []
-        for e in eintraege:
-            reihen.append((f"`{e[0]}`", e[1]))
-        b += ["", f"### {titel}", "", _md_tabelle(["Schreibweise", "Wirkung"], reihen)]
+    b = ["### So liest du einen Befehl", "", f"Beispiel: `{H.BAUPLAN_BEISPIEL}`", "",
+         _md_tabelle(["Teil", "Bedeutung"], [(f"`{k}`", v) for k, v in H.BAUPLAN]), "", H.BAUPLAN_HINWEIS]
+    for titel, eintraege in H.befehle_teile():
+        b += ["", f"### {titel}", "", _md_tabelle(["Schreibweise", "Wirkung"], [(f"`{k}`", v) for k, v in eintraege])]
+    b += ["", "### Seite sieht nicht gut aus? – Lösungen", "", _md_tabelle(["Problem", "Lösung"], H.LOESUNGEN)]
     teile.append(("Befehle (@)", "\n".join(b)))
     quelle_ = _lies(os.path.join(MOTOR, "build.py"))
     f = re.findall(r'^\s*"([a-z0-9]+)":\s*dict\(name="([^"]+)",\s*seite=\((\d+),\s*(\d+)\).*?rand=\((\d+),\s*(\d+),'

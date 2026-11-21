@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 3.5.1
+# pureSATZ Hilfe · pureSATZ · Motor 3.6.0
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -461,7 +461,7 @@ Markdown | Text: Absatz, Zeilenumbruch, fett, kursiv, Liste, Titel | `\` am Zeil
 `## @…` / `#### @…` | Titelei-Seite (`##`) bzw. Element mit Angaben darunter (`####`, Ende = Leerzeile); steht in der Gliederung des Editors | `## @IMPRINT`, `#### @PICTURE Sommer`
 `@BEREICH` … `@END` | Textbereich mit Anfang und Ende: nur in einer Fassung, umrahmt oder zusammenhaltend | `@UC`, `@UC-BLOCK Titel`, `@DECORATE-REST`
 
-Bauplan eines Befehls: `@[FASSUNG-]NAME[-GRÖSSE][-ORT[-HÖHE]][-STIL] Text` – alles vor dem ersten Leerzeichen ist der Befehl (gross geschrieben), danach der Text. Zahlen in mm. Ortswörter: `REST` (Mitte des Rests der Seite, dann neue Seite) · `BOTTOM` (unten; `BOTTOM-34` = 34 mm über dem Ende des Textes) · `PAGE` (eigene Seite) · `GAP` (Lücke vor der nächsten Überschrift) · `RIGHT`/`LEFT` (daneben, Text fliesst herum). Fassung vorne = alles nur dort: `@UC-…`, `@NORMAL-…` (kurz `@N-…`), `@EBOOK-…`, `@PRINT-…` (Druck), `@SCREEN-…` (Lese-PDF). Fassung hinten = nur die Verzierung dort, der Text steht in beiden: `@DECORATE-REST-UPRIGHT-UC` … `@END` (nur bei `@DECORATE`). Nur angeben, was vom Standard abweicht. → Gestalten: Ich will …
+Bauplan eines Befehls (Fassung vorne und hinten, Grösse, Ort, Stil) und alle Befehle: → Befehle (@). Nur angeben, was vom Standard abweicht. → Gestalten: Ich will …
 
 Im Text | Wirkung
 `# Teil 1|Titel|Untertitel` (`|bild.jpg`) | neuer Teil mit Teil-Seite (optional eigenes Bild)
@@ -706,7 +706,7 @@ Ortswort | heisst
 Ich will … | So
 Text hervorheben | `**fett**` · `*kursiv*` mitten im Text. → fett und kursiv
 eine Zeile umbrechen, ohne neuen Absatz | `\` am Zeilenende (in Variablen: `<br/>`)
-eine Randbemerkung | `@ASIDE Satz` (klein, kursiv)
+eine Randbemerkung | `@ASIDE Satz` (klein, kursiv, eingerückt) · nur in UC als Randbemerkung, in normal als Absatz: `@ASIDE-UC Satz`
 einen Zwischentitel | `### Titel`, kleiner `#### Titel` (ins Inhaltsverzeichnis mit `{inhalt-tiefe}: 3` bzw. `4`)
 eine Aufzählung | `- Punkt` oder `1. Schritt`, Unterpunkt zwei Leerzeichen eingerückt
 
@@ -826,7 +826,7 @@ E-Book | `ebook-epub2` (ja = zusätzlich EPUB 2), `ebook-rueckseite` (bild / tex
 Shop | `shop-beschreibung`, `shop-schlagwoerter`, `shop-kategorie`, `shop-link`, `sprache` (Standard `de`, steht in den Shop-Angaben)
 Leseprobe | `leseprobe`, `leseprobe-seiten`, `leseprobe-seiten-uz`, `leseprobe-text`
 Technik | `kurz-normal` / `-uz` (Kürzel vorne an den Druckdateien, z. B. L123), `datei-normal` / `-uz` (Name der Lese-PDFs und E-Books), `ordner-normal` / `-uz` (Ausgabeordner)
-Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt|anschauung), `silbentrennung` (ja · nein · Zahl: automatisch mit pyphen, Standard ab 10 Buchstaben; Menü `tr`), `logo`, `logo-light`, `initial` (ja · titel · nein), `initial-farbe` (akzent · haupt · text · ueberschrift), `fett-anfang-farbe` (leer · haupt · akzent: Fett ganz am Absatzanfang farbig, z. B. «Tantra. Seit …»), `fett-anfang-stil` (leer · kapitaelchen), `decorate-stil` (zitat = kursiv, Standard · blau · aufrecht), `qr-farbe` (leer = schwarz · haupt = blau; Gold zu schwach, mit dem Handy prüfen), `fett-anfang-zeichen` (leer · logo = Logo · ein Zeichen wie ◆ · bild.png), `initial-stufen` (2 · 3 · 4), `initial-stil` (normal · rand · feld), `initial-zeilen` (0 · 1 · 2 · 3 · 4), `initial-schrift` (fett · cinzel · uncial · fraktur · datei.ttf), `kapitaelchen` (ja · nein), `absatz-einzug` (ja · nein), `liste-blocksatz` (nein · ja: Listen im Blocksatz), `seitenausgleich` (nein = Standard wie im Buchsatz: letzte Seite vor Teil/Mittel-Block oben, Rest unten frei · ja = freien Platz auf Abstände verteilen und Seite zentrieren; einzelne Seite mittig immer mit `@PAGE-CENTER`), `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund`
+Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt|anschauung), `silbentrennung` (ja · nein · Zahl: automatisch mit pyphen, Standard ab 10 Buchstaben; Menü `tr`), `logo`, `logo-light`, `initial` (ja · titel · nein), `initial-farbe` (akzent · haupt · text · ueberschrift), `fett-anfang-farbe` (leer · haupt · akzent: Fett ganz am Absatzanfang farbig, z. B. «Tantra. Seit …»), `fett-anfang-stil` (leer · kapitaelchen), `decorate-stil` (zitat = kursiv, Standard · blau · aufrecht), `qr-farbe` (leer = schwarz · haupt = blau; Gold zu schwach, mit dem Handy prüfen), `fett-anfang-zeichen` (leer · logo = Logo · ein Zeichen wie ◆ · bild.png), `initial-stufen` (2 · 3 · 4), `initial-stil` (normal · rand · feld), `initial-zeilen` (0 · 1 · 2 · 3 · 4), `initial-schrift` (fett · cinzel · uncial · fraktur · datei.ttf), `kapitaelchen` (ja · nein), `absatz-einzug` (ja · nein), `liste-blocksatz` (nein · ja: Listen im Blocksatz), `seitenausgleich` (nein = Standard wie im Buchsatz: letzte Seite vor Teil/Mittel-Block oben, Rest unten frei · ja = freien Platz auf Abstände verteilen und Seite zentrieren; einzelne Seite mittig immer mit `@PAGE-CENTER`), `absatz-mitnehmen` (nein · ja: steht vor einem Seitenwechsel nur ein einzeiliger Absatz allein auf der Seite, geht der Absatz davor mit; wirkt mit `f`/`k`), `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund`
 Sicherung | `sicherung-lokal`, `sicherung-cloud`, `sicherung-behalten`
 Layout | `farbschema`, `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `blocksatz` · Inhaltsverzeichnis: `inhalt-tiefe`, `inhalt-dichte`, `inhalt-teile`, `inhalt-punkte`, `inhalt-schrift`
 
@@ -1782,19 +1782,32 @@ Werbebild: Vorder- und Rückseite mit Schatten (…_Mockup.jpg) für Webseite, N
 
 ## Befehle (@)
 
-Jeder Befehl steht auf einer eigenen Zeile: `@NAME-GRÖSSE-ORT Text` – alles vor dem ersten Leerzeichen ist der Befehl (GROSS), danach der Text. Zahlen in mm. Links steht die ganze Zeile, wie sie im Buch steht.
+### So liest du einen Befehl
 
-### Seite sieht nicht gut aus? – Lösungen
+Beispiel: `@DECORATE-ABOVE-BOTTOM-34-UC Schön, dass du da bist.`
 
-Problem | Lösung
-Ein einzelner Satz rutscht allein auf die nächste Seite | «@NEWPAGE-70» vor die letzte Überschrift davor (sie geht dann mit auf die neue Seite) – oder den Absatz kürzen
-Neue Seite erzwingen | «@NEWPAGE»
-Kapitel soll auf einer rechten Seite beginnen | «@NEWPAGE-RIGHT» davor
-Überschrift steht allein unten auf der Seite | «@NEWPAGE-50» vor die Überschrift
-Seite mit wenig Text wirkt verloren | «@PAGE-CENTER» an den Anfang der Seite
-Grosse Lücke unten auf der Seite | Foto kleiner («@PICTURE-60»), Text kürzen oder «@LOGO-10-REST»
-Mehr Luft zwischen zwei Absätzen | «@SPACER-8» (8 mm)
-Text soll nicht getrennt werden | «@KEEP-TOGETHER» … «@END»
+Teil | Bedeutung
+`@` | jeder Befehl beginnt mit @ und steht auf einer eigenen Zeile
+`UC- · N- …` | Fassung vorne (wenn nötig): alles nur in dieser Fassung
+`DECORATE` | der Name, GROSS – z. B. NEWPAGE, LOGO, ASIDE
+`-34 · -12` | Grösse oder Höhe in mm (wenn nötig)
+`-REST · -BOTTOM · -GAP · -RIGHT · -LEFT` | Ort (wenn nötig): Mitte des Rests, unten, Lücke, daneben
+`-UPRIGHT · -ITALIC · -ABOVE` | Stil (wenn nötig): aufrecht, kursiv, Linie nur oben
+`-UC · -N` | Fassung hinten ⇄ (wenn nötig): Text in beiden Fassungen, Gestaltung nur dort
+`Text` | nach dem ersten Leerzeichen
+
+Nur angeben, was vom Standard abweicht. Bereiche: Befehl allein auf der Zeile, Ende mit @END. ⇄ = Fassung hinten möglich.
+
+### Nur in einer Fassung
+Schreibweise | Wirkung
+`@UC-…` | vorne: Befehl oder Bereich samt Text nur in der Fassung UC, z. B. @UC-SPACER-14, #### @UC-PICTURE, @UC-DRAFT
+`@NORMAL-… (@N-…) · @EBOOK-… · @PRINT-… · @SCREEN-…` | nur normal · nur E-Book · nur Druck · nur Lese-PDF
+`@DECORATE-…-UC · @ASIDE-UC · @KEEP-TOGETHER-UC` | hinten: der Text steht in beiden Fassungen, die Gestaltung gilt nur in UC (-NORMAL, -N: nur normal). Geht bei @DECORATE, @DECORATE-TEXT, @ASIDE und @KEEP-TOGETHER, z. B. @DECORATE-REST-UPRIGHT-UC … @END
+
+### Text
+Schreibweise | Wirkung
+`@ASIDE Satz` | ⇄ Randbemerkung: klein, kursiv, eingerückt
+`**fett** · *kursiv* · \ am Zeilenende` | Markdown: fett, kursiv, Zeilenumbruch im Absatz
 
 ### Titelei
 Schreibweise | Wirkung
@@ -1816,15 +1829,14 @@ Schreibweise | Wirkung
 
 ### Sätze mit Linie und Logo (DECORATE)
 Schreibweise | Wirkung
-`@ASIDE Satz` | Randbemerkung, klein, kursiv
-`@DECORATE-TEXT Satz` | Satz kursiv, zentriert, ohne Linien
-`@DECORATE Satz` | Satz zwischen zwei Linien mit Logo
+`@DECORATE-TEXT Satz` | ⇄ Satz kursiv, zentriert, ohne Linien
+`@DECORATE Satz` | ⇄ Satz zwischen zwei Linien mit Logo
 `@DECORATE-LOGO` | nur Linie mit Logo, ohne Text
-`@DECORATE-TEXT-BOTTOM Satz` | Satz kursiv unten auf der Seite
+`@DECORATE-TEXT-BOTTOM Satz` | ⇄ Satz kursiv unten auf der Seite
 `@DECORATE-PAGE Satz` | Satz allein auf einer eigenen Seite
-`@DECORATE-REST Satz` | Satz zwischen Linien in der Mitte des Rests, danach neue Seite
-`@DECORATE-ABOVE-REST Satz` | Schlusssatz mit Linie nur oben, Mitte des Rests
-`@DECORATE-ABOVE-BOTTOM-34 Satz` | Schlusssatz, Oberkante 34 mm über dem Ende des Textes (Doppelseite gleich hoch)
+`@DECORATE-REST Satz` | ⇄ Satz zwischen Linien in der Mitte des Rests, danach neue Seite
+`@DECORATE-ABOVE-REST Satz` | ⇄ Schlusssatz mit Linie nur oben, Mitte des Rests
+`@DECORATE-ABOVE-BOTTOM-34 Satz` | ⇄ Schlusssatz, Oberkante 34 mm über dem Ende des Textes (Doppelseite gleich hoch)
 `…-UPRIGHT · …-UPRIGHT-MAIN` | Schrift wie der Fliesstext (statt kursiv) · in der Hauptfarbe
 
 ### Logo
@@ -1854,17 +1866,22 @@ Schreibweise | Wirkung
 Schreibweise | Wirkung
 `@UC … @END` | Text nur in der Fassung UC; ebenso @NORMAL (@N), @EBOOK, @PRINT (Druck), @SCREEN (Lese-PDF)
 `@UC-BLOCK Titel … @END` | heller Kasten mit Titel – nur in der Fassung UC
-`@DECORATE-REST … @END` | Absätze zwischen zwei Linien mit Logo, in der Mitte des Rests (Abschluss eines Kapitels)
-`@KEEP-TOGETHER … @END` | bleibt auf derselben Seite
+`@DECORATE-REST … @END` | ⇄ Absätze zwischen zwei Linien mit Logo, in der Mitte des Rests (Abschluss eines Kapitels)
+`@KEEP-TOGETHER … @END` | ⇄ bleibt auf derselben Seite
 `@DRAFT … @END` | noch offen: mit «s» gelb, im Druck normal
 `@NOTE Titel … @END` | Notiz an dich: nur im Entwurf sichtbar, nie gedruckt
 `@TIMELINE … @END` | Zeilen «Jahr | Text» als Zeitstrahl
 
-### Nur in einer Fassung
-Schreibweise | Wirkung
-`@UC-…` | vorne: Befehl oder Bereich samt Text nur in der Fassung UC, z. B. @UC-SPACER-14, #### @UC-PICTURE, @UC-DRAFT
-`@NORMAL-… (@N-…) · @EBOOK-… · @PRINT-… · @SCREEN-…` | nur normal · nur E-Book · nur Druck · nur Lese-PDF
-`@DECORATE-…-UC` | hinten: der Text steht in beiden Fassungen, verziert nur in UC (-NORMAL, -N: nur normal). Geht bei @DECORATE, auch als Bereich: @DECORATE-REST-UPRIGHT-UC … @END
+### Seite sieht nicht gut aus? – Lösungen
+Problem | Lösung
+Ein einzelner Satz rutscht allein auf die nächste Seite | in den Variablen «{absatz-mitnehmen}: ja» (der Absatz davor geht mit, wirkt mit f/k) – oder «@NEWPAGE-70» vor die letzte Überschrift davor – oder den Absatz kürzen
+Neue Seite erzwingen | «@NEWPAGE»
+Kapitel soll auf einer rechten Seite beginnen | «@NEWPAGE-RIGHT» davor
+Überschrift steht allein unten auf der Seite | «@NEWPAGE-50» vor die Überschrift
+Seite mit wenig Text wirkt verloren | «@PAGE-CENTER» an den Anfang der Seite
+Grosse Lücke unten auf der Seite | Foto kleiner («@PICTURE-60»), Text kürzen oder «@LOGO-10-REST»
+Mehr Luft zwischen zwei Absätzen | «@SPACER-8» (8 mm)
+Text soll nicht getrennt werden | «@KEEP-TOGETHER» … «@END»
 
 ## Buchformate
 

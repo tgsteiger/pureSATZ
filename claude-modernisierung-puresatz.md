@@ -42,7 +42,7 @@ done
 ```
 - **pruefen.sh** `<name>`: aufbau, dann parallel Selbsttest, `sh build.sh final` je Buch und das Testbuch, danach
   `test/vergleich.py <referenz> <neu>` je Buch. Referenz = letzter geprüfter Stand (nicht ein zu alter!).
-- Hörtexte: Buch-MD mit Platzhaltern durch `motor/audio/md2txt.sh` (Umgebung MD, ZIEL, PLATZHALTER, VERSION) → txt alt/neu vergleichen.
+- Hörtexte: `hoerbuch.hoer_md(md, var)` (wie `texte()`) durch `motor/audio/md2txt.sh` (Umgebung MD, ZIEL, PLATZHALTER) → txt alt/neu vergleichen.
 - Menübild: Menü in einem Pseudo-Terminal laufen lassen, ANSI-Farben in ein PNG zeichnen (für motor/bilder/menu.png).
 
 ### G0 Testbuch zuerst
@@ -55,7 +55,7 @@ Ist Teil des Selbsttests. Ohne dieses Netz keinen Umbau beginnen. Neue Fälle hi
 |---|---|---|
 | G1 | Altlasten weg: alte Schreibweisen, tote Funktionen, Versionskommentare | vorher grep in allen Büchern und der Vorlage; umbenennen.py behält die Übersetzung |
 | G2 | Innen auf die neue Schreibweise: ein Leser (`befehl()`) zerlegt jeden Befehl, alle Module nutzen ihn | gross, mittel Risiko – Testbuch erweitern, Fehler zeigen sich als Seitenunterschiede |
-| G3 | Ein Leser für alle Ausgaben (PDF, E-Book, Prüfen, Stände, Hörbuch) | Hörbuch nur umstellen, wenn ohnehin neu aufgenommen wird (Azure-Kosten) |
+| G3 | Ein Leser für alle Ausgaben (PDF, E-Book, Prüfen, Stände, Hörbuch) | Hörbuch seit 3.6 auch; Hörtexte alt/neu vergleichen – jede geänderte Datei kostet eine Aufnahme |
 | G4 | Doppelten Code zusammenführen | Seitenbild alt/neu muss gleich bleiben |
 | G5 | Menü und Begriffe: Tasten = Terminal-Befehle, ein Wort pro Sache | alte Tasten weiter; Menü mit Eingaben testen; Menübild neu |
 | G6 | Hilfe: jede Sache an einer Stelle, keine Versionsgeschichte, keine doppelten Listen | hilfe.html und Webseite neu erzeugen, tote Anker prüfen |

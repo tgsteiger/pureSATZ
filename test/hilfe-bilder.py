@@ -37,6 +37,11 @@ MUSTER = {
 @DECORATE-TEXT Es ist so schön, hier zu sein.
 
 {KURZ} Darüber: @DECORATE-TEXT.""", []),
+    "aside": ("normal", "ausschnitt", f"""{TEXT}
+
+@ASIDE Mein Tipp aus eigener Erfahrung: eine Randbemerkung mit @ASIDE – klein, kursiv, eingerückt.
+
+{KURZ} Darüber: @ASIDE.""", []),
     "decorate-rest": ("normal", [0, 1, 2], f"""{TEXT}
 
 @DECORATE-REST Es ist so schön, hier zu sein.

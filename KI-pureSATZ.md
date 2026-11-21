@@ -1,6 +1,6 @@
 # KI-pureSATZ – Wiedereinstieg für Claude (ab pureSATZ 3.5)
 
-Stand: 21.11.2026 · Motor 3.5.1 · Zu Beginn einer Sitzung lesen. Gilt für den Motor und alle Bücher.
+Stand: 21.11.2026 · Motor 3.6.0 · Zu Beginn einer Sitzung lesen. Gilt für den Motor und alle Bücher.
 Regeln für die Zusammenarbeit (Sprache, «go», Befehle): `pureWORLD/CLAUDE-WIEDEREINSTIEGE.md` (privat).
 Buchinhalt: `buecher/<Buch>/KI-<Buch>.md` (z. B. KI-Leben123.md). Grosser Umbau: `claude-modernisierung-puresatz.md`.
 Diese Datei ist öffentlich (GitHub) – nichts Persönliches hineinschreiben.
@@ -14,13 +14,14 @@ Diese Datei ist öffentlich (GitHub) – nichts Persönliches hineinschreiben.
   entsteht aus der Hilfe). Hallo-Buch macht pureSATZ selbst (`sh hallo.sh`).
 - Module in `motor/`: bauen.py (Ablauf, Befehle von build.sh) · manuskript.py (liest MD; `befehl()` zerlegt jeden
   @-Befehl, `zeilen()` liefert Text je Fassung) · build.py (PDF) · build-epub.py · build-broschuere.py · menu.py ·
-  hilfe.py + HILFE.md (Hilfe) · update.py · staende.py · fassungen.py (Leseprobe, Korrektur) · audio/ (Hörbuch, md2txt.sh).
+  hilfe.py + HILFE.md (Hilfe) · update.py · staende.py · fassungen.py (Leseprobe, Korrektur) · audio/ (Hörbuch: hoerbuch.hoer_md() liest über zeilen(), md2txt.sh teilt in Kapitel).
 
 ## Schreibweise 3.5 (Kurzfassung, ganz: hilfe.html → «Befehle (@)»)
 - `@[FASSUNG-]NAME[-GRÖSSE][-ORT[-HÖHE]][-STIL][-FASSUNG] Text` · Bereiche `@NAME` … `@END` · Zahlen in mm.
 - Fassung **vorne** = alles nur dort: `@UC-…`, `@NORMAL-…` / `@N-…`, `@EBOOK-…`, `@PRINT-…`, `@SCREEN-…`;
   `@UC` … `@END` = Text nur in UC.
-- Fassung **hinten** (nur `@DECORATE`) = Text in beiden, Verzierung nur dort: `@DECORATE-REST-UPRIGHT-UC` … `@END`.
+- Fassung **hinten** (`@DECORATE`, `@DECORATE-TEXT`, `@ASIDE`, `@KEEP-TOGETHER`; Liste `HINTEN` in manuskript.py) =
+  Text in beiden, Gestaltung nur dort: `@DECORATE-REST-UPRIGHT-UC` … `@END`, `@ASIDE-UC Satz`.
 - Kein Bereich im Bereich. Unbekanntes bricht mit Zeilennummer ab.
 - Begriffe: Fassung **normal** und **UC** (Ordner `ausgabe-unzensiert`, intern `uz`, Terminal `uc` oder `uz`) ·
   **Lese-PDF** (Bildschirm) · final = Druck + E-Book · komplett = final + Leseprobe + Korrektur.
@@ -34,7 +35,8 @@ Diese Datei ist öffentlich (GitHub) – nichts Persönliches hineinschreiben.
 4. Hilfe/Webseite: `python3 motor/hilfe.py` · `python3 docs/landingpage.py ohne-bilder`.
 5. VERSION + CHANGELOG nachführen.
 - Cloud: pyphen und Ghostscript fehlen → Handbuch-PDF bricht ab (nur E-Book vergleichen), Silbentrennung anders.
-  Hörtexte: md2txt.sh über eine Kopie des Buchs laufen lassen und alt/neu vergleichen (Azure-Kosten!).
+  Hörtexte: `hoerbuch.hoer_md()` + md2txt.sh über eine Kopie des Buchs, alt/neu vergleichen – jede geänderte Datei
+  wird neu vertont (Azure-Kosten!).
 - Menü testen mit Eingaben: `printf 'co\n\nj\n' | python3 motor/menu.py`.
 
 ## Dateien holen und zurückschreiben (Cowork)
@@ -62,6 +64,5 @@ dann `sh release.sh` (git push, alle Bücher `update.sh lokal ja`) und in Leben1
 - update.py behält nur den letzten `motor-alt-…`; Starter (build.sh usw.) erneuert update ausser Dateien mit `# eigen`.
 
 ## Offen / Ideen
-- Fassung hinten auch für weitere Befehle (Analyse 21.11., siehe CHANGELOG 3.5.2 falls umgesetzt).
-- Hörbuch-Leser (md2txt.sh) auf manuskript.zeilen() umstellen, wenn das Hörbuch ohnehin neu aufgenommen wird.
-- Ein einzelner Absatz, der allein auf eine neue Seite rutscht, nimmt den Absatz davor mit.
+- Fassung hinten für weitere Befehle: geprüft 21.11. – Bild, Logo, QR, Abstand haben keinen Text; TIMELINE, DRAFT, NOTE, BLOCK nicht sinnvoll.
+- `{absatz-mitnehmen}: ja` (3.6, Standard aus): einzeiliger Schlussabsatz allein auf der Seite → Absatz davor geht mit.

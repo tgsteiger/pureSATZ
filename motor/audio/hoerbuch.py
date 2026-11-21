@@ -80,6 +80,27 @@ def umgebung(var):
                 HB_JAHR=var.get("jahr", ""), HB_COVER=cover[-1] if cover else "")
 
 
+def hoer_md(md, var):
+    """Text fürs Hörbuch mit demselben Leser wie PDF und E-Book (manuskript.zeilen): normale Fassung, Variablen
+    eingesetzt, Fassung vorne/hinten aufgelöst; Bereiche als gewöhnliche Zeilen. md2txt.sh teilt ihn in Kapitel."""
+    import manuskript as M
+    a = M.Ausgabe(var, "normal", "hoerbuch")
+    out = []
+    for z in M.zeilen(md, a):
+        if not isinstance(z, tuple):
+            if getattr(z, "nr", 0) == -1:                       # Bereichsende: im Hörbuch keine Leerzeile
+                continue
+            b = M.befehl(z) if z.startswith("@") else None
+            out.append(("## " if b and b.name in M.TITELEI else "") + str(z))   # Titelei wieder als Überschrift
+        elif z[0] == "PICTURE":                                 # md2txt liest «Bild: Titel. text»
+            out += ["#### @PICTURE " + (z[1] or "")] + [str(x) for x in z[2]]
+        elif z[0] == "BLOCK":
+            out += ([z[1], ""] if z[1] else []) + [str(x) for x in z[2]]
+        elif z[0] not in ("NOTE", "CODE"):                      # DRAFT, KEEP-TOGETHER, TIMELINE, DECORATE-REST
+            out += [str(x) for x in z[2]]
+    return re.sub(r"<br\s*/?>", "\n", "\n".join(out)) + "\n"   # Zeilenumbruch (\\ am Zeilenende) = eigene Zeile, Pause
+
+
 def texte():
     """Buch-MD (Geschichten eingesetzt, normale Fassung) → audio/txt-md/, dazu die Ansage als 00.00.00.
     Nur geänderte Texte werden ersetzt – so erkennt «vertonen» sie am Datum (Text neuer als MP3)."""
@@ -87,10 +108,9 @@ def texte():
     import tempfile
     import manuskript as M
     md, var = buch()
-    _, zeilen = M.lies(md)                                  # Text nach BUCHSTART, @@-Geschichten eingesetzt
     tmp = os.path.join(DATEN, "_buch-hoerbuch.md")
     with open(tmp, "w", encoding="utf-8") as f:
-        f.write("\n".join(z for _, z in zeilen) + "\n")
+        f.write(hoer_md(md, var))
     ziel = os.path.join(DATEN, "txt-md")
     os.makedirs(ziel, exist_ok=True)
     neu = tempfile.mkdtemp(prefix="_txt-neu-", dir=DATEN)    # zuerst hierhin, dann vergleichen

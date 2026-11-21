@@ -173,6 +173,14 @@ Verziert nur in Normal, in UC gewöhnliche Absätze.
 
 @DECORATE-ABOVE-REST-UC Schlusssatz mit Linie nur in UC, Text in beiden.
 
+@ASIDE-UC Randbemerkung nur in UC, in Normal ein Absatz.
+
+@DECORATE-TEXT-NORMAL Satz ohne Linien, besonders nur in Normal.
+
+@KEEP-TOGETHER-UC
+Zusammengehalten nur in UC, Text in beiden.
+@END
+
 """
 
 GESCHICHTE = f"""## Eine Geschichte

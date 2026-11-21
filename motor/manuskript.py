@@ -304,6 +304,7 @@ ORT = ("REST", "BOTTOM", "GAP", "RIGHT", "LEFT")
 TITELEI = ("TITLE", "IMPRINT", "NOTICE", "DEDICATION", "CONTENTS", "INDEX", "LIST-PICTURES", "LIST-TABLES",
            "PICTURE-CREDITS", "BACK-COVER")
 BEREICHE = ("BLOCK", "DRAFT", "NOTE", "KEEP-TOGETHER", "TIMELINE")     # … @END (dazu @UC usw. und @DECORATE-REST)
+HINTEN = ("DECORATE", "DECORATE-TEXT", "ASIDE", "KEEP-TOGETHER")   # Fassung hinten: Text überall, Gestaltung nur dort
 STIL = {"ITALIC": "zitat", "UPRIGHT": "aufrecht", "UPRIGHT MAIN": "blau"}   # Wert wie bei {decorate-stil}
 BEFEHL_ZEILE = re.compile(r"^(#{1,6}\s+)?@([A-Z][A-Z0-9-]*)(?:\s+(.*))?$")
 
@@ -375,8 +376,8 @@ def _pruefe(b, token, wo):
     def nein(was):
         raise Fehler(f"{wo}: @{token} – {was}.")
     n, w = b.name, b.woerter
-    if b.nur and (n != "DECORATE" or b.tag):
-        nein("die Fassung hinten gibt es nur bei @DECORATE (vorne: alles nur dort, hinten: nur die Verzierung)")
+    if b.nur and (n not in HINTEN or b.tag):
+        nein("die Fassung hinten gibt es nur bei @DECORATE, @DECORATE-TEXT, @ASIDE und @KEEP-TOGETHER (vorne: alles nur dort, hinten: Text überall, Gestaltung nur dort)")
     if n in TITELEI and b.tag:
         nein("die Titelei gibt es ohne Fassung")
     elif n == "PICTURE" and b.ort not in (None, "RIGHT", "LEFT"):
@@ -548,7 +549,7 @@ def zeilen(pfad, a, entwurf=False):
                 zeigen = zeigen and entwurf
             if not zeigen:
                 continue
-            if b.name == "DECORATE" and b.nur and not b.nur & a.tags():    # andere Fassung: gewöhnliche Absätze
+            if b.nur and not b.nur & a.tags():          # Fassung hinten, andere Fassung: gewöhnliche Absätze
                 out += inhalt + [_zeile("", -1)]
                 continue
             if b.name == "DECORATE":
@@ -572,7 +573,7 @@ def zeilen(pfad, a, entwurf=False):
                 out.append(_zeile("", -1))
             i += 1
             continue
-        if b.name == "DECORATE" and b.nur and not b.nur & a.tags():    # @DECORATE-UC Satz: hier ein Absatz
+        if b.nur and not b.nur & a.tags():              # @ASIDE-UC Satz usw.: hier ein gewöhnlicher Absatz
             s = b.text
         if b.kopf and b.name != "DECORATE-PAGE":         # «## @TITLE» wirkt wie «@TITLE»
             s = b.zeile(kopf=False)
