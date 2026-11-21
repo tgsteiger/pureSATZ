@@ -3,6 +3,10 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 3.6.2 (November 2026) – KI: auch nur einen Teil der Hilfe
+- Hilfe: bei jedem Abschnitt rechts «📋 für KI» – kopiert nur diesen Abschnitt samt Hinweis für die KI (passt auch in
+  kostenlose KI-Chats). «Mit einer KI arbeiten»: drei Wege (ganze Hilfe, ein Teil, kurz), Einleitung im Handbuch ergänzt.
+
 ## 3.6.1 (November 2026)
 - Handbuch baute nicht (3.6.0): die Lösungstabelle der Hilfe enthielt «{absatz-mitnehmen}» mit Klammern – jetzt ohne.
 - Menü `ss` (Supersync): ein Buch ohne GitHub wird nicht abgeglichen (keine Meldung «nicht mit GitHub verbunden»), wie bei `s`.

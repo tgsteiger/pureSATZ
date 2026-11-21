@@ -581,6 +581,8 @@ body.nur main section:not(.drucke){{display:none}} section{{border:0;margin:0}}
 #leer{{display:none;color:var(--leise);padding:20px}} footer{{color:var(--leise);font-size:13px;padding:10px 0}}
 @media (max-width:760px){{nav{{display:none}} main{{padding:8px 10px 60px}}}}
 main :not(pre)>code{{cursor:copy}} .hist{{white-space:nowrap}}
+section{{position:relative}} .kiab{{position:absolute;top:18px;right:18px;font-size:.8em;padding:2px 8px;opacity:.7}}
+.kiab:hover{{opacity:1}}
 .ki{{margin:14px 0 0;padding:10px 16px;border:1px solid var(--akzent);border-left:5px solid var(--akzent);
 border-radius:10px;background:var(--karte);font-size:15px}} .ki b{{font-family:Poppins,system-ui,sans-serif;font-weight:500;
 color:var(--akzent);display:block;margin-bottom:2px}} #kiknopf{{float:right;margin:0 0 6px 10px;font:13px Poppins,system-ui,sans-serif;border:1px solid var(--akzent);background:var(--karte);color:var(--akzent);border-radius:14px;padding:4px 10px;cursor:pointer}}
@@ -595,7 +597,8 @@ color:var(--akzent);display:block;margin-bottom:2px}} #kiknopf{{float:right;marg
 <div class="ki"><button id="kiknopf">📋 für KI kopieren</button><b>Tipp: Füttere deine Lieblings-KI mit
 hilfe-ki.md – und du bedienst pureSATZ im Flug.</b> Zieh die Datei <code>hilfe-ki.md</code> (liegt neben dieser Seite) in
 deinen KI-Chat oder kopiere die Hilfe mit dem Knopf und füge sie ein – dann stell deine Frage. Die KI kennt jede Einstellung
-und sagt dir, was du wo eintragen musst. Mehr: Abschnitt «Mit einer KI arbeiten» (oben «KI» suchen).</div>{"".join(inhalt)}
+und sagt dir, was du wo eintragen musst. <b>Kostenloser KI-Chat?</b> Bei jedem Abschnitt rechts «📋 für KI» – kopiert nur
+diesen Teil. Mehr: Abschnitt «Mit einer KI arbeiten» (oben «KI» suchen).</div>{"".join(inhalt)}
 <p id="leer">Nichts gefunden.</p>
 <footer><a href="{WEBSEITE}">Webseite</a> · <a href="{GITHUB}">GitHub</a> · <a href="{GITHUB}/issues">Fehler melden</a> · <a class=mail href=#>puresatz (at) gsteiger.ch</a><br>
 Erstellt {datetime.now():%d.%m.%Y %H:%M} von pureSATZ {html.escape(version)} · neu mit «sh build.sh hilfe» · Quellen: START.md, motor/HILFE.md, meine-hilfe.md, Variablen-Datei</footer>
@@ -637,10 +640,18 @@ const t=c.textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Prom
 ()=>{{b.textContent='kopiert ✓';setTimeout(()=>b.textContent='kopieren',1200)}},
 ()=>{{const r=document.createRange();r.selectNodeContents(c);getSelection().removeAllRanges();getSelection().addRange(r)}})}})}}
 knoepfe();
+const KIAB='📋 für KI';                                                                 // ein Abschnitt für eine KI (auch kostenlose)
+secs.forEach(s=>{{const b=document.createElement('button');b.className='kiab';b.textContent=KIAB;
+b.title='Nur diesen Abschnitt für eine KI kopieren – passt auch in kostenlose KI-Chats';
+b.onclick=e=>{{e.stopPropagation();const N=String.fromCharCode(10),t='Hier ein Teil der Hilfe von pureSATZ ('+document.title+'). '
++'Beantworte damit meine Frage. Ändere nur Buchdateien, nie den Ordner motor/.'+N+N+s.innerText.replace(KIAB,'').trim()+N+N+'Meine Frage: ';
+(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(
+()=>{{b.textContent='✓ kopiert';setTimeout(()=>b.textContent=KIAB,3000)}},()=>{{b.textContent='Kopieren ging nicht'}})}};
+s.insertBefore(b,s.querySelector('h2').nextSibling)}});
 document.getElementById('kiknopf').onclick=e=>{{const b=e.target;                  // ganze Hilfe als Text für eine KI
 if(such.value){{such.value='';such.dispatchEvent(new Event('input'))}}
 const N=String.fromCharCode(10),t='pureSATZ Hilfe – '+document.title+N+N+'Für eine KI: Beantworte meine Frage zu pureSATZ mit dieser Hilfe. '
-+'Ändere nur Buchdateien, nie den Ordner motor/.'+N+N+secs.map(s=>s.innerText).join(N+N);
++'Ändere nur Buchdateien, nie den Ordner motor/.'+N+N+secs.map(s=>s.innerText.replace(KIAB,'')).join(N+N);
 (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(
 ()=>{{b.textContent='✓ kopiert ('+Math.round(t.length/1000)+' KB) – im KI-Chat einfügen';setTimeout(()=>b.textContent='📋 für KI kopieren',4000)}},
 ()=>{{b.textContent='Kopieren ging nicht – hilfe-ki.md hochladen'}})}};

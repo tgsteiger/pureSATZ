@@ -1638,22 +1638,28 @@ Statt `sh build.sh …` einfach `build.bat …` (gleiche Optionen), ebenso `clea
 
 ## Mit einer KI arbeiten
 
-**Füttere deine Lieblings-KI mit `hilfe-ki.md` – und du bedienst pureSATZ im Flug.** Die KI kennt dann jede
-Einstellung und sagt dir, was du wo eintragen musst. `hilfe-ki.md` ist dieselbe Hilfe als reiner Text (etwa halb so gross,
-passt auch in kostenlose KI-Chats) und entsteht zusammen mit `hilfe.html` – am besten die aus dem Buchordner,
-dort stehen auch die Variablen deines Buchs.
+**Füttere deine Lieblings-KI mit der Hilfe – und du bedienst pureSATZ im Flug.** Die KI kennt dann die Einstellungen
+und sagt dir, was du wo eintragen musst. Es gibt drei Wege, je nachdem, wie viel Text dein KI-Chat aufnimmt:
 
-1. Neuen Chat öffnen (Claude, ChatGPT, Gemini …) und `hilfe-ki.md` hineinziehen – oder oben in der Hilfe
-   **«📋 für KI kopieren»** drücken und im Chat einfügen (Ctrl+V).
+| Weg | Was du der KI gibst | Wann |
+|---|---|---|
+| **Ganze Hilfe** | `hilfe-ki.md` aus dem Buchordner hineinziehen – oder oben in der Hilfe «📋 für KI kopieren» | KI-Chats mit viel Platz (Abo) |
+| **Ein Teil** | bei einem Abschnitt der Hilfe rechts «📋 für KI» – kopiert nur diesen Teil samt Hinweis für die KI | kostenlose KI-Chats, schnelle Fragen |
+| **Kurz** | `readme4ki.txt` (kurze Regeln) und deine Frage | wenn gar nichts anderes passt |
+
+Den passenden Abschnitt findest du mit der Suche oben in der Hilfe oder im Menü mit `hf wort` (z. B. `hf isbn`).
+`hilfe-ki.md` entsteht zusammen mit `hilfe.html` – am besten die aus dem Buchordner, dort stehen auch die Variablen
+deines Buchs.
+
+1. Neuen KI-Chat öffnen (Claude, ChatGPT, Gemini …) und die Hilfe oder den Abschnitt einfügen (Ctrl+V).
 2. Die Datei dazugeben, um die es geht, z. B. `Mein-Buch-variablen.md`, die Buch-MD oder eine Druckdatei aus `druck/`.
 3. Fragen, z. B. «Wie bringe ich das Inhaltsverzeichnis auf zwei Seiten?» oder «Wie wird ein Foto so breit wie der Text?»
 4. Vorschlag übernehmen, dann `sh build.sh pruefen` – der Motor meldet sofort, falls etwas nicht passt.
 
+Ein Abschnitt von Hand kopiert? Davor schreiben: «Hier ein Teil der Hilfe von pureSATZ. Beantworte damit meine Frage: …»
+
 **Regel für die KI:** nur die Buchdateien ändern (MD, Variablen, Umschlag, `druck/`, Stichworte, Tabellen, Geschichten) –
 **nie den Ordner `motor/`**.
-
-Nimmt ein kostenloser KI-Chat auch `hilfe-ki.md` nicht ganz auf: `readme4ki.txt` (kurze Regeln) und deine Frage
-geben und den passenden Abschnitt dieser Hilfe dazukopieren (oben suchen, Text markieren, kopieren).
 
 ## Skripte und Kurzbefehle
 

@@ -42,7 +42,8 @@ Buchordner) ist immer auf dem neusten Stand; dieses Buch gilt für pureSATZ {ver
 - **Online:** tgsteiger.github.io/pureSATZ – Hilfe und Neuigkeiten.
 - **Fragen und Fehler:** auf GitHub unter «Issues»: github.com/tgsteiger/pureSATZ/issues.
 - **Mit einer KI:** Die Datei `hilfe-ki.md` aus dem Buchordner einer KI geben – dann kennt sie jede Einstellung und
-  hilft beim Schreiben, Gestalten und bei Fehlermeldungen. Mehr dazu: [→ KI](#Mit-einer-KI-arbeiten).
+  hilft beim Schreiben, Gestalten und bei Fehlermeldungen. Für kostenlose KI-Chats genügt der passende Abschnitt:
+  in der Hilfe bei jedem Abschnitt «📋 für KI». Mehr dazu: [→ KI](#Mit-einer-KI-arbeiten).
 - Alle Adressen auf einen Blick: [→ Netz](#pureSATZ-im-Netz).
 
 ## Befehle in diesem Buch
