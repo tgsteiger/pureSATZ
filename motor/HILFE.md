@@ -119,7 +119,7 @@ Untermenüs («…» = nur was es gibt):
 | `sm` `a` `zh` Stände | `sm` Stand merken (wie `sh build.sh stand Name`) · `a` änderungen seit dem letzten Stand als PDF (wie `sh build.sh aenderungen`) · `zh` Stand zurückholen: frühere Fassung der MD aus md-history |
 | `p` PDF öffnen | `n` normal · `u` unzensiert · `l` Leseprobe · `k` Korrektur … |
 | `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten · `t` tabellen · `a` audio … · `p` Pfad Buchordner kopieren · dazu Taste + `t` = Terminal dort (`bt`, `at` …), + `p` = Pfad kopieren (`ap` …) |
-| `n` neu | `b` neues Buch · `h` Hallo-Buch · `e` einrichten · `m` Motor-Selbsttest · `v` Verknüpfung |
+| `n` neu | `b` neues Buch · `h` Hallo-Buch · `e` einrichten · `m` Motor-Selbsttest · `v` Verknüpfung (Starter «Menü» und «Hilfe») |
 
 - Geschichten (`g` → `e` oder `m` → `g`): jede hat ein festes Kürzel aus 1–3 Buchstaben, z. B. `h` herz-im-glueck,
   `he` heimweh. Neue bekommen das kürzeste freie (h · he · Anfänge der Wörter · hei), bestehende bleiben.
@@ -139,7 +139,8 @@ Untermenüs («…» = nur was es gibt):
 - `ul` (update lokal) erscheint nur, wenn neben dem Buch ein Ordner `pureSATZ` liegt; ebenso in `n` neu …:
   `b` neues Buch (setup), `h` Hallo-Buch, `e` einrichten (START-Linux.sh / START-Mac-imTerminal.sh / START-Windows.bat),
   `m` Motor-Selbsttest (test/selbsttest.py, einige Minuten, Ende «SELBSTTEST IN ORDNUNG»).
-- `n` → `v` Verknüpfung (auch `sh menu.sh verknuepfung`): Starter mit Lotus, Doppelklick öffnet das Menü.
+- `n` → `v` Verknüpfung (auch `sh menu.sh verknuepfung`): zwei Starter mit Lotus – «Buch Menü» öffnet das Menü,
+  «Buch Hilfe» (Lotus mit Schild HILFE) baut die Hilfe neu und öffnet sie im Browser.
   Linux: Startmenü und Schreibtisch (beim ersten Mal Rechtsklick → «Start erlauben»), Windows: Buchordner und
   Schreibtisch, Mac: «Buch Menü.command» im Buchordner und auf dem Schreibtisch. Neue Bücher bekommen ihn mit `setup`.
   Buchordner verschoben? `v` nochmals – überschreibt den alten Starter.
@@ -1631,7 +1632,7 @@ sh update.sh lokal      # aus dem Ordner ../pureSATZ statt von GitHub
 ```
 
 Ersetzt wird nur der Ordner `motor/` – deine MD-Dateien, Stichworte, Fotos und Bilder bleiben unberührt.
-Der alte Motor bleibt als `motor-alt-…` liegen. Braucht git und Internet, aber keine Anmeldung –
+Der alte Motor bleibt als `motor-alt-…` liegen (nur der letzte, ältere räumt das Update weg). Braucht git und Internet, aber keine Anmeldung –
 pureSATZ ist öffentlich. Danach `sh build.sh schnell` und, wenn das Buch auf mehreren Computern liegt, `sh sync.sh`.
 Ohne Internet, aus dem Ordner `pureSATZ` neben dem Buch (oder eine Ebene höher, z. B. bei `buecher/Buch`): `sh update.sh lokal`
 (oder im Ordner pureSATZ: `sh setup/setup.sh motor ../<buch>`).

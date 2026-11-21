@@ -13,11 +13,12 @@ ist dafür nicht nötig. Geholt wird mit git und der eigenen GitHub-Anmeldung, a
 einem privaten Repository, wenn man dazu eingeladen ist.
 
 Ersetzt wird NUR der Ordner motor/. Die Buch-Dateien (MD, Stichworte, Fotos, Bilder, Einstellungen)
-bleiben unberührt. Der alte Motor bleibt als motor-alt-<version>/ liegen (kommt nicht zu GitHub).
+bleiben unberührt. Der alte Motor bleibt als motor-alt-<version>/ liegen (nur der letzte, kommt nicht zu GitHub).
 Fehlende Hilfsdateien im Buch (z. B. update.sh) werden ergänzt, bestehende nie überschrieben.
 
 Andere Quelle: Umgebungsvariable PURESATZ_QUELLE=https://github.com/<name>/<repo>.git oder ein Ordner.
 """
+import glob
 import os
 import re
 import shutil
@@ -191,6 +192,9 @@ def main():
             shutil.move(sicherung, MOTOR)
             raise
         print(f"\nMotor aktualisiert: {alt} -> {neu} (alter Motor in {os.path.basename(sicherung)}/)")
+        for d in glob.glob(os.path.join(BASE, "motor-alt-*")):     # nur der letzte alte Motor bleibt liegen
+            if d != sicherung:
+                shutil.rmtree(d, ignore_errors=True)
 
         hilfsdateien(os.path.join(quelle, "vorlage"))
         gi = os.path.join(BASE, ".gitignore")

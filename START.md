@@ -192,7 +192,7 @@ Zum Abhaken. Die Hilfe (`hilfe.html`) zeigt zu jedem Schritt Dauer und späteste
 Im Buchordner `sh menu.sh` (Windows: `menu.bat` doppelklicken). Dann genügt ein Buchstabe – geordnet nach
 Schreiben (`m` MD öffnen, `g` Geschichten, `t` Tabellen, `c` gegenlesen), Bauen (`s` schnell, `f` final,
 `k` komplett), Ansehen (`p` PDF, `o` Ordner) und Abgleichen / Prüfen (`sy` sync, `u` update, `bp` Buch prüfen); `n` neu (neues Buch,
-Hallo-Buch, `v` Lotus-Starter). `:` zeigt Befehle zum Tippen, `h` oder `?` die Hilfe.
+Hallo-Buch, `v` Lotus-Starter für Menü und Hilfe). `:` zeigt Befehle zum Tippen, `h` oder `?` die Hilfe.
 Mit ↑ holst du die letzten Befehle zurück, Enter (oder `z`) = eine Stufe zurück (im Hauptmenü: «beenden? [j/N]»).
 
 Mehr dazu in der Hilfe unter «Erste Schritte → Menü».

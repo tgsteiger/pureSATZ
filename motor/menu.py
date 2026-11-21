@@ -6,7 +6,7 @@ Ein Buchstabe pro Befehl, m / g / t / c / w / p / o / n mit Untermenü; Geschich
 Ganze Befehle gehen auch: final · leseprobe uz 18,20 · personen Eltern.
 MD, PDF und Ordner öffnen im eigenen Programm (das Menü wartet nicht), Bauen läuft hier im Fenster.
 Klang (!) und Verlauf stehen in .menu (kommt nicht zu GitHub). Klang: motor/klang.wav (oder klang.wav im Buchordner), sonst Piepton.
-sh menu.sh verknuepfung = Starter mit Lotus auf den Schreibtisch (n → v im Menü).
+sh menu.sh verknuepfung = Starter «Menü» und «Hilfe» mit Lotus auf den Schreibtisch (n → v im Menü).
 """
 import glob
 import os
@@ -1266,38 +1266,42 @@ def finde_hilfe(wort):
 
 
 def verknuepfung():
-    """Starter mit Lotus, der dieses Menü öffnet: Linux .desktop (Startmenü), Windows .lnk, Mac .command."""
+    """Zwei Starter mit Lotus: «Buch Menü» (dieses Menü) und «Buch Hilfe» (sh build.sh hilfe: neu bauen, im Browser öffnen).
+    Linux .desktop (Startmenü), Windows .lnk, Mac .command."""
     name = os.path.basename(next(iter(glob.glob(os.path.join(BASE, "*-buch.md"))), "Buch-buch.md"))[:-8]
     orte = [BASE] + ([schreibtisch()] if frage(" Auch auf den Schreibtisch? [J/n]: ").lower() not in ("n", "nein")
                      else [])
-    png, ico = (os.path.join(MOTOR, "bilder", f) for f in ("lotus.png", "lotus.ico"))
     if not WIN and not MAC:                    # Linux: Startmenü statt Buchordner (dort startet .desktop nicht)
         orte[0] = os.path.join(os.path.expanduser("~"), ".local", "share", "applications")
-    for ort in orte:
-        if not ort or not os.path.isdir(ort):
-            print("  Schreibtisch nicht gefunden – Starter nur im Buchordner bzw. Startmenü.")
-            continue
-        if WIN:
-            p, q = os.path.join(ort, f"{name} Menü.lnk"), lambda s: s.replace("'", "''")
-            subprocess.run(["powershell", "-NoProfile", "-Command",
-                            f"$s=(New-Object -ComObject WScript.Shell).CreateShortcut('{q(p)}');"
-                            f"$s.TargetPath='{q(os.path.join(BASE, 'menu.bat'))}';$s.WorkingDirectory='{q(BASE)}';"
-                            f"$s.IconLocation='{q(ico)}';$s.Save()"])
-        else:
-            p = os.path.join(ort, f"{name} Menü.command" if MAC else f"puresatz-{name}.desktop")
-            with open(p, "w", encoding="utf-8") as f:
-                f.write(f'#!/bin/sh\ncd "{BASE}" && exec sh menu.sh\n' if MAC else
-                        f'[Desktop Entry]\nType=Application\nName={name} Menü\nComment=pureSATZ-Menü für {name}\n'
-                        f'Exec=sh "{os.path.join(BASE, "menu.sh")}"\nPath={BASE}\nIcon={png}\nTerminal=true\n')
-            os.chmod(p, 0o755)
-            hilfe = (["osascript", "-l", "JavaScript", "-e", 'ObjC.import("AppKit");$.NSWorkspace.sharedWorkspace'
-                      f'.setIconForFileOptions($.NSImage.alloc.initWithContentsOfFile({png!r}),{p!r},0)'] if MAC
-                     else ["gio", "set", p, "metadata::trusted", "true"])
-            if shutil.which(hilfe[0]):
-                subprocess.run(hilfe, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        print(f"  Starter: {p}")
+    for titel, datei, wort, bild, term in (("Menü", "menu", "", "lotus", "true"),
+                                           ("Hilfe", "build", " hilfe", "lotus-hilfe", "false")):
+        png, ico = (os.path.join(MOTOR, "bilder", bild + e) for e in (".png", ".ico"))
+        for ort in orte:
+            if not ort or not os.path.isdir(ort):
+                print("  Schreibtisch nicht gefunden – Starter nur im Buchordner bzw. Startmenü.")
+                continue
+            if WIN:
+                p, q = os.path.join(ort, f"{name} {titel}.lnk"), lambda s: s.replace("'", "''")
+                subprocess.run(["powershell", "-NoProfile", "-Command",
+                                f"$s=(New-Object -ComObject WScript.Shell).CreateShortcut('{q(p)}');"
+                                f"$s.TargetPath='{q(os.path.join(BASE, datei + '.bat'))}';$s.Arguments='{wort.strip()}';"
+                                f"$s.WorkingDirectory='{q(BASE)}';$s.IconLocation='{q(ico)}';$s.Save()"])
+            else:
+                p = os.path.join(ort, f"{name} {titel}.command" if MAC else
+                                 f"puresatz-{name}{'' if titel == 'Menü' else '-hilfe'}.desktop")
+                with open(p, "w", encoding="utf-8") as f:
+                    f.write(f'#!/bin/sh\ncd "{BASE}" && exec sh {datei}.sh{wort}\n' if MAC else
+                            f'[Desktop Entry]\nType=Application\nName={name} {titel}\nComment=pureSATZ-{titel} für {name}\n'
+                            f'Exec=sh "{os.path.join(BASE, datei + ".sh")}"{wort}\nPath={BASE}\nIcon={png}\nTerminal={term}\n')
+                os.chmod(p, 0o755)
+                hilfe = (["osascript", "-l", "JavaScript", "-e", 'ObjC.import("AppKit");$.NSWorkspace.sharedWorkspace'
+                          f'.setIconForFileOptions($.NSImage.alloc.initWithContentsOfFile({png!r}),{p!r},0)'] if MAC
+                         else ["gio", "set", p, "metadata::trusted", "true"])
+                if shutil.which(hilfe[0]):
+                    subprocess.run(hilfe, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            print(f"  Starter: {p}")
     if not WIN and not MAC and len(orte) > 1:
-        print("  Schreibtisch: beim ersten Mal Rechtsklick auf das Lotus-Icon → «Start erlauben».")
+        print("  Schreibtisch: beim ersten Mal Rechtsklick auf die Lotus-Icons → «Start erlauben».")
 
 
 def main():

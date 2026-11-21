@@ -3,6 +3,11 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 3.5.1 (November 2026) – Starter für die Hilfe
+- `n` → `v` Verknüpfung (`sh menu.sh verknuepfung`) legt jetzt zwei Starter an: «Buch Menü» wie bisher und
+  **«Buch Hilfe»** (neues Icon: Lotus mit Schild HILFE) – baut die Hilfe neu und öffnet sie im Browser.
+- Update behält nur noch den letzten alten Motor (`motor-alt-…`); ältere räumt es beim Update weg.
+
 ## 3.5.0 (November 2026) – Fassung hinten, UC, Menü ge
 - **Fassung hinten bei `@DECORATE`:** `@DECORATE-REST-UPRIGHT-UC` … `@END` – der Text steht in beiden Fassungen,
   verziert nur in UC, in der anderen als gewöhnliche Absätze (auch `-NORMAL`, `-N` und einzeilig `@DECORATE-UC Satz`).

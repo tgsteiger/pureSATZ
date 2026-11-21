@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 3.5.0
+# pureSATZ Hilfe · pureSATZ · Motor 3.5.1
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -161,7 +161,7 @@ Zum Abhaken – der Browser merkt sich die Häkchen. «drucken» oben rechts dru
 
 ## Tipp: Menü statt Befehle
 
-Im Buchordner `sh menu.sh` (Windows: `menu.bat` doppelklicken). Dann genügt ein Buchstabe – geordnet nach Schreiben (`m` MD öffnen, `g` Geschichten, `t` Tabellen, `c` gegenlesen), Bauen (`s` schnell, `f` final, `k` komplett), Ansehen (`p` PDF, `o` Ordner) und Abgleichen / Prüfen (`sy` sync, `u` update, `bp` Buch prüfen); `n` neu (neues Buch, Hallo-Buch, `v` Lotus-Starter). `:` zeigt Befehle zum Tippen, `h` oder `?` die Hilfe. Mit ↑ holst du die letzten Befehle zurück, Enter (oder `z`) = eine Stufe zurück (im Hauptmenü: «beenden? [j/N]»).
+Im Buchordner `sh menu.sh` (Windows: `menu.bat` doppelklicken). Dann genügt ein Buchstabe – geordnet nach Schreiben (`m` MD öffnen, `g` Geschichten, `t` Tabellen, `c` gegenlesen), Bauen (`s` schnell, `f` final, `k` komplett), Ansehen (`p` PDF, `o` Ordner) und Abgleichen / Prüfen (`sy` sync, `u` update, `bp` Buch prüfen); `n` neu (neues Buch, Hallo-Buch, `v` Lotus-Starter für Menü und Hilfe). `:` zeigt Befehle zum Tippen, `h` oder `?` die Hilfe. Mit ↑ holst du die letzten Befehle zurück, Enter (oder `z`) = eine Stufe zurück (im Hauptmenü: «beenden? [j/N]»).
 
 Mehr dazu in der Hilfe unter «Erste Schritte → Menü».
 
@@ -256,14 +256,14 @@ Einstellen · Weitergeben | `lp` Leseprobe · `ko` Korrektur · `np` nur Lese-PD
 `sm` `a` `zh` Stände | `sm` Stand merken (wie `sh build.sh stand Name`) · `a` änderungen seit dem letzten Stand als PDF (wie `sh build.sh aenderungen`) · `zh` Stand zurückholen: frühere Fassung der MD aus md-history
 `p` PDF öffnen | `n` normal · `u` unzensiert · `l` Leseprobe · `k` Korrektur …
 `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten · `t` tabellen · `a` audio … · `p` Pfad Buchordner kopieren · dazu Taste + `t` = Terminal dort (`bt`, `at` …), + `p` = Pfad kopieren (`ap` …)
-`n` neu | `b` neues Buch · `h` Hallo-Buch · `e` einrichten · `m` Motor-Selbsttest · `v` Verknüpfung
+`n` neu | `b` neues Buch · `h` Hallo-Buch · `e` einrichten · `m` Motor-Selbsttest · `v` Verknüpfung (Starter «Menü» und «Hilfe»)
 
 - Geschichten (`g` → `e` oder `m` → `g`): jede hat ein festes Kürzel aus 1–3 Buchstaben, z. B. `h` herz-im-glueck, `he` heimweh. Neue bekommen das kürzeste freie (h · he · Anfänge der Wörter · hei), bestehende bleiben. Gespeichert in `geschichten/kuerzel.txt` (kommt mit sync zu GitHub, von Hand änderbar); gelöschte geben ihr Kürzel frei.
 - ↑ ↓ = letzte Befehle, Enter führt sie aus. Ganze Befehle gehen auch: `final`, `leseprobe uc 18,20`, `personen Eltern`. `:` Befehle zeigt diese Befehle zum Tippen (aus dem Spickzettel der Hilfe), danach gleich eingeben. `?` = hilfe. Datei öffnen wie im Terminal: `xdg-open ausgabe-normal/….pdf` (Mac `open`, Windows `start`) – Pfad ab dem Buchordner, das Menü wartet nicht. Die Zeilen am Schluss eines Baus lassen sich so direkt einfügen.
 - Nach einem Bau bleiben die Meldungen stehen: statt des Menüs nur «Eingabe (Enter = Menü)». Die Schlusslinie zeigt Befehl und Dauer: «✓ s fertig · 0 Min. 34 s». Neu gebaute Lese-PDFs öffnen sich gleich (bei komplett nur normal und UC).
 - MD, PDF und Ordner öffnen im eigenen Programm, das Menü bleibt bereit. Bauen läuft im Menüfenster; am Schluss «Fertig» mit Dauer und Klang. Oben links der Buchname als goldenes Schild (auch im Fenster-/Tab-Titel), damit man bei mehreren Büchern sofort sieht, wo man ist. Oben rechts «Klang (!) ein/aus», Taste `!` (beim Einschalten klingt er einmal zur Probe). `$` öffnet ein Terminal im Buchordner, das Menü bleibt offen (praktisch, wenn das Menü per Lotus-Starter läuft). Klang: `motor/klang.wav`, eigener Klang: `klang.wav` in den Buchordner legen; sonst Piepton.
 - `ul` (update lokal) erscheint nur, wenn neben dem Buch ein Ordner `pureSATZ` liegt; ebenso in `n` neu …: `b` neues Buch (setup), `h` Hallo-Buch, `e` einrichten (START-Linux.sh / START-Mac-imTerminal.sh / START-Windows.bat), `m` Motor-Selbsttest (test/selbsttest.py, einige Minuten, Ende «SELBSTTEST IN ORDNUNG»).
-- `n` → `v` Verknüpfung (auch `sh menu.sh verknuepfung`): Starter mit Lotus, Doppelklick öffnet das Menü. Linux: Startmenü und Schreibtisch (beim ersten Mal Rechtsklick → «Start erlauben»), Windows: Buchordner und Schreibtisch, Mac: «Buch Menü.command» im Buchordner und auf dem Schreibtisch. Neue Bücher bekommen ihn mit `setup`. Buchordner verschoben? `v` nochmals – überschreibt den alten Starter.
+- `n` → `v` Verknüpfung (auch `sh menu.sh verknuepfung`): zwei Starter mit Lotus – «Buch Menü» öffnet das Menü, «Buch Hilfe» (Lotus mit Schild HILFE) baut die Hilfe neu und öffnet sie im Browser. Linux: Startmenü und Schreibtisch (beim ersten Mal Rechtsklick → «Start erlauben»), Windows: Buchordner und Schreibtisch, Mac: «Buch Menü.command» im Buchordner und auf dem Schreibtisch. Neue Bücher bekommen ihn mit `setup`. Buchordner verschoben? `v` nochmals – überschreibt den alten Starter.
 - Klang und letzte Befehle stehen in `.menu` (kommt nicht zu GitHub).
 
 ## Die Buchdateien und Ordner
@@ -1523,7 +1523,7 @@ sh update.sh pruefen    # nur nachsehen, nichts ändern
 sh update.sh lokal      # aus dem Ordner ../pureSATZ statt von GitHub
 ```
 
-Ersetzt wird nur der Ordner `motor/` – deine MD-Dateien, Stichworte, Fotos und Bilder bleiben unberührt. Der alte Motor bleibt als `motor-alt-…` liegen. Braucht git und Internet, aber keine Anmeldung – pureSATZ ist öffentlich. Danach `sh build.sh schnell` und, wenn das Buch auf mehreren Computern liegt, `sh sync.sh`. Ohne Internet, aus dem Ordner `pureSATZ` neben dem Buch (oder eine Ebene höher, z. B. bei `buecher/Buch`): `sh update.sh lokal` (oder im Ordner pureSATZ: `sh setup/setup.sh motor ../<buch>`).
+Ersetzt wird nur der Ordner `motor/` – deine MD-Dateien, Stichworte, Fotos und Bilder bleiben unberührt. Der alte Motor bleibt als `motor-alt-…` liegen (nur der letzte, ältere räumt das Update weg). Braucht git und Internet, aber keine Anmeldung – pureSATZ ist öffentlich. Danach `sh build.sh schnell` und, wenn das Buch auf mehreren Computern liegt, `sh sync.sh`. Ohne Internet, aus dem Ordner `pureSATZ` neben dem Buch (oder eine Ebene höher, z. B. bei `buecher/Buch`): `sh update.sh lokal` (oder im Ordner pureSATZ: `sh setup/setup.sh motor ../<buch>`).
 
 ## Windows
 
