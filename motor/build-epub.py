@@ -49,26 +49,26 @@ PORTRAIT_ALT = f"Porträt von {AUTOR}"
 
 
 def esc(t):
-    codes = []                                  # `Code` bleibt wörtlich (ab 2.76)
+    codes = []                                  # `Code` bleibt wörtlich
     t = re.sub(r"`([^`]+)`", lambda m: codes.append(m.group(1)) or f"\x00{len(codes) - 1}\x00", t)
     t = html.escape(t, quote=False).replace("&lt;br/&gt;", "<br/>")
     t = re.sub(r"\[([^\]]+)\]\((https?://[^)\s]+)\)", r'<a href="\2">\1</a>', t)
-    t = re.sub(r"\[([^\]]+)\]\(#([^)\s]+)\)", r'<a href="#@@\2@@">\1</a>', t)   # Verweis im Buch (ab 2.81)
+    t = re.sub(r"\[([^\]]+)\]\(#([^)\s]+)\)", r'<a href="#@@\2@@">\1</a>', t)   # Verweis im Buch
     t = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", t)
-    t = re.sub(r"(?<![\w*])\*(?=\S)([^*\n]+?)(?<=\S)\*(?![\w*])", r"<em>\1</em>", t)            # 2.84.7: *kursiv*
+    t = re.sub(r"(?<![\w*])\*(?=\S)([^*\n]+?)(?<=\S)\*(?![\w*])", r"<em>\1</em>", t)            # *kursiv*
     return re.sub(r"\x00(\d+)\x00", lambda m: "<code>" + html.escape(codes[int(m.group(1))], quote=False) + "</code>", t)
 
 
 # --- Bilder -----------------------------------------------------------------
 # Titelbild: nur Vorder- und Rückseite zeichnen (viel schneller als das ganze Buch).
-# Texte des Umschlags: Blöcke «::: nur-ebook» oder Zeilen «- name-ebook:», gibt es keine, dann wie im Druck («::: nur-druck»,
-# z. B. «Erstausgabe {jahr}» statt «Stand …» des Bildschirm-PDFs).
+# Texte des Umschlags: Bereich «@EBOOK» oder Zeilen «name-ebook:», gibt es keine, dann wie im Druck («@PRINT»,
+# z. B. «Erstausgabe {jahr}» statt «Stand …» des Lese-PDFs).
 def _umschlag_medium():
     try:
         text = open(os.path.join(BASE, bk.UMSCHLAG), encoding="utf-8").read()
     except OSError:
         return "druck"
-    return "ebook" if re.search(r"^\s*(:::\s*nur-ebook\b|(?:[-*]\s+)?[a-z-]+-ebook\s*:)", text, re.M | re.I) else "druck"
+    return "ebook" if re.search(r"^\s*(@EBOOK\b|[a-z-]+-ebook\s*:)", text, re.M) else "druck"
 
 
 from reportlab.pdfgen import canvas as _canvas
@@ -115,6 +115,11 @@ def rundbild(datei):
 
 ORN = '<div class="orn"><img src="img/lotus.png" alt=""/></div>'
 
+
+def zier_satz(t):
+    """@DECORATE: Lotus, der Satz, Lotus."""
+    return f'{ORN}<p class="zitat">{esc(t)}</p>{ORN}'
+
 # --- Kapitel aus text.md ------------------------------------------------------
 dateien = []          # (dateiname, titel, inhalt-html)
 nav = []              # (ebene, titel, ziel)
@@ -129,13 +134,13 @@ teilnr = 0
 seitennr = 0
 
 
-INITIAL_Z = (bk.V("initial-zeilen", "3") or "3").strip()           # 2.82.8: 0 = aus · 1 = erhöht · 2 · 3 · 4
-INITIAL = (bk.V("initial", "nein") or "").strip().lower() in ("ja", "j") and INITIAL_Z != "0"          # ab 2.77
-INITIAL_TITEL = (bk.V("initial", "nein") or "").strip().lower() == "titel"      # 2.82.9: im Kapiteltitel
+INITIAL_Z = (bk.V("initial-zeilen", "3") or "3").strip()           # 0 = aus · 1 = erhöht · 2 · 3 · 4
+INITIAL = (bk.V("initial", "nein") or "").strip().lower() in ("ja", "j") and INITIAL_Z != "0"
+INITIAL_TITEL = (bk.V("initial", "nein") or "").strip().lower() == "titel"      # im Kapiteltitel
 INITIAL_STUFEN = {int(z) for z in re.findall(r"[234]", bk.V("initial-stufen", "2") or "2")} or {2}
 ki = lambda n: " class='ini'" if INITIAL_TITEL and n in INITIAL_STUFEN else ""     # <h2/3/4> mit grossem 1. Buchstaben
 EINZUG = (bk.V("absatz-einzug", "nein") or "").strip().lower() in ("ja", "j")
-KAP = (bk.V("kapitaelchen", "nein") or "").strip().lower() in ("ja", "j")                # ab 2.80
+KAP = (bk.V("kapitaelchen", "nein") or "").strip().lower() in ("ja", "j")
 NACH_KAPITEL = [False]
 
 
@@ -149,7 +154,7 @@ def flush_absatz():
         NACH_KAPITEL[0] = False
 
 
-ZIEL = {}             # Sprungmarke einer Überschrift -> «datei.xhtml#id» (Verweise [Text](#Abschnitt), ab 2.81)
+ZIEL = {}             # Sprungmarke einer Überschrift -> «datei.xhtml#id» (Verweise [Text](#Abschnitt))
 
 
 def ziel(text, id_):
@@ -200,8 +205,8 @@ def liste_zu():
 
 def uz_html(titel, inhalt):
     """Unzensiert-Kasten als <aside>."""
-    hinweis = getattr(E, "KASTEN_HINWEIS", "")
-    h = [f'<aside class="uz"><p class="uzkopf">{esc(getattr(E, "KASTEN_KOPF", "UNZENSIERT"))}'
+    hinweis = getattr(E, "BLOCK_HINWEIS", "")
+    h = [f'<aside class="uz"><p class="uzkopf">{esc(getattr(E, "BLOCK_KOPF", "UNZENSIERT"))}'
          + (f' <span>· {esc(hinweis)}</span>' if hinweis else "") + '</p>']
     if titel:
         h.append(f'<p class="uztitel">{esc(titel)}</p>')
@@ -220,8 +225,8 @@ def uz_html(titel, inhalt):
         if ul: h.append(f"</{ul}>"); ul = False
         if not t:
             if p: h.append(f"<p>{esc(' '.join(p))}</p>"); p = []
-        elif t.startswith("~ "):
-            h.append(f'<p class="notiz">{esc(t[2:])}</p>')
+        elif t.startswith("@ASIDE "):
+            h.append(f'<p class="notiz">{esc(t[7:])}</p>')
         else:
             p.append(t)
     h.append("</aside>")
@@ -316,30 +321,29 @@ for zeile in bk.text_zeilen():
                 lp_aktiv = _norm(zeile.lstrip("# ")) in LP_KAPITEL
         if not lp_aktiv:
             continue
-    elif LESEPROBE and not isinstance(zeile, tuple) and zeile.startswith(("# ", "## ")) and sammle is None:
+    elif LESEPROBE and not isinstance(zeile, tuple) and zeile.startswith(("# ", "## ")) \
+            and not zeile.startswith("## @") and sammle is None:
         if lp_fertig:
             break                         # Leseprobe: hier hört sie auf
         if not (zeile.startswith("# ") and "|" in zeile):       # Teil-Seiten zählen nicht als Kapitel
             lp_zahl += 1
             lp_fertig = lp_zahl >= int(LESEPROBE) if LESEPROBE.isdigit() else LESEPROBE.lower() in zeile.lower()
     if sammle is not None:
-        if isinstance(zeile, tuple) and zeile[0] == "WIDMUNG":
-            vorspann["widmung"] = " ".join(t.strip() for t in zeile[2] if t.strip()); continue
-        if not isinstance(zeile, tuple) and zeile.strip() == "@HINWEIS" and sammle in ("impressum", "widmung_z"):
+        if not isinstance(zeile, tuple) and zeile.strip() == "@NOTICE" and sammle in ("impressum", "widmung_z"):
             sammle = "impressum"; vorspann["impressum"].append(""); continue     # Hinweis unten im Impressum
-        if not isinstance(zeile, tuple) and zeile.strip() == "@WIDMUNG" and sammle == "impressum":
+        if not isinstance(zeile, tuple) and zeile.strip() == "@DEDICATION" and sammle == "impressum":
             sammle = "widmung_z"; vorspann["widmung_z"] = []; continue
         if isinstance(zeile, tuple) or zeile.lstrip().startswith(("#", "@")):
             sammle = None
         else:
             vorspann[sammle].append(zeile); continue
-    if isinstance(zeile, tuple) and zeile[0] == "ZEITSTRAHL":
+    if isinstance(zeile, tuple) and zeile[0] == "TIMELINE":
         flush_absatz()
         zeilen_z = "\n".join(f"<tr><td class='jahr'>{esc(a)}</td><td>{esc(b)}</td></tr>"
                              for a, b in bk.zeitstrahl_zeilen(zeile[2]))
         aktuell["html"].append(f"<table>{zeilen_z}</table>")
         continue
-    if isinstance(zeile, tuple) and zeile[0] == "ZUSAMMEN":     # im E-Book: normaler Text
+    if isinstance(zeile, tuple) and zeile[0] == "KEEP-TOGETHER":     # im E-Book: normaler Text
         flush_absatz()
         for z in zeile[2] + [""]:
             t = z.strip()
@@ -349,52 +353,28 @@ for zeile in bk.text_zeilen():
                 tag = "ul" if art == "-" else "ol"
                 aktuell["html"].append(f"<{tag}" + (' class="unter"' if e else "")
                                        + (f' start="{art}"' if tag == "ol" and art != 1 else "") + f"><li>{esc(text)}</li></{tag}>")
-            elif t.startswith("> "): aktuell["html"].append(f'{ORN}<p class="zitat">{esc(t[2:])}</p>{ORN}')
+            elif t.startswith("@DECORATE "): flush_absatz(); aktuell["html"].append(zier_satz(t[10:]))
+            elif t.startswith("@ASIDE "): flush_absatz(); aktuell["html"].append(f'<p class="notiz">{esc(t[7:])}</p>')
             else: absatz.append(t)
         flush_absatz()
         continue
     if isinstance(zeile, tuple):
         flush_absatz()
         liste_zu(); NUM = bk.Nummerierung()
-        if zeile[0] == "UZ":
+        if zeile[0] == "BLOCK":
             aktuell["html"].append(uz_html(zeile[1], zeile[2]))
-        elif zeile[0] == "OFFEN":        # nur im Entwurf: gelb markiert
+        elif zeile[0] == "DRAFT":        # nur im Entwurf: gelb markiert
             aktuell["html"].append(uz_html("", zeile[2]).replace('class="uz"', 'class="uz offen"', 1)
-                                   .replace(esc(getattr(E, "KASTEN_KOPF", "UNZENSIERT")), "OFFEN", 1))
-        elif zeile[0] == "SEITE":        # eigene Seite (z. B. «Über den Autor»)
-            seitennr += 1
-            name = f"seite{seitennr}.xhtml"
-            neue_datei(name, zeile[1])
-            aktuell["html"].append(f'<h2 id="s{seitennr}">{esc(zeile[1])}</h2>')
-            nav.append((1, zeile[1], name))
-        elif zeile[0] == "PORTRAIT":
-            datei, _, text = zeile[2][0].partition("|")
-            name = rundbild(datei.strip())
-            if name:
-                aktuell["html"].append(f'<div class="bild"><img class="portrait" src="img/{name}" alt="{esc(text.strip() or PORTRAIT_ALT)}"/></div>'
-                                       + (f'<p class="bildtext">{esc(text.strip())}</p>' if text.strip() else ""))
-        elif zeile[0] == "QR":           # im E-Book als Links statt QR-Codes
-            for z in zeile[2]:
-                url, _, label = z.partition("|")
-                aktuell["html"].append(f'<p class="mitte"><a href="{esc(url.strip())}">{esc(label.strip().replace("<br/>", " · "))}</a></p>')
-        elif zeile[0] == "ZEIT":         # Zeitstrahl als eigene Datei
-            seitennr += 1
-            titel_z = zeile[1] or getattr(E, "WORT_ZEITSTRAHL", "Zeitstrahl")
-            name = f"seite{seitennr}.xhtml"
-            neue_datei(name, titel_z)
-            zeilen_z = "\n".join(f"<tr><td class='jahr'>{esc(a)}</td><td>{esc(b)}</td></tr>"
-                                 for a, b in bk.zeitstrahl_zeilen(zeile[2]))
-            aktuell["html"].append(f"<h2 id='z{seitennr}'>{esc(titel_z)}</h2><table>{zeilen_z}</table>")
-            nav.append((1, titel_z, name))
-        elif zeile[0] == "CODE":          # Code-Block wörtlich (ab 2.76)
+                                   .replace(esc(getattr(E, "BLOCK_KOPF", "UNZENSIERT")), "OFFEN", 1))
+        elif zeile[0] == "CODE":          # Code-Block wörtlich
             aktuell["html"].append("<pre>" + html.escape("\n".join(zeile[2]), quote=False) + "</pre>")
-        elif zeile[0] == "MITTE":         # zentrierter Block zwischen zwei Lotusblüten
+        elif zeile[0] == "DECORATE-REST":  # zentrierter Block zwischen zwei Lotusblüten
             absaetze, p = [], []
             for z in zeile[2] + [""]:
                 if z.strip(): p.append(z.strip())
                 elif p: absaetze.append(" ".join(p)); p = []
             aktuell["html"].append(ORN + "".join(f'<p class="mitte">{esc(a)}</p>' for a in absaetze) + ORN)
-        elif zeile[0] == "FOTO":          # nur echte Fotos, keine Vorschläge im E-Book
+        elif zeile[0] == "PICTURE":       # nur echte Fotos, keine Vorschläge im E-Book
             pfad, text, _, datei = bk.foto_info(zeile[2])
             if pfad and VERZ_E_AN["bild"]:
                 VERZ_E["bild"].append(text or zeile[1])
@@ -434,6 +414,40 @@ for zeile in bk.text_zeilen():
         s = s.replace("\\.", ".", 1)
     if not s.strip():
         flush_absatz(); continue
+    b = bk.M.befehl(s) if s.startswith(("@", "## @")) else None
+    if b is not None:                            # Befehl (3.0); Layout-Befehle gelten im E-Book nicht
+        flush_absatz()
+        n, t = b.name, b.text
+        if n == "DECORATE-PAGE" and b.kopf:      # «## @DECORATE-PAGE Satz» in der Titelei
+            vorspann["kernsatz"] = t
+        elif n == "DECORATE-PAGE":
+            aktuell["html"].append(f'<div class="motto">{zier_satz(t)}</div>')
+        elif n == "DECORATE":
+            aktuell["html"].append(zier_satz(t))
+        elif n == "DECORATE-TEXT":
+            aktuell["html"].append(f'<p class="zitat" style="margin-top: 3em;">{esc(t)}</p>' if b.ort == "BOTTOM"
+                                   else f'<p class="zitat">{esc(t)}</p>')
+        elif n == "ASIDE":
+            aktuell["html"].append(f'<p class="notiz">{esc(t)}</p>')
+        elif n == "NEWPAGE" and not b.zahl:     # im E-Book neue Seite
+            aktuell["html"].append('<div class="umbruch"></div>')
+        elif n == "TITLE":
+            sammle = "titel"
+        elif n == "IMPRINT":
+            sammle = "impressum"
+        elif n == "QR":                          # im E-Book: Links statt QR-Codes (QR-RIGHT: Link steht im Text)
+            for x in t.split(";;"):
+                url, _, label = x.partition("|")
+                label = (label.strip() or url.strip()).replace("<br/>", ": ")
+                aktuell["html"].append(f'<p><a href="{esc(url.strip())}">{esc(label)}</a></p>')
+        elif n in ("LIST-PICTURES", "LIST-TABLES"):
+            verzeichnis_datei("bild" if n == "LIST-PICTURES" else "tabelle")
+        elif n in ("PICTURE-CREDITS", "INDEX", "BACK-COVER"):
+            if n != "PICTURE-CREDITS":
+                verzeichnisse_auto_e()
+            if not bn_gesetzt:
+                bildnachweis_datei()
+        continue
     if s.startswith("# ") and "|" not in s:      # Kapitel oberster Ebene: eigene Datei
         seitennr += 1
         t = s[2:].strip()
@@ -475,26 +489,6 @@ for zeile in bk.text_zeilen():
         aktuell["html"].append(f'<h2{ki(2)} id="{ziel(s[3:], anker)}">{esc(s[3:])}</h2>'); NACH_KAPITEL[0] = True
         if TIEFE >= 2:
             nav.append((2 if any(n[0] == 1 for n in nav) else 1, s[3:], f"{aktuell['name']}#{anker}"))
-    elif s.startswith("> "):
-        flush_absatz()
-        aktuell["html"].append(f'{ORN}<p class="zitat">{esc(s[2:])}</p>{ORN}')
-    elif s.startswith("~ "):
-        flush_absatz(); aktuell["html"].append(f'<p class="notiz">{esc(s[2:])}</p>')
-    elif s.strip() in ("@UMBRUCH", "@UMBRUCH-RECHTS"):     # «---»: im E-Book neue Seite
-        flush_absatz(); aktuell["html"].append('<div class="umbruch"></div>')
-    elif s.startswith("@MOTTO "):
-        flush_absatz()
-        aktuell["html"].append(f'<div class="motto">{ORN}<p class="zitat">{esc(s[7:])}</p>{ORN}</div>')
-    elif s.startswith("@ZITAT "):
-        flush_absatz(); aktuell["html"].append(f'<p class="zitat">{esc(s[7:])}</p>')
-    elif s.startswith("@UNTEN "):
-        flush_absatz(); aktuell["html"].append(f'<p class="zitat" style="margin-top: 3em;">{esc(s[7:])}</p>')
-    elif s == "@TITEL":
-        flush_absatz(); sammle = "titel"
-    elif s == "@IMPRESSUM":
-        flush_absatz(); sammle = "impressum"
-    elif s.startswith("@KERNSATZ"):
-        flush_absatz(); vorspann["kernsatz"] = s[9:].strip()
     elif s.startswith("@PORTRAIT "):
         flush_absatz()
         datei, _, text = s[10:].partition("|")
@@ -502,22 +496,6 @@ for zeile in bk.text_zeilen():
         if name:
             aktuell["html"].append(f'<div class="bild"><img class="portrait" src="img/{name}" alt="{esc(text.strip() or PORTRAIT_ALT)}"/></div>'
                                    + (f'<p class="bildtext">{esc(text.strip())}</p>' if text.strip() else ""))
-    elif s.startswith("@QR-FLUSS "):              # 2.84.11: im E-Book weglassen (Link steht im Text)
-        flush_absatz()
-    elif s.startswith(("@QR-PAAR ", "@QR ")):     # im E-Book: Links statt QR-Codes
-        flush_absatz()
-        for x in s.split(" ", 1)[1].split(";;"):
-            url, _, label = x.partition("|")
-            label = (label.strip() or url.strip()).replace("<br/>", ": ")
-            aktuell["html"].append(f'<p><a href="{esc(url.strip())}">{esc(label)}</a></p>')
-    elif s.strip() in ("@BILDERVERZEICHNIS", "@TABELLENVERZEICHNIS"):
-        flush_absatz(); verzeichnis_datei("bild" if s.strip() == "@BILDERVERZEICHNIS" else "tabelle")
-    elif s.startswith(("@BILDNACHWEIS", "@STICHWORTE", "@RUECKSEITE")):
-        flush_absatz()
-        if not s.startswith("@BILDNACHWEIS"):
-            verzeichnisse_auto_e()
-        if not bn_gesetzt:
-            bildnachweis_datei()
     elif s.startswith("@#"):                     # Tabelle aus tabellen/*.csv
         flush_absatz(); aktuell["html"].append(tabelle_html(s))
         if VERZ_E_AN["tabelle"]:
@@ -543,7 +521,7 @@ if LESEPROBE:                             # Schlussseite wie im PDF, mit Link st
     nav.append((1, "Ende der Leseprobe", "leseprobe-ende.xhtml"))
 neue_datei(None, None)
 
-# Titelseite mit Impressum (vorne), alles aus @TITEL / @IMPRESSUM / @KERNSATZ der MD
+# Titelseite mit Impressum (vorne), alles aus @TITLE / @IMPRINT / ## @DECORATE-PAGE der MD
 titelz = [z.strip() for z in vorspann["titel"] if z.strip()]
 
 

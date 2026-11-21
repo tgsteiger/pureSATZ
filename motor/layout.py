@@ -80,7 +80,7 @@ TEIL = dict(
 #   # Teil 2|Titel|Untertitel|berge.jpg
 
 # --- Verzierung (Zitate, @ZIER, Motto, Mitte-Blöcke) --------------------------------
-# Eigenes Bild fürs ganze Buch: in der MD «zier: bild.png» (und «zier-hell: bild-hell.png»).
+# Eigenes Bild fürs ganze Buch: in der Variablen-Datei «{logo}: bild.png» (und «{logo-light}: bild-hell.png»).
 VERZIERUNG = dict(bild="verzierung.png", hell="verzierung-hell.png", linie="akzent")
 
 # --- Umschlag ------------------------------------------------------------------------

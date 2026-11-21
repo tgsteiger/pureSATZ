@@ -30,10 +30,10 @@ FARBIG = not WIN and sys.stdout.isatty()                           # Farben/fett
 FETT = (lambda t: f"\033[1;38;5;178m{t}\033[0m") if FARBIG else (lambda t: t)   # Bereich / Titel: fett, Gold
 HELL = (lambda t: f"\033[1;97m{t}\033[0m") if FARBIG else (lambda t: t)          # Buchname: fett, weiss
 GRAU = (lambda t: f"\033[38;5;244m{t}\033[0m") if FARBIG else (lambda t: t)      # Trennlinien: gedämpft
-GRUEN = (lambda t: f"\033[38;5;108m{t}\033[0m") if FARBIG else (lambda t: t)    # ✓ nach einem Lauf (gedämpft, 2.82.3)
-ROT = (lambda t: f"\033[38;5;167m{t}\033[0m") if FARBIG else (lambda t: t)      # ✗ Fehler (gedämpft, 2.82.3)
+GRUEN = (lambda t: f"\033[38;5;108m{t}\033[0m") if FARBIG else (lambda t: t)    # ✓ nach einem Lauf (gedämpft)
+ROT = (lambda t: f"\033[38;5;167m{t}\033[0m") if FARBIG else (lambda t: t)      # ✗ Fehler (gedämpft)
 GOLDFEIN = (lambda t: f"\033[38;5;136m{t}\033[0m") if FARBIG else (lambda t: t)  # Linien um einen Lauf: fein, dunkleres Gold
-SCHILD = (lambda t: f"\033[1;38;5;234;48;5;178m {t} \033[0m") if FARBIG else (lambda t: t)   # Buchname: goldenes Schild (2.69.19)
+SCHILD = (lambda t: f"\033[1;38;5;234;48;5;178m {t} \033[0m") if FARBIG else (lambda t: t)   # Buchname: goldenes Schild
 zuletzt = ""                                                                   # letzte Eingabe (für die Startlinie)
 RAND = 71                                                                      # rechter Rand von Kopfzeile, Linien, «Weiteres»
 
@@ -86,7 +86,7 @@ sys.path.insert(0, MOTOR)
 import plattform                        # noqa: E402
 PURESATZ = plattform.puresatz(BASE)    # ../pureSATZ oder ../../pureSATZ (z. B. buecher/Buch)
 LOKAL = os.path.isdir(os.path.join(PURESATZ, "motor"))
-BEFEHLE = ("cover-stand", "schnell", "komplett", "final", "entwurf", "leseprobe", "korrektur", "nur-pdf", "nur-druck", "nur-ebook", "covers", "isbn",
+BEFEHLE = ("co", "cover-stand", "schnell", "komplett", "final", "entwurf", "leseprobe", "korrektur", "nur-pdf", "nur-druck", "nur-ebook", "covers", "isbn",
            "pruefen", "personen", "stichworte", "stand", "aenderungen", "änderungen", "geschichten", "hilfe", "mockup", "sicherung")
 MD = {"b": ("Buch", "*-buch.md"), "v": ("Variablen", "*-variablen.md"), "u": ("Umschlag", "*-umschlag.md"),
       "s": ("Stichworte", "stichworte-*.txt"), "h": ("meine Hilfe", "meine-hilfe.md")}
@@ -94,7 +94,7 @@ WEG = ("check_", "_Buchblock", "_Cover", "_Umschlag", "_booklet", "_Inhalt", "_A
        "_tmp")
 ton = True
 gelaufen = False                       # hat der letzte Menüpunkt etwas ausgeführt (Meldungen stehen lassen)?
-INITIAL_VERLAUF = []                   # ↑ ↓ im Initialen-Menü (2.82.16), in EINST als «in:…»
+INITIAL_VERLAUF = []                   # ↑ ↓ im Initialen-Menü, in EINST als «in:…»
 
 
 def einstellungen(speichern=False):
@@ -214,7 +214,7 @@ def lauf(cmd, ordner=BASE, env=None, titel=None):
     d = int(time.time() - t)
     zeit = f" · {d // 60} Min. {d % 60} s"
     text = (GRUEN("✓ ") + FETT(name) + GOLDFEIN(" fertig" + zeit)) if r == 0 \
-        else (ROT("✗ ") + FETT(name) + ROT(" Fehler – siehe oben") + GOLDFEIN(zeit))      # 2.82.21: mit Befehl
+        else (ROT("✗ ") + FETT(name) + ROT(" Fehler – siehe oben") + GOLDFEIN(zeit))      # mit Befehl
     print(linie(text, len(name) + len(zeit) + (13 if r == 0 else 26)) + "\n")   # Schlusslinie, dann Leerzeile
     klang()
     return r
@@ -258,7 +258,7 @@ def pdfs():
 
 
 def fassungen_zwei():
-    """Hat das Buch eine zweite Fassung (UZ)? Dann gibt es s1 / s2 (2.84.8)."""
+    """Hat das Buch die Fassung UC? Dann gibt es s1 / s2 (2.84.8)."""
     try:
         return len(open(os.path.join(BASE, "_druckbilder", "pruefen.txt"), encoding="utf-8").read().split()[1:]) > 1
     except OSError:
@@ -361,7 +361,7 @@ def status_zeile():
     teile, bau = [], ""
     for f in sorted(glob.glob(os.path.join(BASE, "ausgabe-*", "00-UEBERSICHT.txt"))):
         name = os.path.basename(os.path.dirname(f))[8:]
-        kurz = {"normal": "N", "unzensiert": "UZ"}.get(name, name[:3].upper())
+        kurz = {"normal": "N", "unzensiert": "UC"}.get(name, name[:3].upper())
         text = open(f, encoding="utf-8").read()
         m = re.search(r"_Buchblock\.pdf\s.*?(\d+) S\.", text)
         teile.append(f"{kurz} {m.group(1)} S." if m else f"{kurz} –")
@@ -412,7 +412,7 @@ def trennstellen_menue():
         e = frage(" Wahl: ").strip()
         if not e or e == "q":
             return
-        if e.isdigit() or e.lower() in ("aus", "an"):              # 2.84.7: {silbentrennung} setzen
+        if e.isdigit() or e.lower() in ("aus", "an"):              # {silbentrennung} setzen
             wert = {"aus": "nein", "an": "ja"}.get(e.lower(), e)
             k = next((n for n, z in enumerate(zeilen) if z.startswith("{silbentrennung}:")), None)
             if k is None:
@@ -553,7 +553,7 @@ def einordnen(extra=None):
         pos = max([i + 1 for i in range(k + 1, ende) if s[i].lstrip("# ").startswith(("@@", "@#"))] or [k + 1])
     else:                                           # nach der letzten @@-Zeile, sonst vor den Anhang, sonst ans Ende
         pos = v[-1][0] if v else next((i for i, x in enumerate(s) if x.startswith("# ") and "anhang" in x.lower()), len(s))
-        pos += 1 if v and pos < len(s) and s[pos] == ":::" else 0          # nicht in einen ::: nur-uz-Block
+        pos += 1 if v and pos < len(s) and s[pos] in (":::", "@END") else 0   # nicht in einen @UC-Bereich
         neu = ["", kopf] + neu + ([""] if not v and pos < len(s) else [])
     z[pos:pos] = neu
     open(buch, "w", encoding="utf-8").write("\n".join(z))
@@ -776,7 +776,7 @@ def alle_in_einer_datei():
         with open(ALLE, "w", encoding="utf-8") as f:
             f.write("> Alle Geschichten in einer Datei. Text frei ändern, Steuerzeichen unverändert lassen:\n"
                     "> @@@ name (Trennzeile, nie ändern) · stand: / stichworte: / quelle: / notiz: (Kopfzeilen) ·\n"
-                    "> # bis #### (Titel) · @#name (Tabelle) · #### @FOTO (Foto) · > (Zitat) · ::: … ::: (Bereiche)\n"
+                    "> # bis #### (Titel) · @#name (Tabelle) · #### @PICTURE (Foto) · @DECORATE (Satz) · @UC … @END (Bereiche)\n"
                     "> Antwort bitte vollständig als Markdown mit allen Steuerzeichen, zum Kopieren.\n"
                     "> Zurück in die Einzeldateien: Menü g → a.\n\n"
                     + "".join(f"@@@ {n}\n{open(alle[n], encoding='utf-8').read().strip()}\n\n" for n in G.reihe(BASE, buchdatei())))
@@ -814,11 +814,11 @@ def cover_faellig():
     return out
 
 
-def cover_menue():
-    """cv: Druckdateien mit fälligem Coverrechner öffnen und sagen, was zu tun ist."""
+def cover_menue(still=False):
+    """co: Druckdateien mit fälligem Coverrechner öffnen und sagen, was zu tun ist (still: nichts sagen, wenn alles passt)."""
     faellig = cover_faellig()
     if not faellig:
-        return print("  Coverrechner: alles passt (oder noch kein «final» gebaut).")
+        return None if still else print("  Coverrechner: alles passt (oder noch kein «final» gebaut).")
     for k, d, n, b, g, _ in faellig:
         print(f"  {FETT(k)}: Buchblock {n} Seiten, Werte für {b} – {g}. Öffne {d} …")
         oeffnen(os.path.join(BASE, d))
@@ -837,8 +837,8 @@ INITIAL_FARBEN = (("g", "akzent", "gold", "Akzentfarbe, wie Zierlinien und Lotus
 
 
 INITIAL_SCHLUESSEL = ("initial", "initial-stufen", "initial-zeilen", "initial-schrift", "initial-farbe", "kapitaelchen",
-                      "absatz-einzug", "fett-anfang-farbe", "fett-anfang-stil",       # fett-anfang: 2.82.26
-                      "mitte-stil", "qr-farbe", "farbschema")                       # Gestaltung: 2.82.29
+                      "absatz-einzug", "fett-anfang-farbe", "fett-anfang-stil",       # fett-anfang
+                      "decorate-stil", "qr-farbe", "farbschema")                       # Gestaltung
 
 
 def initialen_menue():
@@ -851,7 +851,7 @@ def initialen_menue():
         return
     standard = {"initial": "nein", "initial-stufen": "2", "initial-zeilen": "3", "initial-schrift": "",
                 "initial-farbe": "akzent", "kapitaelchen": "nein", "absatz-einzug": "nein",
-                "fett-anfang-farbe": "", "fett-anfang-stil": "", "mitte-stil": "zitat", "qr-farbe": "",
+                "fett-anfang-farbe": "", "fett-anfang-stil": "", "decorate-stil": "zitat", "qr-farbe": "",
                 "farbschema": "1"}
     while True:
         zeilen = open(pfad, encoding="utf-8").read().split("\n")
@@ -883,13 +883,13 @@ def initialen_menue():
                     "fa": {"haupt": "blau", "blau": "blau", "akzent": "gold", "gold": "gold"}.get(
                         wert("fett-anfang-farbe", f), "schwarz")
                     + (" · Kapitälchen" if wert("fett-anfang-stil", f) in ("kapitaelchen", "ja") else ""),
-                    "mi": {"aufrecht": "aufrecht", "blau": "blau aufrecht"}.get(wert("mitte-stil", f), "wie Zitat"),
+                    "mi": {"aufrecht": "aufrecht", "blau": "blau aufrecht"}.get(wert("decorate-stil", f), "wie Zitat"),
                     "qr": "blau" if wert("qr-farbe", f) in ("haupt", "blau") else "schwarz",
                     "sc": (wert("farbschema", f) + " " + next((re.sub(r"^### Farbschema \d+:?\s*", "", z) for z in zeilen
                            if z.startswith(f"### Farbschema {wert('farbschema', f)}")), ""))[:16]}
 
         st = {f: stand(f) for f in fassungen}
-        print("\n " + FETT("Gestaltung …".ljust(27)) + "".join(FETT(("normal" if f == "normal" else "unzensiert").ljust(17))
+        print("\n " + FETT("Gestaltung …".ljust(27)) + "".join(FETT(("normal" if f == "normal" else "UC").ljust(17))
                                                             for f in fassungen))
         for titel, k in (("Wo", "wo"), ("Schrift", "schrift"), ("Farbe", "farbe"), ("Kapitälchen", "kap"),
                          ("Einzug", "einzug"), ("Fett am Absatzanfang", "fa"), ("Mitte-Block", "mi"),
@@ -904,15 +904,15 @@ def initialen_menue():
         print(f"  {FETT('e1')} / {FETT('e0')}  Einzug ein / aus       " + GRAU("(Absätze eingerückt statt mit Abstand)"))
         print(f"  {FETT('fb')} {FETT('fg')} {FETT('fs')} Fett am Absatzanfang blau · gold · schwarz  " + GRAU("(«**Tantra.** Seit …»)"))
         print(f"  {FETT('fk1')} / {FETT('fk0')} Fett am Absatzanfang in Kapitälchen ein / aus")
-        print(f"  {FETT('mz')} {FETT('mb')} {FETT('ma')} Mitte-Block wie Zitat · blau aufrecht · aufrecht   " + GRAU("(::: mitte)"))
+        print(f"  {FETT('mz')} {FETT('mb')} {FETT('ma')} DECORATE kursiv · blau aufrecht · aufrecht   " + GRAU("({decorate-stil})"))
         print(f"  {FETT('qb')} / {FETT('qs')}  QR-Codes blau / schwarz · {FETT('sc1')} {FETT('sc2')} {FETT('sc3')} Farbschema")
         print(f"  {FETT('o')}        Variablen-Datei öffnen " + GRAU("(alle Farben und Werte)"))
         print(f"  {FETT('v')}        Vorschau " + GRAU("(schnell bauen, PDF öffnen)"))
         print(GRAU(" " + "─" * 54))
         if hat_uz:
-            print(f"  {FETT('n')} … = nur normal · {FETT('uz')} … = nur unzensiert · ohne = beide")
-            print(f"  {FETT('n0')} / {FETT('uz0')} = alles aus " + GRAU("(Initial, Kapitälchen, Einzug)"))
-            print(GRAU("  z. B.  n ti c b k1   ·   uz 0   ·   e1   ·   ↵ = zurück"))
+            print(f"  {FETT('n')} … = nur normal · {FETT('uc')} … = nur UC · ohne = beide")
+            print(f"  {FETT('n0')} / {FETT('uc0')} = alles aus " + GRAU("(Initial, Kapitälchen, Einzug)"))
+            print(GRAU("  z. B.  n ti c b k1   ·   uc 0   ·   e1   ·   ↵ = zurück"))
         else:
             print(GRAU("  z. B.  ti c b k1   ·   0   ·   e1   ·   ↵ = zurück"))
         e = frage_verlauf(" Wahl: ", INITIAL_VERLAUF).lower().split()
@@ -920,7 +920,7 @@ def initialen_menue():
             einstellungen(speichern=True)                 # Verlauf gleich sichern
             return
         ziel = list(fassungen)
-        if e[0] in ("n", "uz", "n0", "uz0") and hat_uz:
+        if e[0] in ("n", "uz", "uc", "n0", "uz0", "uc0") and hat_uz:
             ziel = ["normal" if e[0].startswith("n") else "uz"]
             if e[0].endswith("0"):
                 e[0:1] = ["0", "k0", "e0"]
@@ -945,7 +945,7 @@ def initialen_menue():
             elif t in ("fk1", "fk0"):
                 neu["fett-anfang-stil"] = "kapitaelchen" if t == "fk1" else ""
             elif t in ("mz", "mb", "ma"):
-                neu["mitte-stil"] = {"mz": "zitat", "mb": "blau", "ma": "aufrecht"}[t]
+                neu["decorate-stil"] = {"mz": "zitat", "mb": "blau", "ma": "aufrecht"}[t]
             elif t in ("qb", "qs"):
                 neu["qr-farbe"] = "haupt" if t == "qb" else ""
             elif re.fullmatch(r"sc\d", t):
@@ -995,8 +995,8 @@ def initialen_menue():
                 oeffnen(next(iter(liste.values()))[1])
 
 
-ISBN_AUSGABEN = (("Druck normal", "Druck normal"), ("Druck unzensiert", "Druck UZ"),
-                 ("E-Book", "E-Book normal"), ("E-Book unzensiert", "E-Book UZ"))
+ISBN_AUSGABEN = (("Druck normal", "Druck normal"), ("Druck unzensiert", "Druck UC"),
+                 ("E-Book", "E-Book normal"), ("E-Book unzensiert", "E-Book UC"))
 
 
 def isbn_menue():
@@ -1063,7 +1063,7 @@ def pruef_stand():
 
 
 def bp_marke():
-    """«bp Buch prüfen» mit dem Stand pro Fassung (2.82.3): «✓» bzw. «N ✓  UZ ✗». ✗ (rot) = Prüfung mit Fehler oder
+    """«bp Buch prüfen» mit dem Stand pro Fassung (2.82.3): «✓» bzw. «N ✓  UC ✗». ✗ (rot) = Prüfung mit Fehler oder
     Coverrechner-Warnung der Fassung, ? = noch nicht geprüft. Ist die Prüfung veraltet, prüft das Menü kurz selbst."""
     if not pruef_stand():
         try:                                          # still prüfen (ca. 1 s, nur nach Änderungen)
@@ -1080,7 +1080,7 @@ def bp_marke():
     marke = lambda f: ROT("✗") if stand == "fehler" or f in warn else ("✓" if stand == "ok" else "?")
     if len(fassungen) < 2:
         return "Buch prüfen " + marke(fassungen[0])
-    return "Buch prüfen  " + "  ".join(("N " if f == "normal" else "UZ ") + marke(f) for f in fassungen)
+    return "Buch prüfen  " + "  ".join(("N " if f == "normal" else "UC ") + marke(f) for f in fassungen)
 
 
 def motor_bereit():
@@ -1093,34 +1093,59 @@ def motor_bereit():
         return ""
 
 
+def alte_schreibweise():
+    """Liste der Dateien, die umbenennen.py noch umstellen würde (leer = alles 3.0). Fehler: still leer."""
+    try:
+        import umbenennen
+        return umbenennen.aenderungen(BASE)
+    except Exception:
+        return []
+
+
+def umstellen_menue():
+    """um (3.0.1): Buch auf die Schreibweise 3.0 umstellen – zeigen, fragen, sichern, schreiben."""
+    import umbenennen
+    liste = umbenennen.aenderungen(BASE)
+    if not liste:
+        return print(GRUEN("  ✓ Schon alles in der Schreibweise 3.0."))
+    umbenennen.zeigen(BASE, liste)
+    print(GRAU("  Das Buch sieht danach genau gleich aus. Sicherung in md-history/.")
+          + "\n" + FETT("  Andere Computer zuerst mit ss auf 3.0 bringen") + GRAU(" (ein älterer Motor kennt die neuen Namen nicht)."))
+    if frage(" Umstellen? [J/n]: ").lower() in ("n", "nein", "z", "q"):
+        return print("  Nichts geändert.")
+    print(GRUEN(f"  ✓ Umgestellt ({umbenennen.schreiben(BASE, liste)} Zeilen)") + GRAU("  → s bauen und ansehen"))
+
+
 def zeige():
     bp = bp_marke()                                   # zuerst: prüft bei Bedarf still (Stand für die Zeile unten)
     print("\n" + kopf(rechts=f"Klang ({FETT('!')}) {'ein' if ton else 'aus'}"))
-    motor_neu = motor_bereit()                         # 2.84.1: neuerer Motor in pureSATZ daneben?
+    motor_neu = motor_bereit()                         # neuerer Motor in pureSATZ daneben?
     if motor_neu:
         print(FETT(f" ⚠ Motor {motor_neu} bereit") + GRAU("  → ul"))
     for k, d, n, b, g, _ in cover_faellig():
-        print(FETT(f" ⚠ Coverrechner {k}: {n} Seiten, eingetragen für {b}") + GRAU(f"  ({g}) → co"))
+        print(FETT(f" ⚠ Coverrechner {k}: {n} Seiten, eingetragen für {b}") + GRAU(f"  ({g}) → co"))   # co öffnet die Datei
     if pruef_stand() == "fehler":
         print(ROT(" ✗ Buch prüfen: Fehler gefunden") + GRAU("  → bp"))
-    status = status_zeile()                           # 2.82.18: Stand auf einen Blick (Seiten, letzter Bau, Cover)
+    if alte_schreibweise():                            # 3.0.1: Buch noch in der Schreibweise vor 3.0?
+        print(FETT(" ⚠ Alte Schreibweise (vor 3.0)") + GRAU("  → um"))
+    status = status_zeile()                           # Stand auf einen Blick (Seiten, letzter Bau, Cover)
     if status:
         print(status)
-    spalten = [("1 Schreiben", [("m", "MD öffnen …"), ("g", "Geschichten …"), ("t", "Tabellen …")]),  # 2.82.18:
-                                                                                                    # Blöcke im Buchablauf,
-               ("Einstellen", [("in", "Gestaltung …"), ("tr", "Trennstellen …"), ("st", "Stichworte …"),  # Tasten gleich
-                                 ("is", "ISBN …")]),
-               ("2 Bauen", [("s", ("schnell  (sync + Lese-PDF)" if os.path.isdir(os.path.join(BASE, ".git"))
-                                   else "schnell  (Lese-PDF)") + ("  s1/2" if fassungen_zwei() else "")), ("k", "komplett (Druck + E-Book)")]   # 2.82.19: k = final
+    spalten = [("Schreiben", [("m", "MD öffnen …"), ("g", "Geschichten …"), ("t", "Tabellen …")]),
+               ("Einstellen", [("ge", "Gestaltung …"), ("tr", "Trennstellen …"), ("st", "Stichworte …"),   # links der Buch-
+                               ("is", "ISBN …")]),                                                          # ablauf, rechts was
+               ("Bauen", [("s", ("schnell  (sync + Lese-PDF)" if os.path.isdir(os.path.join(BASE, ".git"))  # dazugehört
+                                 else "schnell  (Lese-PDF)") + ("  s1/2" if fassungen_zwei() else "")),
+                          ("f", "final    (Druck + E-Book)"), ("k", "komplett (+ Leseprobe, Korr.)")]
                 + ([("hb", "Hörbuch … (Linux)")] if LINUX else [])),
-               ("Prüfen", [("bp", bp), ("co", "Coverrechner prüfen")]),        # 2.82.19: Prüfen neben Bauen
-               ("3 Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"), ("a", "änderungen (a|ä)"), ("zh", "Stand zurückholen …"),
-                              ("db", "Druckbericht")]),
-               ("Weitergeben", [("w", "beides: Leseprobe + Korrektur"), ("c", "check / gegenlesen …"),
-                                  ("lp", "Leseprobe    ko Korrektur"), ("np", "nur-pdf      ne nur E-Book")])]
+               ("Prüfen", [("bp", bp), ("co", "Coverrechner prüfen"), ("db", "Druckbericht")]),
+               ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"),
+                            ("sm", "Stand merken"), ("a", "änderungen (a|ä)"), ("zh", "Stand zurückholen …")]),
+               ("Weitergeben", [("c", "check / gegenlesen …"), ("lp", "Leseprobe    ko Korrektur"),
+                                ("np", "nur Lese-PDF ne nur E-Book")])]
     spalten_zeigen(spalten, "sy sync · ss neues Gerät (u+sy+s) · u update" + (" (ul lokal)" if LOKAL else "")
-                   + " · sm Stand merken · au aufräumen … · n neu · $ Terminal · : Befehle · h hilfe · hf finden",
-                   fliessend=True)  # Aufräumen in Weiteres
+                   + " · cl aufräumen … · n neu · $ Terminal · : Befehle · h hilfe · hf finden",
+                   fliessend=True)
     if os.path.exists(ALLE):
         print(SPERRE)
 
@@ -1131,7 +1156,7 @@ def spalten_zeigen(spalten, weiteres, fliessend=False):
     zweite = lambda t: re.sub(r"(\s{1,})([a-zäöü]{2}) ", lambda m: m.group(1) + FETT(m.group(2)) + " ", t, count=1) \
         if re.search(r"\s[a-z]{2} [A-ZÄÖÜa-z]", t[12:]) else t   # «Leseprobe    ko Korrektur»: zweite Taste gold
     linie = lambda t, n=30: GRAU("── ") + t + " " + GRAU("─" * (n - len(t)))
-    if fliessend:                                                     # 2.82.20: Hauptmenü – jede Spalte rückt
+    if fliessend:                                                     # Hauptmenü – jede Spalte rückt
         seite = [[], []]                                              # für sich nach oben, keine Leerzeilen
         for n, (t, z) in enumerate(spalten):
             seite[n % 2] += [("─", t)] + z
@@ -1145,7 +1170,7 @@ def spalten_zeigen(spalten, weiteres, fliessend=False):
         for a, b in zip(z1 + [("", "")] * 3, z2 + [("", "")] * 3):
             if a[0] or b[0]:
                 print((f"  {taste(a[0])}{a[1]:<33}" + (f"{taste(b[0])}{zweite(b[1])}" if b[0] else "")).rstrip())
-    print(f" {GRAU('──')} Weiteres {GRAU('─' * (RAND - 13))}")       # wie die anderen Gruppen (2.82.3)
+    print(f" {GRAU('──')} Weiteres {GRAU('─' * (RAND - 13))}")       # wie die anderen Gruppen
     zeile, laenge = "", 2                                              # Tasten unter den anderen Tasten, umbrechen bei RAND
     for i, t in enumerate(weiteres.split(" · ")):
         teil = (FETT(t.split(" ", 1)[0]) + " " + t.split(" ", 1)[1]) if " " in t else t
@@ -1166,7 +1191,7 @@ def befehle():
     """: Befehle zum Tippen – aus dem Spickzettel der Hilfe (hilfe.py); die Eingabe geht danach direkt ans Menü."""
     from hilfe import SPICKZETTEL
     liste = [(b[12:], t) for b, t in SPICKZETTEL if b.startswith("sh build.sh ") and b.split()[2] in BEFEHLE]
-    liste.append(("leseprobe uz 18,20", "Leseprobe nur mit diesen Seiten, nur Unzensiert"))
+    liste.append(("leseprobe uc 18,20", "Leseprobe nur mit diesen Seiten, nur UC"))
     breit = max(len(b) for b, _ in liste) + 2
     rest = max(20, min(90, shutil.get_terminal_size((90, 24)).columns) - breit - 3)   # Zeile höchstens 90 Zeichen
     print("\n Befehle – hier tippen (ohne Menü: sh build.sh … davor)")
@@ -1300,41 +1325,42 @@ def main():
                     break
                 continue
             seit = time.time()
-            if w == "cv":                                   # Coverrechner fällig? (ab 2.78)
-                cover_menue()
+            if w in ("co", "cv"):                           # Coverrechner: Stand zeigen (baut nichts), fällige Datei öffnen
+                if bauen("co") == 0:
+                    cover_menue(still=True)
             elif w == "hf" or w.startswith("hf "):          # hilfe finden: hf isbn
                 finde_hilfe(e[2:].strip())
-            elif w in ("s", "s1", "s2"):                    # 2.84.2: zuerst abgleichen (Buch bei GitHub), dann bauen
+            elif w in ("s", "s1", "s2"):                    # zuerst abgleichen (Buch bei GitHub), dann bauen
                 if os.path.isdir(os.path.join(BASE, ".git")) and skript("sync") != 0:
                     print(GRAU("  ⚠ sync nicht möglich – baue trotzdem"))
-                nur = {"s1": ["normal"], "s2": ["uz"]}.get(w, [])      # 2.84.8: s1 = nur normal, s2 = nur unzensiert
+                nur = {"s1": ["normal"], "s2": ["uz"]}.get(w, [])      # s1 = nur normal, s2 = nur unzensiert
                 k = "u" if w == "s2" else "n"
-                if bauen("schnell", *nur) == 0 and k in pdfs():       # 2.84.3: Lese-PDF gleich öffnen
+                if bauen("schnell", *nur) == 0 and k in pdfs():       # Lese-PDF gleich öffnen
                     oeffnen(pdfs()[k][1])
-            elif w == "k":                                  # 2.82.19: ohne Leseprobe/Korrektur (dafür w)
+            elif w == "f":                                  # Druck + E-Book
                 bauen("final")
-            elif w == "f":
-                bauen("final")
-            elif w == "db":                                 # Druckbericht des letzten Druck-Baus (ab 2.82.11)
+            elif w == "k":                                  # wie sh build.sh komplett: final + Leseprobe + Korrektur
+                bauen("komplett")
+            elif w == "db":                                 # Druckbericht des letzten Druck-Baus
                 oeffnen(next(iter(sorted(glob.glob(os.path.join(BASE, "*", "00-Druckbericht.pdf")))), None))
-            elif w == "co":                                 # Coverrechner prüfen, ohne zu bauen (ab 2.82.11)
-                bauen("cover-stand")
-            elif w == "in":
+            elif w == "um":                                 # 3.0.1: auf die Schreibweise 3.0 umstellen
+                umstellen_menue()
+            elif w in ("ge", "in"):                     # Gestaltung (in = alte Taste)
                 initialen_menue()
             elif w == "is":
                 isbn_menue()
             elif w == "st":
                 stichworte_menue()
-            elif w == "tr":                                 # Trennstellen (ab 2.82.18)
+            elif w == "tr":                                 # Trennstellen
                 trennstellen_menue()
             elif w in ("lp", "ko", "np", "ne"):
                 bauen({"lp": "leseprobe", "ko": "korrektur", "np": "nur-pdf", "ne": "nur-ebook"}[w])
             elif w == "sm":
                 name = frage(" Name des Stands: ")
                 bauen("stand", *([name] if name else []))
-            elif w == "au":
+            elif w in ("cl", "au"):                         # aufräumen (wie sh cleanup.sh)
                 lauf([sys.executable, os.path.join(MOTOR, "aufraeumen.py")], titel="aufräumen")
-            elif w == "w":                                  # 2.82.13: weitergeben = Leseprobe + Korrektur (ex «weitere»)
+            elif w == "w":                                  # alte Taste: Leseprobe + Korrektur (steckt in k)
                 if bauen("leseprobe") == 0:
                     bauen("korrektur")
             elif w == "m":
@@ -1344,7 +1370,7 @@ def main():
                     md["g"] = ("Geschichten …", "g")
                 md["t"] = ("Tabellen …", "t")
                 if druck_dateien():
-                    md["d"] = ("Druck …", "d")                # 2.82.12: Druckdatei(en) der Ausgaben
+                    md["d"] = ("Druck …", "d")                # Druckdatei(en) der Ausgaben
                 k = untermenue("MD öffnen …", {k: v for k, v in md.items() if v[1]})
                 if k == "g":
                     geschichte_oeffnen()
@@ -1413,7 +1439,7 @@ def main():
                         for p in glob.glob(os.path.join(BASE, "ausgabe-*", f"check_{name}_*.pdf")):
                             if os.path.getmtime(p) >= seit - 1:
                                 oeffnen(p)
-            elif w == "bp":                                 # Buch prüfen: Variablen, Druckdateien, Befehle, Fotos … (ab 2.82)
+            elif w == "bp":                                 # Buch prüfen: Variablen, Druckdateien, Befehle, Fotos …
                 bauen("pruefen")
             elif w in ("a", "ä"):
                 seit = time.time()
@@ -1426,7 +1452,7 @@ def main():
                 hoerbuch_menue()
             elif w == "sy":
                 skript("sync")
-            elif w == "ss":                                 # 2.84: Supersync – Motor holen, Buch abgleichen, schnell bauen
+            elif w == "ss":                                 # Supersync – Motor holen, Buch abgleichen, schnell bauen
                 vorher = open(os.path.join(MOTOR, "VERSION"), encoding="utf-8").read().strip()
                 for name, schritt in (("Motor", lambda: skript("update", "ja")), ("Sync", lambda: skript("sync")),
                                       ("Bauen", lambda: bauen("schnell"))):

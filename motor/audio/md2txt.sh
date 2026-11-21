@@ -61,25 +61,35 @@ kom   { if (/-->/) kom=0; next }
 /<!--/ && !/-->/ { kom=1; next }
 { gsub(/<!--[^>]*-->/,"") }
 
-# Versions-Blöcke  ::: klasse [Titel] ... :::
-/^::: *$/ { if (weg) entf($0); if (d>0) d--
-            weg=0; for (i=1;i<=d;i++) if (!halt[i]) weg=1; next }
-/^:::/ { fotoaus(); k=$0; sub(/^::: */,"",k)
-         kl=k; sub(/ .*/,"",kl); ti=k; sub(/^[^ ]+ */,"",ti)
-         v=""; if (kl=="uz" || kl ~ /-uz$/) v="uz"
-         else if (kl=="normal" || kl ~ /-normal$/) v="normal"
-         else if (kl ~ /-ebook$/) v="ebook"
-         halt[++d]=(v=="" || v==ver)
-         weg=0; for (i=1;i<=d;i++) if (!halt[i]) weg=1
+# Fassung (pureSATZ 3.0): @UC … @END, Vorsilbe @UC-…  ·  ver = normal | uz (PRINT/SCREEN: gilt auch fürs Hörbuch)
+function fass(w) { return (w=="UC" ? "uz" : (w=="NORMAL" || w=="N") ? "normal" : w=="EBOOK" ? "ebook" : "") }
+function auf(v)  { halt[++d]=(v=="" || v==ver); weg=0; for (i=1;i<=d;i++) if (!halt[i]) weg=1 }
+/^@END *$/ { if (weg) entf($0); if (d>0) d--
+             weg=0; for (i=1;i<=d;i++) if (!halt[i]) weg=1; next }
+/^@(UC|NORMAL|N|EBOOK|PRINT|SCREEN) *$/ { fotoaus(); k=$0; sub(/ .*/,"",k); sub(/^@/,"",k)
+         auf(fass(k)); if (weg) entf($0); next }
+# Bereiche @UC-BLOCK Titel, @DRAFT, @NOTE (nie vorgelesen), @KEEP-TOGETHER, @TIMELINE, @DECORATE-REST/-ABOVE-…
+/^@((UC|NORMAL|N|EBOOK|PRINT|SCREEN)-)?(BLOCK|DRAFT|NOTE|KEEP-TOGETHER|TIMELINE)( |$)/ ||
+/^@((UC|NORMAL|N|EBOOK|PRINT|SCREEN)-)?DECORATE(-ABOVE)?-(REST|BOTTOM)[-A-Z0-9]* *$/ {
+         fotoaus(); kw=$0; sub(/ .*/,"",kw); ti=$0; sub(/^[^ ]+ */,"",ti); if (ti==$0) ti=""
+         v=""; if (match(kw, /^@(UC|NORMAL|N|EBOOK|PRINT|SCREEN)-/)) { v=substr(kw,2,RLENGTH-2); v=fass(v) }
+         if (kw ~ /BLOCK$/) v="uz"
+         auf(v); if (kw ~ /NOTE$/) { halt[d]=0; weg=1 }
          if (weg) { entf($0); next }
-         if (kl=="uz" && datei) { out(punkt(ti!="" ? ersetze(ti) : "Unzensiert")); out("") }
+         if (kw ~ /BLOCK$/ && datei) { out(punkt(ti!="" ? ersetze(ti) : "Unzensiert")); out("") }
          next }
 weg { entf($0); next }
+# Eine Zeile mit Vorsilbe (@UC-ASIDE Text): andere Fassung weg, sonst ohne Vorsilbe weiter
+/^@(UC|NORMAL|N|EBOOK|PRINT|SCREEN)-[A-Z]/ { v=$0; sub(/-.*/,"",v); sub(/^@/,"",v)
+         if (fass(v)!="" && fass(v)!=ver) { entf($0); next }
+         sub(/^@(UC|NORMAL|N|EBOOK|PRINT|SCREEN)-/,"@") }
+/^@DECORATE(-ABOVE)?-(REST|BOTTOM)[-A-Z0-9]* / { sub(/^[^ ]+ +/,""); out(ersetze($0)); next }   # Bereich mit einem Satz
 
-# Fotos  @FOTO Titel / @FOTO-UZ Titel  mit text: ...
-/^(#+ +)?@FOTO/ { fotoaus(); s=$0; sub(/^#+ +/,"",s)
-                  kw=s; sub(/ .*/,"",kw); ftitel=s; sub(/^[^ ]+ */,"",ftitel)
-                  fv=""; if (kw ~ /-UZ$/) fv="uz"; else if (kw ~ /-NORMAL$/) fv="normal"
+# Bilder  #### @PICTURE-60 Titel / #### @UC-PICTURE Titel  mit text: ...
+/^#+ +@((UC|NORMAL|N|EBOOK|PRINT|SCREEN)-)?PICTURE([-0-9A-Z.]*)?( |$)/ && !/PICTURE-CREDITS/ {
+                  fotoaus(); s=$0; sub(/^#+ +/,"",s)
+                  kw=s; sub(/ .*/,"",kw); ftitel=s; sub(/^[^ ]+ */,"",ftitel); if (ftitel==s) ftitel=""
+                  fv=""; if (match(kw, /^@(UC|NORMAL|N|EBOOK|PRINT|SCREEN)-/)) { fv=substr(kw,2,RLENGTH-2); fv=fass(fv) }
                   if (fv!="" && fv!=ver) { fskip=1; entf($0) } else foto=1
                   next }
 (foto || fskip) && /^[a-z]+: / { if (fskip) entf($0)
@@ -89,10 +99,10 @@ weg { entf($0); next }
 
 # Überschriften
 /^#+ / { l=index($0," ")-1; t=substr($0,l+2)
-         if (t ~ /^@WIDMUNG/)  { atsek=0; neu(l, "Widmung", "Widmung"); next }
-         if (t ~ /^@KERNSATZ/) { atsek=0; s=t; sub(/^@KERNSATZ */,"",s)
+         if (t ~ /^@DEDICATION/)  { atsek=0; neu(l, "Widmung", "Widmung"); next }
+         if (t ~ /^@DECORATE-PAGE/) { atsek=0; s=t; sub(/^@DECORATE-PAGE */,"",s)
                                  if (datei && s!="") { out(punkt(ersetze(s))); out("") }; next }
-         if (t ~ /^@/) { atsek=1; entf($0); next }        # @TITEL, @IMPRESSUM usw.
+         if (t ~ /^@/) { atsek=1; entf($0); next }        # @TITLE, @IMPRINT usw.
          atsek=0
          sub(/ *\{[#.][^}]*\} *$/,"",t); sub(/ *#+ *$/,"",t)
          t=ersetze(t); n=split(t,p,"|"); t=""; nm=""
@@ -105,7 +115,8 @@ atsek  { entf($0); next }
 !datei { next }                                          # Text vor 1. Überschrift
 
 # Steuerbefehle
-/^@ZITAT/    { s=$0; sub(/^@ZITAT[^ ]* */,"",s); out(punkt(ersetze(s))); out(""); next }
+/^@DECORATE-TEXT /  { s=$0; sub(/^[^ ]+ +/,"",s); out(punkt(ersetze(s))); out(""); next }
+/^@(DECORATE(-(UC|NORMAL|N|EBOOK|PRINT|SCREEN))*|ASIDE) / { s=$0; sub(/^[^ ]+ +/,"",s); out(ersetze(s)); next }
 /^@PORTRAIT/ { s=$0; sub(/^[^|]*\| */,"",s); if (s!=$0) { out("Bild: " punkt(ersetze(s))); out("") }; next }
 /^@/         { entf($0); next }
 
@@ -126,8 +137,8 @@ zi>1 && zi<=25 && !/^ *\|/ { s=$0; sub(/ *\| */,": ",s); out(punkt(ersetze(s)));
   for (i=1;i<=n;i++) s=s (i>1 ? ", " : "") kopf[i] " " z[i]
   out(punkt(ersetze(s))); out(""); next }
 
-# Normaler Text, Listen, Randbemerkungen (~)
-{ s=$0; sub(/^ *> ?/,"",s); sub(/^~ +/,"",s)
+# Normaler Text, Listen
+{ s=$0
   if (sub(/^ *([-*+]|[0-9]+\.) +/,"",s)) { out(punkt(ersetze(s))); out(""); next }
   out(ersetze(s)) }
 END { fotoaus() }

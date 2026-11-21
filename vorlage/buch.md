@@ -1,19 +1,19 @@
-## @TITEL
+## @TITLE
 {titel}
 {untertitel}
 {titel-zusatz}
 
-## @IMPRESSUM
+## @IMPRINT
 
-## @HINWEIS
+## @NOTICE
 Hier steht ein Hinweis unten im Impressum, z. B. «Dieses Buch ersetzt keine Beratung». Keiner gewünscht? Diese zwei Zeilen löschen.
 
-## @WIDMUNG
+## @DEDICATION
 Hier steht eine Widmung. Im gedruckten Buch steht sie allein auf der rechten Seite neben dem Impressum. Keine gewünscht? Diese zwei Zeilen löschen.
 
-## @KERNSATZ Ein Satz, der das ganze Buch zusammenfasst.
+## @DECORATE-PAGE Ein Satz, der das ganze Buch zusammenfasst.
 
-## @INHALTSVERZEICHNIS
+## @CONTENTS
 
 ## Vorwort
 
@@ -22,11 +22,11 @@ Dieses Demo-Kapitel zeigt alle Möglichkeiten. Schau dir das PDF an und vergleic
 Ein neuer Absatz beginnt nach einer leeren Zeile. **Fett** steht zwischen zwei Sternchen. Ein Link sieht so aus: [{website}](https://{website}).\
 Diese Zeile beginnt neu, gehört aber zum selben Absatz: In der MD steht am Ende der Zeile davor ein umgekehrter Schrägstrich (Backslash).
 
-~ Eine Zeile mit Tilde ist eine kursive Randbemerkung.
+@ASIDE Eine Randbemerkung: klein und kursiv.
 
-@ZITAT-ZIER Ein Zitat mit @ZITAT-ZIER, eingerahmt von der Verzierung (kurz geht auch eine Zeile mit «> »).
+@DECORATE Ein Satz mit @DECORATE, zwischen zwei Linien mit Logo.
 
-@ZITAT Ein Zitat mit @ZITAT, schlicht, ohne Verzierung.
+@DECORATE-TEXT Ein Satz mit @DECORATE-TEXT, schlicht, ohne Linien.
 
 {autor}, {ort}
 
@@ -56,84 +56,80 @@ Beginnt ein Satz mit einer Zahl und einem Punkt, aber es ist keine Aufzählung: 
 
 ## Zwei Ausgaben aus einer Datei
 
-Blöcke beginnen mit drei Doppelpunkten und enden mit drei Doppelpunkten. Die Endung sagt, wo der Block erscheint: -normal, -uz (zweite Ausgabe), -bildschirm, -druck, -ebook, -buch, -privatdruck.
+Ein Bereich beginnt mit einem @-Befehl allein auf der Zeile und endet mit @END. @UC (zweite Ausgabe), @NORMAL, @EBOOK, @PRINT (Druck) und @SCREEN (Lese-PDF) sagen, wo er erscheint. Für eine einzelne Zeile genügt die Vorsilbe: @UC-SPACER-14.
 
-::: uz Ein Kasten mit eigenem Titel
+@UC-BLOCK Ein Kasten mit eigenem Titel
 Dieser Kasten erscheint nur in der zweiten Ausgabe, «{ausgabe-name-uz}». In der normalen Ausgabe fehlt er ganz.
 
 - Auch Aufzählungen gehen im Kasten.
-~ Und Randbemerkungen.
-:::
+@ASIDE Und Randbemerkungen.
+@END
 
-::: nur-uz
+@UC
 Dieser normale Absatz steht nur in der zweiten Ausgabe.
-:::
+@END
 
-::: nur-normal
+@NORMAL
 Dieser normale Absatz steht nur in der normalen Ausgabe.
-:::
+@END
 
-::: nur-ebook
+@EBOOK
 Dieser Absatz steht nur im E-Book.
-:::
+@END
 
 ## Noch offen
 
-Beim Schreiben ist nicht alles entschieden. Dafür gibt es die Familie «offen». Im Entwurf (sh build.sh) ist sie farbig markiert, und am Ende des Bauens steht eine Liste mit Zeilennummern.
+Beim Schreiben ist nicht alles entschieden. Dafür gibt es @DRAFT und @NOTE. Im Entwurf (sh build.sh) sind sie farbig markiert, und am Ende des Bauens steht eine Liste mit Zeilennummern.
 
-::: offen
+@DRAFT
 Dieser Absatz ist noch offen: Im Entwurf gelb, in der Druckfassung normaler Text in beiden Ausgaben.
-:::
+@END
 
-::: offen-uz
-Dieser Absatz ist offen und gehört eher in die zweite Ausgabe. Entschieden? Aus offen-uz wird nur-uz.
-:::
+@UC-DRAFT
+Dieser Absatz ist offen und gehört eher in die zweite Ausgabe. Entschieden? Aus @UC-DRAFT wird @UC.
+@END
 
-::: offen-notiz Hier fehlt noch etwas
+@NOTE Hier fehlt noch etwas
 Eine Notiz an dich selbst: erscheint nur im Entwurf als roter Kasten und wird nie gedruckt.
-:::
+@END
 
 ## Bilder
 
-Ein Foto beginnt mit «#### @FOTO Titel» (so steht es auch in der Gliederung des Editors), darunter die Angaben, eine pro Zeile (ohne «- »). Die erste Leerzeile beendet den Foto-Block. Ein Foto über die ganze Breite (ohne «fluss»):
+Ein Foto beginnt mit «#### @PICTURE Titel» (so steht es auch in der Gliederung des Editors), darunter die Angaben, eine pro Zeile. Die erste Leerzeile beendet den Foto-Block. Eine Zahl im Namen ist die Breite in mm: «#### @PICTURE-80 Titel».
 
-#### @FOTO Landschaft
+#### @PICTURE-80 Landschaft
 datei: beispiel.jpg
 text: Ein Bild mit Bildunterschrift
 quelle: Foto: Vorname Nachname
 alt: Weite Landschaft mit Hügeln unter blauem Himmel
-breite: 80
 
 Ein Hochformat wird bei gleicher Breite höher; der Motor begrenzt Fotos auf 75 mm Höhe, darum wird es schmaler. Sollen alle Fotos gleich gross sein: in der Variablen-Datei «foto-format: 3:2» (alle gleich zugeschnitten), «foto-breite» und «foto-anpassen: nein».
 
-#### @FOTO Hochformat
+#### @PICTURE Hochformat
 datei: beispiel-hoch.jpg
 text: Ein Hochformat: gleich hoch, aber schmaler
 alt: Ein Baum vor einem Abendhimmel
 
-#### @FOTO Ein Foto, das noch fehlt
+#### @PICTURE Ein Foto, das noch fehlt
 Vorschlag: Hier könnte ein Foto vom Garten stehen. Im Entwurf ein Kasten, im Druck nichts.
 datei: garten.jpg
 
-#### @FOTO Klein mit Textfluss
+#### @PICTURE-40-RIGHT Klein mit Textfluss
 datei: beispiel.jpg
-fluss: rechts
-breite: 40
 text: Text fliesst um das Bild
 
 Dieser Absatz fliesst links um das kleine Bild herum. Das ist praktisch für Porträts oder kleine Erinnerungsstücke. Die folgenden Absätze (bis zu fünf) umfliessen das Bild, bis es zu Ende ist.
 
 Fotos mit «quelle:» erscheinen automatisch im Bildnachweis im Anhang, mit Seitenzahl.
 
-Noch ein Absatz, damit man den Textfluss gut sieht. Mit «fluss: links» steht das Bild links. Ein Buch lebt von Abwechslung: lange Absätze, kurze Absätze, Bilder, Zitate.
+Noch ein Absatz, damit man den Textfluss gut sieht. Mit «@PICTURE-40-LEFT» steht das Bild links. Ein Buch lebt von Abwechslung: lange Absätze, kurze Absätze, Bilder, Zitate.
 
-Auch der Strichcode auf der Rückseite darf schön sein: Mit «barcode-rahmen: berge» in der Druckdatei bekommt er einen goldenen Rahmen, oben als Bergkette (mit «gold» ein schlichter Goldrahmen). Er bleibt lesbar. Das Beispiel zeigt eine erfundene Nummer.
+Auch der Strichcode auf der Rückseite darf schön sein: Mit «isbn-rahmen: berge» in der Druckdatei bekommt er einen goldenen Rahmen, oben als Bergkette (mit «gold» ein schlichter Goldrahmen). Er bleibt lesbar. Das Beispiel zeigt eine erfundene Nummer.
 
-#### @FOTO Strichcode mit Goldrahmen
+#### @PICTURE-60 Strichcode mit Goldrahmen
 datei: strichcode-bergkette.png
-text: Strichcode mit Bergkette – barcode-rahmen: berge
+text: Strichcode mit Bergkette – isbn-rahmen: berge
 alt: Strichcode mit goldenem Rahmen, oben als Bergkette
-breite: 60
 
 ## Eine Tabelle
 
@@ -143,30 +139,30 @@ Tabellen stehen als CSV-Datei im Ordner tabellen/ (mit LibreOffice bearbeiten, a
 
 Zahlen stehen rechtsbündig. Ist eine Tabelle zu breit, wird sie kleiner oder quer gestellt. Eine neue Tabelle legt «sh neu.sh tabelle "Titel"» an.
 
-@UMBRUCH-RECHTS
+@NEWPAGE-RIGHT
 
 ## Seiten steuern
 
-Eine Zeile mit drei Strichen (---, davor eine Leerzeile) beginnt eine neue Seite, gleich wie @UMBRUCH. @UMBRUCH-RECHTS beginnt im Druck immer auf einer rechten Seite. @PLATZ 60 beginnt eine neue Seite nur, wenn weniger als 60 mm Platz bleiben. @ABSTAND 8 lässt 8 mm frei.
+@NEWPAGE beginnt eine neue Seite. @NEWPAGE-RIGHT beginnt im Druck immer auf einer rechten Seite. @NEWPAGE-60 beginnt eine neue Seite nur, wenn weniger als 60 mm Platz bleiben. @SPACER-8 lässt 8 mm frei.
 
-@ABSTAND 8
+@SPACER-8
 
-::: zusammen
-Ein Block «zusammen» wird nie auf zwei Seiten getrennt.
+@KEEP-TOGETHER
+Ein Bereich @KEEP-TOGETHER wird nie auf zwei Seiten getrennt.
 
 - zum Beispiel eine Liste,
 - die zusammenbleiben soll.
-:::
+@END
 
-@ZIER 12
+@LOGO-12
 
-::: mitte
-Ein zentrierter Block zwischen zwei Verzierungen,
+@DECORATE-REST
+Mit @DECORATE-REST steht der Text zwischen zwei Linien mitten im Rest der Seite,
 
 zum Beispiel für einen Dank oder ein Gedicht.
-:::
+@END
 
-@MOTTO Ein Satz allein auf einer Seite.
+@DECORATE-PAGE Ein Satz allein auf einer Seite.
 
 # Teil 2|Anhang|Zeitstrahl, Autor und Verzeichnis|beispiel.jpg
 
@@ -176,12 +172,12 @@ Dieser Teil hat oben ein eigenes Bild: Es steht als vierte Angabe in der Teil-Ze
 
 # Zeitstrahl
 
-::: zeitstrahl
+@TIMELINE
 1974 | Geboren
 1990 | Lehre
 {jahr} | Erstes Buch
 heute | {ort}
-:::
+@END
 
 # Über den Autor
 
@@ -189,17 +185,17 @@ heute | {ort}
 
 **{autor}** lebt in {ort}. Hier steht ein kurzer Text über den Autor.
 
-::: nur-normal
+@NORMAL
 «{titel}» ist das erste Buch.
-:::
-::: nur-uz
+@END
+@UC
 Dies ist die Ausgabe «{ausgabe-name}» von «{titel}».
-:::
+@END
 
-@QR-PAAR https://{website} | Website<br/>{website} ;; https://{website}/blog | Blog<br/>{website}/blog
+@QR https://{website} | Website<br/>{website} ;; https://{website}/blog | Blog<br/>{website}/blog
 
-@STICHWORTE
+@INDEX
 
-@MOTTO Danke.
+@DECORATE-PAGE Danke.
 
-@RUECKSEITE
+@BACK-COVER

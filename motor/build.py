@@ -1,5 +1,5 @@
 """
-build.py – Bildschirm-PDF eines Buchs (pureSATZ).
+build.py – Lese-PDF eines Buchs (pureSATZ).
 Aufruf (im Buchordner):  python3 motor/build.py      -> normale Ausgabe
                          python3 motor/build.py uz   -> zweite Ausgabe (Unzensiert / Director's Cut)
 Alles zum Buch steht in der Buch-MD (Variablen oben, dann der Text) und in <buch>-umschlag.md.
@@ -54,7 +54,7 @@ from reportlab.graphics.shapes import Drawing
 
 # --- Buchdateien ---------------------------------------------------------------
 #   Drei Dateien:  <name>-variablen.md, <name>-buch.md, <name>-umschlag.md
-#   (früher: eine Buch-MD mit «# BUCHSTART» oder «---»-Block oben – geht weiterhin)
+#   (oder eine Buch-MD mit «# BUCHSTART»: Einstellungen davor, z. B. das Handbuch)
 def _buchdateien():
     if os.environ.get("BUCH_MD"):
         t = os.environ["BUCH_MD"]
@@ -75,7 +75,7 @@ def _buchdateien():
             continue
         with open(os.path.join(BASE, f), encoding="utf-8") as d:
             zeilen = d.read().split("\n")
-        if (zeilen and zeilen[0].strip() == "---") or any(M.ist_buchstart(z) for z in zeilen):
+        if any(M.ist_buchstart(z) for z in zeilen):
             kand.append(f)
     if len(kand) != 1:
         raise SystemExit("Keine Buchdateien gefunden. Erwartet: <name>-variablen.md, <name>-buch.md, "
@@ -102,7 +102,7 @@ def _grundvariablen():
 #   Druckdateien (build-broschuere.py) und haben dort Vorrang. Test: sh build.sh final druck=<datei>
 DRUCK_NAMEN = ("plattform", "format", "seite", "bindung", "projekt", "ruecken", "ruecken-hardcover",
                "ruecken-softcover", "beschnitt-hardcover", "beschnitt-softcover", "beschnitt-buchblock",
-               "deckel-hardcover", "papier", "extra-seiten", "isbn-buch", "barcode-position",
+               "deckel-hardcover", "papier", "extra-seiten", "barcode-position",
                "barcode-groesse", "barcode-bild", "barcode-rahmen", "barcode-rahmen-farbe", "barcode-rahmen-abstand",
                "isbn-position", "isbn-groesse", "isbn-bild", "isbn-rahmen", "isbn-rahmen-farbe", "isbn-rahmen-abstand",
                "versatz-vertikal", "versatz-horizontal",
@@ -114,33 +114,29 @@ def druckmodus():
     return os.environ.get("BUCH_DRUCKMODUS") == "1"
 
 
-def druck_datei(fassung=None):
-    """Druckdatei der Fassung als Pfad relativ zum Buchordner (z. B. druck/epubli-a5-normal.md), sonst None.
-    Vorrang hat «druck=<datei>» beim Aufruf (Umgebungsvariable BUCH_DRUCK_DATEI)."""
+def _plattform_datei(medium, fassung, vorrang=""):
+    """Name aus {druck-datei} unter «## Ausgabe: …» (sonst {druck} bzw. {ebook}) -> «druck/<name>.md», sonst None."""
     f = fassung or FASSUNG
-    w = os.environ.get("BUCH_DRUCK_DATEI", "").strip() or \
-        M.Ausgabe(_grundvariablen(), f, "druck")("druck-datei").strip() or \
-        M.Ausgabe(_grundvariablen(), f)("druck").strip()
+    w = vorrang or M.Ausgabe(_grundvariablen(), f, medium)("druck-datei").strip() or \
+        M.Ausgabe(_grundvariablen(), f)(medium).strip()
     if not w:
         return None
     w = w.replace("\\", "/")
     if not w.lower().endswith(".md"):
         w += ".md"
     return w if w.startswith("druck/") else "druck/" + w
+
+
+def druck_datei(fassung=None):
+    """Druckdatei der Fassung (z. B. druck/epubli-a5-normal.md), sonst None.
+    Vorrang hat «druck=<datei>» beim Aufruf (Umgebungsvariable BUCH_DRUCK_DATEI)."""
+    return _plattform_datei("druck", fassung, os.environ.get("BUCH_DRUCK_DATEI", "").strip())
 
 
 def ebook_datei(fassung=None):
     """Plattform-Datei des E-Books ({druck-datei} unter «## Ausgabe: E-Book»), sonst None.
     Meist braucht das E-Book keine: Impressum, ISBN und Preis stehen in der Variablen-Datei."""
-    f = fassung or FASSUNG
-    w = M.Ausgabe(_grundvariablen(), f, "ebook")("druck-datei").strip() or \
-        M.Ausgabe(_grundvariablen(), f)("ebook").strip()
-    if not w:
-        return None
-    w = w.replace("\\", "/")
-    if not w.lower().endswith(".md"):
-        w += ".md"
-    return w if w.startswith("druck/") else "druck/" + w
+    return _plattform_datei("ebook", fassung)
 
 
 def ebook_erstellen(fassung=None):
@@ -158,7 +154,7 @@ def _plattform_variablen(d, was):
                          "Musterdateien liegen in pureSATZ/vorlage/druck/.")
     v = M.lies_variablen(pfad)[0]
     for k in list(v):                     # isbn-… = Name ab 2.74.1 für den Strichcode (früher barcode-…, gilt weiter)
-        if k.startswith("isbn-") and not k.startswith("isbn-buch"):
+        if k.startswith("isbn-"):
             v["barcode-" + k[5:]] = v[k]
     return v
 
@@ -191,7 +187,7 @@ def _ueberlagern(v, dv, fassung, medium):
     v = dict(v)
 
     def zerlege(k):
-        for t in ("normal", "uz", "dc"):
+        for t in ("normal", "uz"):
             if k.endswith("-" + t):
                 return k[:-len(t) - 1], t
         return k, None
@@ -199,7 +195,7 @@ def _ueberlagern(v, dv, fassung, medium):
         basis, tag = zerlege(k)
         if tag and (tag == "normal") != (f == "normal"):
             continue                                                  # gilt für die andere Fassung
-        for x in (basis, basis + "-normal", basis + "-uz", basis + "-dc", basis + "-" + medium,
+        for x in (basis, basis + "-normal", basis + "-uz", basis + "-" + medium,
                   f"{basis}-{medium}-normal", f"{basis}-{medium}-uz"):
             v.pop(x, None)                                            # Plattform-Datei schlägt auch «name-druck»
         v[basis] = dv[k]
@@ -246,9 +242,12 @@ def stichwort_zeilen():
     return z
 
 
+UZ_NAMEN = ("uz", "uc", "unzensiert")                      # Aufruf: build.py uz
+
+
 def _fassung_aus_aufruf():
     a = [x.lower() for x in sys.argv[1:]]
-    return "uz" if any(x in ("b", "dc", "uz", "unzensiert", "directors-cut", "v3uz") for x in a) else "normal"
+    return "uz" if any(x in UZ_NAMEN for x in a) else "normal"
 
 
 FASSUNG = _fassung_aus_aufruf()      # "normal" oder "uz" (zweite Ausgabe)
@@ -291,7 +290,7 @@ def zweite_ausgabe():
     w = V("zweite-ausgabe")
     if w:
         return w.lower() in ("ja", "true", "1")
-    return any(k.endswith(("-uz", "-dc")) for k in alle_variablen())
+    return any(k.endswith("-uz") for k in alle_variablen())
 
 
 def teil_eintrag(num, titel, sub=""):
@@ -301,7 +300,7 @@ def teil_eintrag(num, titel, sub=""):
 
 class _Einstellungen:
     """Alte Namen (E.TITEL, E.JAHR …) lesen jetzt die Variablen der MD (titel, jahr …)."""
-    STANDARD = {"SPRACHE": "de", "PLATTFORM": "epubli", "KASTEN_HINWEIS": "darf übersprungen werden",
+    STANDARD = {"SPRACHE": "de", "PLATTFORM": "epubli", "BLOCK_HINWEIS": "darf übersprungen werden",
                 "WORT_INHALT": "Inhalt", "WORT_ZEITSTRAHL": "Zeitstrahl", "WORT_NOTIZEN": "Notizen",
                 "WORT_STICHWORTE": "Stichwortverzeichnis", "WORT_BILDNACHWEIS": "Bildnachweis", "TRENNUNG": "de_CH", "STEMPEL": True,
                 "STICHWORTE_DATEI": "stichworte.txt", "STICHWORTE_IM_ANHANG": False}
@@ -310,7 +309,7 @@ class _Einstellungen:
         if n == "MANUSKRIPT": return TEXT
         if n == "ZWEITE_AUSGABE": return zweite_ausgabe()
         if n == "STICHWORTVERZEICHNIS": return ja("stichworte")
-        if n == "KASTEN_KOPF": return V("kasten-kopf") or V("stempel", fassung="uz") or "UNZENSIERT"
+        if n == "BLOCK_KOPF": return V("block-kopf") or V("stempel", fassung="uz") or "UNZENSIERT"
         w = var().wert(n.lower().replace("_", "-"))
         if w not in (None, ""):
             return w
@@ -356,7 +355,7 @@ def _layout_aus_variablen():
     for k, w in v.items():
         if k.startswith("farbe-") and w:
             L.FARBEN[k[6:].replace("-", "_")] = w
-    for k, w in v.items():                 # farbe-stempel-uz: gilt nur in dieser Ausgabe (ab 2.81)
+    for k, w in v.items():                 # farbe-stempel-uz: gilt nur in dieser Ausgabe
         if k.startswith("farbe-") and k.endswith(("-normal", "-uz")) and w and k.rpartition("-")[2] == FASSUNG:
             L.FARBEN[k[6:].rpartition("-")[0].replace("-", "_")] = w
 
@@ -449,7 +448,7 @@ def lesbare_farbe(farbe_, hintergruende, ziel=4.5):
     return "#000000"
 
 
-if __name__ == "__main__" and ja("bildschirm-dunkler", "nein"):   # nur Bildschirm-PDF: für Schwarz-weiss-Ausdrucke
+if __name__ == "__main__" and ja("bildschirm-dunkler", "nein"):   # nur Lese-PDF: für Schwarz-weiss-Ausdrucke
     def _dunkler(hx, f):
         h = hexfarbe(hx).lstrip("#")
         return "#" + "".join(f"{int(int(h[i:i + 2], 16) * f):02X}" for i in (0, 2, 4))
@@ -464,8 +463,8 @@ STEMPEL = "stempel" if getattr(E, "STEMPEL", True) else None
 STEMPEL_FARBEN = {"stempel": farbe("stempel")}
 # Verzierung (z. B. Lotusblüte) aus layout.py
 # Verzierung («Zier»): Bild aus der Variable «zier» der MD, sonst aus layout.py
-LOTUS = finde(V("zier") or L.VERZIERUNG["bild"])
-LOTUS_HELL = finde(V("zier-hell") or V("zier") or L.VERZIERUNG.get("hell") or L.VERZIERUNG["bild"])
+LOTUS = finde(V("logo") or L.VERZIERUNG["bild"])
+LOTUS_HELL = finde(V("logo-light") or V("logo") or L.VERZIERUNG.get("hell") or L.VERZIERUNG["bild"])
 if not LOTUS or not LOTUS_HELL:
     raise SystemExit(f"Bild für die Verzierung nicht gefunden: {V('zier') or L.VERZIERUNG['bild']}")
 
@@ -525,7 +524,7 @@ def _ersetzen(tmp, ziel):
 
 def bild(pfad, hintergrund="weiss"):
     """Im Druck keine Transparenzen (epubli-Vorgabe): Bild auf seine Hintergrundfarbe setzen.
-    Im Bildschirm-PDF wird das Original mit Transparenz verwendet."""
+    Im Lese-PDF wird das Original mit Transparenz verwendet."""
     if not DRUCK:
         return pfad
     from PIL import Image
@@ -605,10 +604,10 @@ ENTWURF = not (os.environ.get("BUCH_FINAL") == "1" or os.environ.get("LR_FINAL")
 
 
 def waehle(arg=None):
-    """Ausgabe wählen: normal (Standard) oder zweite Ausgabe («uz», «dc», «b», «unzensiert»)."""
+    """Ausgabe wählen: normal (Standard) oder zweite Ausgabe («uz» oder «unzensiert»)."""
     global AUSGABE, FASSUNG
     a = (arg or "A").lower()
-    FASSUNG = "uz" if a in ("b", "dc", "uz", "unzensiert", "directors-cut", "v3uz") else "normal"
+    FASSUNG = "uz" if a in UZ_NAMEN else "normal"
     AUSGABE = "B" if FASSUNG == "uz" else "A"
     if AUSGABE == "B" and not zweite_ausgabe():
         raise SystemExit("Es gibt keine zweite Ausgabe (Variable «zweite-ausgabe: nein» in der MD).")
@@ -716,7 +715,7 @@ def foto_hinweise():
     fb = V("foto-breite", "").strip()
     for fassung in ("normal", "uz"):
         for z in M.zeilen(os.path.join(BASE, TEXT), var(fassung), entwurf=True):
-            if not (isinstance(z, tuple) and z[0] == "FOTO"):
+            if not (isinstance(z, tuple) and z[0] == "PICTURE"):
                 continue
             datei = next((t.strip()[6:].strip() for t in z[2] if t.strip().lower().startswith("datei:")), "")
             pfad = finde(datei, ("fotos", "bilder")) if datei else None
@@ -762,7 +761,7 @@ def foto_alt(inhalt):
 
 # --- Bildnachweis ---------------------------------------------------------------
 # Fotos mit «quelle:» werden gesammelt; im Anhang entsteht die Seite «Bildnachweis»
-# (an der Stelle von @BILDNACHWEIS, sonst automatisch vor dem Stichwortverzeichnis).
+# (an der Stelle von @PICTURE-CREDITS, sonst automatisch vor dem Stichwortverzeichnis).
 QUELLEN = []              # [(nr, bildtext, quelle)] des laufenden Durchlaufs
 QUELLEN_SEITE = {}        # nr -> Seite (aus dem vorherigen Durchlauf)
 
@@ -893,9 +892,9 @@ try:                       # Silbentrennung, falls python3-pyphen installiert is
 except ImportError:
     TRENNUNG = None
 _st = (V("silbentrennung", "ja") or "ja").strip().lower()   # ja · nein · Zahl = trennen ab so vielen Buchstaben
-if _st in ("nein", "aus", "0"):                             # {silbentrennung}: nein = aus, nur {trennstellen} (2.82.30)
+if _st in ("nein", "aus", "0"):                             # {silbentrennung}: nein = aus, nur {trennstellen}
     TRENNUNG = None
-TRENNEN_AB = int(_st) if _st.isdigit() else 10              # 2.84.7: nur lange Wörter trennen (weniger Striche)
+TRENNEN_AB = int(_st) if _st.isdigit() else 10              # nur lange Wörter trennen (weniger Striche)
 def _stil(name, d, **k):
     """ParagraphStyle aus einem layout.py-Eintrag (schrift, groesse, zeilenabstand, farbe, abstand_*)."""
     a = dict(k)
@@ -912,7 +911,7 @@ body = ParagraphStyle("body", fontName=schrift("text"), fontSize=TEXT_GROESSE, l
                       textColor=farbe(L.TEXT["farbe"]),
                       alignment=TA_JUSTIFY if L.TEXT.get("blocksatz", True) else TA_LEFT,
                       spaceAfter=L.TEXT["abstand_nach"], hyphenationLang=TRENNUNG,
-                      embeddedHyphenation=1,          # 2.82.30: auch am Bindestrich trennen (Informatik-Ausbildung)
+                      embeddedHyphenation=1,          # auch am Bindestrich trennen (Informatik-Ausbildung)
                       hyphenationMinWordLength=TRENNEN_AB,
                       allowWidows=0, allowOrphans=0)
 h2 = _stil("h2", L.KAPITEL, keepWithNext=1)
@@ -920,23 +919,23 @@ h3 = _stil("h3", L.ZWISCHENTITEL, keepWithNext=1)
 h4 = _stil("h4", dict(L.ZWISCHENTITEL, groesse=L.ZWISCHENTITEL.get("groesse", 11.5) - 1, zeilenabstand=14,
                       abstand_vor=12, abstand_nach=4), keepWithNext=1)
 _iz = (V("initial-zeilen", "3") or "3").strip()
-INITIAL_ZEILEN = int(_iz) if _iz in ("0", "1", "2", "3", "4") else 3   # 2.82.8: 0 = aus · 1 = erhöht · 2 · 3 · 4
-INITIAL = (V("initial", "nein") or "nein").strip().lower() in ("ja", "j") and INITIAL_ZEILEN > 0     # ab 2.77
-INITIAL_TITEL = (V("initial", "nein") or "nein").strip().lower() == "titel"     # 2.82.9: erster Buchstabe des Kapiteltitels
+INITIAL_ZEILEN = int(_iz) if _iz in ("0", "1", "2", "3", "4") else 3   # 0 = aus · 1 = erhöht · 2 · 3 · 4
+INITIAL = (V("initial", "nein") or "nein").strip().lower() in ("ja", "j") and INITIAL_ZEILEN > 0
+INITIAL_TITEL = (V("initial", "nein") or "nein").strip().lower() == "titel"     # erster Buchstabe des Kapiteltitels
 INITIAL_TITEL_FAKTOR = 1.45
-INITIAL_STUFEN = {int(z) for z in re.findall(r"[234]", V("initial-stufen", "2") or "2")} or {2}   # 2.82.9: ## ### ####
+INITIAL_STUFEN = {int(z) for z in re.findall(r"[234]", V("initial-stufen", "2") or "2")} or {2}   # ## ### ####
 INITIAL_FARBE_TITEL = (V("initial-farbe", "") or "").strip().lower() in ("ueberschrift", "überschrift")
 INITIAL_FARBE = farbe({"haupt": "haupt", "blau": "haupt", "text": "text", "schwarz": "text"}.get(
-    (V("initial-farbe", "akzent") or "").strip().lower(), "akzent"))     # akzent/gold · haupt/blau · text/schwarz (2.82.9)
+    (V("initial-farbe", "akzent") or "").strip().lower(), "akzent"))     # akzent/gold · haupt/blau · text/schwarz
 EINZUG = (V("absatz-einzug", "nein") or "nein").strip().lower() in ("ja", "j")
-INITIAL_STIL = (V("initial-stil", "normal") or "normal").strip().lower()                # ab 2.80: normal | rand | feld
+INITIAL_STIL = (V("initial-stil", "normal") or "normal").strip().lower()                # normal | rand | feld
 KAPITAELCHEN = (V("kapitaelchen", "nein") or "nein").strip().lower() in ("ja", "j")
 body_e0 = ParagraphStyle("body_e0", parent=body, spaceAfter=0)                         # Absatz-Einzug: erster Absatz
 body_e = ParagraphStyle("body_e", parent=body_e0, firstLineIndent=5 * mm)              # folgende Absätze eingerückt
 quote = _stil("quote", L.ZITAT, alignment=TA_CENTER, spaceBefore=10, spaceAfter=12, leftIndent=8 * mm,
               rightIndent=8 * mm)
 note = _stil("note", L.NOTIZ, parent=body, leftIndent=6 * mm, rightIndent=6 * mm, alignment=TA_LEFT)
-LISTE_BLOCKSATZ = (V("liste-blocksatz", "nein") or "nein").strip().lower() in ("ja", "j")   # 2.82.17
+LISTE_BLOCKSATZ = (V("liste-blocksatz", "nein") or "nein").strip().lower() in ("ja", "j")
 bullet = ParagraphStyle("bullet", parent=body, leftIndent=5 * mm, bulletIndent=0,
                         alignment=TA_JUSTIFY if LISTE_BLOCKSATZ else TA_LEFT, spaceAfter=5)
 bullet2 = ParagraphStyle("bullet2", parent=bullet, leftIndent=11 * mm, bulletIndent=6.5 * mm)
@@ -945,7 +944,7 @@ nummer = ParagraphStyle("nummer", parent=bullet, leftIndent=7 * mm, bulletIndent
 nummer2 = ParagraphStyle("nummer2", parent=nummer, leftIndent=13 * mm, bulletIndent=11 * mm)
 
 
-# --- Listen: «- Punkt» und nummerierte Aufzählung «1. Punkt» (ab 2.16), Unterpunkte eingerückt ----------
+# --- Listen: «- Punkt» und nummerierte Aufzählung «1. Punkt», Unterpunkte eingerückt ----------
 LISTE = re.compile(r"^( *)(-|\d{1,3}\.)\s+(.*)$")
 
 
@@ -1139,7 +1138,7 @@ def stichworte():
     return _STICHWORTE
 
 
-IM_ANHANG = False        # Zeitstrahl und «::: seite»-Seiten: nicht ins Stichwortverzeichnis
+IM_ANHANG = False        # Zeitstrahl: nicht ins Stichwortverzeichnis
 
 
 def stichwort_marken(t):
@@ -1172,7 +1171,7 @@ def stichwortverzeichnis():
     return [PageBreak(), p, Spacer(1, 4), REGISTER]
 
 
-# --- Verweise im Buch: [Text](#Abschnitt) (ab 2.81) -------------------------------------------
+# --- Verweise im Buch: [Text](#Abschnitt) -------------------------------------------
 # Jede Überschrift bekommt eine Sprungmarke (M.anker). Der Link führt im PDF dorthin; im Druck steht dahinter
 # die Seite («→ «Tabellen», S. 23»). Die Seite stammt aus dem ersten Satzlauf, der zweite setzt sie ein.
 ANKER_ALLE = []           # Sprungmarken aller Überschriften dieser Ausgabe (vor dem Satz gesammelt)
@@ -1236,7 +1235,7 @@ def inline(t):
         t = t.replace(wort, getrennt)
     t = re.sub(r"&(?!amp;|lt;|gt;|quot;|#)", "&amp;", t)
     t = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", t)
-    t = re.sub(r"(?<![\w*])\*(?=\S)([^*\n]+?)(?<=\S)\*(?![\w*])", r"<i>\1</i>", t)              # 2.84.7: *kursiv*
+    t = re.sub(r"(?<![\w*])\*(?=\S)([^*\n]+?)(?<=\S)\*(?![\w*])", r"<i>\1</i>", t)              # *kursiv*
     return re.sub(r"\x00(\d+)\x00", lambda m: code_text(codes[int(m.group(1))]), t)
 
 
@@ -1249,7 +1248,7 @@ def initial_schrift():
     if w.lower() == "fett":
         return schrift("text_fett")
     w = {"cinzel": "CinzelDecorative-Bold.ttf", "uncial": "UncialAntiqua-Regular.ttf",          # Zierschriften im Motor
-         "fraktur": "UnifrakturMaguntia-Regular.ttf"}.get(w.lower(), w)                         # (motor/fonts, ab 2.82.5)
+         "fraktur": "UnifrakturMaguntia-Regular.ttf"}.get(w.lower(), w)                         # (motor/fonts)
     if "Initial-Eigen" not in pdfmetrics.getRegisteredFontNames():
         pfad = finde(w, ("fonts", "bilder", ""))
         if not pfad:
@@ -1290,7 +1289,7 @@ class ErhoehtesInitial(Flowable):
         if buchstabe in UMLAUTE:
             self.ueber += self.gr * cap * 0.25                     # Punkte
         lw = pdfmetrics.stringWidth(buchstabe, self.font, self.gr)
-        self.p = Paragraph(text, ParagraphStyle("ini1", parent=stil, firstLineIndent=lw + 0.3 * mm))   # 2.82.9: enger
+        self.p = Paragraph(text, ParagraphStyle("ini1", parent=stil, firstLineIndent=lw + 0.3 * mm))   # enger
         self.style = stil
     def wrap(self, aw, ah):
         self.w, self.ph = self.p.wrap(aw, ah)
@@ -1322,7 +1321,7 @@ class Initial(Flowable):
         cap = (getattr(pdfmetrics.getFont(self.font).face, "capHeight", 700) or 700) / 1000
         self.cap = cap
         self.gr = ((zeilen - 1) * TEXT_ZEILE + TEXT_GROESSE * cap) / cap      # Buchstabe: oben Zeile 1 bis Grundlinie
-        if buchstabe in UMLAUTE:          # Punkte/Ring über dem Buchstaben: etwas kleiner, damit sie Platz haben (2.82.8)
+        if buchstabe in UMLAUTE:          # Punkte/Ring über dem Buchstaben: etwas kleiner, damit sie Platz haben
             self.gr *= UMLAUT_FAKTOR
         if stil == "feld":
             self.gr *= 0.7
@@ -1338,7 +1337,7 @@ class Initial(Flowable):
     def wrap(self, aw, ah):
         return self.w, (self.z - 1) * TEXT_ZEILE + self.luft + 1   # ImageAndFlowables setzt noch eine Zeile daneben
     _restrictSize = wrap
-    def _unRestrictSize(self):      # von ImageAndFlowables beim erneuten Umbruch aufgerufen (2.81)
+    def _unRestrictSize(self):      # von ImageAndFlowables beim erneuten Umbruch aufgerufen
         pass
     def draw(self):
         c, grund = self.canv, 1 + self.luft - TEXT_GROESSE           # Grundlinie der letzten Initial-Zeile
@@ -1469,7 +1468,7 @@ class Doc(BaseDocTemplate):
             self.pageTemplates.insert(0, self.pageTemplates.pop(1))
 
     def _b(self, fn):
-        """Verschiebt alle Zeichnungen um den Beschnitt (im Bildschirm-PDF ist B = 0)."""
+        """Verschiebt alle Zeichnungen um den Beschnitt (im Lese-PDF ist B = 0)."""
         def wrapped(c, d):
             c.saveState(); c.translate(B, B); fn(c, d); c.restoreState()
         return wrapped
@@ -1690,7 +1689,7 @@ class Doc(BaseDocTemplate):
     def kopfzeile(self, c, d):
         """Kopfzeile: «Autor · Teil · Kapitel» (Variable «kopfzeile»: ohne-autor, autor, wechselnd).
         Kapitel = das erste Kapitel, das auf der Seite beginnt, sonst das laufende.
-        Ein @KOPF-Zusatz (z. B. «Ecuador») ersetzt das Kapitel, solange er die ganze Seite gilt."""
+        Ein @HEADER-Zusatz (z. B. «Ecuador») ersetzt das Kapitel, solange er die ganze Seite gilt."""
         teil = getattr(self, "kopf", self.KOPF_STANDARD)
         kap = self._kap_seite or self._kap_start
         if self._zusatz_start:
@@ -1753,7 +1752,7 @@ def barcode_feld():
         b, h, rand, unten = 60 * mm, 35 * mm, 0, 0
     x = {"links": rand, "mitte": (W - b) / 2, "rechts": W - rand - b}[pos]
     pfad = None
-    if bd.lower() == "auto":             # Strichcode-Bild aus {isbn} selbst machen (ab 2.82.5)
+    if bd.lower() == "auto":             # Strichcode-Bild aus {isbn} selbst machen
         pfad = isbn_png()
     elif bd:
         pfad = finde(bd, ("bilder",))
@@ -1921,7 +1920,7 @@ def code_kasten(sprache, inhalt):
 
 
 def offen_kasten(zusatz, inhalt):
-    """«::: offen»: Buchtext, über den noch nicht entschieden ist. Nur im Entwurf als gelber Kasten."""
+    """@DRAFT … @END: Buchtext, über den noch nicht entschieden ist. Nur im Entwurf als gelber Kasten."""
     return uz_kasten("", inhalt, kopf_text="OFFEN", hinweis="noch nicht entschieden " + zusatz,
                      hg=farbe("offen"), linie=farbe("offen_linie"), stil=ParagraphStyle("ofb", parent=body, spaceAfter=0))
 
@@ -1933,9 +1932,9 @@ def uz_kasten(titel, inhalt, kopf_text=None, hinweis=None, hg=None, linie=None, 
     # Seiten laufen, ohne dass der Kopf allein unten auf einer Seite stehen bleibt.
     uz_body_ = stil or uz_body
     if hinweis is None:
-        hinweis = getattr(E, "KASTEN_HINWEIS", "")
+        hinweis = getattr(E, "BLOCK_HINWEIS", "")
     kopf_farbe = hexfarbe("offen_linie") if kopf_text == "OFFEN" else hexfarbe("akzent")
-    kopf = (f"<font name='{schrift('titel')}' size='7.2' color='{kopf_farbe}'>{kopf_text or getattr(E, 'KASTEN_KOPF', 'UNZENSIERT')}</font> "
+    kopf = (f"<font name='{schrift('titel')}' size='7.2' color='{kopf_farbe}'>{kopf_text or getattr(E, 'BLOCK_KOPF', 'UNZENSIERT')}</font> "
             + (f"<font name='{schrift('text_kursiv')}' size='7.2' color='{hexfarbe('leise')}'>· {hinweis.strip()}</font>" if hinweis.strip() else "")
             + "<br/>")
     if titel:
@@ -1961,11 +1960,11 @@ def uz_kasten(titel, inhalt, kopf_text=None, hinweis=None, hg=None, linie=None, 
             _, art, text = zahl.punkt(m)
             rows.append([Paragraph(inline(text), uz_bullet, bulletText="•") if art == "-" else
                          Paragraph(inline(text), uz_nummer, bulletText=f"{art}.")])
-        elif t.startswith("~ "):
+        elif t.startswith("@ASIDE "):
             fl()
             if kopf:
                 rows.append([Paragraph(kopf.rstrip("<br/>"), uz_body_)]); kopf = ""
-            rows.append([Paragraph(inline(t[2:]), uz_note)])
+            rows.append([Paragraph(inline(t[7:]), uz_note)])
         else:
             para.append(t)
     try:                    # splitInRow gibt es erst ab reportlab 3.6.10
@@ -2031,21 +2030,13 @@ class MottoSeite(Flowable):
         o1.drawOn(self.canv, 0, y + oh + gap + self.ph + gap)
 
 
-def mitte(titel, inhalt):
-    """Zentrierter Block zwischen zwei kleinen Lotusblüten (z. B. der Dank am Schluss). Ab 2.82.27 wie @ZITAT-ZIER
-    (kursiv, Zitatfarbe, schmaler); {mitte-stil}: blau = aufrecht in der Hauptfarbe · aufrecht = wie früher;
-    «::: mitte blau» / «::: mitte aufrecht» = nur dieser Block (2.82.29)."""
-    woerter = (titel or "").strip().lower().split()
-    oben = "oben" in woerter                                # 2.84.5: «::: mitte oben» = Zier nur oben
-    fest = None                                             # 2.84.6: «fest [mm]» = Oberkante fest über dem Seitenende
-    if "fest" in woerter:
-        try:
-            fest = float(woerter[woerter.index("fest") + 1])
-        except (IndexError, ValueError):
-            fest = 60
-    art = next((w for w in woerter if w in ("zitat", "blau", "aufrecht")), "")
-    if art not in ("zitat", "blau", "aufrecht"):
-        art = (V("mitte-stil") or "zitat").strip().lower()                # zitat · blau (aufrecht, Hauptfarbe) · aufrecht
+def mitte(b, inhalt):
+    """@DECORATE-REST (b = der Befehl): zentrierter Block zwischen zwei kleinen Lotusblüten in der Mitte des Rests
+    (z. B. der Dank am Schluss), kursiv in der Zitatfarbe wie @DECORATE. -ABOVE = Zier nur oben ·
+    -BOTTOM-34 = Oberkante 34 mm über dem Seitenende · Stil -UPRIGHT / -UPRIGHT-MAIN, sonst {decorate-stil}."""
+    oben = "ABOVE" in b.woerter
+    fest = float(b.hoehe or 60) if b.ort == "BOTTOM" else None
+    art = b.stil or (V("decorate-stil") or "zitat").strip().lower()          # zitat · blau (aufrecht, Hauptfarbe) · aufrecht
     st = ParagraphStyle("mitte", parent=quote if art == "zitat" else body, alignment=TA_CENTER, spaceBefore=0,
                         spaceAfter=7, **({"textColor": farbe("haupt")} if art == "blau" else {}))
     teile, para = [Spacer(1, 10), Ornament(), Spacer(1, 8)], []
@@ -2082,7 +2073,7 @@ class MitteBlock(Flowable):
 
     def draw(self):
         y = self.platz - 0.5 - (self.platz - self.h) / 2 + 8 * mm   # optisch leicht über der Mitte
-        if self.fest and self.h <= self.fest * mm <= self.platz:   # 2.84.6: auf allen Seiten gleiche Höhe
+        if self.fest and self.h <= self.fest * mm <= self.platz:   # auf allen Seiten gleiche Höhe
             y = self.fest * mm
         y = min(y, self.platz - 0.5)
         for t, h in zip(self.teile, self.hs):
@@ -2091,8 +2082,8 @@ class MitteBlock(Flowable):
 
 
 class LotusUnten(Flowable):
-    """@LOTUS-UNTEN: füllt den Rest der Seite und setzt eine Lotusblüte zentriert an den unteren Rand.
-    2.84.10: «@LOTUS-UNTEN 10 mitte» = mitten in den freien Platz."""
+    """@LOGO-10-BOTTOM: füllt den Rest der Seite und setzt eine Lotusblüte zentriert an den unteren Rand.
+    @LOGO-10-REST = mitten in den freien Platz."""
     def __init__(self, breite, mitte=False):
         super().__init__(); self.b, self.mitte = breite, mitte
     def wrap(self, aw, ah):
@@ -2108,7 +2099,7 @@ class LotusUnten(Flowable):
 
 
 class LotusTrenner(Flowable):
-    """@LOTUS-TRENNER: Lotusblüte ohne Höhe; sie wird in den Abstand vor der folgenden Überschrift gezeichnet."""
+    """@LOGO-6-GAP: Lotusblüte ohne Höhe; sie wird in den Abstand vor der folgenden Überschrift gezeichnet."""
     def __init__(self, breite):
         super().__init__(); self.b = breite
     def wrap(self, aw, ah):
@@ -2133,7 +2124,7 @@ class UmflossenesBild(ImageAndFlowables):
         return max(super().getSpaceAfter(), body.spaceAfter)
 
     def split(self, aw, ah):
-        r = super().split(aw, ah)          # 2.85.1: ReportLab macht beim Seitenumbruch wieder ein normales
+        r = super().split(aw, ah)          # ReportLab macht beim Seitenumbruch wieder ein normales
         if r and type(r[0]) is ImageAndFlowables:   # ImageAndFlowables daraus – Abstand behalten
             r[0].__class__ = UmflossenesBild
         return r
@@ -2241,7 +2232,7 @@ def _build(out, ausgleich=None):
     teil_gesehen = False
     schwebe = {}   # Foto, das von den folgenden Absätzen umflossen wird
 
-    ini = {}               # wartendes Initial (I1, ab 2.79): Buchstabe, Absätze daneben, deren Höhe
+    ini = {}               # wartendes Initial (I1): Buchstabe, Absätze daneben, deren Höhe
 
     def initial_ausgeben(erzwungen=True):
         """Initial mit den Absätzen daneben setzen, sobald sie drei Zeilen füllen. Kommt vorher ein Titel, Foto
@@ -2287,11 +2278,11 @@ def _build(out, ausgleich=None):
                 initial_ausgeben(erzwungen=False)
                 return
             if INITIAL and INITIAL_ZEILEN == 1 and nach_kapitel and not schwebe and re.match(r"[A-ZÄÖÜ]", text):
-                rest = kapitaelchen(text[1:]) if KAPITAELCHEN else text[1:]     # erhöhtes Initial (2.82.8)
+                rest = kapitaelchen(text[1:]) if KAPITAELCHEN else text[1:]     # erhöhtes Initial
                 story.append(ErhoehtesInitial(text[0], INITIAL_FARBE, inline(rest), stil, initial_schrift()))
                 nach_kapitel = False
                 return
-            if INITIAL and nach_kapitel and not schwebe and re.match(r"[A-ZÄÖÜ]", text):   # nur Grossbuchstaben (2.81)
+            if INITIAL and nach_kapitel and not schwebe and re.match(r"[A-ZÄÖÜ]", text):   # nur Grossbuchstaben
                 ohne = inline(kapitaelchen(text[1:]) if KAPITAELCHEN else text[1:])
                 rest = Paragraph(ohne, ParagraphStyle("ini", parent=stil, firstLineIndent=0,
                                                       allowOrphans=1, allowWidows=1))
@@ -2314,12 +2305,12 @@ def _build(out, ausgleich=None):
                 story.append(p)
 
     nach_kapitel = False   # {initial}: ja – nächster Absatz bekommt den grossen Anfangsbuchstaben
-    sammle = None          # @TITEL / @IMPRESSUM: die folgenden Zeilen gehören dazu
+    sammle = None          # @TITLE / @IMPRINT: die folgenden Zeilen gehören dazu
     QUELLEN.clear(); VERZ["bild"].clear(); VERZ["tabelle"].clear(); VERZ_GESETZT.clear()
     bn_gesetzt = False     # Bildnachweis schon gesetzt?
 
     def vorspann_fertig():
-        """@TITEL bzw. @IMPRESSUM mit den gesammelten Zeilen setzen."""
+        """@TITLE bzw. @IMPRINT mit den gesammelten Zeilen setzen."""
         nonlocal sammle
         if sammle is None:
             return
@@ -2331,16 +2322,109 @@ def _build(out, ausgleich=None):
         else:
             story.extend(impressum(z, widmung))
 
+    def befehl_setzen(b, ln):
+        """Eine Befehlszeile (pureSATZ 3.0, Fassung schon ausgewählt) in die Story setzen."""
+        nonlocal story, sammle, bn_gesetzt
+        n, t, wo = b.name, b.text, f"{TEXT}, Zeile {getattr(ln, 'nr', '?')}"
+        if n == "DECORATE-PAGE" and b.kopf:       # «## @DECORATE-PAGE Satz» in der Titelei: allein auf einer Seite
+            vorspann["kernsatz"] = True
+            story += ([PageBreak(), MottoSeite(inline_einfach(t)), PageBreak()] if DRUCK
+                      else [MottoSeite(inline_einfach(t)), PageBreak()])
+        elif n == "DECORATE-PAGE":
+            flush()
+            story += [NextPageTemplate("plain"), PageBreak(), MottoSeite(inline(t)), NextPageTemplate("body")]
+        elif n == "DECORATE":                     # Linie-Logo, Satz, Linie-Logo
+            flush(); story.append(KeepTogether([Spacer(1, 6)] + zier_satz(t) + [Spacer(1, 14)]))
+        elif n == "DECORATE-LOGO":                # Linie-Logo-Linie ohne Text
+            flush(); story += [Spacer(1, 10), Ornament(), Spacer(1, 6)]
+        elif n == "DECORATE-TEXT" and b.ort == "BOTTOM":
+            flush(); story.append(ZitatUnten(inline(t)))
+        elif n == "DECORATE-TEXT":                # nur der Satz, ohne Linien
+            flush(); story.append(KeepTogether([Spacer(1, 6), Paragraph(inline(t), quote), Spacer(1, 14)]))
+        elif n == "ASIDE":
+            flush(); story.append(Paragraph(inline(t), note))
+        elif n == "HEADER":
+            flush(); story.append(KopfZusatz(t))
+        elif n == "NEWPAGE" and b.ort == "RIGHT":  # im Druck zusätzlich eine leere linke Seite, falls nötig
+            from reportlab.platypus.flowables import DocIf
+            story += [Umbruch()] + ([DocIf("doc.page % 2 == 0", [PageBreak()])] if DRUCK else [])
+        elif n == "NEWPAGE" and b.zahl:           # neue Seite, wenn weniger Platz bleibt
+            flush(); story.append(CondPageBreak(b.mm(0) * mm))
+        elif n == "NEWPAGE":
+            flush(); story.append(Umbruch())
+        elif n == "SPACER":
+            story.append(Spacer(1, b.mm(8) * mm))
+        elif n == "PAGE-CENTER":
+            flush(); story.append(SeiteMitte())
+        elif n == "LOGO" and b.ort in ("BOTTOM", "REST"):   # unten auf die Seite bzw. in die Mitte des Rests
+            flush(); story.append(LotusUnten(b.mm(10) * mm, b.ort == "REST"))
+        elif n == "LOGO" and b.ort == "GAP":      # ohne eigenen Platz, in die Lücke vor der nächsten Überschrift
+            flush(); story.append(LotusTrenner(b.mm(6) * mm))
+        elif n == "LOGO":
+            flush()
+            from reportlab.platypus import Image as Image_
+            lb = b.mm(12) * mm
+            story += [Spacer(1, 1 * mm), Image_(bild(LOTUS), lb, lb * LOTUS_RATIO, mask="auto"), Spacer(1, 1 * mm)]
+        elif n == "QR-RIGHT":                     # QR rechts, die folgenden Absätze fliessen herum
+            url, _, label = t.partition("|")      # ohne «| Text» = ohne Bildtext
+            flush(); ausgeben()
+            schwebe.update(teile=qrbox(url.strip(), inline_einfach(label.strip()))[:1 if not label.strip() else 2],
+                           seite="right", bw=23 * mm, paras=[])
+        elif n == "QR" and ";;" in t:             # zwei (oder drei) QR-Codes nebeneinander
+            story += qr_reihe(None, t.split(";;"))
+        elif n == "QR":                           # QR-Code mit klickbarem Link darunter
+            url, _, text = t.partition("|"); url = url.strip(); text = (text or url).strip()
+            if "www." in text:
+                w = text[text.index("www."):].split()[0]
+                text = text.replace(w, f'<a href="{url}" color="{hexfarbe("akzent")}">{w}</a>')
+            qr = qr_code(url); qb = qr.getBounds(); qs = 23 * mm
+            dq = Drawing(qs, qs, transform=[qs / (qb[2] - qb[0]), 0, 0, qs / (qb[3] - qb[1]), 0, 0]); dq.add(qr)
+            story.append(KeepTogether([Spacer(1, 4), dq, Spacer(1, 2),
+                                       Paragraph(text, ParagraphStyle("qrt", parent=body, alignment=TA_LEFT))]))
+        elif n == "TITLE":
+            sammle = ["TITEL", [], ""]
+        elif n == "IMPRINT":
+            sammle = ["IMPRESSUM", [], ""]
+        elif n == "DEDICATION":
+            raise M.Fehler(f"{wo}: @DEDICATION gehört direkt unter @IMPRINT.")
+        elif n == "NOTICE":
+            raise M.Fehler(f"{wo}: @NOTICE gehört direkt nach @IMPRINT oder @DEDICATION.")
+        elif n == "CONTENTS":
+            if DRUCK and not vorspann["kernsatz"]:
+                story.append(PageBreak())
+            teile_zusammen = V("inhalt-teile", "fortlaufend").strip().lower() == "zusammen"
+            toc = Inhaltsverzeichnis() if teile_zusammen else TableOfContents()
+            toc.levelStyles = [toc1, toc2, toc3, toc4]
+            toc.dotsMinLevel = 0 if ja("inhalt-punkte") else -1     # {inhalt-punkte}: nein = ohne Punktlinie
+            story += [Paragraph(E.WORT_INHALT, INHALT_STIL), NextPageTemplate("tocfolge"), toc]
+        elif n == "BACK-COVER":
+            flush()
+            story += verzeichnisse_auto()
+            if not bn_gesetzt:
+                story += bildnachweis(); bn_gesetzt = True
+            if not DRUCK:  # im Druck ist die Rückseite Teil des Umschlags
+                story += [NextPageTemplate("back"), PageBreak(), Spacer(1, 1)]
+        elif n == "PICTURE-CREDITS":
+            flush(); story += bildnachweis(); bn_gesetzt = True
+        elif n in ("LIST-PICTURES", "LIST-TABLES"):
+            flush(); story += verzeichnis("bild" if n == "LIST-PICTURES" else "tabelle")
+        elif n == "INDEX":
+            flush()
+            story += verzeichnisse_auto()
+            if not bn_gesetzt:
+                story += bildnachweis(); bn_gesetzt = True
+            story += stichwortverzeichnis()
+        else:                                     # z. B. @PICTURE ohne «####»
+            raise M.Fehler(f"{wo}: «{b.zeile().strip()}» geht hier nicht.")
+
     liste = Liste()
     for ln in lines:
         if liste.punkte and not (not isinstance(ln, tuple) and (not ln.strip() or LISTE.match(ln.rstrip()))):
             story += liste.ende()
         if sammle is not None:
-            if not isinstance(ln, tuple) and ln.strip() == "@HINWEIS" and sammle[0] == "IMPRESSUM":
+            if not isinstance(ln, tuple) and ln.strip() == "@NOTICE" and sammle[0] == "IMPRESSUM":
                 del sammle[3:]; sammle[1].append(""); continue      # folgende Zeilen = Hinweis unten im Impressum
-            if isinstance(ln, tuple) and ln[0] == "WIDMUNG" and sammle[0] == "IMPRESSUM":
-                sammle[2] = " ".join(t.strip() for t in ln[2] if t.strip()); continue
-            if not isinstance(ln, tuple) and ln.strip() == "@WIDMUNG" and sammle[0] == "IMPRESSUM":
+            if not isinstance(ln, tuple) and ln.strip() == "@DEDICATION" and sammle[0] == "IMPRESSUM":
                 sammle.append("widmung"); continue          # folgende Zeilen = Widmung
             if not isinstance(ln, tuple) and len(sammle) > 3 and not ln.lstrip().startswith(("#", "@")):
                 sammle[2] = (sammle[2] + " " + ln.strip()).strip(); continue
@@ -2348,24 +2432,22 @@ def _build(out, ausgleich=None):
                 vorspann_fertig()
             else:
                 sammle[1].append(ln); continue
-        if isinstance(ln, tuple) or (ln.strip() and (ln.lstrip().startswith(("#", ">", "~", "- ", "@"))
+        if isinstance(ln, tuple) or (ln.strip() and (ln.lstrip().startswith(("#", "- ", "@"))
                                                      or LISTE.match(ln.rstrip()))):
             flush(); ausgeben()
-        if isinstance(ln, tuple) and ln[0] == "ZEITSTRAHL":
+        if isinstance(ln, tuple) and ln[0] == "TIMELINE":
             story += zeitstrahl_tabelle(ln[2]); continue
         if not isinstance(ln, tuple) and ln.lstrip().startswith("@#"):
             t_ = tabelle(ln); story += t_[:2] + verz_marke("tabelle", tabellen_titel(ln)) + t_[2:]; continue   # Marke nach der Tabelle
-        if isinstance(ln, tuple) and ln[0] == "WIDMUNG":
-            raise M.Fehler("::: widmung gehört direkt unter @IMPRESSUM.")
         marke = (verz_marke("bild", foto_info(ln[2])[1] or ln[1])
-                 if isinstance(ln, tuple) and ln[0] == "FOTO" and foto_info(ln[2])[0] else [])
-        if isinstance(ln, tuple) and ln[0] == "FOTO" and foto_quelle(ln[2]) and foto_info(ln[2])[0]:
+                 if isinstance(ln, tuple) and ln[0] == "PICTURE" and foto_info(ln[2])[0] else [])
+        if isinstance(ln, tuple) and ln[0] == "PICTURE" and foto_quelle(ln[2]) and foto_info(ln[2])[0]:
             nr = len(QUELLEN) + 1
             QUELLEN.append((nr, foto_info(ln[2])[1] or ln[1], foto_quelle(ln[2])))
             story.append(QuellenMarke(nr))
-        if isinstance(ln, tuple):          # Kasten, offene Stelle, Notiz, Foto, Mitte, Zusammen
-            teile = {"UZ": uz_kasten, "OFFEN": offen_kasten, "PH": platzhalter, "FOTO": foto, "MITTE": mitte,
-                     "ZUSAMMEN": zusammen, "CODE": code_kasten}[ln[0]](ln[1], ln[2])
+        if isinstance(ln, tuple):          # Bereiche (… @END), Bild, Code
+            teile = {"BLOCK": uz_kasten, "DRAFT": offen_kasten, "NOTE": platzhalter, "PICTURE": foto,
+                     "DECORATE-REST": mitte, "KEEP-TOGETHER": zusammen, "CODE": code_kasten}[ln[0]](ln[1], ln[2])
             if teile and isinstance(teile[0], tuple) and teile[0][0] == "FLOAT":
                 story += marke
                 _, t, seite, bw = teile[0]
@@ -2376,6 +2458,9 @@ def _build(out, ausgleich=None):
         s = ln.rstrip()
         if not s.strip():
             flush(); continue
+        b = M.befehl(s, f"{TEXT}, Zeile {getattr(ln, 'nr', '?')}") if s.startswith(("@", "## @")) else None
+        if b:
+            befehl_setzen(b, ln); continue
         if s.startswith(("# ", "## ")):
             IM_ANHANG = False
         if s.startswith("# ") and "|" not in s:
@@ -2419,114 +2504,16 @@ def _build(out, ausgleich=None):
             p = titel_absatz(t, st, 2)
             p._toc = (1, t)
             story += [p, AnkerMarke(t)]; first = False; nach_kapitel = True
-        elif s.startswith("> "):
-            flush(); story.append(KeepTogether([Spacer(1, 6), Ornament(), Paragraph(inline(s[2:]), quote),
-                                                Ornament(), Spacer(1, 14)]))
-        elif s.startswith("~ "):
-            flush(); story.append(Paragraph(inline(s[2:]), note))
         elif LISTE.match(s):
             flush(); liste.punkt(LISTE.match(s))
-        elif s.startswith("@MOTTO "):
-            flush()
-            story += [NextPageTemplate("plain"), PageBreak(), MottoSeite(inline(s[7:])),
-                      NextPageTemplate("body")]
-        elif s.startswith("@KOPF"):
-            flush(); story.append(KopfZusatz(s[5:].strip()))
-        elif s.startswith("@PLATZ "):
-            flush(); story.append(CondPageBreak(float(s.split()[1]) * mm))   # neue Seite, wenn weniger Platz
-        elif s == "@TITEL":
-            sammle = ["TITEL", [], ""]
-        elif s == "@IMPRESSUM":
-            sammle = ["IMPRESSUM", [], ""]
-        elif s == "@WIDMUNG":
-            raise M.Fehler(f"{TEXT}, Zeile {getattr(ln, 'nr', '?')}: @WIDMUNG gehört direkt unter @IMPRESSUM.")
-        elif s == "@HINWEIS":
-            raise M.Fehler(f"{TEXT}, Zeile {getattr(ln, 'nr', '?')}: @HINWEIS gehört direkt nach @IMPRESSUM oder @WIDMUNG.")
-        elif s.startswith("@KERNSATZ"):
-            vorspann["kernsatz"] = True
-            t = inline_einfach(s[9:].strip())
-            story += ([PageBreak(), MottoSeite(t), PageBreak()] if DRUCK else [MottoSeite(t), PageBreak()])
-        elif s == "@INHALTSVERZEICHNIS":
-            if DRUCK and not vorspann["kernsatz"]:
-                story.append(PageBreak())
-            teile_zusammen = V("inhalt-teile", "fortlaufend").strip().lower() == "zusammen"
-            toc = Inhaltsverzeichnis() if teile_zusammen else TableOfContents()
-            toc.levelStyles = [toc1, toc2, toc3, toc4]
-            toc.dotsMinLevel = 0 if ja("inhalt-punkte") else -1     # {inhalt-punkte}: nein = ohne Punktlinie
-            story += [Paragraph(E.WORT_INHALT, INHALT_STIL), NextPageTemplate("tocfolge"), toc]
         elif s.startswith("@PORTRAIT "):
             # @PORTRAIT bild.png | Bildtext : rundes Foto mit Ring
             story += portrait(None, [s[10:]])
-        elif s.startswith("@QR-PAAR "):
-            # @QR-PAAR url | Text ;; url | Text : zwei (oder drei) QR-Codes nebeneinander
-            story += qr_reihe(None, s[9:].split(";;"))
-        elif s.startswith("@QR-FLUSS "):
-            # 2.84.11: @QR-FLUSS url | Text : QR-Code rechts, die folgenden Absätze fliessen darum herum
-            url, _, label = s[10:].partition("|")      # 2.84.12: ohne «| Text» = ohne Bildtext
-            flush(); ausgeben()
-            schwebe.update(teile=qrbox(url.strip(), inline_einfach(label.strip()))[:1 if not label.strip() else 2],
-                           seite="right", bw=23 * mm, paras=[])
-        elif s.startswith("@QR "):
-            # @QR url | Text : QR-Code mit klickbarem Link darunter
-            url, _, text = s[4:].partition("|"); url = url.strip(); text = (text or url).strip()
-            if "www." in text:
-                w = text[text.index("www."):].split()[0]
-                text = text.replace(w, f'<a href="{url}" color="{hexfarbe("akzent")}">{w}</a>')
-            qr = qr_code(url); qb = qr.getBounds(); qs = 23 * mm
-            dq = Drawing(qs, qs, transform=[qs / (qb[2] - qb[0]), 0, 0, qs / (qb[3] - qb[1]), 0, 0]); dq.add(qr)
-            story.append(KeepTogether([Spacer(1, 4), dq, Spacer(1, 2),
-                                       Paragraph(text, ParagraphStyle("qrt", parent=body, alignment=TA_LEFT))]))
-        elif s.startswith("@ZITAT "):
-            # Zitat wie «> », aber ohne Verzierung
-            flush(); story.append(KeepTogether([Spacer(1, 6), Paragraph(inline(s[7:]), quote), Spacer(1, 14)]))
-        elif s.startswith("@UNTEN "):
-            flush(); story.append(ZitatUnten(inline(s[7:])))
-        elif s == "@UMBRUCH-RECHTS":
-            # neue Seite; im Druck zusätzlich eine leere linke Seite, falls nötig
-            from reportlab.platypus.flowables import DocIf
-            story += [Umbruch()] + ([DocIf("doc.page % 2 == 0", [PageBreak()])] if DRUCK else [])
-        elif s.startswith("@ABSTAND"):
-            story.append(Spacer(1, float((s.split() + ["8"])[1]) * mm))
-        elif s.startswith(("@LOTUS-UNTEN", "@ZIER-UNTEN")):
-            # Lotusblüte zentriert ganz unten auf die aktuelle Seite; danach geht es auf der nächsten Seite weiter
-            w_ = s.split()[1:]
-            zahl = next((float(x) for x in w_ if x.replace(".", "", 1).isdigit()), 10)
-            flush(); story.append(LotusUnten(zahl * mm, "mitte" in w_))
-        elif s.strip() == "@ZIER-LINIE":
-            # 2.84.4: eine Zier wie bei «> Satz» (goldene Linien, Lotus in der Mitte), ohne Text
-            flush(); story += [Spacer(1, 10), Ornament(), Spacer(1, 6)]
-        elif s.startswith(("@LOTUS-TRENNER", "@ZIER-TRENNER")):
-            # kleine Lotusblüte ohne eigenen Platzbedarf, mittig in die Lücke vor der nächsten Überschrift
-            flush(); story.append(LotusTrenner(float(s.split()[1]) * mm if len(s.split()) > 1 else 6 * mm))
-        elif s.split()[0] in ("@LOTUS", "@ZIER"):
-            # @LOTUS 12 = kleine Lotusblüte, zentriert (Zahl = Breite in mm)
-            flush()
-            from reportlab.platypus import Image as Image_
-            lb = float(s.split()[1]) * mm if len(s.split()) > 1 else 12 * mm
-            story += [Spacer(1, 1 * mm), Image_(bild(LOTUS), lb, lb * LOTUS_RATIO, mask="auto"), Spacer(1, 1 * mm)]
-        elif s == "@SEITENMITTE":
-            flush(); story.append(SeiteMitte())
-        elif s == "@UMBRUCH":
-            flush(); story.append(Umbruch())
-        elif s == "@RUECKSEITE":
-            flush()
-            story += verzeichnisse_auto()
-            if not bn_gesetzt:
-                story += bildnachweis(); bn_gesetzt = True
-            if not DRUCK:  # im Druck ist die Rückseite Teil des Umschlags
-                story += [NextPageTemplate("back"), PageBreak(), Spacer(1, 1)]
-        elif s == "@BILDNACHWEIS":
-            flush(); story += bildnachweis(); bn_gesetzt = True
-        elif s in ("@BILDERVERZEICHNIS", "@TABELLENVERZEICHNIS"):
-            flush(); story += verzeichnis("bild" if s == "@BILDERVERZEICHNIS" else "tabelle")
-        elif s == "@STICHWORTE":
-            flush()
-            story += verzeichnisse_auto()
-            if not bn_gesetzt:
-                story += bildnachweis(); bn_gesetzt = True
-            story += stichwortverzeichnis()
         elif s.lstrip().startswith("@"):
-            raise M.Fehler(f"{TEXT}, Zeile {getattr(ln, 'nr', '?')}: unbekannter Befehl «{s.strip()}».")
+            import umbenennen as U
+            neu = U.zeile(s.strip())                  # alte Schreibweise (vor 3.0)?
+            raise M.Fehler(f"{TEXT}, Zeile {getattr(ln, 'nr', '?')}: unbekannter Befehl «{s.strip()}»."
+                           + (f" Alte Schreibweise – neu: «{neu.strip()}». Menü um stellt das ganze Buch um." if neu else ""))
         else:
             para.append(s.strip())
     story += liste.ende()
@@ -2571,7 +2558,7 @@ Flowable.splitOn = _split_mit_nummer
 
 
 class KopfZusatz(Flowable):
-    """@KOPF Text: ersetzt in der Kopfzeile das Kapitel (z. B. «Ecuador»); @KOPF allein beendet es."""
+    """@HEADER Text: ersetzt in der Kopfzeile das Kapitel (z. B. «Ecuador»); @HEADER allein beendet es."""
     def __init__(self, text):
         super().__init__(); self.text = text
     def wrap(self, aw, ah):
@@ -2581,7 +2568,7 @@ class KopfZusatz(Flowable):
 
 
 class SeiteMitte(Flowable):
-    """@SEITENMITTE: Inhalt dieser Seite (auch mit Überschrift) senkrecht zentrieren."""
+    """@PAGE-CENTER: Inhalt dieser Seite (auch mit Überschrift) senkrecht zentrieren."""
     def wrap(self, aw, ah):
         return 0, 0
     def draw(self):
@@ -2589,7 +2576,7 @@ class SeiteMitte(Flowable):
 
 
 class Umbruch(PageBreak):
-    """Von Hand gesetzter Seitenwechsel (@UMBRUCH); die Seite davor wird ausgeglichen."""
+    """Von Hand gesetzter Seitenwechsel (@NEWPAGE); die Seite davor wird ausgeglichen."""
 
 
 def seitenausgleich(doc, story):
@@ -2597,7 +2584,7 @@ def seitenausgleich(doc, story):
     auf die Abstände verteilen, vor allem um Zitate, Bilder und Überschriften herum."""
     info = doc.lr_info
     ziele = [i for i, f in enumerate(story) if isinstance(f, (PartMarker, MottoSeite, Umbruch, MitteBlock))]
-    nur_mitte = {i for i, f in enumerate(story) if type(f) is PageBreak}   # z. B. vor den Stichworten: nur @SEITENMITTE
+    nur_mitte = {i for i, f in enumerate(story) if type(f) is PageBreak}   # z. B. vor den Stichworten: nur @PAGE-CENTER
     ausgleich = {}
     for z in sorted(set(ziele) | nur_mitte):
         inhalt = [i for i in range(z) if i in info and not isinstance(story[i], (PageBreak, CondPageBreak, Spacer))]
@@ -2610,11 +2597,11 @@ def seitenausgleich(doc, story):
         sm = [i for i in inhalt if isinstance(story[i], SeiteMitte) and info[i][0] == seite]
         if z in nur_mitte and not sm:
             continue
-        if sm:                # @SEITENMITTE: ganzen Inhalt der Seite nur senkrecht zentrieren
+        if sm:                # @PAGE-CENTER: ganzen Inhalt der Seite nur senkrecht zentrieren
             if frei > 6 * mm:
                 ausgleich[sm[0]] = (frei - 4) / 2
             continue
-        if not ja("seitenausgleich", "nein"):   # 2.86.0: Standard wie im Buchsatz – Rest der Seite bleibt unten frei
+        if not ja("seitenausgleich", "nein"):   # Standard wie im Buchsatz – Rest der Seite bleibt unten frei
             continue
         if frei < 15 or frei > 0.75 * (H - TOP - BOT):
             continue
@@ -2671,7 +2658,7 @@ def build(out):
 
 
 def zeitstrahl_zeilen(inhalt):
-    """Zeilen eines «::: zeitstrahl»-Blocks:  1974 | Geboren in Bern"""
+    """Zeilen eines @TIMELINE-Bereichs:  1974 | Geboren in Bern"""
     rows = []
     for z in inhalt:
         if "|" in z:
@@ -2680,29 +2667,8 @@ def zeitstrahl_zeilen(inhalt):
     return rows
 
 
-def zeitstrahl_block(titel, inhalt):
-    rows = zeitstrahl_zeilen(inhalt)
-    titel = titel or getattr(E, "WORT_ZEITSTRAHL", "Zeitstrahl")
-    cs = ParagraphStyle("c", parent=body, fontSize=8.6, leading=11, spaceAfter=0, alignment=TA_LEFT)
-    ys = ParagraphStyle("y", parent=cs, fontName=schrift("titel"), textColor=GOLD)
-    global IM_ANHANG
-    alt, IM_ANHANG = IM_ANHANG, True
-    data = [[Paragraph(inline(a), ys), Paragraph(inline(b), cs)] for a, b in rows]
-    IM_ANHANG = alt
-    t = Table(data, colWidths=[22 * mm, W - IN - OUT - 22 * mm])
-    t.setStyle(TableStyle([
-        ("VALIGN", (0, 0), (-1, -1), "TOP"),
-        ("LINEBELOW", (0, 0), (-1, -2), 0.3, farbe("linie")),
-        ("TOPPADDING", (0, 0), (-1, -1), 2.2), ("BOTTOMPADDING", (0, 0), (-1, -1), 2.2),
-        ("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 4),
-    ]))
-    p = Paragraph(titel, ZEIT_STIL); p._toc = (0, titel)
-    # Folgeseite beginnt auf der Höhe der Tabelle von Seite 1 (unter der Überschrift)
-    return [PageBreak(), p, NextPageTemplate("zeitfolge"), t, NextPageTemplate("body")]
-
-
 def zeitstrahl_tabelle(inhalt):
-    """«::: zeitstrahl»: Zeilen «Jahr | Text» als Tabelle (Überschrift davor mit «# Zeitstrahl»)."""
+    """@TIMELINE … @END: Zeilen «Jahr | Text» als Tabelle (Überschrift davor mit «# Zeitstrahl»)."""
     rows = zeitstrahl_zeilen(inhalt)
     cs = ParagraphStyle("c", parent=body, fontSize=8.6, leading=11, spaceAfter=0, alignment=TA_LEFT)
     ys = ParagraphStyle("y", parent=cs, fontName=schrift("titel"), textColor=GOLD)
@@ -2822,7 +2788,7 @@ def tabelle(zeile):
     qs = ParagraphStyle("tq", parent=zs, fontName=schrift("text_kursiv"), fontSize=gr - 0.8, textColor=SOFT)
     daten = [[Paragraph(inline(ein(d["titel"])), ts)] + [""] * (len(kopf) - 1),
              [Paragraph(inline(k), kr if rechts[i] else ks) for i, k in enumerate(kopf)]]
-    ohne_titel = not d["titel"].strip()          # Zeile 1 leer = Tabelle ohne Titel (ab 2.76)
+    ohne_titel = not d["titel"].strip()          # Zeile 1 leer = Tabelle ohne Titel
     daten += [[Paragraph(inline(x), zr if rechts[i] else zs) for i, x in enumerate(r)] for r in reihen]
     stil = [("SPAN", (0, 0), (-1, 0)), ("VALIGN", (0, 0), (-1, -1), "TOP"),
             ("LEFTPADDING", (0, 0), (-1, -1), 4), ("RIGHTPADDING", (0, 0), (-1, -1), 4),
@@ -2875,7 +2841,7 @@ def absatz_anfang(t):
         wort = f'<font color="{hexfarbe(farbe_)}">{wort}</font>'
     vor = ""
     if zeichen:
-        bild = LOTUS if zeichen.lower() in ("zier", "lotus") else \
+        bild = LOTUS if zeichen.lower() in ("logo", "zier", "lotus") else \
             finde(zeichen) if zeichen.lower().endswith((".png", ".jpg", ".jpeg")) else None
         if bild:
             h = TEXT_GROESSE * 0.85
@@ -2890,14 +2856,14 @@ def inline_einfach(t):
     """Wie inline(), aber ohne Stichwortmarken (Titelei, Impressum, Zeitstrahl, QR-Texte)."""
     t = re.sub(r"&(?!amp;|lt;|gt;|quot;|#)", "&amp;", links(t))
     t = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", t)
-    return re.sub(r"(?<![\w*])\*(?=\S)([^*\n]+?)(?<=\S)\*(?![\w*])", r"<i>\1</i>", t)            # 2.84.7: *kursiv*
+    return re.sub(r"(?<![\w*])\*(?=\S)([^*\n]+?)(?<=\S)\*(?![\w*])", r"<i>\1</i>", t)            # *kursiv*
 
 
 def zeilen_html(zeilen):
     """Zeilen untereinander (<br/>), Leerzeile = Abstand (<br/><br/>)."""
     out, leer = [], False
     for z in zeilen:
-        if getattr(z, "nr", 0) == -1:          # Ende eines ::: nur-Blocks
+        if getattr(z, "nr", 0) == -1:          # Ende eines Bereichs (@UC … @END)
             continue
         if not z.strip():
             leer = bool(out); continue
@@ -2917,7 +2883,7 @@ def titelseite(titel, untertitel):
 
 
 class ZitatUnten(Flowable):
-    """@UNTEN Text: füllt den Rest der Seite und setzt den Text kursiv, zentriert an den unteren Rand."""
+    """@DECORATE-TEXT-BOTTOM Text: füllt den Rest der Seite und setzt den Text kursiv, zentriert an den unteren Rand."""
     def __init__(self, text):
         super().__init__(); self.text = text
     def _p(self, aw):
@@ -2999,8 +2965,13 @@ def impressum(zeilen, widmung):
     return out
 
 
+def zier_satz(text):
+    """@DECORATE: Linie-Logo, der Satz (kursiv, zentriert), Linie-Logo."""
+    return [Ornament(), Paragraph(inline(text), quote), Ornament()]
+
+
 def zusammen(titel, inhalt):
-    """«::: zusammen»: Absätze, Aufzählungen und Zitate, die nie auf zwei Seiten getrennt werden."""
+    """@KEEP-TOGETHER … @END: Absätze, Aufzählungen und Zitate, die nie auf zwei Seiten getrennt werden."""
     teile, para, liste = [], [], Liste()
     for z in inhalt + [""]:
         t = z.strip()
@@ -3011,24 +2982,17 @@ def zusammen(titel, inhalt):
             liste.punkt(m); continue
         if t:
             teile += liste.ende()
-        if not t or t.startswith(("> ", "~ ")):
+        if not t or t.startswith(("@DECORATE ", "@ASIDE ")):
             if para:
                 teile.append(Paragraph(inline(" ".join(para)), body)); para = []
-            if t.startswith("> "):
-                teile += [Ornament(), Paragraph(inline(t[2:]), quote), Ornament()]
-            elif t.startswith("~ "):
-                teile.append(Paragraph(inline(t[2:]), note))
+            if t.startswith("@DECORATE "):
+                teile += zier_satz(t[10:])
+            elif t.startswith("@ASIDE "):
+                teile.append(Paragraph(inline(t[7:]), note))
         else:
             para.append(t)
     teile += liste.ende()
     return [KeepTogether(teile)] if teile else []
-
-
-def seite_kopf(titel, _):
-    """«::: seite Titel»: neue Seite mit Überschrift (im Inhaltsverzeichnis wie «Über den Autor»)."""
-    p = Paragraph(inline(titel), ParagraphStyle("sh", parent=h2, spaceBefore=0))
-    p._toc = (0, titel)
-    return [PageBreak(), p]
 
 
 def qr_code(url):
@@ -3091,20 +3055,18 @@ def portrait(_, zeilen):
 
 
 def offene_stellen():
-    """Alle «::: offen…»- und Platzhalter-Blöcke im Manuskript (auch in eingebundenen Geschichten)."""
+    """Alle @DRAFT- und @NOTE-Bereiche im Manuskript (auch in eingebundenen Geschichten)."""
     out = []
     zeilen = [z for _, z in M.lies(os.path.join(BASE, TEXT))[1]]
     nummern = [n for n, _ in M.lies(os.path.join(BASE, TEXT))[1]]
     for i, z in enumerate(zeilen):
-        s = z.strip()
-        if s.startswith(":::") and s != ":::":
-            art = s[3:].strip().split(" ", 1)[0].lower()
-            if art.startswith("offen") or art.startswith("platzhalter"):
-                text = s[3:].strip()[len(art):].strip()
-                k = i + 1
-                while not text and k < len(zeilen) and zeilen[k].strip() != ":::":
-                    text = zeilen[k].strip(); k += 1
-                out.append((nummern[i], art, text[:60] + ("…" if len(text) > 60 else "")))
+        b = M.befehl(z) if z.lstrip().startswith("@") else None
+        if b and b.name in ("DRAFT", "NOTE"):
+            text, k = b.text, i + 1
+            while not text and k < len(zeilen) and zeilen[k].strip() != "@END":
+                text = zeilen[k].strip(); k += 1
+            out.append((nummern[i], z.strip()[1:].split()[0],
+                        text[:60] + ("…" if len(text) > 60 else "")))
     return out
 
 

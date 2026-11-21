@@ -37,14 +37,14 @@ AUSGABEN (Variablen-Datei)
 - Erlaubte Namen dort: druck-datei (Plattform-Datei ohne .md), isbn, preis, impressum-herstellung, impressum-kontakt,
   impressum-logo, erstellen (E-Book: ja/nein). Leer = Zeile fällt weg.
 - Gemeinsames Impressum unter «## Impressum»: {impressum-rechte}, {impressum-kontakt}.
-- «## @IMPRESSUM» in der Buch-MD bleibt leer: der Motor setzt © {jahr} {autor}, {website}, {impressum-herstellung},
+- «## @IMPRINT» in der Buch-MD bleibt leer: der Motor setzt © {jahr} {autor}, {website}, {impressum-herstellung},
   {impressum-satz1}, {impressum-satz2}, {impressum-rechte}, {impressum-kontakt}, {auflage}, ISBN {isbn} selbst ein.
 
 DRUCK (nur wenn es den Ordner druck/ gibt)
 - Eine Plattform-Datei pro Druckerei und Format, z. B. druck/epubli-a5.md, druck/bod-a5-hardcover.md. Nur Technik, keine Texte.
 - Erlaubte Namen: neu-berechnet, berechnet-fuer-seiten, berechnet-am (diese drei setzt der Motor), plattform, format (nur wenn anders als das Grundformat), bindung,
   projekt, farbmodus (rgb|cmyk; cmyk braucht Ghostscript), ruecken-hardcover, ruecken-softcover, beschnitt-buchblock, beschnitt-hardcover, beschnitt-softcover,
-  deckel-hardcover, papier, extra-seiten, barcode-position, barcode-groesse, barcode-bild, versatz-vertikal,
+  deckel-hardcover, papier, extra-seiten, isbn-position, isbn-groesse, isbn-bild, isbn-rahmen, versatz-vertikal,
   versatz-horizontal. Masse in mm, z. B. «{deckel-hardcover}: 153x216».
 - «## Coverrechner (Rohdaten)» zuunterst: Text aus dem Coverrechner, wie er kommt. Der Motor liest ihn beim Bau
   (motor/rohdaten2cover.py) und trägt Rücken, Beschnitt, Deckel und die drei Kopfzeilen selbst ein.
@@ -71,27 +71,33 @@ BUCHTEXT (@@NAME@@-buch.md)
   ## Kapitel                    Kapitel (erscheint im Inhaltsverzeichnis)
   ### Zwischentitel             kleiner Titel
   Leerzeile                     neuer Absatz.   \ am Zeilenende = Zeilenumbruch im Absatz
-  ---                           neue Seite (eigene Zeile, davor Leerzeile), wie @UMBRUCH
-  ~ Randbemerkung   - Listenpunkt   **fett**   [Text](https://…)
-  > Satz = Zitat mit Verzierung (wie @ZITAT-ZIER). Nur im Buchtext; in den Einstellungs-Dateien ist «> …» eine Erklärung.
+  - Listenpunkt   **fett**   *kursiv*   [Text](https://…)
   1. Aufzählung (zählt selbst)   «  - Unterpunkt» (eingerückt)   «3\. Mai» = Zahl ohne Aufzählung
-  ## @BEFEHL                    Befehl als Überschrift, wirkt wie @BEFEHL
+  ## @BEFEHL                    Befehl als Überschrift (Titelei), wirkt wie @BEFEHL
 
-Blöcke: beginnen mit «::: art Titel», enden mit «:::» (eigene Zeile)
-  Arten: nur, mitte, zusammen, offen, offen-notiz, widmung, zeitstrahl, uz
-  Endung = nur in einer Ausgabe/Medium: -normal, -uz, -bildschirm, -druck, -ebook, -buch, -privatdruck
-  Beispiel:  ::: nur-uz        (dieser Text nur in der zweiten Ausgabe)
-Foto (ohne «:::»):  «#### @FOTO Titel», darunter Zeilen «datei: bild.jpg» / «text: Bildunterschrift» /
-  «alt: Bildbeschreibung» / «breite: 60» / «fluss: rechts» / «quelle: Foto: Name». Ende = erste Leerzeile.
-  Der Foto-Block endet an der ersten Leerzeile.  «#### @FOTO-UZ Titel» = nur zweite Ausgabe.
+Alles, was pureSATZ ist, beginnt mit @ (pureSATZ 3.0). Bauplan einer Befehlszeile:
+  @[FASSUNG-]NAME[-GRÖSSE][-ORT[-HÖHE]][-STIL] Text
+  Alles vor dem ersten Leerzeichen ist der Befehl (GROSS), danach der Text. Zahlen in mm.
+  Ortswörter: REST (Mitte des Rests der Seite, dann neue Seite) · BOTTOM (unten; BOTTOM-34 = 34 mm über dem Textende)
+              PAGE (eigene Seite) · GAP (Lücke vor der nächsten Überschrift) · RIGHT/LEFT (daneben, Text fliesst herum)
+  Fassung als Vorsilbe: UC- (Unzensiert) · NORMAL- · EBOOK- · PRINT- (Druck) · SCREEN- (Lese-PDF), z. B. @UC-SPACER-14
+
+Bereiche: Befehl allein auf der Zeile (oder mit Titel), Ende mit «@END» (eigene Zeile). Kein Bereich im Bereich.
+  @UC … @END (nur zweite Ausgabe; ebenso @NORMAL @EBOOK @PRINT @SCREEN) · @UC-BLOCK Titel (Kasten der zweiten Ausgabe)
+  @DECORATE-REST (Absätze zwischen Linien, Mitte des Rests) · @KEEP-TOGETHER · @DRAFT (noch offen) · @NOTE Titel (nie gedruckt)
+  @TIMELINE (Zeilen «1974 | Geboren»)
+Foto:  «#### @PICTURE Titel» (mit Breite und Seite: «#### @PICTURE-60-RIGHT Titel»), darunter Zeilen «datei: bild.jpg» /
+  «text: Bildunterschrift» / «alt: Bildbeschreibung» / «quelle: Foto: Name». Ende = erste Leerzeile.
+  «#### @UC-PICTURE Titel» = nur zweite Ausgabe.
 
 Befehle (eine eigene Zeile, GROSS, genau so geschrieben):
-  @TITEL @IMPRESSUM @HINWEIS @WIDMUNG @KERNSATZ Satz @INHALTSVERZEICHNIS   (als «## @…» geschrieben)
-  @ZITAT Satz (schlicht)  @ZITAT-ZIER Satz (mit Verzierung)  @MOTTO Satz  @UNTEN Satz  @KOPF Text
-  @UMBRUCH (= ---)  @UMBRUCH-RECHTS  @PLATZ 40  @ABSTAND 8  @SEITENMITTE
-  @ZIER 12  @ZIER-UNTEN  @ZIER-TRENNER
-  @QR url | Text   @QR-PAAR url | Text ;; url | Text   @PORTRAIT bild.png | Text
-  @BILDNACHWEIS  @STICHWORTE  @RUECKSEITE
+  ## @TITLE  ## @IMPRINT  ## @NOTICE  ## @DEDICATION  ## @DECORATE-PAGE Satz  ## @CONTENTS   (Titelei)
+  @NEWPAGE  @NEWPAGE-RIGHT  @NEWPAGE-40  @SPACER-8  @PAGE-CENTER  @HEADER Text … @HEADER
+  @ASIDE Satz  @DECORATE Satz  @DECORATE-TEXT Satz  @DECORATE-TEXT-BOTTOM Satz  @DECORATE-PAGE Satz  @DECORATE-LOGO
+  @DECORATE-REST Satz  @DECORATE-ABOVE-REST Satz  @DECORATE-ABOVE-BOTTOM-34 Satz   (Stil: -UPRIGHT, -UPRIGHT-MAIN)
+  @LOGO-12  @LOGO-6-GAP  @LOGO-10-REST  @LOGO-10-BOTTOM
+  @QR url | Text   (mehrere: … ;; url | Text)   @QR-RIGHT url   @PORTRAIT bild.png | Text   @#tabelle   @@geschichte
+  @INDEX  @LIST-PICTURES  @LIST-TABLES  @PICTURE-CREDITS  @BACK-COVER
 Keine anderen @-Befehle erfinden. Befehle nicht übersetzen, nicht verschieben ohne Auftrag.
 
 UMSCHLAG (@@NAME@@-umschlag.md)
@@ -100,7 +106,7 @@ UMSCHLAG (@@NAME@@-umschlag.md)
   Endung am Schlüssel = nur dort: fuss-druck, fuss-bildschirm, text-ebook, auszug-uz. «> feld: …» = Erklärung. Text der Rückseite kurz halten.
 
 WAS DER MOTOR MACHT (zur Info)
-  sh build.sh            Entwurf: Bildschirm-PDF, Druckdateien, E-Book (offene Stellen sichtbar)
+  sh build.sh            Entwurf: Lese-PDF, Druckdateien, E-Book (offene Stellen sichtbar)
   sh build.sh schnell    nur Lese-PDFs (beim Schreiben)
   sh build.sh final      Druckfassung für die Druckerei, mit Seitenbilanz, Shop-Angaben, Kontrast-Prüfung
   sh build.sh komplett   final + Leseprobe + Korrektur in einem Durchgang

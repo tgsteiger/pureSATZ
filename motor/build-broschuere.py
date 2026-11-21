@@ -346,5 +346,5 @@ if not ISBN and not bk.PRIVATDRUCK:
           + ("im Impressum steht «ISBN folgt»." if bk.V("isbn") == "folgt" else "das Impressum hat keine ISBN-Zeile."))
 
 if bk.ENTWURF:
-    offen = sum(1 for z in bk.text_zeilen() if isinstance(z, tuple) and z[0] in ("PH", "OFFEN"))
+    offen = sum(1 for z in bk.text_zeilen() if isinstance(z, tuple) and z[0] in ("NOTE", "DRAFT"))
     print(f"ENTWURF: {offen} offene Stellen und Notizen sichtbar. Für den Druck: sh build.sh final")

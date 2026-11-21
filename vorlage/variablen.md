@@ -20,7 +20,7 @@
 {ausgabe-name-normal}: Normale Ausgabe
 {ausgabe-name-uz}: @@ZWEITNAME@@
 {stempel-uz}: @@ZWEITLABEL@@
-{kasten-hinweis}: darf übersprungen werden
+{block-hinweis}: darf übersprungen werden
 > {zweite-ausgabe}: zweite Ausgabe, z. B. Director's Cut oder Unzensiert: ja | nein
 
 ## Impressum
@@ -29,7 +29,7 @@
 {impressum-kontakt}:
 {impressum-satz1}: Gesetzt mit pureSATZ · github.com/tgsteiger/pureSATZ
 {impressum-satz2}:
-> Gilt für alle Ausgaben. Steht in der Buch-MD unter «## @IMPRESSUM» nichts, setzt der Motor das Impressum selbst zusammen: © {jahr} {autor} · {website} · {impressum-herstellung} · {impressum-satz1} · {impressum-satz2} · {impressum-rechte} · {impressum-hinweis} · {impressum-kontakt} · {auflage} · ISBN {isbn}. Leere Zeilen fallen weg.
+> Gilt für alle Ausgaben. Steht in der Buch-MD unter «## @IMPRINT» nichts, setzt der Motor das Impressum selbst zusammen: © {jahr} {autor} · {website} · {impressum-herstellung} · {impressum-satz1} · {impressum-satz2} · {impressum-rechte} · {impressum-hinweis} · {impressum-kontakt} · {auflage} · ISBN {isbn}. Leere Zeilen fallen weg.
 > Was nur für eine Ausgabe gilt (Herstellung, Logo, eigene Kontaktzeile, ISBN, Preis), steht unten bei der Ausgabe und ersetzt dort die Zeile von hier.
 > {impressum-hinweis}: eigener Absatz vor der Kontaktadresse, z. B. «… ersetzt keine medizinische Beratung» (leer = fällt weg).
 > {impressum-satz1}, {impressum-satz2}: zwei freie Zeilen direkt unter der Herstellung, z. B. womit gesetzt wurde oder wer begleitet hat (leer = Zeile fällt weg).
@@ -116,8 +116,8 @@
 {bilderverzeichnis}: nein
 {tabellenverzeichnis}: nein
 {trennstellen}: Welt|anschauung, Gedanken|karussell
-{zier}:
-{zier-hell}:
+{logo}:
+{logo-light}:
 {initial}: nein
 {initial-farbe}: akzent
 {initial-stufen}: 2
@@ -133,7 +133,7 @@
 > {stichworte-gruppen}: zusammen = nie ein einzelnes Wort eines Buchstabens allein oben oder unten auf der Seite · fortlaufend = die Einträge laufen einfach weiter (Standard)
 > {bilderverzeichnis}, {tabellenverzeichnis}: ja = eigene Seite mit allen Fotos bzw. Tabellen und Seitenzahl, vor dem Stichwortverzeichnis (anderer Ort: Zeile @BILDERVERZEICHNIS / @TABELLENVERZEICHNIS)
 > {trennstellen}: | = hier darf ein langes Wort getrennt werden
-> {zier}: eigenes Bild der Verzierung im Ordner bilder/, leer = Standard
+> {logo}: Logo des Buchs (Bild im Ordner bilder/), leer = Standard · {logo-light}: helle Fassung für Teil- und Leerseiten
 > {initial}: ja = grosser Anfangsbuchstabe über drei Zeilen am Anfang jedes Kapitels · titel = erster Buchstabe des Kapiteltitels hervorgehoben · nein (Standard)
 > {initial-farbe}: akzent (Gold, Standard) | haupt (Blau wie die Überschriften) | text (Schwarz) | ueberschrift (wie die jeweilige Überschrift)
 > {initial-stufen}: nur bei {initial}: titel – 2 (Kapitel ##, Standard) | 3 | 4 oder mehrere, z. B. 2 3
@@ -143,7 +143,7 @@
 > {kapitaelchen}: ja = die ersten zwei Wörter jedes Kapitels in Kapitälchen (auch ohne Initial)
 > {absatz-einzug}: ja = Absätze ohne Abstand, ab dem zweiten eingerückt (wie viele Romane) · nein = mit Abstand (Standard)
 > {kopfzeile}: ohne-autor (Teil · Kapitel, Standard) | autor (Autor · Teil · Kapitel) | wechselnd (links Teil, rechts Kapitel)
-> {bildschirm-dunkler}: ja = feine Farben nur im Bildschirm-PDF etwas dunkler (für Schwarz-weiss-Ausdrucke)
+> {bildschirm-dunkler}: ja = feine Farben nur im Lese-PDF etwas dunkler (für Schwarz-weiss-Ausdrucke)
 > {mockup-hintergrund}: Farbverlauf (oben, unten) des Werbebilds …_Mockup.jpg (entsteht bei «final» und mit «sh build.sh mockup»)
 
 ## Sicherung
@@ -151,7 +151,7 @@
 {sicherung-cloud}:
 {sicherung-behalten}: 10
 {md-history-behalten}: 200
-> «sh sicherung.sh» sichert das ganze Buch als ZIP (Name mit Datum und Uhrzeit, ohne Zwischenspeicher; von den Ausgaben nur die Bildschirm-PDFs). «sh sicherung.sh lokal» oder «cloud» = nur dorthin, ohne Angabe = an beide. Pfade relativ zum Buchordner oder mit ~ bzw. /.
+> «sh sicherung.sh» sichert das ganze Buch als ZIP (Name mit Datum und Uhrzeit, ohne Zwischenspeicher; von den Ausgaben nur die Lese-PDFs). «sh sicherung.sh lokal» oder «cloud» = nur dorthin, ohne Angabe = an beide. Pfade relativ zum Buchordner oder mit ~ bzw. /.
 > {sicherung-behalten}: nur die neuesten ZIPs behalten (leer = alle)
 > {md-history-behalten}: bei jedem Bau kommen die MD-Dateien mit Datum und Uhrzeit nach md-history/; pro Datei nur die neuesten Stände behalten (leer = alle)
 

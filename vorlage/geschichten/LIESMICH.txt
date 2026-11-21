@@ -11,7 +11,7 @@ Aufbau einer Geschichte:
   - stichworte: Emotionscode, Schutz
   - quelle: Praxis 2018
 
-  Der Text, wie im Buch: Absätze, **fett**, > Zitat, ::: Blöcke, Fotos, {variablen}.
+  Der Text, wie im Buch: Absätze, **fett**, @DECORATE Satz, @UC … @END, Fotos, {variablen}.
 
 Die drei Zeilen mit «-» sind freiwillig und werden nicht gedruckt:
   stand       idee · entwurf · ueberarbeiten · fertig   (nur für die Übersicht)

@@ -187,17 +187,22 @@ HINWEIS = ("\n$ sh build.sh aenderungen          letzte Änderungen"
 
 
 # --- Text in Absätze zerlegen ----------------------------------------------------
-BLOCK = re.compile(r"^\s*:::\s*(\S*)")
 LISTE = re.compile(r"^\s*(?:[-*]|\d{1,3}\.)\s+\S")
 
 
-def _fassung(art):
-    a = art.lower()
-    if a.endswith("-uz") or a == "uz" or a.startswith("nur-uz"):
-        return "nur Unzensiert"
-    if a.endswith("-normal"):
-        return "nur normale Fassung"
-    return ""
+def _fassung(b):
+    """Befehl -> «nur UC» / «nur normale Fassung» / ""."""
+    if b.tag == "uz" or b.name == "BLOCK":
+        return "nur UC"
+    return "nur normale Fassung" if b.tag == "normal" else ""
+
+
+def _befehl(z):
+    import manuskript as M
+    try:
+        return M.befehl(z) if z.lstrip().startswith(("@", "#")) else None
+    except M.Fehler:
+        return None
 
 
 def _kapitelname(z):
@@ -233,13 +238,17 @@ def absaetze(buchtext, geschichten_text):
 
     for z in zeilen:
         s = z.strip()
-        b = BLOCK.match(z)
-        if b:
+        b = _befehl(z)
+        if b and b.name == "END":                          # Bereich zu
             fertig()
-            if b.group(1):
-                offen.append(_fassung(b.group(1)))
-            elif offen:
+            if offen:
                 offen.pop()
+            continue
+        if b and (b.name == "" or (b.bereich and not b.text) or (b.bereich and b.name != "DECORATE")):
+            fertig(); offen.append(_fassung(b))             # Bereich auf: @UC, @UC-BLOCK Titel, @DRAFT …
+            continue
+        if b and b.tag and not b.kopf:                     # @UC-ASIDE Text: ein Absatz nur in dieser Fassung
+            fertig(); offen.append(_fassung(b)); para.append(s); fertig(); offen.pop()
             continue
         k = _kapitelname(z)
         if k:
@@ -253,9 +262,10 @@ def absaetze(buchtext, geschichten_text):
             continue
         if LISTE.match(z):                                 # jeder Listenpunkt ist ein eigener Absatz
             fertig()
-        if not s or s in ("---",) or s.startswith(("#### @FOTO",)):
+        bild = b and b.name == "PICTURE" and b.kopf
+        if not s or s in ("---", "@NEWPAGE") or bild:
             fertig()
-            if s.startswith("#### @FOTO"):
+            if bild:
                 para.append(s)
             continue
         para.append(z)

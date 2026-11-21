@@ -111,9 +111,28 @@ def frage(text):
         return False
 
 
+def hilfsdateien(vorlage):
+    """Hilfsdateien (build.sh …): fehlende ergänzen, veraltete erneuern – ausser mit «# eigen» bzw. «rem eigen» darin.
+    update.* und menu.* nur ergänzen: sie können gerade laufen. Auch einzeln: python3 motor/update.py hilfsdateien"""
+    for f in HILFSDATEIEN:
+        q, z = os.path.join(vorlage, f), os.path.join(BASE, f)
+        if not os.path.exists(q):
+            continue
+        if not os.path.exists(z):
+            shutil.copy2(q, z)
+            print(f"  neu im Buch: {f}")
+        elif not f.startswith(("update.", "menu.")) and open(q, "rb").read() != open(z, "rb").read() \
+                and not re.search(r"^(#|rem) eigen\b", open(z, encoding="utf-8", errors="replace").read(), re.M | re.I):
+            shutil.copy2(q, z + ".neu")
+            os.replace(z + ".neu", z)
+            print(f"  erneuert: {f}")
+
+
 def main():
     global QUELLE
     a = [x.lower() for x in sys.argv[1:]]
+    if a == ["hilfsdateien"]:                     # nach einem Update mit älterem update.py (release.py)
+        hilfsdateien(os.path.join(plattform.puresatz(BASE), "vorlage")); return
     if "lokal" in a:
         QUELLE = plattform.puresatz(BASE)
     nur_pruefen = "pruefen" in a or "prüfen" in a
@@ -173,13 +192,7 @@ def main():
             raise
         print(f"\nMotor aktualisiert: {alt} -> {neu} (alter Motor in {os.path.basename(sicherung)}/)")
 
-        # Fehlende Hilfsdateien ergänzen (nie überschreiben)
-        vorlage = os.path.join(quelle, "vorlage")
-        for f in HILFSDATEIEN:
-            q, z = os.path.join(vorlage, f), os.path.join(BASE, f)
-            if os.path.exists(q) and not os.path.exists(z):
-                shutil.copy2(q, z)
-                print(f"  neu im Buch: {f}")
+        hilfsdateien(os.path.join(quelle, "vorlage"))
         gi = os.path.join(BASE, ".gitignore")
         if os.path.exists(gi):
             alt_gi = open(gi, encoding="utf-8").read()

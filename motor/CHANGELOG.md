@@ -3,6 +3,107 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 3.5.0 (November 2026) – Fassung hinten, UC, Menü ge
+- **Fassung hinten bei `@DECORATE`:** `@DECORATE-REST-UPRIGHT-UC` … `@END` – der Text steht in beiden Fassungen,
+  verziert nur in UC, in der anderen als gewöhnliche Absätze (auch `-NORMAL`, `-N` und einzeilig `@DECORATE-UC Satz`).
+  Fassung vorne bleibt: alles nur dort. PDF, E-Book und Hörbuch.
+- **`@N-…` / `@N`** = Kurzform für `@NORMAL-…` / `@NORMAL`.
+- **Fassung UC** überall gleich benannt (statt Unzensiert, UZ, zweite Ausgabe): Menü «N ✓ UC ✓», ISBN, Hilfe,
+  Glossar. Im Terminal geht `uc` neben `uz` (`sh build.sh schnell uc`, `leseprobe uc 18,20`). Ordner bleibt `ausgabe-unzensiert`.
+- Menü: **`ge` Gestaltung** (`in` geht weiter) · Stände zusammen unter «Ansehen»: `sm` merken, `a` änderungen,
+  `zh` zurückholen · `db` Druckbericht unter «Prüfen». Menü eine Zeile kürzer.
+
+## 3.4.0 (November 2026) – Menü: Tasten wie die Befehle
+- **`f` final, `k` komplett** – wie im Terminal: `k` baut jetzt final + Leseprobe + Korrektur (bisher = final).
+  `w` steht nicht mehr im Menü (steckt in `k`), die Taste geht weiter.
+- **Coverrechner überall `co`:** Menü `co` zeigt den Stand (baut nichts) und öffnet eine fällige Druckdatei;
+  im Terminal `sh build.sh co` (`cover-stand` und Menü `cv` gehen weiter). Bauen: `sh build.sh covers`.
+- **Aufräumen `cl`** (wie `sh cleanup.sh`), deutlich getrennt von `a` änderungen; `au` geht weiter.
+- **«Lese-PDF»** statt «Bildschirm-PDF» in Menü, Meldungen und Hilfe; Menü `np` = «nur Lese-PDF».
+- Gruppen im Menü ohne Nummern (Schreiben, Einstellen, Bauen, Prüfen, Ansehen, Weitergeben).
+- Hilfe: Menü-Text und Menübild neu (aus der echten Ausgabe), Tasten-Tabelle, Spickzettel (`sh build.sh co`);
+  «Erste Schritte»: die beiden Anfangsabschnitte sind jetzt einer («1. Erstes PDF in fünf Minuten»).
+
+## 3.3.0 (November 2026) – Hilfe geordnet, Starter ohne Doppeltes
+- **Hilfe: jede Sache an einer Stelle.** Befehle erklärt «Gestalten: Ich will …» (nach Zweck, mit Bildern); alle auf einen
+  Blick stehen unter «Befehle (@)» – die Bereiche (`… @END`) jetzt in derselben Tabelle statt in einem eigenen Abschnitt.
+  «Schreiben», «Text hervorheben» und «Seitengestaltung» wiederholen keine Befehlslisten mehr (Seitengestaltung heisst jetzt
+  «Initial, Einzug, Listen, Trennung»). Versionsangaben («ab 2.81») aus dem Hilfetext entfernt, alte Variablennamen
+  (`kasten-kopf` → `block-kopf`) ersetzt. Verweise geprüft (keiner tot), Hilfebilder unverändert.
+- **build.sh:** Die Liste aller Befehle steht nur noch in `motor/bauen.py`; `sh build.sh befehle` zeigt sie,
+  build.sh/build.bat verweisen darauf.
+- **update:** erneuert jetzt auch veraltete Starter im Buch (build, cleanup, neu, sicherung, sync – .sh und .bat), ausser
+  sie enthalten `# eigen` bzw. `rem eigen`. `update.*` und `menu.*` werden nur ergänzt (sie können gerade laufen).
+  `release.sh` ruft danach `python3 motor/update.py hilfsdateien` mit dem neuen Motor auf, damit es sofort wirkt.
+- Vorlage: readme4ki (`isbn-…` statt `barcode-…`), geschichten/LIESMICH, variablen.md auf 3.0. Webseite (docs) nachgeführt.
+
+## 3.2.0 (November 2026) – Motor bereinigen, Teil 2: innen 3.0
+- **Eine Sprache innen und aussen:** Der Motor wertet die Befehle von 3.0 direkt aus. Die Übersetzung in die alten
+  Formen beim Lesen (`manuskript.v3`) fällt weg. Den Bauplan `@[FASSUNG-]NAME[-GRÖSSE][-ORT[-HÖHE]][-STIL] Text`
+  zerlegt nur noch `manuskript.befehl()`; PDF, E-Book, Hörbuch, Stände und Prüfung nutzen es.
+  Bereiche kommen als `BLOCK`, `DRAFT`, `NOTE`, `KEEP-TOGETHER`, `TIMELINE`, `DECORATE-REST`, `PICTURE`;
+  Variablen heissen auch innen `{logo}`, `{logo-light}`, `{decorate-stil}`, `{block-kopf}`, `{block-hinweis}`.
+- **Alte Schreibweise (vor 3.0)** baut nicht mehr. Der Bau meldet z. B. «unbekannter Befehl «@ZIER 12». Alte Schreibweise –
+  neu: «@LOGO-12». Menü um stellt das ganze Buch um.» Das alte Wissen steht nur noch in `umbenennen.py`.
+  `> Satz` und `~ Satz` sind alte Schreibweise (`um` macht `@DECORATE` / `@ASIDE` daraus); `---` bleibt `@NEWPAGE`.
+- Korrigiert: Ein Bild in `@UC … @END` wurde als Überschrift «@FOTO …» mit Rohtext gesetzt – jetzt ein Bild.
+  Im E-Book stehen `@ASIDE`/`@DECORATE` in `@KEEP-TOGETHER` an der richtigen Stelle. Hörbuch: `@NOTE` wird nicht mehr
+  vorgelesen. Fehler «kein Bereich im Bereich», wenn `@UC-…` in einem `@UC`-Bereich steht.
+- Import aus Word/LibreOffice schreibt die 3.0-Schreibweise (`@DECORATE`, `@NEWPAGE`, `#### @PICTURE`, `@BACK-COVER`)
+  und lässt die Demo-Widmung der Vorlage wieder weg. Geschichten-Sammlung, Stichworte-Prüfung, Änderungen (staende),
+  offene Stellen: 3.0-Namen.
+- **Doppeltes zusammengeführt (G4):** Zitat mit Verzierung (`zier_satz`, PDF und E-Book je eine Stelle),
+  `druck_datei`/`ebook_datei` (`_plattform_datei`). Tote Zweige im E-Book (SEITE, PORTRAIT, QR, ZEIT) entfernt.
+- Testbuch «alle Befehle»: dazu Bild in `@UC … @END` und `@DECORATE`/`@ASIDE` in `@KEEP-TOGETHER`.
+- Bücher sehen genau gleich aus (Leben123 normal + UZ, Naehrstoffe, Handbuch-E-Book, Testbuch; Hörbuch-Texte von
+  Leben123 und Naehrstoffe gleich).
+
+## 3.1.0 (November 2026) – Motor bereinigen, Teil 1
+- **Testbuch «alle Befehle»** (`test/alle-befehle.py`): Demo-Kapitel der Vorlage plus jeder weitere 3.0-Befehl, jede Fassung,
+  Bild links/rechts, QR, breite Tabelle, Geschichte, Zeitstrahl, Verzeichnisse; baut `final` (normal + zweite Ausgabe) und
+  meldet, wenn ein Befehl aus manuskript.py im Testbuch fehlt. Läuft im Selbsttest mit. Mit Ordner (`… alle-befehle.py <ordner>`)
+  bleibt es stehen – für den Vergleich alter/neuer Motor mit `test/vergleich.py`.
+- **Altlasten weg** (keines der Bücher nutzt sie; alte Bücher stellt Menü `um` / `motor/umbenennen.py` weiterhin um):
+  `@LOTUS`, `@LOTUS-UNTEN`, `@LOTUS-TRENNER`, `@ANHANG` · Fassungsnamen `dc`, `v2`, `offiziell` (`::: nur-dc`, `{name-dc}`,
+  Aufruf `build.py dc|b|directors-cut|v3uz` – heute `uz`) · `{isbn-buch}` · `::: foto` (heute `#### @PICTURE`) ·
+  Variablenblock zwischen `---` oben in der Buch-MD · Variablen mit Strich `- name: wert` (heute `{name}: wert`).
+  Bleiben, weil Druckdateien sie noch haben: `barcode-…` (heute `isbn-…`) und `{neu-berechnen}`.
+- Tote Funktionen `zeitstrahl_block` und `seite_kopf` (build.py) entfernt; Versionsnummern aus rund 80 Code-Kommentaren
+  entfernt (die Geschichte steht hier im CHANGELOG).
+- Bücher sehen genau gleich aus (Leben123 normal + UZ, Naehrstoffe, Testbuch «alle Befehle»: «Alles gleich»).
+
+## 3.0.1 (November 2026)
+- Menü: Hat ein Buch noch die Schreibweise vor 3.0, steht oben «⚠ Alte Schreibweise (vor 3.0) → um». Taste `um` zeigt die
+  Änderungen, fragt «Umstellen? [J/n]», sichert nach md-history/ und stellt um (umbenennen.py). Hinweis: andere Computer
+  zuerst mit `ss` auf 3.0 bringen. `bp` meldet kurz «alte Schreibweise → Menü um».
+
+## 3.0.0 (November 2026) – neue Schreibweise
+- **Neue Befehlsnamen (englisch, ein Bauplan):** `@[FASSUNG-]NAME[-GRÖSSE][-ORT[-HÖHE]][-STIL] Text`, Zahlen in mm.
+  Ortswörter `REST` (Mitte des Rests, dann neue Seite) · `BOTTOM` · `GAP` (Lücke vor der nächsten Überschrift) · `RIGHT`/`LEFT`.
+  Fassung als Vorsilbe: `@UC-…` (Unzensiert), `@NORMAL-…`, `@EBOOK-…`, `@PRINT-…`, `@SCREEN-…`.
+- **Bereiche** `@NAME` … `@END` statt `::: …` / `:::`: `@UC`, `@NORMAL`, `@EBOOK`, `@UC-BLOCK Titel`, `@DRAFT`, `@NOTE`,
+  `@KEEP-TOGETHER`, `@TIMELINE`, `@DECORATE-REST`.
+- **DECORATE-Familie:** `@DECORATE Text` (Linie-Logo, Text, Linie-Logo) · `@DECORATE-LOGO` · `@DECORATE-TEXT Text` (ohne Linien) ·
+  `@DECORATE-TEXT-BOTTOM Text` · `@DECORATE-PAGE Text` (eigene Seite; `## @DECORATE-PAGE` in der Titelei) ·
+  `@DECORATE-REST Text` · `@DECORATE-ABOVE-REST Text` (Schlusssatz) · `@DECORATE-ABOVE-BOTTOM-34 Text` · Stil `-UPRIGHT`, `-UPRIGHT-MAIN`.
+- Weiter: `@LOGO-12` · `@LOGO-10-BOTTOM` · `@LOGO-8-REST` · `@LOGO-6-GAP` · `@SPACER-8` · `@NEWPAGE` · `@NEWPAGE-RIGHT` ·
+  `@NEWPAGE-40` · `@PAGE-CENTER` · `@HEADER Text` · `@ASIDE Text` · `@QR a ;; b` · `@QR-RIGHT` · `#### @PICTURE-60-RIGHT Titel` ·
+  Titelei `@TITLE` `@IMPRINT` `@NOTICE` `@DEDICATION` `@CONTENTS` · `@INDEX` `@LIST-PICTURES` `@LIST-TABLES` `@PICTURE-CREDITS` `@BACK-COVER`.
+- Variablen: `{logo}`, `{logo-light}`, `{decorate-stil}`, `{block-kopf}`, `{block-hinweis}`.
+- **Alte Namen gehen weiter**, mit gleicher Wirkung. Die neuen werden beim Lesen in die bewährten internen Formen übersetzt
+  (manuskript.v3) – das Buch sieht genau gleich aus (Leben123 normal + UZ, Naehrstoffe, Hallo-Buch: «Alles gleich»).
+- `python3 motor/umbenennen.py` zeigt die Umstellung eines Buchs, `… ja` schreibt sie (Sicherung in md-history/).
+- Vorlage (Hallo-Buch) in der neuen Schreibweise.
+- **Hilfe 3.0:** HILFE.md, START.md («Gestalten: Ich will …» nach Zweck, mit Bildern), readme4ki, Befehlsliste und
+  «Bereiche (@ … @END)» in hilfe.html und im Handbuch zeigen nur noch die neuen Namen. Suche findet neue Befehle auch mit
+  alten Wörtern (zitat → DECORATE, umbruch → NEWPAGE …).
+- **Bilder in der Hilfe** (motor/bilder/hilfe/) macht der Motor selbst: `python3 test/hilfe-bilder.py`.
+- `bp` / Buch prüfen: Hinweis «alte Schreibweise – umstellen mit python3 motor/umbenennen.py».
+- Menü `in`: `mz` `mb` `ma` schreiben `{decorate-stil}`. Steht ein neuer und ein alter Variablenname da, gilt der neue.
+- `aenderungen` und die Leseprobe (Rückseite) kennen die neuen Namen.
+- Handbuch: `{isbn-bild}` im Spickzettel als Code (brach den Bau ab).
+- Handbuch: die Buch-MD aus der Hilfe entsteht in der Schreibweise 3.0 (`@NORMAL`/`@UC` … `@END`, `@TITLE`, `@INDEX` …) – kein Hinweis «alte Schreibweise» mehr.
+
 ## 2.86.0 (November 2026)
 - **Neuer Standard wie im Buchsatz:** `{seitenausgleich}: nein` – die letzte Seite vor einem neuen Teil oder Mittel-Block wird nicht mehr gestreckt oder zentriert, der Rest bleibt unten frei. Wer den alten Ausgleich will: `{seitenausgleich}: ja`. `@SEITENMITTE`, `::: mitte`, `fest` und `@ZIER-UNTEN … mitte` wirken wie bisher. `{seite-zentrieren}` (2.85.2) entfällt.
 

@@ -1,7 +1,7 @@
 # pureSATZ – Vorlage für neue Bücher
 
 Ein Satzsystem für Bücher aus Markdown: **alles steht in drei MD-Dateien**, der Motor macht das
-Layout. Zwei Ausgaben (normal und z. B. Director's Cut / Unzensiert), daraus Bildschirm-PDF,
+Layout. Zwei Ausgaben (normal und z. B. Director's Cut / Unzensiert), daraus Lese-PDF,
 Druckdateien für epubli, BoD, tredition oder KDP (Hardcover/Softcover), E-Book und Booklets. Entstanden aus «Leben 1.0, 2.0, 3.0».
 
 **Webseite:** [tgsteiger.github.io/pureSATZ](https://tgsteiger.github.io/pureSATZ/) – Download, fünf Schritte, Hilfe online.
@@ -51,7 +51,7 @@ Das legt **neben** `pureSATZ` einen Buchordner an (z. B. `../Mein-Buch/`; ein le
 | `fotos/`, `bilder/`, `build.sh`, `cleanup.sh`, `sicherung.sh`, `README.md`, `motor/` | Bilder, Bauen, Aufräumen, Sicherung, Hilfe, Satzsystem |
 
 Alle MD-Dateien haben dieselben Regeln: Überschriften `#`, `##`, `###`, Werte als `{name}: wert` (derselbe Name erscheint im Buch als `{name}`),
-darunter die Erklärungen als `> {name}: …`. Im Buchtext ist `> Satz` dagegen ein Zitat (wie `@ZITAT-ZIER Satz`). Danach im Buchordner:
+darunter die Erklärungen als `> {name}: …`. Im Buchtext beginnt alles, was pureSATZ ist, mit `@` (z. B. `@DECORATE Satz`). Danach im Buchordner:
 
 ```sh
 sh build.sh             # Entwurf
@@ -99,7 +99,7 @@ ausgereift – Regeln für das Dokument und Einschränkungen in `INSTALLATION.md
 
 ## Kapitelanfang (Initial)
 
-Grosser Anfangsbuchstabe am Kapitelanfang: im Menü `in` **Initialen …** wählen – wo (`0` aus, `1` erhöht,
+Grosser Anfangsbuchstabe am Kapitelanfang: im Menü `ge` **Gestaltung …** wählen – wo (`0` aus, `1` erhöht,
 `2`, `3`, `4` Zeilen oder `ti` im Kapiteltitel), Schrift (Textschrift, fett, Cinzel, Uncial, Fraktur), Farbe (gold,
 blau, schwarz) und Kapitälchen; `v` zeigt eine Vorschau. Beispiel `ti c b` = im Titel, Cinzel, blau.
 Im Titel auch für Zwischentitel: `ti23` (Stufen `##` und `###`), Farbe `ü` = wie die jeweilige Überschrift.

@@ -3,7 +3,7 @@
 selbsttest.py – prüft pureSATZ von A bis Z (läuft bei jedem «git push» auf GitHub: Linux, Mac, Windows).
 
 Legt in einem leeren Ordner ein Testbuch an (wie setup/setup.sh), richtet die Python-Umgebung ein und baut:
-final (Bildschirm-PDF, Buchblock, Hardcover- und Softcover-Umschlag, E-Book), schnell, leseprobe, korrektur,
+Testbuch «alle Befehle» (test/alle-befehle.py), final (Lese-PDF, Buchblock, Hardcover- und Softcover-Umschlag, E-Book), schnell, leseprobe, korrektur,
 sicherung, Geschichten (neu, einbinden, Sammel-PDF, Tippfehler), Druckangaben (druck=…, BoD). Danach wird geprüft, ob alle Dateien da sind. Fehler = Abbruch mit Meldung.
 
 Auch von Hand möglich (im Ordner pureSATZ):   python3 test/selbsttest.py
@@ -59,6 +59,7 @@ def main():
     else:
         py = os.path.join(buch, ".venv", "Scripts" if os.name == "nt" else "bin",
                           "python.exe" if os.name == "nt" else "python3")
+    lauf([py, os.path.join("test", "alle-befehle.py")], lb)       # 3.1: jeder Befehl, beide Fassungen, final
     for art in (["komplett"], ["schnell"]):              # komplett = final + Leseprobe + Korrektur (2.20.1)
         lauf([py, os.path.join("motor", "bauen.py")] + art, buch)
     lauf([py, os.path.join("motor", "sicherung.py"), "lokal"], buch)
@@ -117,13 +118,13 @@ def main():
     vd = os.path.join(buch, "Testbuch-variablen.md")
     v = open(vd, encoding="utf-8").read()
     with open(vd, "w", encoding="utf-8") as f:
-        neu = (v.replace("{leseprobe-seiten}:\n", "{leseprobe-seiten}: 5,7-8\n- leseprobe-seiten-uz: 6\n", 1)
+        neu = (v.replace("{leseprobe-seiten}:\n", "{leseprobe-seiten}: 5,7-8\n{leseprobe-seiten-uz}: 6\n", 1)
                .replace("{foto-format}:\n", "{foto-format}: 3:2\n", 1)
                .replace("{md-history-behalten}: 200\n", "{md-history-behalten}: 3\n", 1)
                .replace("{ebook-epub2}: nein\n", "{ebook-epub2}: ja\n", 1))
         if neu.count("\n") != v.count("\n") + 1 or "{foto-format}: 3:2" not in neu or "{ebook-epub2}: ja" not in neu:
             sys.exit("FEHLER: Selbsttest konnte die Variablen-Datei nicht anpassen (Schreibweise geändert?)")
-        f.write(neu)                  # «- leseprobe-seiten-uz» mit «- » ohne Klammern: alte Schreibweise geht auch
+        f.write(neu)
     lauf([py, os.path.join("motor", "bauen.py"), "schnell"], buch)
     lauf([py, os.path.join("motor", "bauen.py"), "nur-ebook", "final"], buch)       # mit ebook-epub2: ja (2.20)
     lauf([py, os.path.join("motor", "bauen.py"), "leseprobe"], buch)
@@ -209,7 +210,7 @@ def main():
     for endung in ("odt", "docx"):
         md = open(os.path.join(unten, f"Import-{endung}", f"Import-{endung}-buch.md"), encoding="utf-8").read()
         for muss in ("# Teil 1|Erster Teil|", "## Ein Kapitel", "**fettem Wort**", "- Punkt eins",
-                     "text: Eine Sonne am Himmel", "> Alles ist bereits in dir."):
+                     "text: Eine Sonne am Himmel", "@DECORATE Alles ist bereits in dir."):
             if muss not in md:
                 fehlt.append(f"Import-{endung}: «{muss}» fehlt in der Buch-MD")
     zips = [f for f in os.listdir(os.path.join(unten, "Sicherungen"))] if os.path.isdir(os.path.join(unten, "Sicherungen")) else []

@@ -2,7 +2,7 @@
 """
 mockup.py – Werbebild des Buchs: Vorder- und Rückseite leicht gedreht, mit Schatten (pureSATZ ab 2.17).
 
-Aus dem Bildschirm-PDF (erste Seite = Vorderseite, letzte Seite = Rückseite) entsteht im Ausgabeordner
+Aus dem Lese-PDF (erste Seite = Vorderseite, letzte Seite = Rückseite) entsteht im Ausgabeordner
     <datei>_Mockup.jpg          quadratisch, 1600 × 1600 Pixel – für Webseite, Newsletter, Shop, Social Media
     <datei>_Vorderseite.jpg     nur die Vorderseite, gerade, mit Schatten (z. B. für die Startseite)
 
@@ -86,6 +86,6 @@ def erzeuge(pdf, hintergrund="#E9EEF4, #C9D3DF", groesse=1600):
 
 
 if __name__ == "__main__":
-    # python3 motor/mockup.py <Bildschirm-PDF>
+    # python3 motor/mockup.py <Lese-PDF>
     for p in erzeuge(sys.argv[1]):
         print("Mockup:", p)

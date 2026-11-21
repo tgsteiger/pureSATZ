@@ -1,5 +1,5 @@
 """
-fassungen.py – Leseprobe und Korrekturfassung aus dem fertigen Bildschirm-PDF (wird von bauen.py benutzt).
+fassungen.py – Leseprobe und Korrekturfassung aus dem fertigen Lese-PDF (wird von bauen.py benutzt).
 
 Leseprobe:  Umschlag, Titelei bis zum Inhaltsverzeichnis, dann Seiten oder Kapitel, «Ende der Leseprobe», Rückseite.
             Variablen:  leseprobe-seiten: 14,16,17-20,22   (gedruckte Seitenzahlen; -uz = eigene für die zweite Ausgabe)
@@ -157,7 +157,7 @@ def schlussseite(breite, hoehe, titel, zeilen, schrift_titel, schrift_text, farb
 
 
 def leseprobe(quelle, ziel, bis, schluss, mit_rueckseite=True, seiten=None):
-    """quelle: Bildschirm-PDF; schluss: fertige Schlussseite (PageObject).
+    """quelle: Lese-PDF; schluss: fertige Schlussseite (PageObject).
     seiten: Liste gedruckter Seitenzahlen (sonst bis = Kapitel). Gibt (seiten im PDF, Beschreibung)."""
     r = PdfReader(io.BytesIO(open(quelle, "rb").read()))   # Datei nicht offen halten (Windows)
     w = PdfWriter()

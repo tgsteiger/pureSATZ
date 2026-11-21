@@ -8,7 +8,7 @@ Quellen (Markdown, nur dort pflegen – die HTML-Seite entsteht daraus):
                           «# Gruppe» = gelber Titel in der Navigation, «## Abschnitt» darunter.
                           Gleiche Gruppen aus START.md und HILFE.md werden zusammengelegt (ab 2.75), Reihenfolge: GRUPPEN
     meine-hilfe.md        eigene Praxis-Notizen im Buchordner (freiwillig, Gruppe «Meine Hilfe»)
-    Befehle, Blöcke       direkt aus dem Motor (manuskript.py)
+    Befehle und Bereiche  Tabelle BEFEHL_GRUPPEN (unten), Leitfaden: «Gestalten: Ich will …» in START.md
     Variablen             aus der Variablen-Datei des Buchs (mit den aktuellen Werten)
 Im Ordner pureSATZ zusätzlich: ERSTES-BUCH.md, INSTALLATION.md, GITHUB.md.
 Knopf «Start» oben: springt zum ersten Abschnitt von START.md (Checkliste und Hallo-Buch für den Anfang).
@@ -27,7 +27,13 @@ import unicodedata
 SYNONYME = [("isbn", "strichcode", "barcode", "ean-13"), ("aufräumen", "cleanup", "löschen", "entfernen", "delete"),
             ("hörbuch", "audio", "vertonen", "azure"), ("umschlag", "cover", "rückseite"),
             ("farbe", "farbschema", "farben"), ("sicherung", "backup", "md-history"),
-            ("seitenzahl", "coverrechner", "rücken"), ("inhaltsverzeichnis", "inhalt-"), ("fremdwort", "aussprache")]
+            ("seitenzahl", "coverrechner", "rücken"), ("inhaltsverzeichnis", "inhalt-", "contents"), ("fremdwort", "aussprache"),
+            # 3.0: alte Wörter finden die neuen Befehle
+            ("decorate", "zitat", "zier", "verzierung", "logo", "lotus", "linie", "motto", "kernsatz"),
+            ("newpage", "umbruch", "neue seite", "platz"), ("spacer", "abstand", "leerraum"),
+            ("picture", "foto", "fluss"), ("unzensiert", "nur-uz", "@uc", "fassung"), ("draft", "offen", "notiz", "note"),
+            ("header", "kopfzeile", "kopf"), ("aside", "randbemerkung"), ("timeline", "zeitstrahl"),
+            ("keep-together", "zusammen"), ("index", "stichwort"), ("page-center", "seitenmitte")]
 
 
 def norm2(t):
@@ -95,7 +101,7 @@ WEBSEITE = "https://tgsteiger.github.io/pureSATZ/"
 GITHUB = "https://github.com/tgsteiger/pureSATZ"
 
 SPICKZETTEL = [
-    ("sh menu.sh", "Menü: die häufigsten Befehle mit einer Taste (s schnell, k komplett, m MD, p PDF, o Ordner; ↑ = letzte)"),
+    ("sh menu.sh", "Menü: die häufigsten Befehle mit einer Taste (s schnell, f final, k komplett, m MD, p PDF, o Ordner; ↑ = letzte)"),
     ("sh sync.sh", "Am Anfang und am Ende: Stand mit den anderen Computern abgleichen"),
     ("sh build.sh schnell", "Beim Schreiben: nur die Lese-PDFs, in wenigen Sekunden"),
     ("sh build.sh", "Alles als Entwurf: PDF, Druckdateien, E-Book"),
@@ -121,27 +127,13 @@ SPICKZETTEL = [
                       "md-history/ und Texte bleiben"),
     ("sh build.sh hilfe", "Diese Hilfe neu erzeugen und öffnen"),
     ("sh build.sh covers", "Cover neu berechnen: Text des Coverrechners (unten in druck/<datei>.md) lesen, Buchblock und "
-                           "Umschlag bauen (wie nur-druck final; prüfen ohne Bau: Menü co)"),
-    ("sh build.sh isbn", "ISBN prüfen (Prüfziffer) und Strichcode-PNG machen, wie {isbn-bild}: auto (Menü: is)"),
-    ("cv (im Menü)", "Coverrechner fällig? Öffnet die Druckdatei, wenn Seitenzahl oder Rohdaten nicht passen (ab 2.78)"),
+                           "Umschlag bauen (wie nur-druck final; prüfen ohne Bau: sh build.sh co)"),
+    ("sh build.sh co", "Coverrechner: Stand des Umschlags je Fassung ansehen – baut nichts (Menü co öffnet dazu eine fällige Druckdatei)"),
+    ("sh build.sh isbn", "ISBN prüfen (Prüfziffer) und Strichcode-PNG machen, wie `{isbn-bild}: auto` (Menü: is)"),
     ("sh build.sh hilfe isbn", "In der Hilfe suchen: zeigt die Abschnitte und öffnet die Hilfe gefiltert (Menü: hf isbn)"),
     ("sh build.sh mockup", "Werbebild: Vorder- und Rückseite mit Schatten (…_Mockup.jpg) für Webseite, Newsletter, Shop "
                            "(grosse Cover-Bilder für E-Book-Shops entstehen mit dem E-Book: …_Cover-vorne.jpg)"),
 ]
-
-BLOECKE = [
-    ("::: nur-uz", "Text nur in der zweiten Ausgabe (auch -normal, -bildschirm, -druck, -ebook, -buch, -privatdruck)"),
-    ("::: uz Titel", "Heller Kasten «Unzensiert» – nur in der zweiten Ausgabe"),
-    ("::: mitte", "Text mittig auf einer eigenen Seite (z. B. Überleitung)"),
-    ("#### @FOTO Titel", "Foto: darunter datei:, text:, alt:, breite:, fluss:, quelle: (je eine Zeile); Ende = Leerzeile"),
-    ("::: zusammen", "Zeilen bleiben auf derselben Seite"),
-    ("::: offen", "Noch offener Text: im Entwurf gelb, im Druck normal"),
-    ("::: offen-notiz", "Notiz an dich: nur im Entwurf sichtbar, nie gedruckt"),
-    ("::: widmung", "Widmung (direkt unter @IMPRESSUM)"),
-    ("::: zeitstrahl", "Zeilen «Jahr | Text» als Zeitstrahl-Tabelle"),
-    (":::", "Ende eines Blocks (eigene Zeile)"),
-]
-
 
 # --- Markdown → HTML (klein, ohne Zusatzpaket) -------------------------------------------
 def _inline(t):
@@ -309,62 +301,90 @@ def md_html(text):
 
 
 # --- Automatische Abschnitte ---------------------------------------------------------------
-BEFEHL_GRUPPEN = [      # Gruppen in hilfe.html; Einträge ohne @ (Markdown) stehen als (Schreibweise, Wirkung) dabei
-    ("Titelei", ["@TITEL", "@IMPRESSUM", "@HINWEIS", "@WIDMUNG", "@KERNSATZ", "@INHALTSVERZEICHNIS"]),
-    ("Seite, Umbruch, Kopfzeile", ["@UMBRUCH", "@UMBRUCH-RECHTS", "@PLATZ", "@ABSTAND", "@SEITENMITTE", "@KOPF"]),
-    ("Text hervorheben (von leicht bis stark)", [("~ Satz", "kursive Randbemerkung, klein"),
-                                                 "@ZITAT", "@ZITAT-ZIER", "@UNTEN", "@MOTTO"]),
-    ("Verzierung", ["@ZIER", "@ZIER-UNTEN", "@ZIER-TRENNER"]),
-    ("Bilder, Links, Tabellen, Geschichten", ["@FOTO", "@PORTRAIT", "@QR", "@QR-PAAR", "@#name", "@@name"]),
-    ("Verzeichnisse und Schluss", ["@STICHWORTE", "@BILDNACHWEIS", "@RUECKSEITE"]),
+BEFEHL_GRUPPEN = [      # Gruppen in hilfe.html und im Handbuch: (Schreibweise, Wirkung) – pureSATZ 3.0
+    ("Titelei", [("## @TITLE", "Titelseite; die Zeilen darunter: Titel, Untertitel, Zusatz"),
+                 ("## @IMPRINT", "Impressum; leer = der Motor setzt es je Ausgabe zusammen"),
+                 ("## @NOTICE", "Hinweis unten im Impressum (z. B. ersetzt keine Beratung)"),
+                 ("## @DEDICATION", "Widmung (Druck: eigene Seite rechts, unteres Drittel)"),
+                 ("## @DECORATE-PAGE Satz", "ein Satz allein auf einer Seite, zwischen zwei Linien mit Logo"),
+                 ("## @CONTENTS", "Inhaltsverzeichnis an dieser Stelle")]),
+    ("Seite, Abstand, Kopfzeile", [("@NEWPAGE", "neue Seite"),
+                                   ("@NEWPAGE-RIGHT", "neue Seite, im Druck immer eine rechte"),
+                                   ("@NEWPAGE-40", "neue Seite nur, wenn weniger als 40 mm Platz bleiben"),
+                                   ("@SPACER-8", "8 mm Leerraum"),
+                                   ("@PAGE-CENTER", "Inhalt dieser Seite senkrecht mittig (wirkt beim Bauen mit k)"),
+                                   ("@HEADER Text", "Kopfzeile ab hier ersetzen; «@HEADER» allein beendet es")]),
+    ("Sätze mit Linie und Logo (DECORATE)", [
+        ("@ASIDE Satz", "Randbemerkung, klein, kursiv"),
+        ("@DECORATE-TEXT Satz", "Satz kursiv, zentriert, ohne Linien"),
+        ("@DECORATE Satz", "Satz zwischen zwei Linien mit Logo"),
+        ("@DECORATE-LOGO", "nur Linie mit Logo, ohne Text"),
+        ("@DECORATE-TEXT-BOTTOM Satz", "Satz kursiv unten auf der Seite"),
+        ("@DECORATE-PAGE Satz", "Satz allein auf einer eigenen Seite"),
+        ("@DECORATE-REST Satz", "Satz zwischen Linien in der Mitte des Rests, danach neue Seite"),
+        ("@DECORATE-ABOVE-REST Satz", "Schlusssatz mit Linie nur oben, Mitte des Rests"),
+        ("@DECORATE-ABOVE-BOTTOM-34 Satz", "Schlusssatz, Oberkante 34 mm über dem Ende des Textes (Doppelseite gleich hoch)"),
+        ("…-UPRIGHT · …-UPRIGHT-MAIN", "Schrift wie der Fliesstext (statt kursiv) · in der Hauptfarbe")]),
+    ("Logo", [("@LOGO-12", "Logo im Text, 12 mm breit (Bild: Variable logo)"),
+              ("@LOGO-6-GAP", "Logo in die Lücke vor der nächsten Überschrift"),
+              ("@LOGO-10-REST", "Logo in die Mitte des Rests, danach neue Seite"),
+              ("@LOGO-10-BOTTOM", "Logo unten auf die Seite, danach neue Seite")]),
+    ("Bilder, Links, Tabellen, Geschichten", [
+        ("#### @PICTURE-60-RIGHT Titel", "Foto (Breite in mm, RIGHT/LEFT = Text fliesst herum); darunter datei:, text:, quelle:, alt:"),
+        ("@PORTRAIT bild.png | Bildtext", "rundes Foto mit Ring"),
+        ("@QR https://… | Text", "QR-Code mit Link; mehrere nebeneinander mit «;;»"),
+        ("@QR-RIGHT url | Text", "QR-Code rechts, der nächste Absatz fliesst herum"),
+        ("@#name", "Tabelle tabellen/name.csv («@#name quer» / «hoch»)"),
+        ("@@name", "Geschichte geschichten/name.md einbinden")]),
+    ("Verzeichnisse und Schluss", [("@INDEX", "Stichwortverzeichnis (Liste: stichworte-<buch>.txt)"),
+                                   ("@LIST-PICTURES · @LIST-TABLES", "Bilder- bzw. Tabellenverzeichnis an dieser Stelle"),
+                                   ("@PICTURE-CREDITS", "Bildnachweis (Fotos mit «quelle:»)"),
+                                   ("@BACK-COVER", "Rückseite (nur Lese-PDF)")]),
+    ("Bereiche: Befehl allein auf der Zeile … @END (kein Bereich im Bereich)", [
+        ("@UC … @END", "Text nur in der Fassung UC; ebenso @NORMAL (@N), @EBOOK, @PRINT (Druck), @SCREEN (Lese-PDF)"),
+        ("@UC-BLOCK Titel … @END", "heller Kasten mit Titel – nur in der Fassung UC"),
+        ("@DECORATE-REST … @END", "Absätze zwischen zwei Linien mit Logo, in der Mitte des Rests (Abschluss eines Kapitels)"),
+        ("@KEEP-TOGETHER … @END", "bleibt auf derselben Seite"),
+        ("@DRAFT … @END", "noch offen: mit «s» gelb, im Druck normal"),
+        ("@NOTE Titel … @END", "Notiz an dich: nur im Entwurf sichtbar, nie gedruckt"),
+        ("@TIMELINE … @END", "Zeilen «Jahr | Text» als Zeitstrahl")]),
+    ("Nur in einer Fassung", [("@UC-…", "vorne: Befehl oder Bereich samt Text nur in der Fassung UC, z. B. @UC-SPACER-14, "
+                                        "#### @UC-PICTURE, @UC-DRAFT"),
+                              ("@NORMAL-… (@N-…) · @EBOOK-… · @PRINT-… · @SCREEN-…", "nur normal · nur E-Book · nur Druck · nur Lese-PDF"),
+                              ("@DECORATE-…-UC", "hinten: der Text steht in beiden Fassungen, verziert nur in UC (-NORMAL, -N: nur normal). "
+                                                  "Geht bei @DECORATE, auch als Bereich: @DECORATE-REST-UPRIGHT-UC … @END")]),
 ]
-BEFEHL_VERSTECKT = {"@LOTUS", "@LOTUS-UNTEN", "@LOTUS-TRENNER", "@ANHANG"}     # gehen noch, stehen nicht in der Hilfe
+BEFEHL_VERSTECKT = set()
 
 LOESUNGEN = [
     ("Ein einzelner Satz rutscht allein auf die nächste Seite",
-     "«@PLATZ 70» vor die letzte Überschrift davor (sie geht dann mit auf die neue Seite) – oder den Absatz kürzen"),
-    ("Neue Seite erzwingen", "«---» auf eigener Zeile (davor eine Leerzeile)"),
-    ("Kapitel soll auf einer rechten Seite beginnen", "«@UMBRUCH-RECHTS» davor"),
-    ("Überschrift steht allein unten auf der Seite", "«@PLATZ 50» vor die Überschrift"),
-    ("Seite mit wenig Text wirkt verloren", "«@SEITENMITTE» an den Anfang der Seite"),
-    ("Grosse Lücke unten auf der Seite", "Foto kleiner («breite: 60»), Text kürzen oder «@ZIER-UNTEN»"),
-    ("Mehr Luft zwischen zwei Absätzen", "«@ABSTAND 8» (8 mm)"),
-    ("Text soll nicht getrennt werden", "Block «::: zusammen» … «:::»"),
+     "«@NEWPAGE-70» vor die letzte Überschrift davor (sie geht dann mit auf die neue Seite) – oder den Absatz kürzen"),
+    ("Neue Seite erzwingen", "«@NEWPAGE»"),
+    ("Kapitel soll auf einer rechten Seite beginnen", "«@NEWPAGE-RIGHT» davor"),
+    ("Überschrift steht allein unten auf der Seite", "«@NEWPAGE-50» vor die Überschrift"),
+    ("Seite mit wenig Text wirkt verloren", "«@PAGE-CENTER» an den Anfang der Seite"),
+    ("Grosse Lücke unten auf der Seite", "Foto kleiner («@PICTURE-60»), Text kürzen oder «@LOGO-10-REST»"),
+    ("Mehr Luft zwischen zwei Absätzen", "«@SPACER-8» (8 mm)"),
+    ("Text soll nicht getrennt werden", "«@KEEP-TOGETHER» … «@END»"),
 ]
 
 
 def befehle_html():
-    sys.path.insert(0, MOTOR)
-    import manuskript as M
-
     def reihe(k, v):
         return f"<tr><td><code>{html.escape(k)}</code></td><td>{html.escape(v)}</td></tr>"
-    out = ["<p>Jeder Befehl steht auf einer eigenen Zeile, genau so geschrieben (GROSS). "
-           "<code>## @TITEL</code> wirkt wie <code>@TITEL</code>. Links steht die ganze Zeile, wie sie im Buch steht.</p>",
+    out = ["<p>Jeder Befehl steht auf einer eigenen Zeile: <code>@NAME-GRÖSSE-ORT Text</code> – alles vor dem ersten "
+           "Leerzeichen ist der Befehl (GROSS), danach der Text. Zahlen in mm. Links steht die ganze Zeile, wie sie im Buch steht.</p>",
            "<h3>Seite sieht nicht gut aus? – Lösungen</h3>",
            "<table><thead><tr><th>Problem</th><th>Lösung</th></tr></thead><tbody>"
            + "".join(f"<tr><td>{html.escape(p)}</td><td>{html.escape(l)}</td></tr>" for p, l in LOESUNGEN)
            + "</tbody></table>"]
-    gezeigt = set()
     for titel, eintraege in BEFEHL_GRUPPEN:
         reihen = []
         for e in eintraege:
-            if isinstance(e, tuple):
-                reihen.append(reihe(*e))
-            elif e in M.BEFEHLE:
-                reihen.append(reihe(*M.BEFEHLE[e])); gezeigt.add(e)
+            reihen.append(reihe(*e))
         out.append(f"<h3>{html.escape(titel)}</h3><table><thead><tr><th>Schreibweise</th><th>Wirkung</th></tr></thead>"
                    f"<tbody>{''.join(reihen)}</tbody></table>")
-    rest = [k for k in M.BEFEHLE if k not in gezeigt and k not in BEFEHL_VERSTECKT]
-    if rest:
-        out.append("<h3>Weitere</h3><table><tbody>" + "".join(reihe(*M.BEFEHLE[k]) for k in rest) + "</tbody></table>")
     return "\n".join(out)
-
-
-def bloecke_html():
-    reihen = "".join(f"<tr><td><code>{html.escape(k)}</code></td><td>{html.escape(v)}</td></tr>" for k, v in BLOECKE)
-    return ("<p>Ein Block beginnt mit <code>::: art</code> und endet mit einer Zeile <code>:::</code>.</p>"
-            f"<table><thead><tr><th>Block</th><th>Wirkung</th></tr></thead><tbody>{reihen}</tbody></table>")
 
 
 def variablen_html(pfad):
@@ -390,7 +410,7 @@ def variablen_html(pfad):
     fertig()
     out = [f"<p>Aus <code>{html.escape(os.path.basename(pfad))}</code> – mit den Werten dieses Buchs. "
            "Namen vor dem Doppelpunkt nie ändern, nur den Wert. Unter «Ausgabe: …» gilt ein Wert nur für diese Ausgabe; "
-           "<code>{name-uz}</code> = Wert für die zweite Ausgabe. Im Buch steht derselbe Name als <code>{name}</code>.</p>"]
+           "<code>{name-uz}</code> = Wert für die Fassung UC. Im Buch steht derselbe Name als <code>{name}</code>.</p>"]
     for g, e, r in teile:
         if not r and not e:
             continue
@@ -698,7 +718,7 @@ def sammle(basis, variablen=None):
     Gibt (gruppen, start_da) zurück."""
     start = gruppiert(_lies(start_datei(basis)), "Erste Schritte")
     meine = [(t, h) for _, t, h in md_html(_lies(os.path.join(basis, "meine-hilfe.md"))) if t and h.strip()]
-    nachschlagen = [("Spickzettel", spick_html()), ("Befehle (@)", befehle_html()), ("Blöcke (:::)", bloecke_html()),
+    nachschlagen = [("Spickzettel", spick_html()), ("Befehle (@)", befehle_html()),
                     ("Buchformate", formate_html(variablen))]
     if variablen:
         nachschlagen.append(("Variablen dieses Buchs", variablen_html(variablen)))

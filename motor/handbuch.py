@@ -139,9 +139,12 @@ def win_zelle(c):
     return H._windows(c) or c
 
 
+NEU = {"::: nur-normal": "@NORMAL", "::: nur-uz": "@UC"}   # 3.0: Buch-MD in der neuen Schreibweise
+
+
 class Umsetzer:
     """Hilfe-Markdown → Buch-Markdown (pureSATZ). Zwei Ausgaben (ab 2.81): normal = Linux & Mac, uz = Windows.
-    Wo sich ein Absatz, Code-Block oder eine Tabelle unterscheidet, steht er zweimal: «::: nur-normal» / «::: nur-uz»
+    Wo sich ein Absatz, Code-Block oder eine Tabelle unterscheidet, steht er zweimal: «@NORMAL» / «@UC» … «@END»
     bzw. «```nur-normal» / «```nur-uz»."""
 
     def __init__(self, basis, titel):
@@ -218,12 +221,12 @@ class Umsetzer:
                     i += 1
                 i += 1; continue
             if s in ("::: nur-normal", "::: nur-uz"):      # eigener Text je Ausgabe (z. B. in der Einleitung)
-                bloecke.append(s); zwang = s[8:]; fix("", s); i += 1; continue
+                bloecke.append(s); zwang = s[8:]; fix("", NEU[s]); i += 1; continue
             if s in ("::: nur-handbuch", "::: kacheln"):
                 bloecke.append(s); i += 1; continue
             if s == ":::" and bloecke:
                 if bloecke.pop() in ("::: nur-normal", "::: nur-uz"):
-                    zwang = None; fix(":::", "")
+                    zwang = None; fix("@END", "")
                 i += 1; continue
             if s in ("---", "***"):
                 i += 1; continue
@@ -264,8 +267,8 @@ class Umsetzer:
             elif lx == wn:
                 out += lx
             else:
-                out += ["", "::: nur-normal"] + [x for x in lx if x.strip()] + [":::", "::: nur-uz"] \
-                    + [x for x in wn if x.strip()] + [":::", ""]
+                out += ["", "@NORMAL"] + [x for x in lx if x.strip()] + ["@END", "@UC"] \
+                    + [x for x in wn if x.strip()] + ["@END", ""]
         return "\n".join(out).strip("\n")
 
 
@@ -277,24 +280,18 @@ def _md_tabelle(kopf, reihen):
 
 
 def motor_teile():
-    import manuskript as M
     teile = [("Spickzettel", "Die häufigsten Befehle im Buchordner.\n\n"
               + _md_tabelle(["Befehl", "Wofür"], [(f"`{b}`", t) for b, t in H.SPICKZETTEL]))]
-    b = ["Jeder Befehl steht auf einer eigenen Zeile, genau so geschrieben (GROSS). `## @TITEL` wirkt wie `@TITEL`.",
+    b = ["Jeder Befehl steht auf einer eigenen Zeile: `@NAME-GRÖSSE-ORT Text` – alles vor dem ersten Leerzeichen ist "
+         "der Befehl (GROSS), danach der Text. Zahlen in mm.",
          "", "### Seite sieht nicht gut aus? – Lösungen", "",
          _md_tabelle(["Problem", "Lösung"], H.LOESUNGEN)]
-    gezeigt = set()
     for titel, eintraege in H.BEFEHL_GRUPPEN:
         reihen = []
         for e in eintraege:
-            if isinstance(e, tuple):
-                reihen.append((f"`{e[0]}`", e[1]))
-            elif e in M.BEFEHLE:
-                reihen.append((f"`{M.BEFEHLE[e][0]}`", M.BEFEHLE[e][1])); gezeigt.add(e)
+            reihen.append((f"`{e[0]}`", e[1]))
         b += ["", f"### {titel}", "", _md_tabelle(["Schreibweise", "Wirkung"], reihen)]
     teile.append(("Befehle (@)", "\n".join(b)))
-    teile.append(("Blöcke (:::)", "Ein Block beginnt mit `::: art` und endet mit einer Zeile `:::`.\n\n"
-                  + _md_tabelle(["Block", "Wirkung"], [(f"`{a}`", w) for a, w in H.BLOECKE])))
     quelle_ = _lies(os.path.join(MOTOR, "build.py"))
     f = re.findall(r'^\s*"([a-z0-9]+)":\s*dict\(name="([^"]+)",\s*seite=\((\d+),\s*(\d+)\).*?rand=\((\d+),\s*(\d+),'
                    r'\s*(\d+),\s*(\d+)\),\s*text=\(([\d.]+),', quelle_, re.M)
@@ -323,7 +320,7 @@ def erzeuge(basis):
     alle_titel = [t for _, a in gruppen for t, _ in a]
     u = Umsetzer(basis, alle_titel)
 
-    out = ["## @TITEL", "{titel}", "{untertitel}", "{titel-zusatz}", "", "## @IMPRESSUM", "", "## @INHALTSVERZEICHNIS", ""]
+    out = ["## @TITLE", "{titel}", "{untertitel}", "{titel-zusatz}", "", "## @IMPRINT", "", "## @CONTENTS", ""]
     ein = _lies(os.path.join(ps, "handbuch", "einleitung.md")).replace("{version}", version)
     ein = "\n".join(z for z in ein.split("\n") if not z.startswith(">"))
     for g, a in abschnitte(ein, "Einleitung"):
@@ -343,7 +340,7 @@ def erzeuge(basis):
                 out += ["## Lizenz", ""] + sum(([f"### {t}", "", u.md(h), ""] for t, h in a), [])
             else:
                 out += sum(([f"## {t}", "", u.md(h), ""] for t, h in a), [])
-    out += ["@STICHWORTE", ""]
+    out += ["@INDEX", ""]
     text = re.sub(r"\n{3,}", "\n\n", "\n".join(out))
 
     v = variablen_datei(basis)

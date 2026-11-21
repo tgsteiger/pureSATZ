@@ -6,7 +6,7 @@ release.py – neue Motor-Version freigeben (Aufruf: sh release.sh im Ordner pur
 2. fragt «Übernehmen?»
 3. Selbsttest (nur Menü/Hilfe geändert: Frage, ob überspringen)
 4. git add / commit / push
-5. alle Bücher daneben (../ und ../buecher/): sh update.sh lokal ja
+5. alle Bücher daneben (../ und ../buecher/): sh update.sh lokal ja, dann Hilfsdateien (build.sh …) erneuern
 """
 import glob
 import os
@@ -98,6 +98,7 @@ def main():
         if os.path.exists(os.path.join(b, "update.sh")):
             print(f"\n=== {os.path.basename(b)} ===", flush=True)
             subprocess.run(["sh", "update.sh", "lokal", "ja"], cwd=b)
+            subprocess.run([sys.executable, os.path.join("motor", "update.py"), "hilfsdateien"], cwd=b)   # mit neuem Motor
     print("\n✓ Fertig. Bauen im Menü des Buchs (s).")
 
 

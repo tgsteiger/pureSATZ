@@ -10,23 +10,17 @@ Variablen
    Unter «## Ausgabe: Druck normal» (… unzensiert, E-Book, E-Book unzensiert, PDF) gilt ein Wert nur für diese
    Ausgabe (intern «name-druck-normal»). {isbn}: die ISBN der Ausgabe.
    Eine Zeile, in der eine Variable leer bleibt, fällt ganz weg.
-   Ein leeres «## @IMPRESSUM» füllt der Motor selbst (IMPRESSUM_VORLAGE).
+   Ein leeres «## @IMPRINT» füllt der Motor selbst (IMPRESSUM_VORLAGE).
 
-2. Blöcke  ::: art[-ausgabe] [Titel]  …  :::
-   art:     nur, mitte, foto, offen, offen-notiz, zusammen, widmung, zeitstrahl,
-            uz (heller Kasten der zweiten Ausgabe; «dc» geht auch)
-   ausgabe: normal, uz (oder dc), bildschirm, druck, ebook, buch (Druck mit ISBN), privatdruck
-   Ohne Endung erscheint der Block in allen Ausgaben.
+2. Befehle (pureSATZ 3.0)  @[FASSUNG-]NAME[-GRÖSSE][-ORT[-HÖHE]][-STIL] Text  – zerlegt von befehl().
+   Bereiche  @NAME [Titel] … @END: @UC @NORMAL @EBOOK @PRINT @SCREEN (Fassung), @UC-BLOCK, @DRAFT, @NOTE,
+   @KEEP-TOGETHER, @TIMELINE, @DECORATE-REST. zeilen() liefert sie als Tupel, die Fassung ist schon ausgewählt.
 """
 import os
 import re
 
 # Endungen der Blöcke und Variablen
 TAGS = ("normal", "uz", "bildschirm", "druck", "ebook", "buch", "privatdruck")
-ALT = {"v2": "normal", "offiziell": "normal", "dc": "uz"}   # andere Namen (::: nur-v2, ::: foto-dc …)
-ARTEN = {"nur": None, "mitte": "MITTE", "foto": "FOTO", "platzhalter": "PH", "offen-notiz": "PH",
-         "offen": "OFFEN", "zusammen": "ZUSAMMEN", "widmung": "WIDMUNG", "zeitstrahl": "ZEITSTRAHL",
-         "uz": "UZ", "dc": "UZ"}
 
 
 class Fehler(SystemExit):
@@ -59,8 +53,8 @@ def _wo(name, nr):
     return f"{nr.datei}, Zeile {int(nr)}" if isinstance(nr, Nr) else f"{name}, Zeile {nr}"
 
 
-CODE_ZAUN = "```"          # Code-Block: Zeilen zwischen «```» und «```» bleiben wörtlich (ab 2.76)
-                           # «```nur-uz» … = nur in dieser Ausgabe (wie «::: nur-uz», ab 2.81)
+CODE_ZAUN = "```"          # Code-Block: Zeilen zwischen «```» und «```» bleiben wörtlich
+                           # «```nur-uz» … = nur in dieser Ausgabe (wie «::: nur-uz»)
 
 
 def anker(t):
@@ -120,10 +114,8 @@ def _geschichten_einsetzen(pfad, zeilen_mit_nr):
 _CACHE = {}
 
 
-VARIABLE = re.compile(r"^\s*(?:[-*]\s+)?\{?([a-z][a-z0-9-]*)\}?\s*:(?:\s+(.*?))?\s*$")   # «{name}: wert», auch «- name:» / «- {name}:»
+VARIABLE = re.compile(r"^\s*\{?([a-z][a-z0-9-]*)\}?\s*:(?:\s+(.*?))?\s*$")   # «{name}: wert» (auch «name: wert»)
 BUCHSTART = re.compile(r"^#{1,6}\s*=*\s*BUCHSTART\b", re.I)
-BEFEHL_ALS_TITEL = re.compile(r"^#{1,6}\s+(@[A-Z].*)$")     # «## @TITEL» = «@TITEL»
-FOTO_KOPF = re.compile(r"^#{1,6}\s+@FOTO(-[A-Za-z]+)?(?:\s+(.*))?$")   # «#### @FOTO Titel»
 
 
 def ist_buchstart(zeile):
@@ -133,9 +125,8 @@ def ist_buchstart(zeile):
 def lies(pfad):
     """(variablen, [(nr, zeile)]) – Einstellungen oben, danach der Text mit Zeilennummern.
 
-    Neue Form:  alles vor «# BUCHSTART» sind Einstellungen. Jede Zeile «- name: wert» (oder
-                «name: wert») ist eine Variable; Überschriften und Sätze sind Erklärungen.
-    Alte Form:  Variablenblock zwischen zwei Zeilen «---» ganz oben."""
+    Ohne Variablen-Datei: alles vor «# BUCHSTART» sind Einstellungen (z. B. Handbuch). Jede Zeile
+    «{name}: wert» ist eine Variable; Überschriften und Sätze sind Erklärungen."""
     if pfad in _CACHE:
         return _CACHE[pfad]
     roh = open(pfad, encoding="utf-8").read().split("\n")
@@ -143,11 +134,6 @@ def lies(pfad):
     bs = next((i for i, z in enumerate(roh) if ist_buchstart(z)), None)
     if bs is not None:
         bereich, start = range(0, bs), bs + 1
-    elif roh and roh[0].strip() == "---":
-        ende = next((i for i in range(1, len(roh)) if roh[i].strip() == "---"), None)
-        if ende is None:
-            raise Fehler(f"{os.path.basename(pfad)}: Variablenblock oben wird nicht mit «---» geschlossen.")
-        bereich, start = range(1, ende), ende + 1
     else:
         bereich = range(0)
     for i in bereich:
@@ -272,15 +258,15 @@ class Ausgabe:
             if k in self.var:
                 return self.var[k]
         if name == "isbn":
-            return (self.var.get("isbn-buch") or "folgt") if self.medium == "druck" else ""
+            return "folgt" if self.medium == "druck" else ""
         if name in self.var:
             return self.var[name]
         if any(f"{name}-{m}" in self.var or f"{name}-{m}-{f}" in self.var
                for m in ("druck", "ebook", "bildschirm") for f in ("normal", "uz")):
             return ""
-        if any(f"{name}-{t}" in self.var for t in ("normal", "uz", "dc")):
+        if any(f"{name}-{t}" in self.var for t in ("normal", "uz")):
             if self.fassung == "uz":
-                return self.var.get(f"{name}-uz", self.var.get(f"{name}-dc", ""))
+                return self.var.get(f"{name}-uz", "")
             return self.var.get(f"{name}-normal", "")
         return standard
 
@@ -301,35 +287,145 @@ class Ausgabe:
             if w == "":
                 leer = True
             return w
-        teile = re.split(r"(`[^`]+`)", text)         # in `Code` bleibt {name} stehen (ab 2.76)
+        teile = re.split(r"(`[^`]+`)", text)         # in `Code` bleibt {name} stehen
         neu = "".join(x if x.startswith("`") and x.endswith("`") and len(x) > 1 else
                       re.sub(r"\{([A-Za-z][A-Za-z0-9-]*)\}", ein, x) for x in teile)
         return None if leer else neu
 
 
-def _art(kopf):
-    """'foto-uz Titel' -> ('foto', 'uz', 'Titel')"""
-    art, _, titel = kopf.strip().partition(" ")
-    art = art.lower()
-    tag = None
-    if "-" in art:
-        basis, _, t = art.rpartition("-")
-        t = ALT.get(t, t)
-        if t in TAGS and basis in ARTEN:
-            art, tag = basis, t
-    if art not in ARTEN:
-        return None, None, titel
-    return art, tag, titel.strip()
+# --------------------------------------------------------------------------- Befehle (pureSATZ 3.0)
+# Bauplan @[FASSUNG-]NAME[-GRÖSSE][-ORT[-HÖHE]][-STIL] Text – an dieser einen Stelle zerlegt (befehl), alle nutzen es.
+FASSUNG = {"UC": "uz", "NORMAL": "normal", "N": "normal", "EBOOK": "ebook", "PRINT": "druck", "SCREEN": "bildschirm"}
+NAMEN = ("DECORATE-LOGO", "DECORATE-TEXT", "DECORATE-PAGE", "DECORATE", "LOGO", "SPACER",
+         "NEWPAGE", "PAGE-CENTER", "HEADER", "ASIDE", "QR-RIGHT", "QR", "BLOCK", "DRAFT", "NOTE", "KEEP-TOGETHER",
+         "TIMELINE", "END", "PICTURE-CREDITS", "PICTURE", "TITLE", "IMPRINT", "NOTICE", "DEDICATION", "CONTENTS",
+         "INDEX", "LIST-PICTURES", "LIST-TABLES", "BACK-COVER")
+ORT = ("REST", "BOTTOM", "GAP", "RIGHT", "LEFT")
+TITELEI = ("TITLE", "IMPRINT", "NOTICE", "DEDICATION", "CONTENTS", "INDEX", "LIST-PICTURES", "LIST-TABLES",
+           "PICTURE-CREDITS", "BACK-COVER")
+BEREICHE = ("BLOCK", "DRAFT", "NOTE", "KEEP-TOGETHER", "TIMELINE")     # … @END (dazu @UC usw. und @DECORATE-REST)
+STIL = {"ITALIC": "zitat", "UPRIGHT": "aufrecht", "UPRIGHT MAIN": "blau"}   # Wert wie bei {decorate-stil}
+BEFEHL_ZEILE = re.compile(r"^(#{1,6}\s+)?@([A-Z][A-Z0-9-]*)(?:\s+(.*))?$")
 
 
-UMBRUCH_LINIE = re.compile(r"^\s*-{3,}\s*$")      # «---» = @UMBRUCH
-ZITAT_ZIER = re.compile(r"^@ZITAT-ZIER\s+")         # «@ZITAT-ZIER Satz» = «> Satz»
+class Befehl:
+    """Eine Befehlszeile, zerlegt: @UC-LOGO-8-BOTTOM-10 -> tag 'uz', name 'LOGO', zahl '8', ort 'BOTTOM', hoehe '10'."""
+    def __init__(self, kopf, tag, name, rest, text=""):
+        self.kopf, self.tag, self.name, self.rest, self.text = kopf, tag, name, rest, text
+        self.zahl = self.ort = self.hoehe = None
+        self.woerter = []
+        self.nur = set()        # Fassung hinten (@DECORATE-REST-UC): nur die Gestaltung gilt dort, der Text überall
+
+    def mm(self, standard):
+        """Zahl im Namen (mm), sonst der Standard."""
+        return float(self.zahl) if self.zahl else standard
+
+    @property
+    def bereich(self):
+        """Beginnt einen Bereich (… @END)? @DECORATE-REST Satz ist ein Bereich mit einer Zeile."""
+        return self.name in BEREICHE or (self.name == "DECORATE" and self.ort in ("REST", "BOTTOM"))
+
+    @property
+    def stil(self):
+        """«zitat», «aufrecht», «blau» oder None (dann gilt {decorate-stil})."""
+        return STIL.get(" ".join(w for w in self.woerter if w in ("ITALIC", "UPRIGHT", "MAIN")))
+
+    def zeile(self, kopf=True):
+        """Die Zeile ohne Fassung: «@UC-ASIDE Text» -> «@ASIDE Text»."""
+        return (self.kopf if kopf else "") + "@" + self.rest + ((" " + self.text) if self.text else "")
+
+
+def befehl(s, wo=""):
+    """Zeile -> Befehl, oder None, wenn sie kein Befehl ist (Text, @@geschichte, @#tabelle, @PORTRAIT).
+    Ein falscher Bauplan gibt einen Fehler mit Zeilennummer."""
+    m = BEFEHL_ZEILE.match(s.strip())
+    if not m:
+        return None
+    kopf, token, text = m.group(1) or "", m.group(2), (m.group(3) or "").strip()
+    tag, rest = None, token
+    for k, t in FASSUNG.items():
+        if token == k:
+            return Befehl(kopf, t, "", token, text)
+        if token.startswith(k + "-"):
+            tag, rest = t, token[len(k) + 1:]
+    name = next((n for n in NAMEN if rest == n or rest.startswith(n + "-")), None)
+    if name is None:
+        return None
+    b = Befehl(kopf, tag, name, rest, text)
+    for w in [x for x in rest[len(name):].split("-") if x]:
+        if re.fullmatch(r"\d+(?:[.,]\d+)?", w):
+            z = w.replace(",", ".")
+            if b.ort == "BOTTOM" and b.hoehe is None:
+                b.hoehe = z
+            elif b.zahl is None and b.ort is None:
+                b.zahl = z
+            else:
+                raise Fehler(f"{wo}: @{token} – die Zahl {w} passt hier nicht.")
+        elif w in ORT and b.ort is None:
+            b.ort = w
+        elif w in FASSUNG:
+            b.nur.add(FASSUNG[w])
+        else:
+            b.woerter.append(w)
+    _pruefe(b, token, wo)
+    return b
+
+
+def _pruefe(b, token, wo):
+    def nein(was):
+        raise Fehler(f"{wo}: @{token} – {was}.")
+    n, w = b.name, b.woerter
+    if b.nur and (n != "DECORATE" or b.tag):
+        nein("die Fassung hinten gibt es nur bei @DECORATE (vorne: alles nur dort, hinten: nur die Verzierung)")
+    if n in TITELEI and b.tag:
+        nein("die Titelei gibt es ohne Fassung")
+    elif n == "PICTURE" and b.ort not in (None, "RIGHT", "LEFT"):
+        nein("ein Bild steht im Text, RIGHT oder LEFT")
+    elif n == "BLOCK" and b.tag != "uz":
+        nein("den Block gibt es nur als @UC-BLOCK")
+    elif n == "DECORATE":
+        st = " ".join(x for x in w if x in ("ITALIC", "UPRIGHT", "MAIN"))
+        if any(x not in ("ABOVE", "ITALIC", "UPRIGHT", "MAIN") for x in w) or (st and st not in STIL):
+            nein("unbekannter Teil (möglich: ABOVE, REST, BOTTOM-34, ITALIC, UPRIGHT, UPRIGHT-MAIN, am Ende UC oder NORMAL)")
+        if b.ort not in ("REST", "BOTTOM"):
+            if b.ort or "ABOVE" in w or st:
+                nein("ABOVE und der Stil gehen (noch) nur mit REST oder BOTTOM")
+            if not b.text:
+                nein("Text fehlt (ohne Text: @DECORATE-LOGO)")
+    elif n == "DECORATE-LOGO" and (b.zahl or b.ort or w):
+        nein("die Grösse des Logos in der Linie kommt später")
+    elif n == "DECORATE-TEXT" and (w or b.hoehe or b.ort not in (None, "BOTTOM")):
+        nein("möglich: @DECORATE-TEXT Text oder @DECORATE-TEXT-BOTTOM Text")
+    elif n == "LOGO":
+        if w or b.hoehe:
+            nein("möglich: @LOGO-12, @LOGO-10-BOTTOM, @LOGO-8-REST, @LOGO-6-GAP")
+        if b.ort not in (None, "BOTTOM", "REST", "GAP"):
+            nein("Ort: REST, BOTTOM oder GAP")
+
+
+def _bis_end(roh, i, name, b):
+    """Zeilen eines Bereichs bis @END: (Liste [(nr, zeile)], Index nach @END). Kein Bereich im Bereich."""
+    nr = roh[i][0]
+    inhalt, i = [], i + 1
+    while i < len(roh):
+        n2, z = roh[i]
+        c = befehl(z, _wo(name, n2)) if z.lstrip().startswith("@") else None
+        if c and c.name == "END":
+            return inhalt, i + 1
+        if c and (c.bereich or c.name == ""):
+            raise Fehler(f"{_wo(name, nr)}: Bereich @{b.rest} wird nicht mit @END geschlossen "
+                         f"(kein Bereich im Bereich, Zeile {n2}).")
+        inhalt.append((n2, z)); i += 1
+    raise Fehler(f"{_wo(name, nr)}: Bereich @{b.rest} wird nicht mit @END geschlossen.")
+
+
+UMBRUCH_LINIE = re.compile(r"^\s*-{3,}\s*$")      # «---» = @NEWPAGE (Markdown)
 
 
 def markdown_zeilen(roh):
     """Markdown-Schreibweisen vor dem Lesen umsetzen:
     «\\» am Zeilenende = Zeilenumbruch im Absatz (wie <br/>; die nächste Zeile gehört zum selben Absatz),
-    eine Zeile «---» = neue Seite (wie @UMBRUCH), «@ZITAT-ZIER Satz» = «> Satz» (Zitat mit Verzierung)."""
+    eine Zeile «---» = neue Seite (wie @NEWPAGE)."""
     out, i, code = [], 0, im_code(roh)
     while i < len(roh):
         nr, s = roh[i]
@@ -341,22 +437,20 @@ def markdown_zeilen(roh):
             t = t[:-1].rstrip() + "<br/>" + roh[i][1].strip()
             t = t.rstrip()
         if UMBRUCH_LINIE.match(t):
-            t = "@UMBRUCH"
-        elif ZITAT_ZIER.match(t):
-            t = ZITAT_ZIER.sub("> ", t, 1)
+            t = "@NEWPAGE"
         out.append((nr, t))
         i += 1
     return out
 
 
-IMPRESSUM_KOPF = re.compile(r"^\s*(?:#{1,6}\s+)?@IMPRESSUM\s*$")
+IMPRESSUM_KOPF = re.compile(r"^\s*(?:#{1,6}\s+)?@IMPRINT\s*$")
 IMPRESSUM_VORLAGE = ["© {jahr} {autor}", "{website}", "", "{impressum-herstellung}", "{impressum-satz1}",
                      "{impressum-satz2}", "", "{impressum-rechte}", "", "{impressum-hinweis}", "",
                      "{impressum-kontakt}", "", "{auflage}", "ISBN {isbn}"]
 
 
 def impressum_einsetzen(roh, a):
-    """Leeres «## @IMPRESSUM»: der Motor setzt die Zeilen selbst ein (IMPRESSUM_VORLAGE).
+    """Leeres «## @IMPRINT»: der Motor setzt die Zeilen selbst ein (IMPRESSUM_VORLAGE).
     Zeilen mit einer Variablen, die das Buch nicht kennt, fallen weg."""
     out, code = [], im_code(roh)
     for i, (nr, s) in enumerate(roh):
@@ -364,8 +458,8 @@ def impressum_einsetzen(roh, a):
         if i in code or not IMPRESSUM_KOPF.match(s):
             continue
         naechste = next((z for _, z in roh[i + 1:] if z.strip()), "")
-        if naechste and not naechste.lstrip().startswith(("#", "@", ":::")):
-            continue                                    # eigene Zeilen unter @IMPRESSUM
+        if naechste and not naechste.lstrip().startswith(("#", "@")):
+            continue                                    # eigene Zeilen unter @IMPRINT
         for v in IMPRESSUM_VORLAGE:
             if any(a.wert(n) is None for n in re.findall(r"\{([a-z][a-z0-9-]*)\}", v)):
                 continue
@@ -374,86 +468,120 @@ def impressum_einsetzen(roh, a):
 
 
 def zeilen(pfad, a, entwurf=False):
-    """Text der Ausgabe a: Zeilen (str) und Blöcke als Tupel (ART, titel, [zeilen])."""
+    """Text der Ausgabe a: Zeilen (str) und Bereiche als Tupel (NAME, titel, [zeilen]).
+    NAME: BLOCK, DRAFT, NOTE, KEEP-TOGETHER, TIMELINE, DECORATE-REST (titel = der Befehl), PICTURE, CODE.
+    @UC … @END usw. und die Vorsilbe @UC-… wählen die Fassung aus; danach steht der Befehl ohne Vorsilbe da."""
     name = os.path.basename(pfad)
     _, roh = lies(pfad)
     roh = impressum_einsetzen(markdown_zeilen(roh), a)
-    out, i = [], 0
+    out, i, offen = [], 0, None             # offen: Zeile, in der ein Bereich @UC … beginnt (wird gezeigt)
     while i < len(roh):
         nr, s = roh[i]
         s = s.rstrip()
-        if s.lstrip().startswith(CODE_ZAUN):    # Code-Block: wörtlich, ohne Variablen (ab 2.76)
+        wo = _wo(name, nr)
+        if s.lstrip().startswith(CODE_ZAUN):    # Code-Block: wörtlich, ohne Variablen
             inhalt, i = [], i + 1
             while i < len(roh) and not roh[i][1].lstrip().startswith(CODE_ZAUN):
                 inhalt.append(_zeile(roh[i][1].rstrip(), roh[i][0])); i += 1
             if i >= len(roh):
-                raise Fehler(f"{_wo(name, nr)}: Code-Block wird nicht mit «{CODE_ZAUN}» geschlossen.")
+                raise Fehler(f"{wo}: Code-Block wird nicht mit «{CODE_ZAUN}» geschlossen.")
             info = s.strip()[3:].strip()
             i += 1
-            if info.lower().startswith("nur-"):          # «```nur-uz»: nur in dieser Ausgabe (ab 2.81)
-                tag = ALT.get(info[4:].lower(), info[4:].lower())
+            if info.lower().startswith("nur-"):          # «```nur-uz»: nur in dieser Ausgabe
+                tag = info[4:].lower()
                 info = ""
                 if tag in TAGS and tag not in a.tags():
                     continue
             out.append(("CODE", info, inhalt))
             continue
-        fk = FOTO_KOPF.match(s)
-        if fk:                                  # «#### @FOTO Titel» … bis zur ersten Leerzeile
-            art, tag, titel = _art("foto" + (fk.group(1) or "").lower() + " " + (fk.group(2) or ""))
-            if art != "foto":
-                raise Fehler(f"{_wo(name, nr)}: unbekannter Foto-Befehl «{s.lstrip('# ')}» "
-                             "(möglich: @FOTO, @FOTO-UZ, @FOTO-NORMAL …).")
-            inhalt, i = [], i + 1
-            while i < len(roh) and roh[i][1].strip() and not roh[i][1].lstrip().startswith(("#", ":::")):
+        b = befehl(s, wo) if s.lstrip().startswith(("@", "#")) else None
+        if b is None:
+            z = a.ersetze(s, wo)
+            if z is not None:
+                out.append(_zeile(z, nr))
+            i += 1
+            continue
+        if b.name == "":                        # @UC … @END: nur in dieser Fassung
+            if offen is not None:
+                raise Fehler(f"{wo}: @{b.rest} – kein Bereich im Bereich (offen seit Zeile {offen}).")
+            if b.tag in a.tags():
+                offen, i = nr, i + 1
+            else:
+                i = _bis_end(roh, i, name, b)[1]
+            continue
+        if b.name == "END":
+            if offen is None:
+                raise Fehler(f"{wo}: @END ohne Bereich.")
+            offen = None
+            out.append(_zeile("", -1))          # -1 = Bereichsende (zählt im Impressum nicht als Leerzeile)
+            i += 1
+            continue
+        if b.name == "PICTURE" and b.kopf:      # «#### @PICTURE-60-RIGHT Titel» … bis zur ersten Leerzeile
+            inhalt = ([_zeile("breite: " + b.zahl, nr)] if b.zahl else []) \
+                + ([_zeile("fluss: " + ("rechts" if b.ort == "RIGHT" else "links"), nr)] if b.ort else [])
+            i += 1
+            while i < len(roh) and roh[i][1].strip() and not roh[i][1].lstrip().startswith(("#", "@")):
                 n2, z = roh[i]
                 z = z.strip()
                 if z[:2] in ("- ", "* "):
                     z = z[2:].strip()
-                z = a.ersetze(z, f"{_wo(name, n2)}")
+                z = a.ersetze(z, _wo(name, n2))
                 if z is not None:
                     inhalt.append(_zeile(z, n2))
                 i += 1
-        elif s.startswith(":::") and s.strip() != ":::":
-            art, tag, titel = _art(s[3:])
-            if art is None:
-                raise Fehler(f"{_wo(name, nr)}: unbekannter Block «{s}».")
-            inhalt, i = [], i + 1
-            while i < len(roh) and roh[i][1].strip() != ":::":
-                n2, z = roh[i]
-                if z.strip().startswith(":::"):
-                    raise Fehler(f"{_wo(name, nr)}: Block «{s}» wird nicht mit «:::» geschlossen.")
-                z = a.ersetze(z.rstrip(), f"{_wo(name, n2)}")
-                if z is not None:
-                    inhalt.append(_zeile(z, n2))
-                i += 1
-            if i >= len(roh):
-                raise Fehler(f"{_wo(name, nr)}: Block «{s}» wird nicht mit «:::» geschlossen.")
-            i += 1
-        if fk or (s.startswith(":::") and s.strip() != ":::"):
-            zeigen = tag is None or tag in a.tags()
-            if art in ("uz", "dc"):
+            if b.tag is None or b.tag in a.tags():
+                out.append(("PICTURE", a.ersetze(b.text, wo) or "", inhalt))
+            continue
+        if b.bereich:
+            if b.tag and offen is not None:
+                raise Fehler(f"{wo}: @{b.rest} – kein Bereich im Bereich (offen seit Zeile {offen}).")
+            if b.name == "DECORATE" and b.text:          # @DECORATE-REST Satz: ein Absatz
+                teil, i = [(nr, b.text)], i + 1
+            else:
+                teil, i = _bis_end(roh, i, name, b)
+            inhalt = [_zeile(z, n2) for n2, z in ((n2, a.ersetze(z.rstrip(), _wo(name, n2))) for n2, z in teil)
+                      if z is not None]
+            zeigen = b.tag is None or b.tag in a.tags()
+            if b.name == "BLOCK":
                 zeigen = a.fassung == "uz"
-            if art in ("platzhalter", "offen-notiz"):     # Notiz an dich: nie gedruckt
+            if b.name == "NOTE":                        # Notiz an dich: nie gedruckt
                 zeigen = zeigen and entwurf
             if not zeigen:
                 continue
-            titel = a.ersetze(titel, f"{_wo(name, nr)}") or ""
-            if art == "offen" and not entwurf:            # Druckfassung: offener Text wird normal gedruckt
-                art = "nur"
-            elif art == "offen" and not titel:
-                titel = {"normal": "· nur normal", "uz": "· nur zweite Ausgabe"}.get(tag, "")
-            if art == "nur":
-                out += inhalt + [_zeile("", -1)]    # -1 = Blockende (zählt im Impressum nicht als Leerzeile)
-            else:
-                out.append((ARTEN[art], titel, inhalt))
+            if b.name == "DECORATE" and b.nur and not b.nur & a.tags():    # andere Fassung: gewöhnliche Absätze
+                out += inhalt + [_zeile("", -1)]
+                continue
+            if b.name == "DECORATE":
+                out.append(("DECORATE-REST", b, inhalt))
+                continue
+            titel = a.ersetze(b.text, wo) or ""
+            if b.name == "DRAFT" and not entwurf:        # Druckfassung: offener Text wird normal gedruckt
+                out += inhalt + [_zeile("", -1)]
+                continue
+            if b.name == "DRAFT" and not titel:
+                titel = {"normal": "· nur normal", "uz": "· nur zweite Ausgabe"}.get(b.tag, "")
+            out.append((b.name, titel, inhalt))
             continue
-        m = BEFEHL_ALS_TITEL.match(s)
-        if m:                                   # «## @TITEL» wirkt wie «@TITEL»
-            s = m.group(1)
-        z = a.ersetze(s, f"{_wo(name, nr)}")
+        if b.tag:                               # @UC-ASIDE Text: nur in dieser Fassung
+            if offen is not None:
+                raise Fehler(f"{wo}: @{b.tag.upper()}-… steht in einem Bereich, der schon nur für eine Fassung gilt.")
+            if b.tag in a.tags():
+                z = a.ersetze(b.zeile(), wo)
+                if z is not None:
+                    out.append(_zeile(z, nr))
+                out.append(_zeile("", -1))
+            i += 1
+            continue
+        if b.name == "DECORATE" and b.nur and not b.nur & a.tags():    # @DECORATE-UC Satz: hier ein Absatz
+            s = b.text
+        if b.kopf and b.name != "DECORATE-PAGE":         # «## @TITLE» wirkt wie «@TITLE»
+            s = b.zeile(kopf=False)
+        z = a.ersetze(s, wo)
         if z is not None:
             out.append(_zeile(z, nr))
         i += 1
+    if offen is not None:
+        raise Fehler(f"{_wo(name, offen)}: Bereich wird nicht mit @END geschlossen.")
     return out
 
 
@@ -480,8 +608,8 @@ def umschlag(pfad, a):
             continue                            # Überschrift, «> Erklärung» oder erklärender Satz
         k, w = m.group(1), (m.group(2) or "").strip()
         basis, _, endung = k.rpartition("-")    # «fuss-druck: …» nur im Druck, «text-uz: …» nur zweite Ausgabe
-        if basis and ALT.get(endung, endung) in TAGS:
-            if ALT.get(endung, endung) not in a.tags():
+        if basis and endung in TAGS:
+            if endung not in a.tags():
                 continue
             k = basis
         teile[akt].append((k, w))
@@ -506,48 +634,6 @@ def alle(teil, k):
     return [w for kk, w in teil if kk == k]
 
 
-# --------------------------------------------------------------------------- Befehle
-# Alle @-Befehle der Buch-MD an einer Stelle (für Prüfung und Hilfe).
-BEFEHLE = {             # Befehl: (Schreibweise im Buch, Wirkung)
-    "@TITEL":              ("## @TITEL", "Titelseite; die Zeilen darunter: Titel, Untertitel, Zusatz"),
-    "@IMPRESSUM":          ("## @IMPRESSUM", "Impressum; leer = der Motor setzt es je Ausgabe zusammen"),
-    "@HINWEIS":            ("## @HINWEIS", "Hinweis unten im Impressum (z. B. keine medizinische Beratung); die Zeilen darunter"),
-    "@WIDMUNG":            ("## @WIDMUNG", "Widmung (Druck: eigene Seite rechts, unteres Drittel); die Zeilen darunter"),
-    "@KERNSATZ":           ("## @KERNSATZ Satz", "der Satz allein, mittig auf einer Seite"),
-    "@INHALTSVERZEICHNIS": ("## @INHALTSVERZEICHNIS", "Inhaltsverzeichnis an dieser Stelle"),
-    "@UMBRUCH":            ("--- oder @UMBRUCH", "neue Seite («---» auf eigener Zeile, davor eine Leerzeile)"),
-    "@UMBRUCH-RECHTS":     ("@UMBRUCH-RECHTS", "neue Seite, im Druck immer eine rechte (z. B. vor einem Kapitel)"),
-    "@PLATZ":              ("@PLATZ 40", "neue Seite, wenn weniger als 40 mm Platz bleiben"),
-    "@ABSTAND":            ("@ABSTAND 8", "8 mm Leerraum"),
-    "@SEITENMITTE":        ("@SEITENMITTE", "Inhalt dieser Seite senkrecht zentrieren"),
-    "@KOPF":               ("@KOPF Text", "Kopfzeile ab hier ersetzen; «@KOPF» allein beendet es"),
-    "@ZITAT":              ("@ZITAT Satz", "Zitat, zentriert, schlicht"),
-    "@ZITAT-ZIER":         ("@ZITAT-ZIER Satz", "Zitat, zentriert, mit Verzierung oben und unten (kurz: «> Satz»)"),
-    "@UNTEN":              ("@UNTEN Satz", "kursiv unten auf die Seite"),
-    "@MOTTO":              ("@MOTTO Satz", "eigene Seite, der Satz in der Mitte"),
-    "@ZIER":               ("@ZIER 12", "kleine Verzierung, zentriert, 12 mm breit (Bild: Variable {zier})"),
-    "@ZIER-UNTEN":         ("@ZIER-UNTEN 10", "Verzierung unten auf die Seite, danach neue Seite (… 10 mitte = in den freien Platz)"),
-    "@ZIER-TRENNER":       ("@ZIER-TRENNER", "kleine Verzierung in die Lücke vor der nächsten Überschrift"),
-    "@ZIER-LINIE":         ("@ZIER-LINIE", "eine Zier mit goldenen Linien und Lotus, ohne Text (wie bei «> Satz»)"),
-    "@FOTO":               ("#### @FOTO Titel", "Foto; darunter «datei: …», «text: …» usw., Ende = erste Leerzeile; @FOTO-UZ = nur zweite Ausgabe"),
-    "@PORTRAIT":           ("@PORTRAIT bild.png | Bildtext", "rundes Foto mit Ring"),
-    "@QR":                 ("@QR https://… | Text", "QR-Code mit Link"),
-    "@QR-PAAR":            ("@QR-PAAR url | Text ;; url | Text", "zwei QR-Codes nebeneinander"),
-    "@QR-FLUSS":           ("@QR-FLUSS url | Text", "QR-Code rechts, der nächste Absatz fliesst herum (ohne | Text: ohne Bildtext)"),
-    "@#name":              ("@#name", "Tabelle tabellen/name.csv; «@#name quer» / «@#name hoch» = Ausrichtung"),
-    "@@name":              ("@@name", "Geschichte geschichten/name.md einbinden"),
-    "@STICHWORTE":         ("@STICHWORTE", "Stichwortverzeichnis (Liste: stichworte-<buch>.txt)"),
-    "@BILDERVERZEICHNIS":  ("@BILDERVERZEICHNIS", "Bilderverzeichnis an dieser Stelle (sonst mit {bilderverzeichnis}: ja automatisch vor den Stichworten)"),
-    "@TABELLENVERZEICHNIS": ("@TABELLENVERZEICHNIS", "Tabellenverzeichnis an dieser Stelle (sonst mit {tabellenverzeichnis}: ja automatisch)"),
-    "@BILDNACHWEIS":       ("@BILDNACHWEIS", "Bildnachweis (Fotos mit «quelle:»); ohne Zeile automatisch vor den Stichworten"),
-    "@RUECKSEITE":         ("@RUECKSEITE", "Rückseite (nur Bildschirm-PDF)"),
-    "@LOTUS":              ("@LOTUS", "(gleich wie @ZIER)"),
-    "@LOTUS-UNTEN":        ("@LOTUS-UNTEN", "(gleich wie @ZIER-UNTEN)"),
-    "@LOTUS-TRENNER":      ("@LOTUS-TRENNER", "(gleich wie @ZIER-TRENNER)"),
-    "@ANHANG":             ("@ANHANG", "(gleich wie «# Titel»)"),
-}
-
-
 def pruefen(basis, text, umschlag_datei=None, finde=None, var=None):
     """Prüft die MD für alle Ausgaben: Variablen, Blöcke, Befehle, Teile, Fotos, Umschlag."""
     pfad = os.path.join(basis, text)
@@ -559,7 +645,7 @@ def pruefen(basis, text, umschlag_datei=None, finde=None, var=None):
             a = Ausgabe(var, fassung, medium, privat)
             for z in zeilen(pfad, a, entwurf=True):
                 if isinstance(z, tuple):
-                    if z[0] == "FOTO":
+                    if z[0] == "PICTURE":
                         for t in z[2]:
                             if t.strip().lower().startswith("datei:"):
                                 d = t.strip()[6:].strip()
@@ -575,10 +661,12 @@ def pruefen(basis, text, umschlag_datei=None, finde=None, var=None):
                         meldungen.append(f"Zeile {z.nr}: {f}")
                     continue
                 if s.startswith("@"):
-                    befehl = s.split()[0]
-                    if befehl not in BEFEHLE:
-                        meldungen.append(f"Zeile {z.nr}: unbekannter Befehl {befehl}")
-                    elif befehl == "@PORTRAIT":
+                    wort = s.split()[0]
+                    if wort == "@PICTURE" or wort.startswith("@PICTURE-") and wort != "@PICTURE-CREDITS":
+                        meldungen.append(f"Zeile {z.nr}: ein Bild beginnt mit «#### {wort} Titel»")
+                    elif wort != "@PORTRAIT" and befehl(s, f"Zeile {z.nr}") is None:
+                        meldungen.append(f"Zeile {z.nr}: unbekannter Befehl {wort}")
+                    elif wort == "@PORTRAIT":
                         d = s[10:].partition("|")[0].strip()
                         if not (finde(d) if finde else os.path.exists(os.path.join(basis, d))):
                             meldungen.append(f"Zeile {z.nr}: Bild fehlt: {d}")
@@ -618,6 +706,13 @@ def pruefen(basis, text, umschlag_datei=None, finde=None, var=None):
                                 f"Dann {m.group(1)}\\. schreiben.")
     except OSError:
         pass
+    try:                                          # 3.0: Buch noch in der alten Schreibweise?
+        import umbenennen as U
+        alt = open(pfad, encoding="utf-8").read()
+        if U.umstellen(alt) != alt:
+            hinweise.append("alte Schreibweise (vor 3.0) – geht weiter. Umstellen: Menü um")
+    except (ImportError, OSError):
+        pass
     meldungen = list(dict.fromkeys(meldungen))
     for h in dict.fromkeys(hinweise):
         print("Hinweis: " + h)
@@ -633,6 +728,4 @@ if __name__ == "__main__":
         pruefen(build.BASE, build.TEXT, build.UMSCHLAG, build.finde, build.alle_variablen())
     else:
         print(__doc__)
-        print("Befehle:")
-        for k, (form, wirkung) in BEFEHLE.items():
-            print(f"  {form:34} {wirkung}")
+        print("Befehle: " + " ".join("@" + n for n in NAMEN) + " · Fassung: " + " ".join("@" + f for f in FASSUNG))

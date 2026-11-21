@@ -1,39 +1,29 @@
-# pureSATZ Hilfe · pureSATZ · Motor 2.86.0
+# pureSATZ Hilfe · pureSATZ · Motor 3.5.0
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
 
 # Erste Schritte
 
-## Mein erstes Buch in 5 Minuten – Schritt für Schritt
+## 1. Erstes PDF in fünf Minuten
 
-Der Start führt in fünf Schritten zum eigenen Buch. Enter nimmt immer den Vorschlag; der Start darf beliebig oft laufen. ZIP ganz auspacken, dann im Ordner pureSATZ:
+ZIP ganz auspacken (Windows: Rechtsklick → «Alle extrahieren …»), dann im Ordner pureSATZ den Start aufrufen:
 
 - Linux: Rechtsklick in den Ordner → «Im Terminal öffnen», dann `sh START-Linux.sh`
 - Mac: Terminal öffnen (Cmd+Leertaste, «Terminal»), `sh ` tippen, `START-Mac-imTerminal.sh` ins Fenster ziehen, Enter
 - Windows: `START-Windows.bat` doppelklicken
 
+Der Start führt in fünf Schritten zum eigenen Buch. Enter nimmt immer den Vorschlag; er darf beliebig oft laufen.
+
 - Technik. Prüft Python (3.10 oder neuer) und installiert, was fehlt. Beim ersten Mal braucht es Internet.
 - Ort. Schlägt einen festen Ordner für deine Bücher vor: `Buchprojekte` im Benutzerordner – nicht Downloads, Schreibtisch oder eine Cloud. pureSATZ wird dorthin kopiert; den ausgepackten Ordner darfst du danach löschen. `n` lässt pureSATZ, wo es ist.
-- Hallo-Buch. Legt ein Beispielbuch an, baut es und öffnet das PDF. So siehst du, was pureSATZ macht, bevor du selber schreibst. Das Hallo-Buch darf später weg.
+- Hallo-Buch. Legt ein Beispielbuch an, baut es und öffnet das PDF. So siehst du, was pureSATZ macht.
 - Dein Buch. Fragt Titel, Untertitel, Autor und Format, legt den Buchordner neben pureSATZ an und öffnet ihn.
 - Extras. GitHub (freiwillig: Sicherung im Netz, Abgleich zwischen Computern) und Ghostscript (empfohlen). Beides geht auch später.
 
-Am Schluss zeigt der Start, was wo liegt (steht auch in `00-UEBERSICHT.txt`). Geschrieben und gebaut wird immer im Ordner deines Buchs. Dort das Menü öffnen – ein Buchstabe genügt, `s` baut das Lese-PDF in Sekunden:
+Klemmt etwas: → Wenn etwas klemmt oder unten «Von Hand».
 
-```
-sh menu.sh
-```
-
-Klemmt etwas: → Wenn etwas klemmt. Ohne Start, von Hand: → Erstes PDF, «Von Hand».
-
-## 1. Erstes PDF in fünf Minuten
-
-Einmal von oben nach unten. Die Häkchen kannst du anklicken, der Browser merkt sie sich. Oben rechts Linux/Mac oder Windows wählen, dann stimmen alle Befehle.
-
--  Starten. ZIP auspacken (Windows: Rechtsklick → «Alle extrahieren …»), dann im Ordner pureSATZ: Windows `START-Windows.bat` doppelklicken · Mac: Terminal öffnen (Cmd+Leertaste, «Terminal», Enter), `sh ` tippen, `START-Mac-imTerminal.sh` ins Fenster ziehen, Enter · Linux: Rechtsklick in den Ordner → «Im Terminal öffnen», dann `sh START-Linux.sh` eintippen. Er führt in fünf Schritten durch: Technik (Python), Ort für die Bücher (`Buchprojekte` im Benutzerordner – nicht Downloads, nicht in einer Cloud), Hallo-Buch, dein eigenes Buch (Titel, Untertitel, Autor, Format) und Extras (GitHub, freiwillig). Enter nimmt jeweils den Vorschlag.
-
-Danach sieht es so aus – geschrieben und gebaut wird immer im Ordner deines Buchs, nie in pureSATZ:
+Danach sieht es so aus (steht auch in `00-UEBERSICHT.txt`) – geschrieben und gebaut wird immer im Ordner deines Buchs, nie in pureSATZ:
 
 ```
 Buchprojekte/
@@ -41,6 +31,14 @@ Buchprojekte/
   Hallo-Buch/    zum Ausprobieren, darf weg
   Mein-Buch/     dein Buch – hier schreibst und baust du
 ```
+
+Im Ordner deines Buchs das Menü öffnen – ein Buchstabe genügt, `s` baut das Lese-PDF in Sekunden:
+
+```
+sh menu.sh
+```
+
+Zum Abhaken einmal von oben nach unten (die Häkchen merkt sich der Browser). Oben rechts Linux/Mac oder Windows wählen, dann stimmen alle Befehle.
 
 -  Terminal im Buchordner. Windows und Mac: im Buchordner `Terminal hier` doppelklicken – das Befehlsfenster öffnet sich genau dort (Windows: cmd). Linux: Rechtsklick in den Ordner → «Im Terminal öffnen».
 
@@ -134,7 +132,7 @@ Welche Datei soll ich hochladen? | `00-UEBERSICHT.txt` im Ausgabeordner zeigt es
 Plattform-Datei fehlt («Druckangaben: … fehlt») | Name bei `{druck-datei}` unter `## Ausgabe: Druck …` prüfen (ohne `.md`), Muster in `pureSATZ/vorlage/druck/`.
 Druckerei meldet «nicht eingebettete Schriften» | Motor aktualisieren und neu bauen (`sh update.sh`, dann `sh build.sh final`). Der Bau warnt selbst, falls noch eine Schrift fehlt.
 Meine Änderung ist wieder weg | Editor: «Auto save» aus. Beim Hinweis «Datei geändert» neu laden. Ändert eine KI oder ein Skript die Datei, sie vorher im Editor schliessen. Ältere Fassungen liegen in `md-history/`.
-Abstand oder neue Seite wirkt nicht | Steht der Befehl innerhalb eines `:::`-Blocks? Dann nach das `:::` setzen.
+Abstand oder neue Seite wirkt nicht | Steht der Befehl innerhalb eines `@DECORATE-REST`- oder `@UC-BLOCK`-Bereichs? Dann nach das `@END` setzen.
 Farben am Bildschirm unsicher | Am Probedruck auf Papier beurteilen, nicht am Bildschirm.
 Etwas anderes | Die Meldung kopieren und in die Suche oben eingeben (im Menü: `hf wort`), oder einer KI zeigen (mit `hilfe-ki.md`).
 
@@ -163,7 +161,7 @@ Zum Abhaken – der Browser merkt sich die Häkchen. «drucken» oben rechts dru
 
 ## Tipp: Menü statt Befehle
 
-Im Buchordner `sh menu.sh` (Windows: `menu.bat` doppelklicken). Dann genügt ein Buchstabe – geordnet nach Schreiben (`m` MD öffnen, `g` Geschichten, `t` Tabellen, `c` gegenlesen), Bauen (`s` schnell, `k` komplett, `w` weitere), Ansehen (`p` PDF, `o` Ordner) und Abgleichen / Prüfen (`sy` sync, `u` update, `bp` Buch prüfen); `n` neu (neues Buch, Hallo-Buch, `v` Lotus-Starter). `:` zeigt Befehle zum Tippen, `h` oder `?` die Hilfe. Mit ↑ holst du die letzten Befehle zurück, Enter (oder `z`) = eine Stufe zurück (im Hauptmenü: «beenden? [j/N]»).
+Im Buchordner `sh menu.sh` (Windows: `menu.bat` doppelklicken). Dann genügt ein Buchstabe – geordnet nach Schreiben (`m` MD öffnen, `g` Geschichten, `t` Tabellen, `c` gegenlesen), Bauen (`s` schnell, `f` final, `k` komplett), Ansehen (`p` PDF, `o` Ordner) und Abgleichen / Prüfen (`sy` sync, `u` update, `bp` Buch prüfen); `n` neu (neues Buch, Hallo-Buch, `v` Lotus-Starter). `:` zeigt Befehle zum Tippen, `h` oder `?` die Hilfe. Mit ↑ holst du die letzten Befehle zurück, Enter (oder `z`) = eine Stufe zurück (im Hauptmenü: «beenden? [j/N]»).
 
 Mehr dazu in der Hilfe unter «Erste Schritte → Menü».
 
@@ -190,52 +188,54 @@ Ein Beispielbuch zum Ausprobieren: im Ordner pureSATZ `sh hallo.sh` (Windows: `h
 
 ## Menü
 
-`sh menu.sh` (Windows: `menu.bat`) zeigt die häufigsten Befehle: links der Buchablauf (1 Schreiben · 2 Bauen · 3 Ansehen), rechts was dazugehört. Ein Buchstabe genügt. Die graue Zeile oben zeigt den Stand: Seiten je Fassung, letzter Bau, Cover.
+`sh menu.sh` (Windows: `menu.bat`) zeigt die häufigsten Befehle: links der Buchablauf (Schreiben · Bauen · Ansehen), rechts was dazugehört. Ein Buchstabe genügt. Die graue Zeile oben zeigt den Stand: Seiten je Fassung, letzter Bau, Cover.
 
 Als Text (zum Suchen):
 
 ```
+ 
  ══ Buch · pureSATZ                                     Klang (!) aus ══
- Leben123 · N 68 S. · UZ 86 S. · komplett 16.11. 10:21 · Cover ✓
- ── 1 Schreiben ───────────────────   ── Einstellen ───────────────────
-  m  MD öffnen …                      in Gestaltung …
+ Leben123 · N 70 S. · UC 88 S. · komplett 21.11. 09:23 · Cover ✓
+ ── Schreiben ─────────────────────   ── Einstellen ───────────────────
+  m  MD öffnen …                      ge Gestaltung …
   g  Geschichten …                    tr Trennstellen …
   t  Tabellen …                       st Stichworte …
- ── 2 Bauen ───────────────────────   is ISBN …
-  s  schnell  (sync + Lese-PDF)       ── Prüfen ───────────────────────
-  k  komplett (Druck + E-Book)        bp Buch prüfen  N ✓  UZ ✗
-  hb Hörbuch … (Linux)                co Coverrechner prüfen
- ── 3 Ansehen ─────────────────────   ── Weitergeben ──────────────────
-  p  PDF öffnen …                     w  beides: Leseprobe + Korrektur
-  o  Ordner öffnen …                  c  check / gegenlesen …
-  a  änderungen (a|ä)                 lp Leseprobe    ko Korrektur
-  db Druckbericht                     np nur-pdf      ne nur E-Book
+ ── Bauen ─────────────────────────   is ISBN …
+  s  schnell  (Lese-PDF)  s1/2        ── Prüfen ───────────────────────
+  f  final    (Druck + E-Book)        bp Buch prüfen  N ✓  UC ✓
+  k  komplett (+ Leseprobe, Korr.)    co Coverrechner prüfen
+  hb Hörbuch … (Linux)                db Druckbericht
+ ── Ansehen ───────────────────────   ── Weitergeben ──────────────────
+  p  PDF öffnen …                     c  check / gegenlesen …
+  o  Ordner öffnen …                  lp Leseprobe    ko Korrektur
+  sm Stand merken                     np nur Lese-PDF ne nur E-Book
+  a  änderungen (a|ä)
   zh Stand zurückholen …
  ── Weiteres ──────────────────────────────────────────────────────────
-  sy sync · ss neues Gerät (u+sy+s) · u update (ul lokal) · sm Stand merken
-  au aufräumen … · n neu · $ Terminal · : Befehle · h hilfe · hf finden
+  sy sync · ss neues Gerät (u+sy+s) · u update (ul lokal)
+  cl aufräumen … · n neu · $ Terminal · : Befehle · h hilfe · hf finden
  Wahl oder Befehl (z. B. final · ↑ = letzte · ↵ = beenden):
 ```
 
 Welche Taste wofür?
 
 Taste | baut | wann
-`s` schnell (`s1` nur normal, `s2` nur zweite Fassung) | zuerst sync (wenn das Buch bei GitHub ist), dann Lese-PDF als Entwurf und gleich öffnen | beim Schreiben, oft
-`k` komplett | Lese-PDF, Druckdateien, E-Book, Mockup, Shop, Druckbericht (= `final`) | vor dem Druck
-`w` weitergeben | Leseprobe + Korrektur-PDF | Buch weitergeben: Webseite, Shop, Leser
+`s` schnell (`s1` nur normal, `s2` nur UC) | zuerst sync (wenn das Buch bei GitHub ist), dann Lese-PDF als Entwurf und gleich öffnen | beim Schreiben, oft
+`f` final | Lese-PDF, Druckdateien, E-Book, Mockup, Shop, Druckbericht | vor dem Druck
+`k` komplett | wie `f`, dazu Leseprobe und Korrektur-PDF (wie `sh build.sh komplett`) | Buch weitergeben: Druckerei, Webseite, Leser
 `c` check / gegenlesen | check_NAME.pdf mit Markierungen pro Person | für Gegenleser
 
-Im Terminal baut `sh build.sh komplett` weiterhin alles zusammen (final + Leseprobe + Korrektur).
+Die Tasten heissen wie die Befehle im Terminal: `f` = `sh build.sh final`, `k` = `sh build.sh komplett`.
 
-Abgleichen und zurückholen (ab 2.84): `sy` sync allein · `ss` Supersync für ein neues oder anderes Gerät (Motor holen + sync + schnell) · `u`/`ul` nur den Motor · `zh` Stand zurückholen: die letzten 5 verschiedenen Stände der Buch-MD aus md-history/ (`v` Variablen, `u` Umschlag), Nummer = zurückholen, der jetzige Stand wird vorher gesichert. Oben «⚠ Motor x bereit → ul»: in pureSATZ daneben liegt ein neuerer Motor.
+Abgleichen und zurückholen: `sy` sync allein · `ss` Supersync für ein neues oder anderes Gerät (Motor holen + sync + schnell) · `u`/`ul` nur den Motor · `zh` Stand zurückholen: die letzten 5 verschiedenen Stände der Buch-MD aus md-history/ (`v` Variablen, `u` Umschlag), Nummer = zurückholen, der jetzige Stand wird vorher gesichert. Oben «⚠ Motor x bereit → ul»: in pureSATZ daneben liegt ein neuerer Motor.
 
-Neue Motor-Version freigeben (im Ordner pureSATZ, ab 2.84): `sh release.sh` – zeigt Version, CHANGELOG und Dateien, fragt (↵ = Empfehlung), Selbsttest, Hilfe neu, git push, danach alle Bücher daneben aktualisieren.
+Neue Motor-Version freigeben (im Ordner pureSATZ): `sh release.sh` – zeigt Version, CHANGELOG und Dateien, fragt (↵ = Empfehlung), Selbsttest, Hilfe neu, git push, danach alle Bücher daneben aktualisieren.
 
-`bp` Buch prüfen = `sh build.sh pruefen`: Variablen, Druckdateien, Befehle, Fotos, Geschichten, Tabellen (ohne Bau). Dahinter steht der Stand pro Fassung (N = normal, UZ = zweite Fassung; bei nur einer Fassung nur das Zeichen): ✓ = in Ordnung · ✗ (rot) = Fehler beim Prüfen – dann steht oben «✗ Buch prüfen: Fehler gefunden», `bp` drücken, die Meldung nennt Datei und Zeile – oder der Umschlag dieser Fassung passt nicht (oben «⚠ Coverrechner …», `cv`) · ? = noch nicht geprüft. Nach einer Änderung an den MD-Dateien prüft das Menü beim Anzeigen kurz selbst (ab 2.82.3).
+`bp` Buch prüfen = `sh build.sh pruefen`: Variablen, Druckdateien, Befehle, Fotos, Geschichten, Tabellen (ohne Bau). Dahinter steht der Stand pro Fassung (N = normal, UC = Fassung UC; bei nur einer Fassung nur das Zeichen): ✓ = in Ordnung · ✗ (rot) = Fehler beim Prüfen – dann steht oben «✗ Buch prüfen: Fehler gefunden», `bp` drücken, die Meldung nennt Datei und Zeile – oder der Umschlag dieser Fassung passt nicht (oben «⚠ Coverrechner …», `co`) · ? = noch nicht geprüft. Nach einer Änderung an den MD-Dateien prüft das Menü beim Anzeigen kurz selbst.
 
 Lange Läufe zeigen einen Balken `Bauen: 2 Läufe  ::::::: ✓ 38 s` (ein `:` pro Sekunde).
 
-Coverrechner (ab 2.78): Steht oben «⚠ Coverrechner …», passt der Umschlag nicht mehr zur Seitenzahl, oder die Rohdaten fehlen bzw. sind nicht lesbar. `cv` öffnet die Druckdatei (siehe «Umschlag: Rücken und Seitenzahl»).
+Coverrechner: Steht oben «⚠ Coverrechner …», passt der Umschlag nicht mehr zur Seitenzahl, oder die Rohdaten fehlen bzw. sind nicht lesbar. `co` zeigt den Stand und öffnet die Druckdatei (siehe «Umschlag: Rücken und Seitenzahl»).
 
 Ja/Nein-Fragen: `[J/n]` = Enter heisst ja, `[j/N]` = Enter heisst nein (der Grossbuchstabe gilt bei Enter).
 
@@ -250,15 +250,17 @@ Untermenüs («…» = nur was es gibt):
 `c` check / gegenlesen | `n` Liste neu (personen-seiten.txt) · `c` check-PDF für eine Person (öffnet sich danach) · `t` Textdatei
 `hb` Hörbuch (Linux) | `p` Probe hören · `w` Wörter hören · `t` Texte aus dem Buch · `v` vertonen · `k` Kapitel vertonen … · `e` Wörter/Probe/Einstellungen öffnen · `s` Azure-Schlüssel · `$` Terminal in audio/ · `o` Ordner · `h` Hilfe · `c` prüfen – siehe Hörbuch: Das Menü
 `f` final | Druckdateien für die Druckerei (wie `sh build.sh final`); danach öffnet sich der Druckbericht (`db`): Seitenbilanz, Umschlag, Coverrechner, ISBN, CMYK, Warnungen – jedes Mal neu, `ausgabe-…/00-Druckbericht.pdf` (`{druckbericht}: nein` in den Variablen = nicht öffnen)
-`co` Coverrechner prüfen | baut nichts: pro Fassung Buchblock-Seiten vom letzten Druck-Bau, eingetragene Werte, ob die Rohdaten passen, und was zu tun ist (`cv` öffnet die Druckdatei)
-Einstellen · Weitere Ausgaben (bis 2.82.10 unter `w` weitere) | `lp` Leseprobe · `ko` Korrektur · `np` nur-pdf · `ne` nur E-Book · `sm` Stand merken · `st` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` Stichwortdatei öffnen) · `is` ISBN … (alle Ausgaben ansehen und eintragen – Druck/E-Book, normal/UZ; Enter = bleibt, `-` = leeren; speichert in der Variablen-Datei, dann Prüfziffer und Strichcode-PNG wie `sh build.sh isbn`) · `tr` Trennstellen … (Liste aus `{trennstellen}`; `Re | vi | ta | ler` = ergänzen, `-Revitaler` = entfernen; wirkt beim nächsten Bau) · `in` Gestaltung … (Tabelle normal / unzensiert; wo: 0–4 Zeilen oder `ti` im Titel – `ti3`, `ti23`, `ti234` = weitere Stufen; Schrift; Farbe `g` gold · `b` blau · `s` schwarz · `ü` wie die Überschrift; `k1`/`k0` Kapitälchen, `e1`/`e0` Einzug; `fb` `fg` `fs` Fett am Absatzanfang blau · gold · schwarz, `fk1`/`fk0` in Kapitälchen; vorne `n` = nur normal, `uz` = nur unzensiert, ohne = beide; `n0`/`uz0` = alles aus; z. B. `n ti c b k1` · `uz 0`; `v` = Vorschau) · `au` aufräumen (wie `sh cleanup.sh`, fragt `[j/N]`)
+`co` Coverrechner prüfen | baut nichts (wie `sh build.sh co`): pro Fassung Buchblock-Seiten vom letzten Druck-Bau, eingetragene Werte, ob die Rohdaten passen, und was zu tun ist; ist etwas fällig, öffnet sich die Druckdatei
+`um` Umstellen auf 3.0 | erscheint oben als «⚠ Alte Schreibweise (vor 3.0) → um», wenn ein Buch noch die Schreibweise vor 3.0 hat: zeigt die Änderungen, fragt, sichert nach md-history und stellt um. Das Buch sieht danach gleich aus. Andere Computer zuerst mit `ss` auf 3.0 bringen – ein älterer Motor kennt die neuen Namen nicht
+Einstellen · Weitergeben | `lp` Leseprobe · `ko` Korrektur · `np` nur Lese-PDF · `ne` nur E-Book · `st` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` Stichwortdatei öffnen) · `is` ISBN … (alle Ausgaben ansehen und eintragen – Druck/E-Book, normal/UC; Enter = bleibt, `-` = leeren; speichert in der Variablen-Datei, dann Prüfziffer und Strichcode-PNG wie `sh build.sh isbn`) · `tr` Trennstellen … (Liste aus `{trennstellen}`; `Re | vi | ta | ler` = ergänzen, `-Revitaler` = entfernen; wirkt beim nächsten Bau) · `ge` Gestaltung … (Tabelle normal / UC; wo: 0–4 Zeilen oder `ti` im Titel – `ti3`, `ti23`, `ti234` = weitere Stufen; Schrift; Farbe `g` gold · `b` blau · `s` schwarz · `ü` wie die Überschrift; `k1`/`k0` Kapitälchen, `e1`/`e0` Einzug; `fb` `fg` `fs` Fett am Absatzanfang blau · gold · schwarz, `fk1`/`fk0` in Kapitälchen; vorne `n` = nur normal, `uc` = nur UC, ohne = beide; `n0`/`uc0` = alles aus; z. B. `n ti c b k1` · `uc 0`; `v` = Vorschau) · `cl` aufräumen (wie `sh cleanup.sh`, fragt `[j/N]`)
+`sm` `a` `zh` Stände | `sm` Stand merken (wie `sh build.sh stand Name`) · `a` änderungen seit dem letzten Stand als PDF (wie `sh build.sh aenderungen`) · `zh` Stand zurückholen: frühere Fassung der MD aus md-history
 `p` PDF öffnen | `n` normal · `u` unzensiert · `l` Leseprobe · `k` Korrektur …
 `o` Ordner öffnen | `b` Buchordner · `n` normal · `u` unzensiert · `d` druck · `g` geschichten · `t` tabellen · `a` audio … · `p` Pfad Buchordner kopieren · dazu Taste + `t` = Terminal dort (`bt`, `at` …), + `p` = Pfad kopieren (`ap` …)
 `n` neu | `b` neues Buch · `h` Hallo-Buch · `e` einrichten · `m` Motor-Selbsttest · `v` Verknüpfung
 
 - Geschichten (`g` → `e` oder `m` → `g`): jede hat ein festes Kürzel aus 1–3 Buchstaben, z. B. `h` herz-im-glueck, `he` heimweh. Neue bekommen das kürzeste freie (h · he · Anfänge der Wörter · hei), bestehende bleiben. Gespeichert in `geschichten/kuerzel.txt` (kommt mit sync zu GitHub, von Hand änderbar); gelöschte geben ihr Kürzel frei.
-- ↑ ↓ = letzte Befehle, Enter führt sie aus. Ganze Befehle gehen auch: `final`, `leseprobe uz 18,20`, `personen Eltern`. `:` Befehle zeigt diese Befehle zum Tippen (aus dem Spickzettel der Hilfe), danach gleich eingeben. `?` = hilfe. Datei öffnen wie im Terminal: `xdg-open ausgabe-normal/….pdf` (Mac `open`, Windows `start`) – Pfad ab dem Buchordner, das Menü wartet nicht. Die Zeilen am Schluss eines Baus lassen sich so direkt einfügen.
-- Nach einem Bau bleiben die Meldungen stehen: statt des Menüs nur «Eingabe (Enter = Menü)». Die Schlusslinie zeigt Befehl und Dauer: «✓ s fertig · 0 Min. 34 s». Neu gebaute Lese-PDFs öffnen sich gleich (bei komplett nur normal und unzensiert).
+- ↑ ↓ = letzte Befehle, Enter führt sie aus. Ganze Befehle gehen auch: `final`, `leseprobe uc 18,20`, `personen Eltern`. `:` Befehle zeigt diese Befehle zum Tippen (aus dem Spickzettel der Hilfe), danach gleich eingeben. `?` = hilfe. Datei öffnen wie im Terminal: `xdg-open ausgabe-normal/….pdf` (Mac `open`, Windows `start`) – Pfad ab dem Buchordner, das Menü wartet nicht. Die Zeilen am Schluss eines Baus lassen sich so direkt einfügen.
+- Nach einem Bau bleiben die Meldungen stehen: statt des Menüs nur «Eingabe (Enter = Menü)». Die Schlusslinie zeigt Befehl und Dauer: «✓ s fertig · 0 Min. 34 s». Neu gebaute Lese-PDFs öffnen sich gleich (bei komplett nur normal und UC).
 - MD, PDF und Ordner öffnen im eigenen Programm, das Menü bleibt bereit. Bauen läuft im Menüfenster; am Schluss «Fertig» mit Dauer und Klang. Oben links der Buchname als goldenes Schild (auch im Fenster-/Tab-Titel), damit man bei mehreren Büchern sofort sieht, wo man ist. Oben rechts «Klang (!) ein/aus», Taste `!` (beim Einschalten klingt er einmal zur Probe). `$` öffnet ein Terminal im Buchordner, das Menü bleibt offen (praktisch, wenn das Menü per Lotus-Starter läuft). Klang: `motor/klang.wav`, eigener Klang: `klang.wav` in den Buchordner legen; sonst Piepton.
 - `ul` (update lokal) erscheint nur, wenn neben dem Buch ein Ordner `pureSATZ` liegt; ebenso in `n` neu …: `b` neues Buch (setup), `h` Hallo-Buch, `e` einrichten (START-Linux.sh / START-Mac-imTerminal.sh / START-Windows.bat), `m` Motor-Selbsttest (test/selbsttest.py, einige Minuten, Ende «SELBSTTEST IN ORDNUNG»).
 - `n` → `v` Verknüpfung (auch `sh menu.sh verknuepfung`): Starter mit Lotus, Doppelklick öffnet das Menü. Linux: Startmenü und Schreibtisch (beim ersten Mal Rechtsklick → «Start erlauben»), Windows: Buchordner und Schreibtisch, Mac: «Buch Menü.command» im Buchordner und auf dem Schreibtisch. Neue Bücher bekommen ihn mit `setup`. Buchordner verschoben? `v` nochmals – überschreibt den alten Starter.
@@ -270,7 +272,7 @@ Das Buch steht in drei MD-Dateien. Alles andere macht der Motor.
 
 Datei | Inhalt
 `<buch>-variablen.md` | `# VARIABLEN` (Buch, Impressum, Ausgaben mit ISBN und Preis, Shop), `# TECHNIK` (Dateien, Sicherung), `# LAYOUT` (Farben, Schriften)
-`<buch>-buch.md` | das Buch: `## @TITEL`, `## @IMPRESSUM`, `## @HINWEIS`, `## @WIDMUNG`, `## @KERNSATZ`, `## @INHALTSVERZEICHNIS`, Kapitel und Teile
+`<buch>-buch.md` | das Buch: `## @TITLE`, `## @IMPRINT`, `## @NOTICE`, `## @DEDICATION`, `## @DECORATE-PAGE`, `## @CONTENTS`, Kapitel und Teile
 `<buch>-umschlag.md` | `## Vorderseite`, `## Buchrücken`, `## Rückseite`, darunter `feld: text` (`-druck`, `-bildschirm`, `-ebook`, `-uz` am Namen = nur dort), `> Erklärung`
 `stichworte-<buch>.txt` | Stichwortverzeichnis: eine Zeile pro Stichwort, Varianten mit `|`, `#` = Kommentar – siehe Stichwortverzeichnis
 `readme4ki.txt` | kurze Anleitung für eine andere KI (siehe unten)
@@ -280,9 +282,9 @@ Die Ordner im Buchordner:
 Ordner | Inhalt
 `druck/` | Plattform-Dateien: die Technik einer Druckerei (Rücken, Beschnitt, Strichcode), eine Datei pro Druckerei und Format. Welche gilt, steht in der Variablen-Datei bei `{druck-datei}` unter `## Ausgabe: Druck …`; nicht gebrauchte liegen in `druck/reserve/`. → Plattform-Dateien
 `ausgabe-normal/` | was der Bau erzeugt: Lese-PDF, Druckdateien, E-Book, Booklet, Werbebilder. Zuoberst `00-UEBERSICHT.txt`: welche Datei wofür
-`ausgabe-unzensiert/` | dasselbe für die zweite Fassung («uz»), falls dein Buch zwei hat. Text in `::: nur-uz` … `:::` steht nur dort, `::: nur-normal` … `:::` nur in der normalen
+`ausgabe-unzensiert/` | dasselbe für die zweite Fassung («uz»), falls dein Buch zwei hat. Text in `@UC` … `@END` steht nur dort, `@NORMAL` … `@END` nur in der normalen
 `ausgabe-test/` | Testläufe mit `druck=<datei>` – kommt nicht zu GitHub
-`fotos/`, `bilder/` | Fotos und Bilder (Porträt, eigene Verzierung, Strichcode)
+`fotos/`, `bilder/` | Fotos und Bilder (Porträt, eigenes Logo, Strichcode)
 `geschichten/`, `tabellen/` | Geschichten und Tabellen (CSV), falls du sie brauchst
 `md-history/` | ältere Fassungen deiner MD-Dateien, entstehen bei jedem Bau (Sichern und zurückholen)
 `motor/` | pureSATZ selbst – nie von Hand ändern, kommt mit `sh update.sh`
@@ -295,11 +297,7 @@ Zeile | Bedeutung
 `{name}: wert` | setzt eine Variable; im Buch erscheint sie als `{name}`
 `feld: text` | Feld des Umschlags, eines Fotos oder einer Geschichte (keine Variable, darum ohne Klammern)
 
-Das Zeichen `>` heisst je nach Datei etwas anderes:
-
-Datei | `> …` heisst
-Buchtext (`<buch>-buch.md`, Geschichten) | Zitat mit Verzierung – Markdown-Kurzform von `@ZITAT-ZIER`
-Einstellungs-Dateien (Variablen, Umschlag, Plattform-Dateien) | Erklärung, wird nie gedruckt
+Das Zeichen `>` steht nur in den Einstellungs-Dateien (Variablen, Umschlag, Plattform-Dateien): Erklärung, wird nie gedruckt. Im Buchtext beginnt alles, was pureSATZ ist, mit `@`.
 
 In jedem Abschnitt zuerst die Werte, darunter die Erklärungen: `> {name}: …`. Kein `- ` davor – das ist nur für echte Listen (Aufzählung im Buch, Stichwort-Liste).
 
@@ -332,15 +330,15 @@ Danach im neuen Buchordner `sh build.sh`. Mit GitHub: dort `git init -b main` un
 
 Für jede Aufgabe: was im Buch stehen muss, die Schritte und wo es genauer steht.
 
-Ein Buch schreiben – braucht die drei Dateien `<buch>-buch.md`, `-variablen.md`, `-umschlag.md` (macht `setup`).\ Schritte: Titel, Autor usw. in der Variablen-Datei › Text in der Buch-Datei › `s` schnell, Lese-PDF ansehen › `w` weitergeben = Leseprobe und Korrektur (zum Gegenlesen) · `k` komplett vor dem Druck · `f` final (nur Druckdateien) gibt es weiter, steht aber nicht im Menü.\ → Ein neues Buch anlegen
+Ein Buch schreiben – braucht die drei Dateien `<buch>-buch.md`, `-variablen.md`, `-umschlag.md` (macht `setup`).\ Schritte: Titel, Autor usw. in der Variablen-Datei › Text in der Buch-Datei › `s` schnell, Lese-PDF ansehen › `f` final vor dem Druck · `k` komplett = final mit Leseprobe und Korrektur (zum Weitergeben und Gegenlesen).\ → Ein neues Buch anlegen
 
 Teile und Kapitel – Überschriften in der Buch-Datei: `# Teil 1|Titel|Untertitel`, `## Kapitel`, `### Zwischentitel`.\ Schritte: Teil-Zeile (neue Seite mit Teil-Seite) › darunter Kapitel mit `##` › `s` schnell.\ → Aufbau eines Buchs
 
 Geschichten als eigene Dateien – Ordner `geschichten/`, im Buch eine Zeile `@@name`.\ Schritte: Menü `g` → `n` neue Geschichte › schreiben › `g` → `b` fehlende ins Buch › `s` schnell.\ → Geschichten sammeln
 
-Ein Inhaltsverzeichnis – `## @INHALTSVERZEICHNIS` in der Buch-Datei (neue Bücher haben es).\ Schritte: Kapitel mit `##` schreiben › `s` schnell › Tiefe und Abstände unter `### Inhaltsverzeichnis` in der Variablen-Datei.\ → Inhaltsverzeichnis gestalten
+Ein Inhaltsverzeichnis – `## @CONTENTS` in der Buch-Datei (neue Bücher haben es).\ Schritte: Kapitel mit `##` schreiben › `s` schnell › Tiefe und Abstände unter `### Inhaltsverzeichnis` in der Variablen-Datei.\ → Inhaltsverzeichnis gestalten
 
-Ein Stichwortverzeichnis – `{stichworte}: ja`, eine Zeile `@STICHWORTE`, die Liste `stichworte-<buch>.txt`.\ Schritte: `st` → `v` Vorschläge › `[+]` markieren › `u` übernehmen › `s` schnell.\ → Stichwortverzeichnis
+Ein Stichwortverzeichnis – `{stichworte}: ja`, eine Zeile `@INDEX`, die Liste `stichworte-<buch>.txt`.\ Schritte: `st` → `v` Vorschläge › `[+]` markieren › `u` übernehmen › `s` schnell.\ → Stichwortverzeichnis
 
 Drucken lassen – eine Druckdatei in `druck/` mit dem Text des Coverrechners.\ Schritte: `f` final › `co` zeigt die Seitenzahl › Coverrechner der Druckerei, Text unten einfügen › `f` final › `bp` zeigt ✓ › hochladen.\ → Umschlag: Rücken und Seitenzahl
 
@@ -379,7 +377,7 @@ notiz: stand = idee · entwurf · ueberarbeiten · fertig
 Foto, kurz (eigenes Bild in `fotos/`; `beispiel-foto.jpg` hat jedes Buch (im Motor) – zum Ausprobieren)
 
 ```
-#### @FOTO Titel
+#### @PICTURE Titel
 datei: beispiel-foto.jpg
 text: Bildunterschrift
 ```
@@ -387,7 +385,7 @@ text: Bildunterschrift
 Fotos – alle Möglichkeiten (einfügen, `sh build.sh schnell`, ansehen; danach `beispiel-foto.jpg` durch dein Foto ersetzen)
 
 ```
-#### @FOTO Bild 1 – volle Breite
+#### @PICTURE Bild 1 – volle Breite
 datei: beispiel-foto.jpg
 text: Bildunterschrift unter dem Foto
 quelle: Foto: Vorname Nachname
@@ -395,58 +393,62 @@ alt: Was auf dem Bild zu sehen ist (für die Vorlesefunktion im E-Book)
 
 Text nach Bild 1. Die erste Leerzeile oben beendet den Foto-Block.
 
-#### @FOTO Bild 2 – klein, Text fliesst links daneben
+#### @PICTURE-45-RIGHT Bild 2 – klein, Text fliesst links daneben
 datei: beispiel-foto.jpg
 text: Bild rechts, 45 mm breit
-breite: 45
-fluss: rechts
 
 Dieser Absatz fliesst links neben Bild 2. Auch die nächsten Absätze fliessen daneben, bis das Bild zu Ende ist.
 
 Noch ein Absatz neben dem Bild.
 
-#### @FOTO Bild 3 – klein, Text fliesst rechts daneben
+#### @PICTURE-45-LEFT Bild 3 – klein, Text fliesst rechts daneben
 datei: beispiel-foto.jpg
 text: Bild links, 45 mm breit
-breite: 45
-fluss: links
 
 Dieser Absatz fliesst rechts neben Bild 3.
 
-#### @FOTO-UZ Bild 4 – nur in der unzensierten Fassung
+#### @UC-PICTURE-80 Bild 4 – nur in der Fassung UC
 datei: beispiel-foto.jpg
-text: Erscheint nur in der zweiten Ausgabe
-breite: 80
+text: Erscheint nur in der Fassung UC
 ```
 
-Tabelle (CSV in `tabellen/`) · Zitat · neue Seite
+Tabelle (CSV in `tabellen/`) · Satz mit Linie und Logo · neue Seite
 
 ```
 @#name-der-tabelle
 
-> Ein Satz als Zitat mit Verzierung.
+@DECORATE Ein Satz zwischen zwei Linien mit Logo.
 
----
+@NEWPAGE
 ```
 
-Text hervorheben – fett mitten im Satz, kursiv als eigene Zeile (→ fett und kursiv)
+Text hervorheben (→ fett und kursiv)
 
 ```
-Ein Satz mit **fettem Wort** mitten im Text.
+Ein Satz mit **fettem Wort** und *kursivem Wort* mitten im Text.
 
-~ Eine Randbemerkung: klein und kursiv.
+@ASIDE Eine Randbemerkung: klein und kursiv.
 
-@ZITAT Ein Zitat: kursiv, zentriert, schlicht.
+@DECORATE-TEXT Ein Satz: kursiv, zentriert, ohne Linien.
 
-> Ein Zitat: kursiv, zentriert, mit Verzierung.
+@DECORATE Ein Satz: kursiv, zentriert, zwischen zwei Linien mit Logo.
 ```
 
-Nur in der unzensierten Fassung
+Kapitel schön abschliessen
 
 ```
-::: nur-uz
-Dieser Text steht nur in der zweiten Ausgabe.
-:::
+@DECORATE-ABOVE-REST Schön, dass du da bist. \
+Herzlich, Name
+```
+
+Nur in der Fassung UC (eine Zeile: Vorsilbe `@UC-…`)
+
+```
+@UC
+Dieser Text steht nur in der Fassung UC.
+@END
+
+@UC-SPACER-14
 ```
 
 ## Schreiben
@@ -454,39 +456,36 @@ Dieser Text steht nur in der zweiten Ausgabe.
 Die Regel – vier Formen, je nach Aufgabe:
 
 Form | Wofür | Beispiel
-Markdown | alles, was Markdown kann: Absatz, Zeilenumbruch, neue Seite, fett, Liste | `\` am Zeilenende · `---` · `**fett**` · `- Punkt`
-`@BEFEHL` | eine Zeile, eine Wirkung – nur für das, was Markdown nicht kann | `@PLATZ 40`, `@KOPF Ecuador`, `@ZITAT-ZIER …`
-`## @…` / `#### @…` | Titelei-Seite (`##`) bzw. Element mit Angaben darunter (`####`, Ende = Leerzeile); steht in der Gliederung des Editors | `## @IMPRESSUM`, `#### @FOTO Sommer`
-`::: art` … `:::` | Textbereich mit Anfang und Ende: nur in einer Fassung, umrahmt oder zusammenhaltend | `::: nur-uz`, `::: uz Titel`, `::: mitte`
+Markdown | Text: Absatz, Zeilenumbruch, fett, kursiv, Liste, Titel | `\` am Zeilenende · `**fett**` · `*kursiv*` · `- Punkt`
+`@BEFEHL Text` | eine Zeile, eine Wirkung – alles, was pureSATZ ist, beginnt mit `@` | `@NEWPAGE-40`, `@HEADER Ecuador`, `@DECORATE Satz`
+`## @…` / `#### @…` | Titelei-Seite (`##`) bzw. Element mit Angaben darunter (`####`, Ende = Leerzeile); steht in der Gliederung des Editors | `## @IMPRINT`, `#### @PICTURE Sommer`
+`@BEREICH` … `@END` | Textbereich mit Anfang und Ende: nur in einer Fassung, umrahmt oder zusammenhaltend | `@UC`, `@UC-BLOCK Titel`, `@DECORATE-REST`
+
+Bauplan eines Befehls: `@[FASSUNG-]NAME[-GRÖSSE][-ORT[-HÖHE]][-STIL] Text` – alles vor dem ersten Leerzeichen ist der Befehl (gross geschrieben), danach der Text. Zahlen in mm. Ortswörter: `REST` (Mitte des Rests der Seite, dann neue Seite) · `BOTTOM` (unten; `BOTTOM-34` = 34 mm über dem Ende des Textes) · `PAGE` (eigene Seite) · `GAP` (Lücke vor der nächsten Überschrift) · `RIGHT`/`LEFT` (daneben, Text fliesst herum). Fassung vorne = alles nur dort: `@UC-…`, `@NORMAL-…` (kurz `@N-…`), `@EBOOK-…`, `@PRINT-…` (Druck), `@SCREEN-…` (Lese-PDF). Fassung hinten = nur die Verzierung dort, der Text steht in beiden: `@DECORATE-REST-UPRIGHT-UC` … `@END` (nur bei `@DECORATE`). Nur angeben, was vom Standard abweicht. → Gestalten: Ich will …
 
 Im Text | Wirkung
 `# Teil 1|Titel|Untertitel` (`|bild.jpg`) | neuer Teil mit Teil-Seite (optional eigenes Bild)
 `# |Anhang|Untertitel` | Teil-Seite ohne Nummer, z. B. für den Anhang; darunter Kapitel mit `##` (Kopfzeile «Anhang · Kapitel»)
 `# Titel` | Kapitel oberster Ebene, neue Seite (Anhang, Zeitstrahl, Über den Autor)
 `## Kapitel` / `### Zwischentitel` / `#### Titel` | Kapitel (im Inhalt) / Zwischentitel / kleiner Titel. Wie tief ins Inhaltsverzeichnis: `{inhalt-tiefe}: 1–4` (Standard 2 = bis `##`)
-`## @BEFEHL` | Befehl als Überschrift (sichtbar in der Navigation des Editors)
-`@ZITAT Satz` · `@ZITAT-ZIER Satz` (kurz `> Satz`) · `~ Satz` | Zitat schlicht · Zitat mit Verzierung · Randbemerkung
-`- Punkt` · `**fett**` · `[Text](https://…)` | Liste · fett · Link
-`[→ Tabellen](#Tabellen)` | Verweis auf ein Kapitel im eigenen Buch: im PDF und E-Book klickbar, im Druck mit Seite («→ Tabellen, S. 23»). Nach `#` der Anfang der Überschrift, Leerzeichen als `-` (ab 2.81)
+`- Punkt` · `**fett**` · `*kursiv*` · `[Text](https://…)` | Liste · fett · kursiv · Link
+`[→ Tabellen](#Tabellen)` | Verweis auf ein Kapitel im eigenen Buch: im PDF und E-Book klickbar, im Druck mit Seite («→ Tabellen, S. 23»). Nach `#` der Anfang der Überschrift, Leerzeichen als `-`
 `1. Punkt` `2. Punkt` | nummerierte Aufzählung (zählt selbst: die erste Zahl ist der Start)
 `  - Unterpunkt` | Unterpunkt, 2–4 Leerzeichen eingerückt (unter `-` und unter `1.`)
 `3\. Mai war …` | Zahl mit Punkt am Zeilenanfang, aber keine Aufzählung
 Leerzeile | neuer Absatz
 `\` am Zeilenende | Zeilenumbruch im Absatz: die nächste Zeile gehört zum selben Absatz (in Variablen: `<br/>`)
-`---` (eigene Zeile, davor eine Leerzeile) | neue Seite, wie `@UMBRUCH` (im Editor eine waagrechte Linie)
 
-Code (ab 2.76): Ein Wort zwischen zwei Backticks (Taste neben dem Fragezeichen) steht in Code-Schrift und bleibt wörtlich – keine Variablen, kein fett; gut für Befehle und Dateinamen. Mehrere Zeilen: eine Zeile mit drei Backticks davor und eine danach – heller Kasten, jede Zeile genau wie getippt, in gleich breiter Schrift (DejaVu Sans Mono, ab 2.77), damit Spalten untereinander stehen. Nur in einer Ausgabe: oben drei Backticks und `nur-uz` (bzw. `nur-normal`, `nur-druck` …) direkt dahinter (ab 2.81).
+Code: Ein Wort zwischen zwei Backticks (Taste neben dem Fragezeichen) steht in Code-Schrift und bleibt wörtlich – keine Variablen, kein fett; gut für Befehle und Dateinamen. Mehrere Zeilen: eine Zeile mit drei Backticks davor und eine danach – heller Kasten, jede Zeile genau wie getippt, in gleich breiter Schrift (DejaVu Sans Mono), damit Spalten untereinander stehen. Nur in einer Ausgabe: oben drei Backticks und `nur-uz` (bzw. `nur-normal`, `nur-druck` …) direkt dahinter.
 
-Blöcke `::: art-ausgabe Titel` … `:::` – Art: `nur`, `mitte`, `zusammen`, `offen`, `offen-notiz`, `zeitstrahl`, `uz` (Kasten der zweiten Ausgabe). Endung: keine (überall), `-normal`, `-uz` (`-dc`), `-bildschirm`, `-druck`, `-ebook`, `-buch`, `-privatdruck`.
+Alle Befehle: nach Zweck und mit Bildern in Gestalten: Ich will …, alle auf einen Blick in Befehle (@).
 
-Foto: beginnt mit `#### @FOTO Titel` (steht so in der Gliederung des Editors), darunter die Angaben, eine pro Zeile. Die erste Leerzeile beendet das Foto – ein `:::` braucht es nicht. `#### @FOTO-UZ Titel` = nur in der zweiten Ausgabe (auch `-NORMAL`, `-DRUCK`, `-EBOOK` …).
+Foto: beginnt mit `#### @PICTURE Titel` (steht so in der Gliederung des Editors), darunter die Angaben, eine pro Zeile. Die erste Leerzeile beendet das Foto. Im Namen: Breite in mm und `RIGHT`/`LEFT` (Text fliesst herum, Standard 45 mm), z. B. `#### @PICTURE-60-RIGHT Titel`. `#### @UC-PICTURE Titel` = nur in der Fassung UC.
 
 ```
-#### @FOTO Sommer
+#### @PICTURE-60 Sommer
 datei: sommer-1980.jpg     Bild im Ordner fotos/ (Grösse: fotos/readme.txt)
 text: Bildunterschrift     (optional)
-breite: 60                 (optional) Breite in mm
-fluss: rechts              (optional) Text umfliesst das Bild, rechts oder links
 quelle: Foto: Max Muster   (optional) erscheint im Bildnachweis im Anhang
 alt: Kind auf rotem Dreirad (optional) Beschreibung fürs E-Book (Vorlesefunktion); sonst gilt text:
 ausschnitt: oben           (optional, nur mit foto-format) was beim Zuschneiden bleibt: oben, unten, links, rechts
@@ -496,33 +495,29 @@ Hier geht der Text weiter.
 
 Eine Zeile ohne bekanntes Feld (z. B. `Vorschlag: …`) erscheint im Entwurf im Kasten, solange das Foto fehlt.
 
-Titelei: Titelseite, Impressum, Hinweis und Widmung stehen ohne `:::` als eigene Abschnitte:
+Titelei: Titelseite, Impressum, Hinweis und Widmung stehen als eigene Abschnitte:
 
 ```
-## @TITEL
+## @TITLE
 {titel}
 {untertitel}
 {titel-zusatz}               weitere Zeilen werden mit « · » an den Untertitel gehängt
 
-## @IMPRESSUM
+## @IMPRINT
                              leer lassen: der Motor setzt die Zeilen je Ausgabe selbst ein (siehe unten)
 
-## @HINWEIS
+## @NOTICE
 Unten im Impressum, mit Abstand (z. B. «ersetzt keine Beratung»).
 
-## @WIDMUNG
+## @DEDICATION
 Im Druck allein auf der rechten Seite gegenüber dem Impressum, im unteren Drittel; im Lese-PDF auf eigener Seite.
 ```
 
-Impressum: Bleibt `## @IMPRESSUM` leer, setzt der Motor für jede Ausgabe ein: `© {jahr} {autor}` · `{website}` · `{impressum-herstellung}` · `{impressum-satz1}` · `{impressum-satz2}` · `{impressum-rechte}` · `{impressum-hinweis}` · `{impressum-kontakt}` · `{auflage}` · `ISBN {isbn}`. Leere Zeilen fallen weg (im Lese-PDF also Herstellung, Logo und ISBN). Die Werte stehen in der Variablen-Datei: gemeinsame unter `## Impressum`, die einer Ausgabe unter `## Ausgabe: …`. Eigene Zeilen unter `## @IMPRESSUM` gehen auch; dann gelten nur diese. Im Druck: Seite 2 links Impressum (oben das Logo aus `{impressum-logo}`), Seite 3 rechts Widmung. Im Lese-PDF: Titel allein, danach Impressum auf eigener Seite unten.
+Impressum: Bleibt `## @IMPRINT` leer, setzt der Motor für jede Ausgabe ein: `© {jahr} {autor}` · `{website}` · `{impressum-herstellung}` · `{impressum-satz1}` · `{impressum-satz2}` · `{impressum-rechte}` · `{impressum-hinweis}` · `{impressum-kontakt}` · `{auflage}` · `ISBN {isbn}`. Leere Zeilen fallen weg (im Lese-PDF also Herstellung, Logo und ISBN). Die Werte stehen in der Variablen-Datei: gemeinsame unter `## Impressum`, die einer Ausgabe unter `## Ausgabe: …`. Eigene Zeilen unter `## @IMPRINT` gehen auch; dann gelten nur diese. Im Druck: Seite 2 links Impressum (oben das Logo aus `{impressum-logo}`), Seite 3 rechts Widmung. Im Lese-PDF: Titel allein, danach Impressum auf eigener Seite unten.
 
 Auflage: `{auflage}: 1. Auflage 2026` steht über der ISBN. Bei Print-on-Demand bleibt sie bei kleinen Korrekturen gleich; erst bei spürbar geändertem Inhalt z. B. `2., überarbeitete Auflage 2028` (dann meist neue ISBN). Nur in einer Fassung: `{auflage-uz}:` leer = dort keine Auflage-Zeile.
 
 Satz und Begleitung: `{impressum-satz1}` und `{impressum-satz2}` sind zwei freie Zeilen direkt unter der Herstellung, z. B. `{impressum-satz1}: Gesetzt mit pureSATZ · github.com/tgsteiger/pureSATZ` (Vorgabe in neuen Büchern) und `{impressum-satz2}: LLM Begleitung: …`. Sie stehen in allen Ausgaben (Lese-PDF, Druck, E-Book, Leseprobe …); leer = Zeile fällt weg.
-
-Seiten: `---` oder `@UMBRUCH` neue Seite · `@UMBRUCH-RECHTS` im Druck rechts · `@PLATZ 60` neue Seite, wenn weniger als 60 mm Platz · `@ABSTAND 8` Leerraum · `::: zusammen` nie trennen · `@SEITENMITTE`.
-
-Weiteres: `@TITEL`, `@IMPRESSUM`, `@HINWEIS`, `@WIDMUNG`, `@KERNSATZ`, `@INHALTSVERZEICHNIS`, `@ZITAT`, `@ZITAT-ZIER`, `@MOTTO`, `@UNTEN`, `@ZIER 12`, `@ZIER-UNTEN`, `@ZIER-TRENNER`, `@ZIER-LINIE`, `@QR url | Text`, `@QR-PAAR … ;; …`, `@QR-FLUSS url | Text`, `@PORTRAIT bild | Text`, `@KOPF`, `@STICHWORTE`, `@RUECKSEITE`. Vollständige Liste: `python3 motor/manuskript.py`.
 
 ## Text hervorheben: fett und kursiv
 
@@ -531,13 +526,10 @@ Suchwörter: fett, kursiv, hervorheben, betonen, Absatzanfang, Pseudo-Block. Bau
 Steuerzeichen | Wirkung
 `**Wort**` | fett, mitten im Text (PDF und E-Book)
 `**Tantra.** Seit …` (Fett ganz am Absatzanfang oder Listenpunkt) | Stichwort-Absatz («Pseudo-Block»): im Druck und Lese-PDF farbig und/oder in Kapitälchen – Menü `in` Gestaltung … (`fb` blau · `fg` gold · `fs` schwarz · `fk1`/`fk0` Kapitälchen) oder `{fett-anfang-farbe}` / `{fett-anfang-stil}`. Fett mitten im Satz bleibt schwarz
-`~ Satz` | Randbemerkung: klein, kursiv, leicht eingerückt
-`@ZITAT Satz` | Zitat: kursiv, zentriert, schlicht
-`> Satz` oder `@ZITAT-ZIER Satz` | Zitat: kursiv, zentriert, mit Verzierung oben und unten
-`::: mitte` … `:::` | wie `@ZITAT-ZIER`, aber senkrecht in der Mitte des Seitenrests (Abschluss eines Teils); `::: mitte aufrecht` = aufrecht · `::: mitte oben` = Zier nur oben (ohne Text: nur die Zier, mittig) · `fest` = fest 60 mm über dem Seitenende (`fest 50`), z. B. gleiche Höhe auf einer Doppelseite
+`*Wort*` | kursiv, mitten im Text
 `text:` beim Foto | Bildunterschrift, automatisch kursiv
 
-Kursiv mitten im Satz (`*Wort*`) gibt es noch nicht – ein einzelner Stern bleibt als Stern stehen. Ein Zeichen davor (Lotus oder ◆): `{fett-anfang-zeichen}: zier` bzw. `◆` – siehe Variablen. Tipp: Fett sparsam einsetzen. Eine Leerzeile vor einem kurzen Satz betont oft schon genug.
+Ein Zeichen davor (Lotus oder ◆): `{fett-anfang-zeichen}: logo` bzw. `◆` – siehe Variablen. Sätze kursiv und zentriert, mit oder ohne Linie und Logo (`@DECORATE …`), Randbemerkung (`@ASIDE`): Gestalten: Ich will …. Tipp: Fett sparsam einsetzen. Eine Leerzeile vor einem kurzen Satz betont oft schon genug.
 
 ## Suchen und Ersetzen mit Regex
 
@@ -556,8 +548,8 @@ Wichtig: `.` `*` `(` `?` haben eine Bedeutung – als Zeichen mit `\` davor (`\.
 ← Gestalten: Ich will … · Zum Kopieren
 
 Ordner | Was | Format | Pixel (300 dpi: Breite in mm × 12)
-`fotos/` | Fotos im Text (`#### @FOTO`) | JPG, RGB (nicht CMYK) | ganze Breite A5: mind. 1400 · `breite: 60`: 700 · `fluss`: 500
-`bilder/` | Porträt, Verzierung, Teil-Bilder | PNG, gern transparent | Porträt 600 × 600 · Teil-Bild 1200
+`fotos/` | Fotos im Text (`#### @PICTURE`) | JPG, RGB (nicht CMYK) | ganze Breite A5: mind. 1400 · `@PICTURE-60`: 700 · `-RIGHT`: 500
+`bilder/` | Porträt, Logo, Teil-Bilder | PNG, gern transparent | Porträt 600 × 600 · Teil-Bild 1200
 
 Dateinamen ohne Leerzeichen und Umlaute, z. B. `sommer-1980.jpg`. Handyfotos sind ideal.
 
@@ -569,13 +561,13 @@ Alle Fotos gleich gross (Variablen-Datei, Abschnitt «Fotos», alles freiwillig)
 
 ```
 {foto-format}: 3:2        alle auf dasselbe Seitenverhältnis zuschneiden (4:3, 16:9, quadrat …)
-{foto-breite}: 100        einheitliche Breite in mm (ein «breite:» im Foto geht vor)
+{foto-breite}: 100        einheitliche Breite in mm (eine Zahl im Foto, z. B. @PICTURE-60, geht vor)
 {foto-anpassen}: nein     am Seitenende nie verkleinern
 ```
 
-Beim Zuschneiden bleibt die Mitte; pro Foto `ausschnitt: oben` (Köpfe!), `unten`, `links` oder `rechts`. Fotos mit `fluss:` werden nicht zugeschnitten. Das Original in `fotos/` bleibt immer unverändert.
+Beim Zuschneiden bleibt die Mitte; pro Foto `ausschnitt: oben` (Köpfe!), `unten`, `links` oder `rechts`. Fotos mit `-RIGHT`/`-LEFT` werden nicht zugeschnitten. Das Original in `fotos/` bleibt immer unverändert.
 
-Bilderverzeichnis / Tabellenverzeichnis: in der Variablen-Datei `{bilderverzeichnis}: ja` bzw. `{tabellenverzeichnis}: ja` – eine eigene Seite listet alle Fotos (Bildtext, sonst Titel) bzw. Tabellen (Titel = erste Zeile der CSV) mit Seitenzahl, vor dem Stichwortverzeichnis. An anderer Stelle: eigene Zeile `@BILDERVERZEICHNIS` bzw. `@TABELLENVERZEICHNIS`. Im E-Book ohne Seitenzahlen.
+Bilderverzeichnis / Tabellenverzeichnis: in der Variablen-Datei `{bilderverzeichnis}: ja` bzw. `{tabellenverzeichnis}: ja` – eine eigene Seite listet alle Fotos (Bildtext, sonst Titel) bzw. Tabellen (Titel = erste Zeile der CSV) mit Seitenzahl, vor dem Stichwortverzeichnis. An anderer Stelle: eigene Zeile `@LIST-PICTURES` bzw. `@LIST-TABLES`. Im E-Book ohne Seitenzahlen.
 
 ## Tabellen
 
@@ -597,7 +589,7 @@ Quelle: eigene Praxisstatistik         ← optional: letzte Zeile, klein darunte
 - Bearbeiten mit LibreOffice: öffnen, ändern, Speichern unter → Text CSV, Feldtrenner `;`, Zeichensatz UTF-8. Trenner `;` oder `,` erkennt pureSATZ selbst. Gedruckt werden nur die Werte.
 - Im Buch: `@#behandlungen-pro-jahr` (auch `@# name`), auch in einer Geschichte. In Zellen gehen `**fett**` und `{variablen}`. Zahlen stehen rechtsbündig, lange Tabellen gehen über mehrere Seiten (Kopfzeile wiederholt sich).
 - Zu breit? pureSATZ bricht zuerst Text in den Zellen um, verkleinert dann die Schrift (bis 7.5 pt) und stellt die Tabelle notfalls quer auf eine eigene Seite (um 90° gedreht, das Buch zum Lesen drehen). Selbst bestimmen: `@#name quer` (immer quer) oder `@#name hoch` (nie quer). Im E-Book wird nie gedreht – breite Tabellen lassen sich dort seitlich verschieben.
-- Nur in einer Ausgabe: `::: nur-uz` / `@#name` / `:::`.
+- Nur in einer Ausgabe: `@UC` / `@#name` / `@END`.
 - `sh build.sh pruefen` meldet fehlende Tabellen (mit Vorschlag bei Tippfehlern) und Zeilen mit zu vielen Werten.
 
 ## Geschichten sammeln (freiwillig)
@@ -620,11 +612,11 @@ stand: entwurf
 stichworte: Emotionscode, Schutz
 quelle: Praxis 2018
 
-Text, wie im Buch: Absätze, **fett**, @ZITAT-ZIER Zitat, ::: Blöcke, Fotos, {variablen}.
+Text, wie im Buch: Absätze, **fett**, @DECORATE-Sätze, @-Bereiche, Fotos, {variablen}.
 ```
 
 - Die Zeilen unter dem Titel sind freiwillig und werden nicht gedruckt; `notiz:` (beliebig oft) für eigene Bemerkungen. `stand`: idee · entwurf · ueberarbeiten · fertig – nur für die Übersicht, wirkt nicht auf den Druck. `stichworte` kommen automatisch ins Stichwortverzeichnis. `quelle` ist eine Notiz für dich.
-- Einbinden: in der Buchdatei eine eigene Zeile `@@schutzschild-hoch` (Name = Dateiname ohne .md). Die Reihenfolge der `@@`-Zeilen ist die Reihenfolge im Buch. In `::: nur-uz` … `:::` gesetzt erscheint die Geschichte nur in der zweiten Ausgabe (die Geschichte selbst darf dann keine eigenen `:::`-Blöcke haben).
+- Einbinden: in der Buchdatei eine eigene Zeile `@@schutzschild-hoch` (Name = Dateiname ohne .md). Die Reihenfolge der `@@`-Zeilen ist die Reihenfolge im Buch. In `@UC` … `@END` gesetzt erscheint die Geschichte nur in der Fassung UC (die Geschichte selbst darf dann keine eigenen `@…`-Bereiche haben).
 - Mit dem Menü ins Buch: `g` → `b` setzt fehlende Geschichten (`@@`) und Tabellen (`@#`) in einen Block `## Noch einordnen` (nach der letzten `@@`-Zeile). Zeilen an ihren Platz schieben, Block löschen. Deine Reihenfolge im Buch bleibt immer. Neues Buch mit Demo-Inhalt: `b` fragt, ob Vorwort und Teil 1 der Demo durch deine Geschichten ersetzt werden (Titelei, Anhang, Über den Autor, Danke bleiben). Danach `s` schnell und `p` = deine Geschichten als Buch.
 - Reihenfolge überall (Liste, Block, Sammel-PDF): zuerst wie im Buch, dann wie angelegt.
 - Alle in einer Datei (z. B. für eine KI): `g` → `a` schreibt `geschichten-alle.md`, ändern, speichern, nochmals `g` → `a` holt alles zurück in die Einzeldateien (vorher Sicherung). Die Zeilen `@@@ name` nicht ändern. Solange die Datei existiert, sind die Einzeldateien im Menü gesperrt.
@@ -667,7 +659,7 @@ uz: 118
 ```
 
 - Wichtig sind nur die Zeilen ganz links: Begriffe derselben Person mit `|` in eine Zeile nehmen, der erste gibt den Dateinamen. `--- Wort` (unter «KEINE PERSONEN») = keine Person, nicht mehr vorschlagen (`--- MusterName` ist nur ein Beispiel). Eine ganz gelöschte Zeile kommt beim nächsten Mal wieder als Vorschlag. Eine eigene Zeile mit einem Namen, den der Motor nicht kennt, geht auch. Datei löschen = alles beginnt neu.
-- `normal:` / `uz:` = die Seiten fürs Check-PDF. Eigene Seiten einfach dazuschreiben, mit Komma und Bereichen: `normal: 44-45,47,49-52`. Sie bleiben beim nächsten Lauf stehen (der Motor vergleicht mit den gefundenen Seiten in der `>`-Zeile); gefundene Seiten berechnet er jedes Mal neu. Nach einem Umbau eigene Seiten selbst prüfen. Ohne unzensierte Fassung gibt es nur `normal:`. (Alte Zeilen `+ normal: 45` gehen weiter.)
+- `normal:` / `uz:` = die Seiten fürs Check-PDF. Eigene Seiten einfach dazuschreiben, mit Komma und Bereichen: `normal: 44-45,47,49-52`. Sie bleiben beim nächsten Lauf stehen (der Motor vergleicht mit den gefundenen Seiten in der `>`-Zeile); gefundene Seiten berechnet er jedes Mal neu. Nach einem Umbau eigene Seiten selbst prüfen. Ohne Fassung UC gibt es nur `normal:`. (Alte Zeilen `+ normal: 45` gehen weiter.)
 - `>`-Zeilen schreibt der Motor: zuerst die Anzahl («4 Stellen gefunden» bzw. «kommt nicht vor»), dann Seite und Zeile jeder Fundstelle. Ganzes Kapitel: Steht ein Begriff im Kapiteltitel (z. B. «Ecuador» in «Ecuador und das runde Rad»), kommen alle Seiten dieses Kapitels dazu.
 - Die Kopfzeile jeder Seite («Teil · Kapitel») zählt nicht als Fundstelle.
 - Die `>`-Zeilen und Seiten schreibt der Motor bei jedem `sh build.sh personen` neu. Deine Namenszeilen bleiben, neu Gefundenes kommt unten dazu. Vorgeschlagen werden Vornamen, Rollen (Vater, Tochter, Nachbarin …) und Stichwörter mit Vornamen – der eigene Vorname (`{autor}`) nicht. Das Stichwortverzeichnis zählt nicht mit.
@@ -681,7 +673,7 @@ Eine KI findet Tippfehler, doppelte Wörter und holprige Sätze. Ein Lektorat du
 
 - Ein Kapitel nach dem anderen geben, nicht das ganze Buch – sonst übersieht die KI vieles.
 - Klar sagen, was du willst, z. B.: «Prüfe nur Rechtschreibung und Zeichensetzung (Schweizer Schreibweise: ss statt ß). Ändere keinen Stil. Liste jede Stelle als: alt → neu.»
-- Vorschläge selber übernehmen, nicht den ganzen Text zurückkopieren. So bleibt deine Sprache, und die Befehle (`@…`, `:::`, `{…}`) bleiben heil.
+- Vorschläge selber übernehmen, nicht den ganzen Text zurückkopieren. So bleibt deine Sprache, und die Befehle (`@…`, `{…}`) bleiben heil.
 - Mehrere Durchgänge, jeder mit einem Ziel, am besten jeweils in einem neuen Chat:
 - Rechtschreibung und Zeichensetzung
 - Wiederholungen und Füllwörter
@@ -695,52 +687,120 @@ Für ein Lektorat auf Papier: `sh build.sh korrektur` (A4 mit Zeilennummern).
 
 ## Gestalten: Ich will …
 
-Die häufigsten Fälle beim Gestalten – nachsehen, wenn etwas nicht so aussieht wie gewünscht. Danach mit `sh build.sh schnell` ansehen. Ganze Bausteine: Zum Kopieren.
+Die häufigsten Fälle beim Gestalten. Danach mit `s` (Menü) bzw. `sh build.sh schnell` ansehen. Ganze Bausteine: Zum Kopieren.
 
 Klick auf einen Code = kopiert. Suchen: Taste `/`.
 
-Ich will … | So geht es
-eine neue Seite | `---` auf einer eigenen Zeile, davor eine Leerzeile. Nicht innerhalb eines `:::`-Blocks, sondern nach dem `:::`. Steht `---` schon oben auf einer Seite, entsteht keine leere Seite.
-mehr Abstand | `@ABSTAND 8` (in mm). Mehrere Leerzeilen geben nicht mehr Abstand. Nicht innerhalb eines `:::`-Blocks.
-einen Satz ganz unten auf der Seite | `@UNTEN Satz` – zentriert und kursiv, z. B. für einen Hinweis
-einen schönen Schluss (Gruss, Zitat) | `@ZITAT Schön, dass du da bist.<br/>Herzlich, Name`, darunter `@ZIER 10`
-ein Zitat mit Verzierung | `@ZITAT-ZIER Satz` (kurz `> Satz`). Nur eine Verzierung pro Seite – sonst wird es unruhig.
-einen kurzen Abschluss am Teil-Ende | `::: mitte` … `:::`
-eine Dankesseite oder ein Nachwort im Inhaltsverzeichnis | als Kapitel `## Danke`, Text im Blocksatz, zum Schluss `@ZITAT` und `@ZIER 10`
-Text hervorheben (fett, kursiv) | `**Wort**` = fett mitten im Text · kursiv als eigene Zeile: `~ Satz` (Randbemerkung) oder `@ZITAT Satz`. → fett und kursiv
-einen Zwischentitel | `### Titel`, kleiner `#### Titel`. Im Inhaltsverzeichnis erscheinen sie mit `{inhalt-tiefe}: 3` bzw. `4` in der Variablen-Datei (Standard: nur `##`)
-eine Randbemerkung | `~ Satz` (klein, kursiv)
-einen grossen Anfangsbuchstaben am Kapitelanfang | `{initial}: ja` in der Variablen-Datei (Farbe: `{initial-farbe}: haupt` = Blau; Stil: `{initial-stil}: rand` oder `feld`, `{initial-zeilen}: 4`, `{initial-schrift}: fett`; dazu `{kapitaelchen}: ja`) → Seitengestaltung
-Absätze eingerückt statt mit Abstand | `{absatz-einzug}: ja` in der Variablen-Datei
-eine Zeile umbrechen, ohne neuen Absatz | `\` am Zeilenende (in Variablen: `<br/>`)
-Text nur in einer Fassung | `::: nur-uz` … `:::` oder `::: nur-normal` … `:::`
-ein Foto | `#### @FOTO Titel`, darunter `datei: bild.jpg` – eine Leerzeile beendet das Foto. → Blöcke zum Kopieren · → alle Angaben
-ein Foto, das der Text umfliesst | zusätzlich `fluss: rechts` oder `fluss: links` und `breite: 40` (mm) – die nächsten Absätze fliessen daneben
-eine Geschichte einbinden | `##### @@name` (Dateiname ohne .md, im Ordner geschichten/) – Menü `g` → `b` macht es selbst. → Geschichten
-eine Tabelle | `@#name` (CSV im Ordner tabellen/) – Menü `t` → `n` legt sie an. → Tabellen
-eine Notiz, die nie gedruckt wird | in einer Geschichte unter dem Titel `notiz: …`; im Buch `::: offen-notiz` … `:::`
-den Druck in CMYK (z. B. tredition) | in der Druckdatei `{farbmodus}: cmyk`, dann `sh build.sh final`. → RGB oder CMYK
-den Strichcode mit der ISBN (EAN-13, Barcode) mit Goldrahmen oder Bergkette | in der Druckdatei `{isbn-rahmen}: berge` oder `gold` (dazu evtl. `{isbn-rahmen-abstand}: 2`, `{isbn-rahmen-farbe}: schwarz`). → Druckangaben
-einen QR-Code | `@QR https://… | Text`, zwei nebeneinander mit `@QR-PAAR`
-sehen, ob es passt | `sh build.sh schnell`, dann das PDF öffnen (der Befehl steht am Ende des Baus)
+So sind alle Befehle gebaut: `@NAME-GRÖSSE-ORT Text` – alles vor dem ersten Leerzeichen ist der Befehl (gross geschrieben), danach kommt der Text. Zahlen sind immer mm. Angeben musst du nur, was vom Standard abweicht.
 
-Alle Befehle: Hilfe «Befehle (@)» und «Blöcke (:::)».
+Ortswort | heisst
+(keins) | hier im Text
+`REST` | in die Mitte des Rests der Seite, danach neue Seite
+`BOTTOM` | unten auf die Seite (`BOTTOM-34` = 34 mm über dem Ende des Textes), danach neue Seite
+`PAGE` | auf eine eigene Seite
+`GAP` | in die Lücke vor der nächsten Überschrift
+`RIGHT` · `LEFT` | daneben, der Text fliesst herum
+
+### Text
+
+Ich will … | So
+Text hervorheben | `**fett**` · `*kursiv*` mitten im Text. → fett und kursiv
+eine Zeile umbrechen, ohne neuen Absatz | `\` am Zeilenende (in Variablen: `<br/>`)
+eine Randbemerkung | `@ASIDE Satz` (klein, kursiv)
+einen Zwischentitel | `### Titel`, kleiner `#### Titel` (ins Inhaltsverzeichnis mit `{inhalt-tiefe}: 3` bzw. `4`)
+eine Aufzählung | `- Punkt` oder `1. Schritt`, Unterpunkt zwei Leerzeichen eingerückt
+
+### Sätze mit Linie und Logo (DECORATE)
+
+Ich will … | So
+einen Satz zwischen zwei Linien mit Logo, der Text geht danach weiter | `@DECORATE Satz`
+denselben Satz ohne Linien | `@DECORATE-TEXT Satz`
+einen Satz ganz unten auf der Seite (z. B. ein Hinweis) | `@DECORATE-TEXT-BOTTOM Satz`
+einen Satz allein auf einer Seite | `@DECORATE-PAGE Satz` (in der Titelei: `## @DECORATE-PAGE Satz`)
+nur Linie mit Logo, ohne Text | `@DECORATE-LOGO`
+
+### Ein Kapitel schön abschliessen
+
+Ich will … | So
+einen Satz mitten in den Rest der Seite, danach neue Seite | `@DECORATE-REST Satz`
+mehrere Absätze so | `@DECORATE-REST` … `@END`
+einen Schlusssatz mit Linie nur oben | `@DECORATE-ABOVE-REST Satz`
+den Schlusssatz auf beiden Seiten einer Doppelseite gleich hoch | `@DECORATE-ABOVE-BOTTOM-34 Satz` – Oberkante 34 mm über dem Ende des Textes. Auf beiden Seiten dieselbe Zahl; reicht der Platz nicht, setzt der Motor mittig
+die Schrift wie der Fliesstext statt kursiv | am Befehl `-UPRIGHT` (in der Hauptfarbe: `-UPRIGHT-MAIN`), z. B. `@DECORATE-REST-UPRIGHT` · für das ganze Buch: `{decorate-stil}`
+
+Zeilenumbruch im Satz mit `\` am Zeilenende, z. B. `@DECORATE-ABOVE-REST Schön, dass du da bist. \` und darunter `Herzlich, Name`.
+
+### Logo
+
+Ich will … | So
+das Logo im Text | `@LOGO-12` (12 mm breit)
+das Logo in die Lücke vor der nächsten Überschrift (ohne eigenen Platz) | `@LOGO-6-GAP`
+das Logo mitten in den Rest der Seite, danach neue Seite | `@LOGO-10-REST`
+das Logo unten auf die Seite, danach neue Seite | `@LOGO-10-BOTTOM`
+ein eigenes Logo | in der Variablen-Datei `{logo}: mein-logo.png` (Bild in `bilder/`), hell: `{logo-light}`
+
+### Seiten und Abstand
+
+Ich will … | So
+eine neue Seite | `@NEWPAGE` (im Druck immer rechts: `@NEWPAGE-RIGHT`)
+eine neue Seite nur, wenn unten zu wenig Platz bleibt | `@NEWPAGE-60` (weniger als 60 mm frei) – gut vor einem Foto oder Zwischentitel
+mehr Abstand | `@SPACER-8` (mm). Mehrere Leerzeilen geben keinen Abstand
+einen Abschnitt nie trennen | `@KEEP-TOGETHER` … `@END`
+den Inhalt einer Seite senkrecht in die Mitte | `@PAGE-CENTER` (wirkt beim Bauen mit `k`)
+in der Kopfzeile ein anderes Wort | `@HEADER Ecuador` … `@HEADER` (allein = wieder normal)
+
+### Zwei Fassungen (normal und Unzensiert)
+
+Ich will … | So
+Text nur in einer Fassung | `@UC` … `@END` (nur Unzensiert) · `@NORMAL` … `@END`
+einen Befehl nur in einer Fassung | Vorsilbe: `@UC-SPACER-14`, `@NORMAL-NEWPAGE`, `#### @UC-PICTURE Titel`
+einen Kasten «Unzensiert» mit Titel | `@UC-BLOCK Titel` … `@END`
+Text nur im E-Book, nur im Druck, nur im Lese-PDF | `@EBOOK` · `@PRINT` · `@SCREEN` … `@END`
+
+### Noch offen
+
+Ich will … | So
+eine Stelle, über die ich noch nicht entschieden habe | `@DRAFT` … `@END` – mit `s` gelb markiert, mit `f` normal gedruckt
+eine Notiz, die nie gedruckt wird | `@NOTE Titel` … `@END` (in einer Geschichte: Zeile `notiz: …`)
+
+### Bilder, Tabellen, QR
+
+Ich will … | So
+ein Foto | `#### @PICTURE Titel`, darunter `datei: bild.jpg` und `text: Bildtext` – eine Leerzeile beendet das Foto. → alle Angaben
+das Foto 60 mm breit | `#### @PICTURE-60 Titel`
+ein Foto, das der Text umfliesst | `#### @PICTURE-40-RIGHT Titel` (oder `-LEFT`)
+eine Tabelle | `@#name` (CSV im Ordner tabellen/) – Menü `t` → `n` legt sie an. → Tabellen
+eine Geschichte einbinden | `##### @@name` – Menü `g` → `b` macht es selbst. → Geschichten
+einen QR-Code | `@QR https://… | Text`, mehrere nebeneinander: `@QR a | Text ;; b | Text`
+einen QR-Code rechts, der Text fliesst herum | `@QR-RIGHT url` direkt vor den Absatz (im E-Book weggelassen)
+einen Zeitstrahl | `@TIMELINE` … `@END`, jede Zeile `1974 | Geboren`
+
+### Aussehen des ganzen Buchs
+
+Ich will … | So
+einen grossen Anfangsbuchstaben am Kapitelanfang | Menü `ge` oder `{initial}: ja` in der Variablen-Datei. → Seitengestaltung
+Absätze eingerückt statt mit Abstand | `{absatz-einzug}: ja`
+den Druck in CMYK (z. B. tredition) | in der Druckdatei `{farbmodus}: cmyk`. → RGB oder CMYK
+den Strichcode mit Goldrahmen oder Bergkette | in der Druckdatei `{isbn-rahmen}: berge` oder `gold`. → Druckangaben
+sehen, ob es passt | Menü `s` (schnell) – für den Druck: `f` (final)
+
+Alle Befehle auf einen Blick: Hilfe «Befehle (@)».
 
 ## Aufbau eines Buchs: Seite für Seite
 
 Ein Buch beginnt mit einer rechten Seite (ungerade Seitenzahl). Den Anfang – die Titelei – setzt pureSATZ aus diesen Zeilen der Buch-MD:
 
 Seite | Inhalt | In der Buch-MD
-1 (rechts) | Titel, Untertitel, Autor | `## @TITEL`
-2 (links) | Impressum: ©, Druckerei, Kontakt, ISBN | `## @IMPRESSUM` – setzt sich selbst zusammen
-3 (rechts) | Widmung im unteren Drittel (freiwillig) | `## @WIDMUNG`
-danach | ein Satz allein auf einer Seite (freiwillig) | `## @KERNSATZ Satz`
-danach | Inhaltsverzeichnis | `## @INHALTSVERZEICHNIS`
+1 (rechts) | Titel, Untertitel, Autor | `## @TITLE`
+2 (links) | Impressum: ©, Druckerei, Kontakt, ISBN | `## @IMPRINT` – setzt sich selbst zusammen
+3 (rechts) | Widmung im unteren Drittel (freiwillig) | `## @DEDICATION`
+danach | ein Satz allein auf einer Seite (freiwillig) | `## @DECORATE-PAGE Satz`
+danach | Inhaltsverzeichnis | `## @CONTENTS`
 danach | Vorwort, dann Teil 1 | `## Vorwort` · `# Teil 1|Titel|Untertitel`
 
 Gut zu wissen:
 
-- Ein Kapitel soll auf einer rechten Seite beginnen: `@UMBRUCH-RECHTS` davor.
+- Ein Kapitel soll auf einer rechten Seite beginnen: `@NEWPAGE-RIGHT` davor.
 - Die Druckerei will eine gerade Seitenzahl (epubli: dazu die letzte Seite frei für den Strichcode). pureSATZ füllt am Schluss selbst mit leeren Seiten auf; `sh build.sh final` zeigt die Seitenbilanz.
 - In den Word-Vorlagen der Druckereien macht man das von Hand – Leerseiten, weisse Kästen über Seitenzahlen, Abschnittswechsel. In pureSATZ ist das nicht nötig.
 - Schöner Kapitelanfang: `{initial}: ja` (grosser Anfangsbuchstabe), siehe «Seitengestaltung».
@@ -752,21 +812,21 @@ Gut zu wissen:
 - Eine Zeile, in der eine Variable leer ist, fällt weg.
 - `format`: `a5` · `taschenbuch` · `sachbuch` · `a4` · `quadrat` (Masse laut epubli) oder eigenes Mass `150 x 215` (mm)
 - `## Ausgabe: …`: Werte nur für diese Ausgabe (siehe «Ausgaben»)
-- `zier`: eigenes Bild für die Verzierung (sonst die Standard-Verzierung)
+- `logo`: eigenes Logo des Buchs (sonst der Standard-Lotus), `logo-light`: helle Fassung
 - `# LAYOUT`: `farbschema`, `farbe-haupt`, `farbe-akzent` …, `schrift-text`, `schrift-titel`, `schriftgroesse`, `blocksatz`
 
 Alle Variablen der Vorlage auf einen Blick (Erklärungen auch direkt in der Variablen-Datei):
 
 Bereich | Variablen
 Buch | `titel`, `untertitel`, `autor`, `website`, `ort`, `jahr`, `auflage`, `stand`, `format`
-Zwei Ausgaben | `zweite-ausgabe` (ja/nein), `ausgabe-name-normal` / `-uz`, `titel-zusatz-normal` / `-uz` (Zeile unter dem Untertitel, je Ausgabe), `stempel-uz` (z. B. UNZENSIERT), `kasten-hinweis`, `kasten-kopf` (Wort oben im Kasten der zweiten Ausgabe, Standard: wie der Stempel)
+Zwei Ausgaben | `zweite-ausgabe` (ja/nein), `ausgabe-name-normal` / `-uz`, `titel-zusatz-normal` / `-uz` (Zeile unter dem Untertitel, je Ausgabe), `stempel-uz` (z. B. UNZENSIERT), `block-hinweis`, `block-kopf` (Wort oben im Kasten der zweiten Ausgabe, Standard: wie der Stempel)
 Impressum | `impressum-rechte`, `impressum-kontakt`
 Ausgabe: … | `druck-datei`, `isbn`, `preis`, `impressum-herstellung`, `impressum-kontakt`, `impressum-logo`, `erstellen` (nur E-Book)
 E-Book | `ebook-epub2` (ja = zusätzlich EPUB 2), `ebook-rueckseite` (bild / text / nein), `ebook-barrierefreiheit`, `farbe-akzent-ebook`, `ebook-id` bzw. `buch-id` (feste Kennung des E-Books; leer = Website/Titel)
 Shop | `shop-beschreibung`, `shop-schlagwoerter`, `shop-kategorie`, `shop-link`, `sprache` (Standard `de`, steht in den Shop-Angaben)
 Leseprobe | `leseprobe`, `leseprobe-seiten`, `leseprobe-seiten-uz`, `leseprobe-text`
 Technik | `kurz-normal` / `-uz` (Kürzel vorne an den Druckdateien, z. B. L123), `datei-normal` / `-uz` (Name der Lese-PDFs und E-Books), `ordner-normal` / `-uz` (Ausgabeordner)
-Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt|anschauung), `silbentrennung` (ja · nein · Zahl: automatisch mit pyphen, Standard ab 10 Buchstaben; Menü `tr`), `zier`, `zier-hell`, `initial` (ja · titel · nein), `initial-farbe` (akzent · haupt · text · ueberschrift), `fett-anfang-farbe` (leer · haupt · akzent: Fett ganz am Absatzanfang farbig, z. B. «Tantra. Seit …»), `fett-anfang-stil` (leer · kapitaelchen), `mitte-stil` (zitat = wie @ZITAT-ZIER, Standard · blau · aufrecht), `qr-farbe` (leer = schwarz · haupt = blau; Gold zu schwach, mit dem Handy prüfen), `fett-anfang-zeichen` (leer · zier = Lotus · ein Zeichen wie ◆ · bild.png), `initial-stufen` (2 · 3 · 4), `initial-stil` (normal · rand · feld), `initial-zeilen` (0 · 1 · 2 · 3 · 4), `initial-schrift` (fett · cinzel · uncial · fraktur · datei.ttf), `kapitaelchen` (ja · nein), `absatz-einzug` (ja · nein), `liste-blocksatz` (nein · ja: Listen im Blocksatz), `seitenausgleich` (nein = Standard wie im Buchsatz: letzte Seite vor Teil/Mittel-Block oben, Rest unten frei · ja = freien Platz auf Abstände verteilen und Seite zentrieren; einzelne Seite mittig immer mit `@SEITENMITTE`), `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund`
+Weiteres | `stichworte`, `stichworte-gruppen` (zusammen · fortlaufend), `bilderverzeichnis`, `tabellenverzeichnis` (ja · nein), `trennstellen` (Welt|anschauung), `silbentrennung` (ja · nein · Zahl: automatisch mit pyphen, Standard ab 10 Buchstaben; Menü `tr`), `logo`, `logo-light`, `initial` (ja · titel · nein), `initial-farbe` (akzent · haupt · text · ueberschrift), `fett-anfang-farbe` (leer · haupt · akzent: Fett ganz am Absatzanfang farbig, z. B. «Tantra. Seit …»), `fett-anfang-stil` (leer · kapitaelchen), `decorate-stil` (zitat = kursiv, Standard · blau · aufrecht), `qr-farbe` (leer = schwarz · haupt = blau; Gold zu schwach, mit dem Handy prüfen), `fett-anfang-zeichen` (leer · logo = Logo · ein Zeichen wie ◆ · bild.png), `initial-stufen` (2 · 3 · 4), `initial-stil` (normal · rand · feld), `initial-zeilen` (0 · 1 · 2 · 3 · 4), `initial-schrift` (fett · cinzel · uncial · fraktur · datei.ttf), `kapitaelchen` (ja · nein), `absatz-einzug` (ja · nein), `liste-blocksatz` (nein · ja: Listen im Blocksatz), `seitenausgleich` (nein = Standard wie im Buchsatz: letzte Seite vor Teil/Mittel-Block oben, Rest unten frei · ja = freien Platz auf Abstände verteilen und Seite zentrieren; einzelne Seite mittig immer mit `@PAGE-CENTER`), `kopfzeile` (ohne-autor · autor · wechselnd), `foto-format`, `md-history-behalten`, `bildschirm-dunkler`, `mockup-hintergrund`
 Sicherung | `sicherung-lokal`, `sicherung-cloud`, `sicherung-behalten`
 Layout | `farbschema`, `farbe-text`, `farbe-leise`, `farbe-haupt`, `farbe-akzent`, `farbe-papier`, `farbe-kasten`, `farbe-stempel`, `schrift-text`, `schrift-titel`, `schriftgroesse`, `zeilenabstand`, `blocksatz` · Inhaltsverzeichnis: `inhalt-tiefe`, `inhalt-dichte`, `inhalt-teile`, `inhalt-punkte`, `inhalt-schrift`
 
@@ -793,57 +853,41 @@ Schema 1 ist immer die Grundlage; das gewählte Schema ersetzt nur die Werte, di
 
 ## Farben und Aussehen auf einen Blick
 
-Suchwörter: Farbe, Aussehen, blau, gold, Gestaltung. Fast alles im Menü `in` Gestaltung … – `o` öffnet dort die Variablen-Datei.
+Suchwörter: Farbe, Aussehen, blau, gold, Gestaltung. Fast alles im Menü `ge` Gestaltung … – `o` öffnet dort die Variablen-Datei.
 
-Was | Variable | Werte | Menü `in`
+Was | Variable | Werte | Menü `ge`
 alle Farben auf einmal | `{farbschema}` | 1 · 2 · 3 (Schemas unter `## Farben`) | `sc1` `sc2` `sc3`
 Überschriften, Links im Text | `{farbe-haupt}` | #RRGGBB (Blau) | – (im Farbschema)
 Gold: Zierlinien, Jahre, Links | `{farbe-akzent}` | #RRGGBB | – (im Farbschema)
 Fliesstext, Kopfzeile | `{farbe-text}`, `{farbe-leise}` | #RRGGBB | – (im Farbschema)
 Initial am Kapitelanfang | `{initial}`, `{initial-farbe}` … | ja · titel · nein / akzent · haupt · text | `0`–`4` `ti` · `g` `b` `s` `ü`
 Fett am Absatzanfang («Tantra. …») | `{fett-anfang-farbe}`, `{fett-anfang-stil}` | haupt · akzent · leer / kapitaelchen | `fb` `fg` `fs` · `fk1` `fk0`
-Zierzitat und Mitte-Block | `{mitte-stil}` | zitat · blau · aufrecht | `mz` `mb` `ma`
+Schrift der DECORATE-Sätze | `{decorate-stil}` | zitat · blau · aufrecht | `mz` `mb` `ma`
 QR-Codes | `{qr-farbe}` | haupt · leer (schwarz) | `qb` `qs`
 
 Danach `v` (Vorschau) oder `s` bauen. Farben am Bildschirm nur grob beurteilen – der Probedruck zählt.
 
-## Seitengestaltung: neue Seite, Umbruch, Zierde
+## Seitengestaltung: Initial, Einzug, Listen, Trennung
 
-Nach einer Änderung `sh build.sh schnell` und ansehen.
+Neue Seite, Abstand, Logo und Linie: Gestalten: Ich will …. Nach einer Änderung `sh build.sh schnell` und ansehen.
 
 Ich will … | So
-eine neue Seite | `---` auf eigener Zeile (davor eine Leerzeile) oder `@UMBRUCH`
-ein Zitat mit Zierlinien mitten im Kapitel, der Text geht danach weiter | `@ZITAT-ZIER Satz.<br/>Zweiter Satz.` (kurz `> Satz`)
-einen Abschluss am Ende eines Teils, senkrecht in der Mitte der restlichen Seite | `::: mitte` … `:::` (mehrere Absätze möglich) – sieht aus wie `@ZITAT-ZIER` (kursiv, Zitatfarbe); `::: mitte blau` = aufrecht in Blau, normale Textgrösse (lange Texte) · `::: mitte aufrecht` = aufrecht schwarz · für alle: `{mitte-stil}` oder Menü `in` (`mz` `mb` `ma`)
-eine neue Seite, im Druck immer rechts (z. B. vor einem Kapitel) | `@UMBRUCH-RECHTS`
-eine neue Seite nur, wenn unten zu wenig Platz bleibt | `@PLATZ 60` (mm) – gut vor einem Foto oder Zwischentitel
-einen Abschnitt nie trennen | `::: zusammen` … `:::`
-Leerraum | `@ABSTAND 8` (mm) – mehrere Leerzeilen geben keinen Abstand
-den Inhalt einer Seite senkrecht in die Mitte | `@SEITENMITTE`
-einen Satz allein auf einer Seite | `## @KERNSATZ Satz` oder `@MOTTO Satz`
-eine kleine Verzierung | `@ZIER 12` (Breite in mm)
-eine Verzierung unten, danach neue Seite | `@ZIER-UNTEN 10`
-eine Verzierung mitten in den freien Platz, danach neue Seite | `@ZIER-UNTEN 10 mitte`
-einen QR-Code rechts neben einen Absatz stellen (Text fliesst herum, im E-Book weggelassen) | `@QR-FLUSS url | Text` direkt vor den Absatz (ohne `| Text` = ohne Bildtext, gut wenn der Link im Absatz steht)
-eine Verzierung zwischen zwei Abschnitten | `@ZIER-TRENNER`
-eine Zier mit goldenen Linien und Lotus (ohne Text) | `@ZIER-LINIE`
-ein eigenes Zierbild | in der Variablen-Datei `{zier}: meine-zier.png` (Bild in `bilder/`)
-einen grossen Anfangsbuchstaben am Kapitelanfang (Initial, drei Zeilen hoch) | Menü `in` Initialen … (wo, Schrift, Farbe, Kapitälchen, Vorschau) oder `{initial}: ja` – Farbe: `{initial-farbe}: akzent` (Gold), `haupt` (Blau wie die Überschriften) oder `text` (Schwarz). Ist der erste Absatz kürzer als drei Zeilen, läuft der nächste daneben weiter; folgt gleich ein Titel oder Foto, beginnt das Kapitel ohne Initial
+einen grossen Anfangsbuchstaben am Kapitelanfang (Initial, drei Zeilen hoch) | Menü `ge` Gestaltung … (wo, Schrift, Farbe, Kapitälchen, Vorschau) oder `{initial}: ja` – Farbe: `{initial-farbe}: akzent` (Gold), `haupt` (Blau wie die Überschriften) oder `text` (Schwarz). Ist der erste Absatz kürzer als drei Zeilen, läuft der nächste daneben weiter; folgt gleich ein Titel oder Foto, beginnt das Kapitel ohne Initial
 den ersten Buchstaben des Kapiteltitels hervorheben (statt eines Initials im Text) | `{initial}: titel` – Buchstabe 1,45-mal so gross wie die Überschrift, welche Stufen: `{initial-stufen}: 2` (Kapitel `##`, Standard), `2 3` oder `2 3 4` (nie `#`, die Teil-Seite), Farbe `{initial-farbe}` (`ueberschrift` = jede Stufe in ihrer eigenen Farbe), Schrift `{initial-schrift}` (leer = Titelschrift, z. B. `cinzel`). Seitenzahl kann sich um 1–2 ändern → Coverrechner prüfen
 das Initial anders: im Rand, im Feld, grösser, fett oder in einer Zierschrift | `{initial-stil}: rand` (links im Rand, Text volle Breite) oder `feld` (helles Feld mit Goldrahmen) · `{initial-zeilen}:` `1` erhöht (steht auf der ersten Zeile und ragt nach oben, Text in voller Breite) · `2` · `3` · `4` · `0` = aus · `{initial-schrift}: fett` · Ä, Ö, Ü werden etwas kleiner gesetzt, damit die Punkte nicht an den Titel stossen · Zierschrift aus dem Motor: `cinzel` (klassisch), `uncial` (keltisch, kleiner), `fraktur` (das I sieht aus wie ein J) · oder eine eigene TTF-Datei aus `fonts/` im Buch (frei z. B. auf fonts.google.com)
 die ersten Wörter jedes Kapitels in Kapitälchen | `{kapitaelchen}: ja` – mit oder ohne Initial
 Absätze eingerückt statt mit Abstand (wie viele Romane) | `{absatz-einzug}: ja` – der erste Absatz nach einem Titel bleibt bündig
-Listen (• und 1.) im Blocksatz wie der Fliesstext | `{liste-blocksatz}: ja` – Standard `nein` = linksbündig; Randbemerkungen (`~`) bleiben linksbündig
-auf einer Doppelseite zwei Zitate / Zierden gleich hoch stellen (links und rechts) | Am Seitenende (Abschluss): beide Blöcke `::: mitte oben fest 42` … `:::` – Oberkante steht 42 mm über dem Seitenende, auf beiden Seiten gleich (Zahl so wählen, dass auf beiden Seiten genug Platz ist; sonst setzt der Motor mittig). Mitten auf der Seite: im PDF messen, wie viel höher der eine Block steht, und davor einen unsichtbaren Abstand einfügen: `@ABSTAND 9` (mm) – nur für eine Fassung in `::: nur-normal` … `:::` (die UZ bricht anders um). Erst ganz am Schluss machen: ändert sich davor noch Text, muss die Zahl nachgestellt werden
-Grosse Lücken im Blocksatz, langes Wort wird nicht getrennt | Menü `tr` Trennstellen …: Wort mit `|` eintragen, wo getrennt werden darf, z. B. `Re|vi|ta|ler` (`-Revitaler` = entfernen) – oder direkt in der Variablen-Datei `{trennstellen}:`; danach `s` bauen. Automatische Silbentrennung: läuft ab 2.83 von selbst (ab 10 Buchstaben, Menü `tr`: Zahl ändern)
+Listen (• und 1.) im Blocksatz wie der Fliesstext | `{liste-blocksatz}: ja` – Standard `nein` = linksbündig; Randbemerkungen (`@ASIDE`) bleiben linksbündig
+auf einer Doppelseite zwei Sätze gleich hoch stellen (links und rechts) | Am Seitenende (Abschluss): auf beiden Seiten `@DECORATE-ABOVE-BOTTOM-34 Satz` – Oberkante steht 34 mm über dem Ende des Textes, auf beiden Seiten gleich (Zahl so wählen, dass auf beiden Seiten genug Platz ist; sonst setzt der Motor mittig). Mitten auf der Seite: im PDF messen, wie viel höher der eine Satz steht, und davor einen unsichtbaren Abstand einfügen: `@NORMAL-SPACER-9` (mm, nur in einer Fassung – die UZ bricht anders um). Erst ganz am Schluss machen: ändert sich davor noch Text, muss die Zahl nachgestellt werden
+Grosse Lücken im Blocksatz, langes Wort wird nicht getrennt | Menü `tr` Trennstellen …: Wort mit `|` eintragen, wo getrennt werden darf, z. B. `Re|vi|ta|ler` (`-Revitaler` = entfernen) – oder direkt in der Variablen-Datei `{trennstellen}:`; danach `s` bauen. Automatische Silbentrennung läuft von selbst (ab 10 Buchstaben, Menü `tr`: Zahl ändern)
 
-Wann umbrechen? Teile (`# Teil …`) und Kapitel oberster Ebene (`# Titel`) beginnen von selbst auf einer neuen Seite. Sonst erst umbrechen, wenn der Text fertig ist – jede Änderung verschiebt die Seiten. Lieber `@PLATZ` als `---`: es wirkt nur, wenn es nötig ist.
+Wann umbrechen? Teile (`# Teil …`) und Kapitel oberster Ebene (`# Titel`) beginnen von selbst auf einer neuen Seite. Sonst erst umbrechen, wenn der Text fertig ist – jede Änderung verschiebt die Seiten. Lieber `@NEWPAGE-60` als `@NEWPAGE`: es wirkt nur, wenn es nötig ist.
 
-Nicht innerhalb eines `:::`-Blocks: `---` und `@ABSTAND` nach dem `:::` setzen. Ruhig bleiben: nur eine Verzierung pro Seite.
+Ruhig bleiben: nur ein Logo oder eine Linie pro Seite.
 
 ## Inhaltsverzeichnis gestalten
 
-`## @INHALTSVERZEICHNIS` im Buch setzt es an diese Stelle. Die Werte stehen in der Variablen-Datei unter `### Inhaltsverzeichnis`.
+`## @CONTENTS` im Buch setzt es an diese Stelle. Die Werte stehen in der Variablen-Datei unter `### Inhaltsverzeichnis`.
 
 Ich will … | So
 mehr oder weniger Ebenen | `{inhalt-tiefe}: 1–4` (Standard 2 = bis `##`; 3 = auch `###`)
@@ -860,7 +904,7 @@ Nur ein, zwei Zeilen auf der letzten Seite? Zuerst `{inhalt-teile}: zusammen`, s
 
 ← Gestalten: Ich will … · Zum Kopieren
 
-Das Verzeichnis am Schluss des Buchs listet Begriffe mit ihren Seiten. Es braucht drei Dinge: `{stichworte}: ja` in der Variablen-Datei, eine eigene Zeile `@STICHWORTE` in der Buchdatei (meist vor `@RUECKSEITE`) und die Liste `stichworte-<buch>.txt`. Neue Bücher (auch das Hallo-Buch) haben alles schon, mit Beispielen aus dem Demo.
+Das Verzeichnis am Schluss des Buchs listet Begriffe mit ihren Seiten. Es braucht drei Dinge: `{stichworte}: ja` in der Variablen-Datei, eine eigene Zeile `@INDEX` in der Buchdatei (meist vor `@BACK-COVER`) und die Liste `stichworte-<buch>.txt`. Neue Bücher (auch das Hallo-Buch) haben alles schon, mit Beispielen aus dem Demo.
 
 In 4 Schritten (Menü: `st` Stichworte …):
 
@@ -902,8 +946,8 @@ sh build.sh                 # alles als Entwurf (offene Stellen und Notizen sich
 sh build.sh final           # alles als Druckfassung für epubli
 sh build.sh komplett        # final + Leseprobe + Korrektur in einem Durchgang (vor Bestellung/Veröffentlichung)
 sh build.sh schnell         # nur die Lese-PDFs, so schnell wie möglich – beim Schreiben
-sh build.sh nur-pdf         # nur die Bildschirm-PDFs (mit Booklet und Statistik)
-sh build.sh nur-pdf final   # nur Bildschirm-PDFs als Druckfassung
+sh build.sh nur-pdf         # nur die Lese-PDFs (mit Booklet und Statistik)
+sh build.sh nur-pdf final   # nur Lese-PDFs als Druckfassung
 sh build.sh nur-druck       # nur Buchblock und Umschlag
 sh build.sh covers          # Cover neu berechnen: Rohdaten des Coverrechners lesen, Buchblock + Umschlag (final)
 sh build.sh isbn            # ISBN prüfen (Prüfziffer) und Strichcode-PNG machen (_druckbilder/isbn-….png)
@@ -932,7 +976,7 @@ sh build.sh stichworte uebernehmen   # alle [+] an stichworte-<buch>.txt anhäng
 final oder komplett?
 
  | `sh build.sh final` | `sh build.sh komplett`
-Lese-PDF (normal, unzensiert) | ✔ | ✔
+Lese-PDF (normal, UC) | ✔ | ✔
 Druckdateien: Buchblock, Umschlag | ✔ | ✔
 E-Book (EPUB) | ✔ | ✔
 Probedruck-Booklet, Mockup, Shop-Angaben, Seitenbilanz, Kontrast | ✔ | ✔
@@ -942,15 +986,15 @@ Dauer | normal | etwas länger
 
 final für jede Druckfassung und jedes Hochladen. komplett vor einer Bestellung, Veröffentlichung oder Korrekturrunde. Leseprobe und Korrektur gehen auch einzeln: `sh build.sh leseprobe`, `sh build.sh korrektur`.
 
-Booklets zum Selberdrucken (A4 quer, doppelseitig, an der kurzen Kante wenden, falten) entstehen automatisch im Ausgabeordner: im Entwurf und bei `nur-pdf` aus dem Bildschirm-PDF (`…_booklet.pdf`), bei `sh build.sh final` als Probedruck genau wie das bestellte Buch: Vorderseite, Buchblock mit ISBN-Impressum und Rückseite (`<kurz>_Probedruck_booklet.pdf`). Ausserdem nach `final`: `shop-angaben.txt` (zum Kopieren für epubli, tolino, KDP) und nach jedem Bau eine kurze Statistik (Wörter, Lesezeit, Seiten pro Teil). Vor der Bestellung: `CHECKLISTE.md` abhaken. Dazu zeigt `final` die Seitenbilanz: Seiten mit Inhalt, Füllseiten und leere Seiten – so siehst du, ob sich Kürzen lohnt. Zudem prüft `final` den Kontrast der Textfarben aus `# LAYOUT` (mind. 4,5:1) und schlägt bei Bedarf eine dunklere Farbe vor.
+Booklets zum Selberdrucken (A4 quer, doppelseitig, an der kurzen Kante wenden, falten) entstehen automatisch im Ausgabeordner: im Entwurf und bei `nur-pdf` aus dem Lese-PDF (`…_booklet.pdf`), bei `sh build.sh final` als Probedruck genau wie das bestellte Buch: Vorderseite, Buchblock mit ISBN-Impressum und Rückseite (`<kurz>_Probedruck_booklet.pdf`). Ausserdem nach `final`: `shop-angaben.txt` (zum Kopieren für epubli, tolino, KDP) und nach jedem Bau eine kurze Statistik (Wörter, Lesezeit, Seiten pro Teil). Vor der Bestellung: `CHECKLISTE.md` abhaken. Dazu zeigt `final` die Seitenbilanz: Seiten mit Inhalt, Füllseiten und leere Seiten – so siehst du, ob sich Kürzen lohnt. Zudem prüft `final` den Kontrast der Textfarben aus `# LAYOUT` (mind. 4,5:1) und schlägt bei Bedarf eine dunklere Farbe vor.
 
-Werbebilder (Mockup) entstehen bei `sh build.sh final` und `nur-pdf final` im Ausgabeordner, aus dem Bildschirm-PDF: `…_Mockup.jpg` (Vorder- und Rückseite leicht gedreht, mit Schatten, 1600 × 1600 Pixel – für Webseite, Newsletter, Shop, Social Media) und `…_Vorderseite.jpg` (nur die Vorderseite, gerade). Jederzeit neu aus dem vorhandenen PDF: `sh build.sh mockup`. Hintergrund ändern: `mockup-hintergrund: #E9EEF4, #C9D3DF` (oben, unten).
+Werbebilder (Mockup) entstehen bei `sh build.sh final` und `nur-pdf final` im Ausgabeordner, aus dem Lese-PDF: `…_Mockup.jpg` (Vorder- und Rückseite leicht gedreht, mit Schatten, 1600 × 1600 Pixel – für Webseite, Newsletter, Shop, Social Media) und `…_Vorderseite.jpg` (nur die Vorderseite, gerade). Jederzeit neu aus dem vorhandenen PDF: `sh build.sh mockup`. Hintergrund ändern: `mockup-hintergrund: #E9EEF4, #C9D3DF` (oben, unten).
 
-Cover-Bilder entstehen mit dem E-Book (`sh build.sh`, `final`, `nur-ebook`) im Ausgabeordner: `…_Cover-vorne.jpg` und `…_Cover-hinten.jpg` – Vorder- und Rückseite gerade, randlos, ohne Schatten, hochaufgelöst (lange Seite 2560 Pixel, kurze mindestens 1600, bei A5 etwa 300 dpi). Die Texte des Umschlags kommen aus Zeilen `feld-ebook:` (oder Blöcken `::: nur-ebook`); gibt es keine, gelten die des Drucks (`fuss-druck: Erstausgabe {jahr}` statt `fuss-bildschirm: Stand {stand}`). Dasselbe gilt für das Titelbild im E-Book. Das Vorne-Bild ist das Titelbild für E-Book-Shops (tolino media, neobooks, BoD, KDP verlangen ein JPG im Hochformat, mindestens 1600 Pixel breit); beide eignen sich auch für Presse, Verlag und Webseite. Unterschied zu `<KURZ>_Cover_Vorderseite.jpg` im Druckordner: Jenes ist für die Druckerei (400 dpi, mit 3 mm Beschnitt rundum, der beim Schneiden wegfällt) – fürs E-Book also das `…_Cover-vorne.jpg` nehmen.
+Cover-Bilder entstehen mit dem E-Book (`sh build.sh`, `final`, `nur-ebook`) im Ausgabeordner: `…_Cover-vorne.jpg` und `…_Cover-hinten.jpg` – Vorder- und Rückseite gerade, randlos, ohne Schatten, hochaufgelöst (lange Seite 2560 Pixel, kurze mindestens 1600, bei A5 etwa 300 dpi). Die Texte des Umschlags kommen aus Zeilen `feld-ebook:` (oder Bereichen `@EBOOK` … `@END`); gibt es keine, gelten die des Drucks (`fuss-druck: Erstausgabe {jahr}` statt `fuss-bildschirm: Stand {stand}`). Dasselbe gilt für das Titelbild im E-Book. Das Vorne-Bild ist das Titelbild für E-Book-Shops (tolino media, neobooks, BoD, KDP verlangen ein JPG im Hochformat, mindestens 1600 Pixel breit); beide eignen sich auch für Presse, Verlag und Webseite. Unterschied zu `<KURZ>_Cover_Vorderseite.jpg` im Druckordner: Jenes ist für die Druckerei (400 dpi, mit 3 mm Beschnitt rundum, der beim Schneiden wegfällt) – fürs E-Book also das `…_Cover-vorne.jpg` nehmen.
 
-Leseprobe (`…_Leseprobe.pdf` und `…_Leseprobe.epub`, Schlussseite mit QR-Code zu `shop-link:`, sonst zur Website): Umschlag und Titelei bis zum Inhaltsverzeichnis, dann die Seiten aus `leseprobe-seiten:` (gedruckte Seitenzahlen, z. B. `14,16,17-20,22`; für die zweite Ausgabe eigene mit `leseprobe-seiten-uz:`). Seiten gehen auch direkt in `leseprobe:` (mit Komma oder Strich, z. B. `leseprobe: 17,18-22, 74, 88-92`; eine Zahl allein = Anzahl Kapitel). Einmalig andere Seiten ohne die Variablen zu ändern: `sh build.sh leseprobe 18,20,23` (mit `normal` oder `uz` nur diese Fassung). Ohne Seiten gilt `leseprobe:` (Anzahl Kapitel oder Titel des letzten Kapitels), ist auch das leer: die 4 Seiten nach dem Inhaltsverzeichnis. Die E-Book-Leseprobe nimmt die Kapitel, in denen die gewählten Seiten liegen. Text der Schlussseite: `leseprobe-text:`. Korrekturfassung (`…_Korrektur.pdf`): jede Seite in Originalgrösse auf A4, links Zeilennummern, rechts Linien für Notizen – zum Ausdrucken und Korrigieren («S. 12, Z. 5»). Im Entwurf mit offenen Stellen, mit `korrektur final` ohne.
+Leseprobe (`…_Leseprobe.pdf` und `…_Leseprobe.epub`, Schlussseite mit QR-Code zu `shop-link:`, sonst zur Website): Umschlag und Titelei bis zum Inhaltsverzeichnis, dann die Seiten aus `leseprobe-seiten:` (gedruckte Seitenzahlen, z. B. `14,16,17-20,22`; für die Fassung UC eigene mit `leseprobe-seiten-uz:`). Seiten gehen auch direkt in `leseprobe:` (mit Komma oder Strich, z. B. `leseprobe: 17,18-22, 74, 88-92`; eine Zahl allein = Anzahl Kapitel). Einmalig andere Seiten ohne die Variablen zu ändern: `sh build.sh leseprobe 18,20,23` (mit `normal` oder `uz` nur diese Fassung). Ohne Seiten gilt `leseprobe:` (Anzahl Kapitel oder Titel des letzten Kapitels), ist auch das leer: die 4 Seiten nach dem Inhaltsverzeichnis. Die E-Book-Leseprobe nimmt die Kapitel, in denen die gewählten Seiten liegen. Text der Schlussseite: `leseprobe-text:`. Korrekturfassung (`…_Korrektur.pdf`): jede Seite in Originalgrösse auf A4, links Zeilennummern, rechts Linien für Notizen – zum Ausdrucken und Korrigieren («S. 12, Z. 5»). Im Entwurf mit offenen Stellen, mit `korrektur final` ohne.
 
-Sicherung: `sh sicherung.sh` legt `<name>_JJJJMMTTHHMMSS.zip` an den Orten ab, die unter `# TECHNIK` bei `sicherung-lokal:` und `sicherung-cloud:` stehen (Leerschläge im Pfad sind kein Problem); `sh sicherung.sh lokal` oder `cloud` nur dorthin. `sicherung-behalten: 10` = nur die 10 neuesten ZIPs bleiben. Im ZIP: alle MD/TXT, Fotos, Bilder, md-history, Motor und je Ausgabe das Bildschirm-PDF – keine Zwischenspeicher und keine anderen Ausgaben (die macht `sh build.sh final` jederzeit neu).
+Sicherung: `sh sicherung.sh` legt `<name>_JJJJMMTTHHMMSS.zip` an den Orten ab, die unter `# TECHNIK` bei `sicherung-lokal:` und `sicherung-cloud:` stehen (Leerschläge im Pfad sind kein Problem); `sh sicherung.sh lokal` oder `cloud` nur dorthin. `sicherung-behalten: 10` = nur die 10 neuesten ZIPs bleiben. Im ZIP: alle MD/TXT, Fotos, Bilder, md-history, Motor und je Ausgabe das Lese-PDF – keine Zwischenspeicher und keine anderen Ausgaben (die macht `sh build.sh final` jederzeit neu).
 
 Aufräumen, alte Dateien löschen, entfernen, delete: `sh cleanup.sh` (Windows: `cleanup.bat`) zeigt zuerst eine Liste und fragt, bevor etwas gelöscht wird. Weg kommen nur entbehrliche Dinge: Zwischenspeicher (`_bildcache`, `_druckbilder`, `__pycache__`, `_epub_tmp`), alte Motoren (`motor-alt-…`), Sicherungen in `_backup/` und `stichworte-vorschlag.txt`. Mit `sh cleanup.sh ausgaben` auch die Ausgabeordner. Nie gelöscht: `md-history/`, `staende/`, die MD-Dateien, Stichworte, `fotos/`, `bilder/`, `motor/`, `.venv/` und alles, was das Skript nicht kennt. Alte ZIP-Sicherungen räumt `sicherung-behalten:` auf, alte Stände in md-history `md-history-behalten:`.
 
@@ -988,7 +1032,7 @@ In der Variablen-Datei hat jede Ausgabe einen Abschnitt. Was dort steht, gilt nu
 
 Ein Wert hier ersetzt den gleichnamigen aus `## Impressum` (z. B. eine eigene `{impressum-kontakt}`-Zeile der Druckerei). Fehlt er, gilt der gemeinsame. Leer (`{isbn}:`) = die Zeile fällt weg. `{druck-datei}` nennt die Plattform-Datei in `druck/` (Name ohne `.md`; auch `reserve/bod-a5`). `shop-angaben.txt` zeigt ISBN und Preis.
 
-Beispiel Leben123: Normal gedruckt bei tredition (mit Logo und ISBN), Unzensiert als Privatdruck bei epubli (ohne ISBN, mit der Kontaktzeile von epubli), E-Book bei tredition, kein E-Book der unzensierten Fassung. Wechselst du die Druckerei, änderst du `{druck-datei}` und die Impressum-Zeilen dieser Ausgabe.
+Beispiel Leben123: Normal gedruckt bei tredition (mit Logo und ISBN), Unzensiert als Privatdruck bei epubli (ohne ISBN, mit der Kontaktzeile von epubli), E-Book bei tredition, kein E-Book der Fassung UC. Wechselst du die Druckerei, änderst du `{druck-datei}` und die Impressum-Zeilen dieser Ausgabe.
 
 ## Plattform-Dateien (druck/)
 
@@ -1013,9 +1057,9 @@ In der Plattform-Datei | Bedeutung
 `isbn-rahmen-farbe` | leer = `gold` (Akzentfarbe) · `schwarz`
 `isbn-rahmen-abstand` | mm weiss zwischen Strichen und Linie, z. B. `2` – dann besteht der Code nur aus schwarzen Strichen auf Weiss (Vorgabe mancher Plattformen, z. B. tredition); leer = 0
 
-Die `isbn-…`-Zeilen gelten für den Strichcode mit der ISBN auf der Rückseite (EAN-13, auch Barcode genannt). Bis 2.74 hiessen sie `barcode-…` – diese Namen gelten weiter. | `versatz-vertikal`, `versatz-horizontal` | ganzen Seiteninhalt verschieben, in mm: vertikal + = nach oben, horizontal + = nach aussen (nach Messung am Probeexemplar) |
+Die `isbn-…`-Zeilen gelten für den Strichcode mit der ISBN auf der Rückseite (EAN-13, auch Barcode genannt). Früher hiessen sie `barcode-…` – diese Namen gelten weiter. | `versatz-vertikal`, `versatz-horizontal` | ganzen Seiteninhalt verschieben, in mm: vertikal + = nach oben, horizontal + = nach aussen (nach Messung am Probeexemplar) |
 
-Zuunterst steht `## Coverrechner (Rohdaten)`: Dort fügst du ein, was der Coverrechner der Plattform ausgibt (Text, wie er kommt). Der Motor liest ihn beim Bau selbst und trägt Rücken, Beschnitt und Deckel oben ein (ab 2.82, siehe «Umschlag: Rücken und Seitenzahl»).
+Zuunterst steht `## Coverrechner (Rohdaten)`: Dort fügst du ein, was der Coverrechner der Plattform ausgibt (Text, wie er kommt). Der Motor liest ihn beim Bau selbst und trägt Rücken, Beschnitt und Deckel oben ein (siehe «Umschlag: Rücken und Seitenzahl»).
 
 `name-normal` / `name-uz` gehen auch in der Plattform-Datei. Weicht das Druckformat vom Grundformat ab, meldet der Bau «Seitenzahlen im Druck anders als im Lese-PDF». Beim Bau steht `Druckangaben: druck/…md`, und eine Kopie der Datei liegt im Ausgabeordner. `sh build.sh pruefen` meldet fehlende Plattform-Dateien und unbekannte Namen.
 
@@ -1032,7 +1076,7 @@ Die Breite des Rückens hängt von Seitenzahl und Papier ab. Die Druckerei rechn
 - Den Text, wie er kommt, in der Plattform-Datei `druck/<datei>.md` zuunterst unter `## Coverrechner (Rohdaten)` einfügen (alten Text ersetzen).
 - Nochmals `f` final (oder `sh build.sh covers`): Der Motor liest Rücken, Beschnitt/Einschlag, Gesamtbreite und -höhe (tredition, epubli, BoD, KDP …, in cm, mm oder Zoll), rechnet den Deckel, trägt die Werte oben ein und baut den Umschlag damit. Oben stehen dann `{neu-berechnet}: ja`, `{berechnet-fuer-seiten}` und `{berechnet-am}`.
 
-Das machen auch `final` und `komplett`. Neue Rohdaten erkennt der Motor am geänderten Text. Er übernimmt nichts, wenn die Seitenzahl in den Rohdaten (z. B. epubli) nicht zum Buchblock passt, der Deckel nicht zum Buchformat passt oder der Text nicht lesbar ist – dann bleiben die Werte oben, und das Menü zeigt «⚠ Coverrechner …» (`cv` öffnet die Datei). Nicht lesbar? Den Rohdaten-Block einer KI geben («Rücken, Beschnitt/Einschlag und Deckel in mm») oder die Werte von Hand eintragen. Gibt der Coverrechner für die neue Seitenzahl genau denselben Text aus, `{berechnet-fuer-seiten}` von Hand anpassen. Von Hand prüfen: `python3 motor/rohdaten2cover.py druck/<datei>.md`. Die Texte auf dem Umschlag stehen in `<buch>-umschlag.md` (Vorderseite, Buchrücken, Rückseite). → Plattform-Dateien
+Das machen auch `final` und `komplett`. Neue Rohdaten erkennt der Motor am geänderten Text. Er übernimmt nichts, wenn die Seitenzahl in den Rohdaten (z. B. epubli) nicht zum Buchblock passt, der Deckel nicht zum Buchformat passt oder der Text nicht lesbar ist – dann bleiben die Werte oben, und das Menü zeigt «⚠ Coverrechner …» (`co` öffnet die Datei). Nicht lesbar? Den Rohdaten-Block einer KI geben («Rücken, Beschnitt/Einschlag und Deckel in mm») oder die Werte von Hand eintragen. Gibt der Coverrechner für die neue Seitenzahl genau denselben Text aus, `{berechnet-fuer-seiten}` von Hand anpassen. Von Hand prüfen: `python3 motor/rohdaten2cover.py druck/<datei>.md`. Die Texte auf dem Umschlag stehen in `<buch>-umschlag.md` (Vorderseite, Buchrücken, Rückseite). → Plattform-Dateien
 
 ## Bei epubli
 
@@ -1069,7 +1113,7 @@ Fotos selber in RGB liefern (nicht CMYK), JPG oder PNG – durchsichtige Stellen
 
 ## Schwarz-weiss drucken (freiwillig)
 
-Die feinen Farben (Kopfzeile, Bildunterschriften, Gold) wirken im eigenen Schwarz-weiss-Ausdruck sehr hell. Mit `bildschirm-dunkler: ja` in der Variablen-Datei (Abschnitt «Weiteres») werden sie nur im Bildschirm-PDF (und in Leseprobe, Korrektur, Booklet zum Selberdrucken) etwas dunkler. Druckdateien für epubli und das E-Book bleiben unverändert.
+Die feinen Farben (Kopfzeile, Bildunterschriften, Gold) wirken im eigenen Schwarz-weiss-Ausdruck sehr hell. Mit `bildschirm-dunkler: ja` in der Variablen-Datei (Abschnitt «Weiteres») werden sie nur im Lese-PDF (und in Leseprobe, Korrektur, Booklet zum Selberdrucken) etwas dunkler. Druckdateien für epubli und das E-Book bleiben unverändert.
 
 ## Druck bei KDP, Lulu und anderen
 
@@ -1085,7 +1129,7 @@ Grenzen: Beschnitt gilt rundum. KDP will beim Buchblock keinen Beschnitt im Bund
 ## Selber drucken: Booklet und Copyshop
 
 - Booklet: `<kurz>_Probedruck_booklet.pdf` (nach `final`) bzw. `<datei>_booklet.pdf` (Entwurf): A4 quer, doppelseitig, an der kurzen Kante wenden, falten, ineinanderlegen, in der Mitte heften – ein Probeexemplar in Originalgrösse. Ein beliebiges PDF als Booklet: siehe «Skripte und Kurzbefehle».
-- Bildschirm-PDF `<datei>.pdf` für den Copyshop (Klebebindung, Spiralbindung) oder zum Verschicken.
+- Lese-PDF `<datei>.pdf` für den Copyshop (Klebebindung, Spiralbindung) oder zum Verschicken.
 - Korrektur-PDF `<datei>_Korrektur.pdf` (`sh build.sh korrektur`): A4 mit Zeilennummern und Rand fürs Lektorat.
 - Feine Farben im Schwarz-weiss-Druck zu hell: `bildschirm-dunkler: ja` (siehe «Schwarz-weiss drucken»).
 
@@ -1108,7 +1152,7 @@ Grenzen: Beschnitt gilt rundum. KDP will beim Buchblock keinen Beschnitt im Bund
 - Im Ausgabeordner: `<datei>.epub` und `<datei>_Cover-vorne.jpg`; die Shop-Texte in `shop-angaben.txt`.
 - Hochladen (tolino media, KDP, XinXii …) und die Vorschau im Shop ansehen: Inhaltsverzeichnis, Fotos, Cover.
 
-Keine E-Book-Fassung der zweiten Ausgabe: unter `## Ausgabe: E-Book unzensiert` `{erstellen}: nein`.
+Kein E-Book der Fassung UC: unter `## Ausgabe: E-Book unzensiert` `{erstellen}: nein`.
 
 ## E-Book bei XinXii, tolino, KDP und BoD
 
@@ -1121,7 +1165,7 @@ Das E-Book ist für alle Shops dasselbe – nur der Druck ist plattformabhängig
 - ISBN: eigene E-Book-ISBN unter `## Ausgabe: E-Book` bei `{isbn}:` eintragen und neu bauen (manche Shops vergeben selbst eine).
 - Leseprobe als E-Book: `<datei>_Leseprobe.epub` (`sh build.sh leseprobe`).
 - EPUB 2: pureSATZ baut EPUB 3, das tolino, KDP, Apple, BoD und XinXii annehmen. Verlangt ein Shop oder Prüfprogramm EPUB 2 (z. B. epubli: «EPUB-Version zu hoch»), in der Variablen-Datei `ebook-epub2: ja` setzen – dann entsteht zusätzlich `<datei>_EPUB2.epub` («epub2-light»: gleicher Inhalt, mit den Angaben zur Barrierefreiheit). Von Hand aus einem fertigen E-Book: `python3 motor/epub2.py ausgabe-normal/<datei>.epub`.
-- Vorder- und Rückseite im E-Book: Erste Seite ist immer das Cover vorne. Als letzte Seite kommt die Rückseite (`ebook-rueckseite`, Standard `bild`): das Bild der Rückseite ohne Strichcode, Slogan, Klappentext und Zitate stehen als Beschreibung für Vorleseprogramme dabei. `text` = dieselben Texte als Seite «Über dieses Buch» (gut lesbar auf kleinen Geräten), `nein` = keine Rückseite. Gilt auch für EPUB 2 und die Leseprobe. Die Texte kommen aus `# Rückseite` der Umschlag-Datei. Das Bildschirm-PDF hat Vorder- und Rückseite schon immer.
+- Vorder- und Rückseite im E-Book: Erste Seite ist immer das Cover vorne. Als letzte Seite kommt die Rückseite (`ebook-rueckseite`, Standard `bild`): das Bild der Rückseite ohne Strichcode, Slogan, Klappentext und Zitate stehen als Beschreibung für Vorleseprogramme dabei. `text` = dieselben Texte als Seite «Über dieses Buch» (gut lesbar auf kleinen Geräten), `nein` = keine Rückseite. Gilt auch für EPUB 2 und die Leseprobe. Die Texte kommen aus `# Rückseite` der Umschlag-Datei. Das Lese-PDF hat Vorder- und Rückseite schon immer.
 
 # Hörbuch (Linux, Testphase)
 
@@ -1172,7 +1216,7 @@ Beim ersten `hb` entsteht der Ordner `audio/` mit `audio.conf`, `aussprache-olli
 ## Hörbuch: Das Menü hb
 
 ```
- Mein-Buch · pureSATZ 2.73.0 › Hörbuch      Ollie · -8% · 128 kbit · F0
+ Mein-Buch · pureSATZ 3.2.0 › Hörbuch      Ollie · -8% · 128 kbit · F0
  ── Probieren ─────────────────────   ── Hörbuch ───────────────────────
   p  Probe hören (probe.txt)          a  alles: Texte → vertonen → Paket → Hörprobe
   w  Wörter hören (KLINGEN FALSCH)    t  Texte aus dem Buch (zeigt Geänderte)
@@ -1225,7 +1269,7 @@ Du hast im Buch etwas korrigiert, z. B. in zwei Kapiteln. So kommen nur diese in
 
 Im Terminal (`hb` → `$`): `sh hb.sh texte` und dann `sh hb.sh vertonen`.
 
-Änderungen an `aussprache-<stimme>.txt` erkennt `v` selbst (ab 2.73): Kapitel mit einem neuen, geänderten oder gelöschten Wort werden neu vertont («Aussprache geändert (Chalet) → 2 Kapitel neu»). Dafür merkt sich jeder MP3-Ordner in `regeln.json`, welche Regeln in welchem Kapitel stecken. Nicht erkannt werden die Pausen in `audio.conf` – dann betroffene Kapitel mit `k` neu, oder alles in einem neuen Ordner (siehe nächster Abschnitt). Kapitel umbenannt? `v` meldet «MP3 ohne Text» – die alte Datei von Hand löschen.
+Änderungen an `aussprache-<stimme>.txt` erkennt `v` selbst: Kapitel mit einem neuen, geänderten oder gelöschten Wort werden neu vertont («Aussprache geändert (Chalet) → 2 Kapitel neu»). Dafür merkt sich jeder MP3-Ordner in `regeln.json`, welche Regeln in welchem Kapitel stecken. Nicht erkannt werden die Pausen in `audio.conf` – dann betroffene Kapitel mit `k` neu, oder alles in einem neuen Ordner (siehe nächster Abschnitt). Kapitel umbenannt? `v` meldet «MP3 ohne Text» – die alte Datei von Hand löschen.
 
 ## Hörbuch: Anderes Tempo ausprobieren
 
@@ -1293,7 +1337,7 @@ Ins Buch kommt nichts: Die Regeln gelten für jedes Vertonen, auch nach Änderun
 
 Entschiedene Wörter zeigen die Farbe ihrer Sprache (✎ gold, deutsch durchgestrichen). Auch die bestehenden Regeln unten auf der Seite (und jedes unterstrichene Wort im Text) haben die Knöpfe: z. B. `Française = Fran-sääs` → `fr`, `Mallorca = Majorka` → `es`, ▶ vergleicht vorher, 🗑 löscht die Regel.
 
-Mithören mit Leuchtstift: ▶ mithören beim Kapitel spielt dessen MP3 (unten in der Leiste). Das gesprochene Wort leuchtet gold, die letzten verblassen über 20 Sekunden – klingt etwas falsch, auch nach ein paar Sekunden noch draufklicken und entscheiden. Wortgenau mit den Zeiten, die beim Vertonen entstehen (`…zeiten.json`, ab 2.74); bei älteren MP3s steht «≈» – dann ist die Stelle geschätzt, das Verblassen gleicht es aus. Scrollst du selbst, folgt die Seite erst nach ein paar Sekunden wieder.
+Mithören mit Leuchtstift: ▶ mithören beim Kapitel spielt dessen MP3 (unten in der Leiste). Das gesprochene Wort leuchtet gold, die letzten verblassen über 20 Sekunden – klingt etwas falsch, auch nach ein paar Sekunden noch draufklicken und entscheiden. Wortgenau mit den Zeiten, die beim Vertonen entstehen (`…zeiten.json`); bei älteren MP3s steht «≈» – dann ist die Stelle geschätzt, das Verblassen gleicht es aus. Scrollst du selbst, folgt die Seite erst nach ein paar Sekunden wieder.
 
 ## Hörbuch: Andere Stimme
 
@@ -1370,7 +1414,7 @@ sed -i 's/^AZURE_STIMME=.*/AZURE_STIMME="2"/' audio.conf   # Stimme 2 fest einst
 
 ## Hörbuch: Was vorgelesen wird
 
-Vorgelesen: Widmung, Kernsatz, Text, Geschichten (`@@`), Zitate, Tabellen Zeile für Zeile, Zeitstrahl, Fotos als «Bild: Titel. Text.». Nicht: @TITEL, @IMPRESSUM, @HINWEIS, Inhaltsverzeichnis, übrige @-Befehle, unzensierte Teile (das Hörbuch gibt es nur für die normale Ausgabe). Kontrolle: `audio/buch.txt` (vorgelesen), `audio/buch-entfernt.txt` (weggelassen).
+Vorgelesen: Widmung, Kernsatz, Text, Geschichten (`@@`), Zitate, Tabellen Zeile für Zeile, Zeitstrahl, Fotos als «Bild: Titel. Text.». Nicht: @TITLE, @IMPRINT, @NOTICE, Inhaltsverzeichnis, übrige @-Befehle, Teile aus UC (das Hörbuch gibt es nur für die normale Fassung). Kontrolle: `audio/buch.txt` (vorgelesen), `audio/buch-entfernt.txt` (weggelassen).
 
 ## Hörbuch: Was im Ordner audio liegt
 
@@ -1454,7 +1498,7 @@ Am Schluss steht der Befehl zum Öffnen: `PDF: xdg-open "…"`. Ist seit dem let
 
 Mehr: `sh build.sh aenderungen "Probedruck 1" "Probedruck 2"` vergleicht zwei Stände; `sh build.sh stand "Probedruck 1" 23.10.2026 15:00` hält einen Stand nachträglich fest (aus md-history/).
 
-- Ergebnis: `…_Aenderungen.pdf` im Ausgabeordner der normalen Fassung (wird jedes Mal ersetzt). Oben eine Zusammenfassung («3 Absätze geändert · 1 neu · 1 gestrichen») und die betroffenen Kapitel, darunter nur die geänderten Absätze, nach Teil und Kapitel: neue Wörter grün und unterstrichen, gestrichene rot und durchgestrichen. Absätze in `::: nur-uz` / `nur-normal` sind markiert («nur Unzensiert»). Am Schluss geänderte Werte aus Variablen und Umschlag sowie neue oder entfernte Stichwörter.
+- Ergebnis: `…_Aenderungen.pdf` im Ausgabeordner der normalen Fassung (wird jedes Mal ersetzt). Oben eine Zusammenfassung («3 Absätze geändert · 1 neu · 1 gestrichen») und die betroffenen Kapitel, darunter nur die geänderten Absätze, nach Teil und Kapitel: neue Wörter grün und unterstrichen, gestrichene rot und durchgestrichen. Absätze in `@UC` / `@NORMAL` sind markiert («nur UC»). Am Schluss geänderte Werte aus Variablen und Umschlag sowie neue oder entfernte Stichwörter.
 - Geschichten aus `geschichten/` stehen an ihrer Stelle im Buch und werden mitverglichen.
 - Wo: Jeder Stand ist eine Kopie der Texte in `staende/<datum>_<name>/` (Buch-, Variablen-, Umschlag-MD, Stichwörter, Geschichten). Der Ordner kommt mit `sh sync.sh` auf die anderen Computer und ins ZIP; `sh cleanup.sh` löscht ihn nie. Einen Stand nicht mehr gebraucht: seinen Ordner löschen.
 - Vergessen, den Stand festzuhalten? Mit Datum und Uhrzeit dahinter holt der Motor die letzte Fassung vor diesem Zeitpunkt aus `md-history/` (der Bau für die Bestellung hat sie dort automatisch gesichert). Nur Datum = bis Ende Tag, nur Uhrzeit = heute. Der Stand bekommt das Datum dieser Fassung.
@@ -1537,7 +1581,7 @@ cd ../pureSATZ-Handbuch && sh build.sh handbuch
 
 Danach entsteht die Buch-MD bei jedem Bau neu aus der Hilfe (`{buch-aus-hilfe}: ja` in der Variablen-Datei). Darum nie dort ändern, sondern in `START.md`, `motor/HILFE.md` und `handbuch/` (Einleitung, Stichworte). Text nur für die Webseite steht zwischen `::: nur-webhilfe` und `:::`, Text nur fürs Buch zwischen `::: nur-handbuch` und `:::`.
 
-Zwei Ausgaben (ab 2.81): normal = Linux & Mac (grüner Stempel), zweite Ausgabe = Windows (blauer Stempel), jede mit eigener ISBN. Die Befehle schreibt der Motor für Windows selbst um, wie der Umschalter oben in der Hilfe. In der Variablen-Datei des Handbuchs:
+Zwei Ausgaben: normal = Linux & Mac (grüner Stempel), zweite Ausgabe = Windows (blauer Stempel), jede mit eigener ISBN. Die Befehle schreibt der Motor für Windows selbst um, wie der Umschalter oben in der Hilfe. In der Variablen-Datei des Handbuchs:
 
 ```
 {zweite-ausgabe}: ja
@@ -1566,7 +1610,7 @@ Termine | Fahrplan unter «Erste Schritte»: Newsletter, Vernissage, Geschenke
 sh menu.sh
 ```
 
-Menü: die häufigsten Befehle mit einer Taste (s schnell, k komplett, m MD, p PDF, o Ordner; ↑ = letzte)
+Menü: die häufigsten Befehle mit einer Taste (s schnell, f final, k komplett, m MD, p PDF, o Ordner; ↑ = letzte)
 
 ```
 sh sync.sh
@@ -1710,19 +1754,19 @@ Diese Hilfe neu erzeugen und öffnen
 sh build.sh covers
 ```
 
-Cover neu berechnen: Text des Coverrechners (unten in druck/<datei>.md) lesen, Buchblock und Umschlag bauen (wie nur-druck final; prüfen ohne Bau: Menü co)
+Cover neu berechnen: Text des Coverrechners (unten in druck/<datei>.md) lesen, Buchblock und Umschlag bauen (wie nur-druck final; prüfen ohne Bau: sh build.sh co)
+
+```
+sh build.sh co
+```
+
+Coverrechner: Stand des Umschlags je Fassung ansehen – baut nichts (Menü co öffnet dazu eine fällige Druckdatei)
 
 ```
 sh build.sh isbn
 ```
 
-ISBN prüfen (Prüfziffer) und Strichcode-PNG machen, wie {isbn-bild}: auto (Menü: is)
-
-```
-cv (im Menü)
-```
-
-Coverrechner fällig? Öffnet die Druckdatei, wenn Seitenzahl oder Rohdaten nicht passen (ab 2.78)
+ISBN prüfen (Prüfziffer) und Strichcode-PNG machen, wie `{isbn-bild}: auto` (Menü: is)
 
 ```
 sh build.sh hilfe isbn
@@ -1738,87 +1782,89 @@ Werbebild: Vorder- und Rückseite mit Schatten (…_Mockup.jpg) für Webseite, N
 
 ## Befehle (@)
 
-Jeder Befehl steht auf einer eigenen Zeile, genau so geschrieben (GROSS). `## @TITEL` wirkt wie `@TITEL`. Links steht die ganze Zeile, wie sie im Buch steht.
+Jeder Befehl steht auf einer eigenen Zeile: `@NAME-GRÖSSE-ORT Text` – alles vor dem ersten Leerzeichen ist der Befehl (GROSS), danach der Text. Zahlen in mm. Links steht die ganze Zeile, wie sie im Buch steht.
 
 ### Seite sieht nicht gut aus? – Lösungen
 
 Problem | Lösung
-Ein einzelner Satz rutscht allein auf die nächste Seite | «@PLATZ 70» vor die letzte Überschrift davor (sie geht dann mit auf die neue Seite) – oder den Absatz kürzen
-Neue Seite erzwingen | «---» auf eigener Zeile (davor eine Leerzeile)
-Kapitel soll auf einer rechten Seite beginnen | «@UMBRUCH-RECHTS» davor
-Überschrift steht allein unten auf der Seite | «@PLATZ 50» vor die Überschrift
-Seite mit wenig Text wirkt verloren | «@SEITENMITTE» an den Anfang der Seite
-Grosse Lücke unten auf der Seite | Foto kleiner («breite: 60»), Text kürzen oder «@ZIER-UNTEN»
-Mehr Luft zwischen zwei Absätzen | «@ABSTAND 8» (8 mm)
-Text soll nicht getrennt werden | Block «::: zusammen» … «:::»
+Ein einzelner Satz rutscht allein auf die nächste Seite | «@NEWPAGE-70» vor die letzte Überschrift davor (sie geht dann mit auf die neue Seite) – oder den Absatz kürzen
+Neue Seite erzwingen | «@NEWPAGE»
+Kapitel soll auf einer rechten Seite beginnen | «@NEWPAGE-RIGHT» davor
+Überschrift steht allein unten auf der Seite | «@NEWPAGE-50» vor die Überschrift
+Seite mit wenig Text wirkt verloren | «@PAGE-CENTER» an den Anfang der Seite
+Grosse Lücke unten auf der Seite | Foto kleiner («@PICTURE-60»), Text kürzen oder «@LOGO-10-REST»
+Mehr Luft zwischen zwei Absätzen | «@SPACER-8» (8 mm)
+Text soll nicht getrennt werden | «@KEEP-TOGETHER» … «@END»
 
 ### Titelei
 Schreibweise | Wirkung
-`## @TITEL` | Titelseite; die Zeilen darunter: Titel, Untertitel, Zusatz
-`## @IMPRESSUM` | Impressum; leer = der Motor setzt es je Ausgabe zusammen
-`## @HINWEIS` | Hinweis unten im Impressum (z. B. keine medizinische Beratung); die Zeilen darunter
-`## @WIDMUNG` | Widmung (Druck: eigene Seite rechts, unteres Drittel); die Zeilen darunter
-`## @KERNSATZ Satz` | der Satz allein, mittig auf einer Seite
-`## @INHALTSVERZEICHNIS` | Inhaltsverzeichnis an dieser Stelle
+`## @TITLE` | Titelseite; die Zeilen darunter: Titel, Untertitel, Zusatz
+`## @IMPRINT` | Impressum; leer = der Motor setzt es je Ausgabe zusammen
+`## @NOTICE` | Hinweis unten im Impressum (z. B. ersetzt keine Beratung)
+`## @DEDICATION` | Widmung (Druck: eigene Seite rechts, unteres Drittel)
+`## @DECORATE-PAGE Satz` | ein Satz allein auf einer Seite, zwischen zwei Linien mit Logo
+`## @CONTENTS` | Inhaltsverzeichnis an dieser Stelle
 
-### Seite, Umbruch, Kopfzeile
+### Seite, Abstand, Kopfzeile
 Schreibweise | Wirkung
-`--- oder @UMBRUCH` | neue Seite («---» auf eigener Zeile, davor eine Leerzeile)
-`@UMBRUCH-RECHTS` | neue Seite, im Druck immer eine rechte (z. B. vor einem Kapitel)
-`@PLATZ 40` | neue Seite, wenn weniger als 40 mm Platz bleiben
-`@ABSTAND 8` | 8 mm Leerraum
-`@SEITENMITTE` | Inhalt dieser Seite senkrecht zentrieren
-`@KOPF Text` | Kopfzeile ab hier ersetzen; «@KOPF» allein beendet es
+`@NEWPAGE` | neue Seite
+`@NEWPAGE-RIGHT` | neue Seite, im Druck immer eine rechte
+`@NEWPAGE-40` | neue Seite nur, wenn weniger als 40 mm Platz bleiben
+`@SPACER-8` | 8 mm Leerraum
+`@PAGE-CENTER` | Inhalt dieser Seite senkrecht mittig (wirkt beim Bauen mit k)
+`@HEADER Text` | Kopfzeile ab hier ersetzen; «@HEADER» allein beendet es
 
-### Text hervorheben (von leicht bis stark)
+### Sätze mit Linie und Logo (DECORATE)
 Schreibweise | Wirkung
-`~ Satz` | kursive Randbemerkung, klein
-`@ZITAT Satz` | Zitat, zentriert, schlicht
-`@ZITAT-ZIER Satz` | Zitat, zentriert, mit Verzierung oben und unten (kurz: «> Satz»)
-`@UNTEN Satz` | kursiv unten auf die Seite
-`@MOTTO Satz` | eigene Seite, der Satz in der Mitte
+`@ASIDE Satz` | Randbemerkung, klein, kursiv
+`@DECORATE-TEXT Satz` | Satz kursiv, zentriert, ohne Linien
+`@DECORATE Satz` | Satz zwischen zwei Linien mit Logo
+`@DECORATE-LOGO` | nur Linie mit Logo, ohne Text
+`@DECORATE-TEXT-BOTTOM Satz` | Satz kursiv unten auf der Seite
+`@DECORATE-PAGE Satz` | Satz allein auf einer eigenen Seite
+`@DECORATE-REST Satz` | Satz zwischen Linien in der Mitte des Rests, danach neue Seite
+`@DECORATE-ABOVE-REST Satz` | Schlusssatz mit Linie nur oben, Mitte des Rests
+`@DECORATE-ABOVE-BOTTOM-34 Satz` | Schlusssatz, Oberkante 34 mm über dem Ende des Textes (Doppelseite gleich hoch)
+`…-UPRIGHT · …-UPRIGHT-MAIN` | Schrift wie der Fliesstext (statt kursiv) · in der Hauptfarbe
 
-### Verzierung
+### Logo
 Schreibweise | Wirkung
-`@ZIER 12` | kleine Verzierung, zentriert, 12 mm breit (Bild: Variable {zier})
-`@ZIER-UNTEN 10` | Verzierung unten auf die Seite, danach neue Seite (… 10 mitte = in den freien Platz)
-`@ZIER-TRENNER` | kleine Verzierung in die Lücke vor der nächsten Überschrift
+`@LOGO-12` | Logo im Text, 12 mm breit (Bild: Variable logo)
+`@LOGO-6-GAP` | Logo in die Lücke vor der nächsten Überschrift
+`@LOGO-10-REST` | Logo in die Mitte des Rests, danach neue Seite
+`@LOGO-10-BOTTOM` | Logo unten auf die Seite, danach neue Seite
 
 ### Bilder, Links, Tabellen, Geschichten
 Schreibweise | Wirkung
-`#### @FOTO Titel` | Foto; darunter «datei: …», «text: …» usw., Ende = erste Leerzeile; @FOTO-UZ = nur zweite Ausgabe
+`#### @PICTURE-60-RIGHT Titel` | Foto (Breite in mm, RIGHT/LEFT = Text fliesst herum); darunter datei:, text:, quelle:, alt:
 `@PORTRAIT bild.png | Bildtext` | rundes Foto mit Ring
-`@QR https://… | Text` | QR-Code mit Link
-`@QR-PAAR url | Text ;; url | Text` | zwei QR-Codes nebeneinander
-`@#name` | Tabelle tabellen/name.csv; «@#name quer» / «@#name hoch» = Ausrichtung
+`@QR https://… | Text` | QR-Code mit Link; mehrere nebeneinander mit «;;»
+`@QR-RIGHT url | Text` | QR-Code rechts, der nächste Absatz fliesst herum
+`@#name` | Tabelle tabellen/name.csv («@#name quer» / «hoch»)
 `@@name` | Geschichte geschichten/name.md einbinden
 
 ### Verzeichnisse und Schluss
 Schreibweise | Wirkung
-`@STICHWORTE` | Stichwortverzeichnis (Liste: stichworte-<buch>.txt)
-`@BILDNACHWEIS` | Bildnachweis (Fotos mit «quelle:»); ohne Zeile automatisch vor den Stichworten
-`@RUECKSEITE` | Rückseite (nur Bildschirm-PDF)
+`@INDEX` | Stichwortverzeichnis (Liste: stichworte-<buch>.txt)
+`@LIST-PICTURES · @LIST-TABLES` | Bilder- bzw. Tabellenverzeichnis an dieser Stelle
+`@PICTURE-CREDITS` | Bildnachweis (Fotos mit «quelle:»)
+`@BACK-COVER` | Rückseite (nur Lese-PDF)
 
-### Weitere
-`@ZIER-LINIE` | eine Zier mit goldenen Linien und Lotus, ohne Text (wie bei «> Satz»)
-`@QR-FLUSS url | Text` | QR-Code rechts, der nächste Absatz fliesst herum (ohne | Text: ohne Bildtext)
-`@BILDERVERZEICHNIS` | Bilderverzeichnis an dieser Stelle (sonst mit {bilderverzeichnis}: ja automatisch vor den Stichworten)
-`@TABELLENVERZEICHNIS` | Tabellenverzeichnis an dieser Stelle (sonst mit {tabellenverzeichnis}: ja automatisch)
+### Bereiche: Befehl allein auf der Zeile … @END (kein Bereich im Bereich)
+Schreibweise | Wirkung
+`@UC … @END` | Text nur in der Fassung UC; ebenso @NORMAL (@N), @EBOOK, @PRINT (Druck), @SCREEN (Lese-PDF)
+`@UC-BLOCK Titel … @END` | heller Kasten mit Titel – nur in der Fassung UC
+`@DECORATE-REST … @END` | Absätze zwischen zwei Linien mit Logo, in der Mitte des Rests (Abschluss eines Kapitels)
+`@KEEP-TOGETHER … @END` | bleibt auf derselben Seite
+`@DRAFT … @END` | noch offen: mit «s» gelb, im Druck normal
+`@NOTE Titel … @END` | Notiz an dich: nur im Entwurf sichtbar, nie gedruckt
+`@TIMELINE … @END` | Zeilen «Jahr | Text» als Zeitstrahl
 
-## Blöcke (:::)
-
-Ein Block beginnt mit `::: art` und endet mit einer Zeile `:::`.
-Block | Wirkung
-`::: nur-uz` | Text nur in der zweiten Ausgabe (auch -normal, -bildschirm, -druck, -ebook, -buch, -privatdruck)
-`::: uz Titel` | Heller Kasten «Unzensiert» – nur in der zweiten Ausgabe
-`::: mitte` | Text mittig auf einer eigenen Seite (z. B. Überleitung)
-`#### @FOTO Titel` | Foto: darunter datei:, text:, alt:, breite:, fluss:, quelle: (je eine Zeile); Ende = Leerzeile
-`::: zusammen` | Zeilen bleiben auf derselben Seite
-`::: offen` | Noch offener Text: im Entwurf gelb, im Druck normal
-`::: offen-notiz` | Notiz an dich: nur im Entwurf sichtbar, nie gedruckt
-`::: widmung` | Widmung (direkt unter @IMPRESSUM)
-`::: zeitstrahl` | Zeilen «Jahr | Text» als Zeitstrahl-Tabelle
-`:::` | Ende eines Blocks (eigene Zeile)
+### Nur in einer Fassung
+Schreibweise | Wirkung
+`@UC-…` | vorne: Befehl oder Bereich samt Text nur in der Fassung UC, z. B. @UC-SPACER-14, #### @UC-PICTURE, @UC-DRAFT
+`@NORMAL-… (@N-…) · @EBOOK-… · @PRINT-… · @SCREEN-…` | nur normal · nur E-Book · nur Druck · nur Lese-PDF
+`@DECORATE-…-UC` | hinten: der Text steht in beiden Fassungen, verziert nur in UC (-NORMAL, -N: nur normal). Geht bei @DECORATE, auch als Bereich: @DECORATE-REST-UPRIGHT-UC … @END
 
 ## Buchformate
 
@@ -1860,10 +1906,10 @@ Editor (z. B. ghostwriter)
 
 Gestalten
 
-- Mehrere Leerzeilen geben nicht mehr Abstand. Für Luft: `@ABSTAND 8` (nicht innerhalb eines `:::`-Blocks).
-- `::: mitte` passt für kurze Abschlüsse am Ende eines Teils.
-- Eine Dankesseite oder ein Nachwort wirkt als normales Kapitel ruhiger und steht im Inhaltsverzeichnis: `## Danke`, Text im Blocksatz, zum Schluss `@ZITAT Gruss<br/>Name` und `@ZIER 10`.
-- Nur eine Verzierung pro Seite – sonst wird es unruhig.
+- Mehrere Leerzeilen geben nicht mehr Abstand. Für Luft: `@SPACER-8`.
+- `@DECORATE-REST` passt für kurze Abschlüsse am Ende eines Kapitels.
+- Eine Dankesseite oder ein Nachwort wirkt als normales Kapitel ruhiger und steht im Inhaltsverzeichnis: `## Danke`, Text im Blocksatz, zum Schluss `@DECORATE-ABOVE-REST Gruss \` und darunter `Name`.
+- Nur ein Logo oder eine Linie pro Seite – sonst wird es unruhig.
 - Inhaltsverzeichnis: siehe Inhaltsverzeichnis gestalten.
 
 Probedruck und Farben
@@ -1881,17 +1927,17 @@ Buchblock | der Innenteil des Buchs ohne Umschlag, eine PDF-Datei für die Druck
 Coverrechner | Rechner der Druckerei: Rückenbreite und Umschlagmasse aus Seitenzahl und Papier
 EAN-13 | der Strichcode mit der ISBN auf der Rückseite (auch Barcode)
 EPUB | Dateiformat für E-Books
-Fassung | normal oder unzensiert («uz»): zwei Varianten desselben Buchs
+Fassung | normal oder UC: zwei Varianten desselben Buchs. Im Text `@NORMAL`/`@N` und `@UC`, im Terminal `normal` und `uc` (alt `uz`), Ordner `ausgabe-unzensiert`
 Füllseite | leere Seite am Schluss, damit die Seitenzahl für die Druckerei aufgeht
 ISBN | Nummer eines Buchs, eine pro Ausgabe
-Lese-PDF | Bildschirm-PDF zum Lesen und Verschicken, mit Umschlag
+Lese-PDF | PDF zum Lesen am Bildschirm und zum Verschicken, mit Umschlag (Menü `s`, Ordner ausgabe-…)
 Motor | pureSATZ selbst (Ordner `motor/`) – setzt das Buch
 Plattform-Datei | `druck/<datei>.md`: die Technik einer Druckerei
 Probedruck | bestelltes Testexemplar vor der Freigabe
 Rücken | schmale Seite des Umschlags zwischen Vorder- und Rückseite
 Stand | festgehaltener Zwischenstand – zeigt später, was sich geändert hat
 Variable | `{name}: wert` in der Variablen-Datei; im Buch erscheint der Wert an der Stelle `{name}`
-Verzierung (Zier) | kleines Bild als Schmuck, z. B. der Lotus
+Logo | Zeichen des Buchs (`{logo}`), z. B. der Lotus; mit `@LOGO-…` und in den Linien von `@DECORATE`
 
 # Einrichten und GitHub
 

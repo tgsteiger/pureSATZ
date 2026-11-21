@@ -1,35 +1,36 @@
 #!/usr/bin/env python3
 """
-bauen.py – steuert den Bau des Buchs (wird von build.sh aufgerufen).
+bauen.py – steuert den Bau des Buchs. Diese Liste ist die einzige: «sh build.sh befehle» zeigt sie.
 
-Aufruf (im Buchordner, mit der Python-Umgebung .venv):
-    python motor/bauen.py                 alles als Entwurf: Bildschirm-PDF, Druckdateien, E-Book
-    python motor/bauen.py final           alles als Druckfassung (offene Stellen, Notizen, Vorschläge ausgeblendet)
-    python motor/bauen.py komplett        final + Leseprobe + Korrektur in einem Durchgang (vor Bestellung/Veröffentlichung)
-    python motor/bauen.py nur-pdf         nur Bildschirm-PDFs (Entwurf)
-    python motor/bauen.py nur-pdf final   nur Bildschirm-PDFs (Druckfassung)
+Im Buchordner (Windows: build.bat statt sh build.sh):
+    sh build.sh                 alles als Entwurf: Lese-PDF, Druckdateien, E-Book
+    sh build.sh final           alles als Druckfassung (offene Stellen, Notizen, Vorschläge ausgeblendet)
+    sh build.sh komplett        final + Leseprobe + Korrektur in einem Durchgang (vor Bestellung/Veröffentlichung)
+    sh build.sh nur-pdf         nur Lese-PDFs (Entwurf)
+    sh build.sh nur-pdf final   nur Lese-PDFs (Druckfassung)
 Booklets zum Selberdrucken entstehen automatisch: im «final» der Probedruck aus der Druckfassung
-(<kurz>_Probedruck_booklet.pdf), sonst aus dem Bildschirm-PDF (<datei>_booklet.pdf).
-    python motor/bauen.py nur-druck [final]   nur Druckdateien (Buchblock, Umschlag)
-    python motor/bauen.py covers          Cover neu berechnen: Rohdaten des Coverrechners lesen, nur-druck final
-    python motor/bauen.py nur-ebook [final]   nur E-Books
-    python motor/bauen.py schnell         nur Lese-PDFs, so schnell wie möglich (beim Schreiben)
-    python motor/bauen.py leseprobe       Leseprobe: Umschlag, Titelei, erste Kapitel (Variable «leseprobe»)
-    python motor/bauen.py leseprobe uz 18,20-22   einmalig diese Seiten, nur diese Fassung (normal | uz)
-    python motor/bauen.py korrektur [final]   Korrekturfassung: A4, Zeilennummern, Rand für Notizen
-    python motor/bauen.py sicherung       nur die MD-Dateien nach md-history/ sichern
-    python motor/bauen.py pruefen         nur die MD prüfen
-    python motor/bauen.py personen        Personen in den Lese-PDFs finden → personen-seiten.txt (Seiten, Zeilen)
-    python motor/bauen.py personen Thomas   check_Thomas_Gegenlesen.pdf aus den fertigen Lese-PDFs
-    python motor/bauen.py stichworte      prüfen und Vorschläge → stichworte-vorschlag.txt ([+] = übernehmen)
-    python motor/bauen.py stichworte uebernehmen   mit [+] markierte Vorschläge an stichworte-<name>.txt anhängen
-    python motor/bauen.py stand "Name"    jetzigen Stand festhalten (staende/) · ohne Name: alle Stände zeigen
-    python motor/bauen.py aenderungen ["Name" ["Name2"]]   was sich seit dem (letzten) Stand geändert hat → …_Aenderungen.pdf
-    python motor/bauen.py geschichten [uz]   Sammel-PDF aller Geschichten aus geschichten/ (normal; mit uz auch unzensiert)
-    python motor/bauen.py hilfe           hilfe.html erzeugen und im Browser öffnen
-    python motor/bauen.py handbuch        nur im Buchordner pureSATZ-Handbuch: Buch-MD aus der Hilfe (motor/handbuch.py)
-    python motor/bauen.py mockup          Werbebilder (…_Mockup.jpg, …_Vorderseite.jpg) aus dem Bildschirm-PDF
-    python motor/bauen.py final druck=bod-a5-normal [normal|uz]
+(<kurz>_Probedruck_booklet.pdf), sonst aus dem Lese-PDF (<datei>_booklet.pdf).
+    sh build.sh nur-druck [final]   nur Druckdateien (Buchblock, Umschlag)
+    sh build.sh co              Coverrechner: Stand des Umschlags je Fassung ansehen, baut nichts (Menü co)
+    sh build.sh covers          Cover neu berechnen: Rohdaten des Coverrechners lesen, nur-druck final
+    sh build.sh nur-ebook [final]   nur E-Books
+    sh build.sh schnell         nur Lese-PDFs, so schnell wie möglich (beim Schreiben)
+    sh build.sh leseprobe       Leseprobe: Umschlag, Titelei, erste Kapitel (Variable «leseprobe»)
+    sh build.sh leseprobe uz 18,20-22   einmalig diese Seiten, nur diese Fassung (normal | uz)
+    sh build.sh korrektur [final]   Korrekturfassung: A4, Zeilennummern, Rand für Notizen
+    sh build.sh sicherung       nur die MD-Dateien nach md-history/ sichern
+    sh build.sh pruefen         nur die MD prüfen
+    sh build.sh personen        Personen in den Lese-PDFs finden → personen-seiten.txt (Seiten, Zeilen)
+    sh build.sh personen Thomas   check_Thomas_Gegenlesen.pdf aus den fertigen Lese-PDFs
+    sh build.sh stichworte      prüfen und Vorschläge → stichworte-vorschlag.txt ([+] = übernehmen)
+    sh build.sh stichworte uebernehmen   mit [+] markierte Vorschläge an stichworte-<name>.txt anhängen
+    sh build.sh stand "Name"    jetzigen Stand festhalten (staende/) · ohne Name: alle Stände zeigen
+    sh build.sh aenderungen ["Name" ["Name2"]]   was sich seit dem (letzten) Stand geändert hat → …_Aenderungen.pdf
+    sh build.sh geschichten [uz]   Sammel-PDF aller Geschichten aus geschichten/ (normal; mit uz auch unzensiert)
+    sh build.sh hilfe           hilfe.html erzeugen und im Browser öffnen
+    sh build.sh handbuch        nur im Buchordner pureSATZ-Handbuch: Buch-MD aus der Hilfe (motor/handbuch.py)
+    sh build.sh mockup          Werbebilder (…_Mockup.jpg, …_Vorderseite.jpg) aus dem Lese-PDF
+    sh build.sh final druck=bod-a5-normal [normal|uz]
                                           Test: nur Druckdateien mit einer anderen Datei aus druck/,
                                           nach ausgabe-test/<datei>/; mit «normal» oder «uz» nur diese Fassung
 Vor jedem Bau: Sicherung nach md-history/ und Prüfung der MD. Gebaut wird parallel.
@@ -51,7 +52,7 @@ MOTOR = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.dirname(MOTOR)
 sys.path.insert(0, MOTOR)
 if __name__ == "__main__" and os.path.exists(os.path.join(MOTOR, "handbuch.py")):   # Handbuch: Buch-MD aus der Hilfe
-    import handbuch as _HB                                                           # (vor dem Lesen der MD, ab 2.76)
+    import handbuch as _HB                                                           # (vor dem Lesen der MD)
     if "handbuch" in [a.lower() for a in sys.argv[1:]]:
         _HB.einschalten(BASE)
     if _HB.aktiv(BASE):
@@ -106,7 +107,7 @@ def aufraeumen_history(ordner):
 
 
 def mockups():
-    """Werbebilder aus dem Bildschirm-PDF jeder Ausgabe: …_Mockup.jpg und …_Vorderseite.jpg."""
+    """Werbebilder aus dem Lese-PDF jeder Ausgabe: …_Mockup.jpg und …_Vorderseite.jpg."""
     try:
         import mockup
     except ImportError:
@@ -154,7 +155,7 @@ def sammlung(mit_uz):
     reihe = G.reihe(BASE, os.path.join(BASE, bk.TEXT))
     tmp = "_geschichten-sammlung.md"
     with open(os.path.join(BASE, tmp), "w", encoding="utf-8") as f:
-        f.write("## @TITEL\n{titel}\nSammlung aller Geschichten\n\n## @INHALTSVERZEICHNIS\n\n"
+        f.write("## @TITLE\n{titel}\nSammlung aller Geschichten\n\n## @CONTENTS\n\n"
                 + "\n\n".join("@@" + n for n in reihe) + "\n")
     try:
         fassungen_ = ["normal"] + (["uz"] if mit_uz and bk.zweite_ausgabe() else [])
@@ -168,16 +169,16 @@ def sammlung(mit_uz):
         env = dict(os.environ, BUCH_FINAL="0", BUCH_BOOKLET="", BUCH_SCHNELL="1")
         parallel(schritte, env)
         if mit_uz and not bk.zweite_ausgabe():
-            print("Hinweis: dieses Buch hat keine zweite Ausgabe – nur die normale Fassung gebaut.")
+            print("Hinweis: dieses Buch hat keine Fassung UC – nur die normale gebaut.")
     finally:
         os.remove(os.path.join(BASE, tmp))
 
 
-PRUEF_OK = False            # letzte Prüfung in Ordnung? (fürs Menü: bp grün/rot, ab 2.82.1)
+PRUEF_OK = False            # letzte Prüfung in Ordnung? (fürs Menü: bp grün/rot)
 
 
 def pruef_ergebnis(wert):
-    """«ok» oder «fehler» und die Fassungen nach _druckbilder/pruefen.txt – das Menü zeigt damit «bp Buch prüfen N ✓ UZ ✗»."""
+    """«ok» oder «fehler» und die Fassungen nach _druckbilder/pruefen.txt – das Menü zeigt damit «bp Buch prüfen N ✓ UC ✗»."""
     try:
         os.makedirs(os.path.join(BASE, "_druckbilder"), exist_ok=True)
         with open(os.path.join(BASE, "_druckbilder", "pruefen.txt"), "w", encoding="utf-8") as f:
@@ -222,7 +223,7 @@ def druck_pruefen():
             continue
         for k in M.lies_variablen(pfad)[0]:
             basis = k
-            for t in ("-normal", "-uz", "-dc"):
+            for t in ("-normal", "-uz"):
                 if k.endswith(t):
                     basis = k[:-len(t)]
             if basis not in bk.DRUCK_NAMEN and not basis.startswith("impressum-"):     # impressum-…: Zeilen fürs Impressum
@@ -280,11 +281,11 @@ def isbn_zeigen():
         f.write("".join(p + "\n" for p in pngs))
 
 
-BERICHT = []          # Ausgaben der Druckdateien-Läufe – für den Druckbericht (2.82.11)
+BERICHT = []          # Ausgaben der Druckdateien-Läufe – für den Druckbericht
 
 
 def cover_stand():
-    """Menü co / «sh build.sh cover-stand» (2.82.11): Stand des Umschlags pro Fassung, OHNE zu bauen –
+    """Menü co / «sh build.sh co»: Stand des Umschlags pro Fassung, OHNE zu bauen –
     Buchblock-Seiten vom letzten Druck-Bau, Werte und Rohdaten in der Druckdatei, passt oder was zu tun ist."""
     import rohdaten2cover as R
     try:
@@ -385,7 +386,7 @@ def parallel(schritte, env):
         e["PYTHONIOENCODING"] = "utf-8"           # Umlaute und «» auch unter Windows
         f = tempfile.TemporaryFile()              # Ausgabe in eine Datei (kein Stau in der Pipe), danach zeigen
         laeufe.append((titel, subprocess.Popen(cmd, cwd=BASE, env=e, stdout=f, stderr=subprocess.STDOUT), f))
-    if sys.stdout.isatty():                       # Balken, solange gebaut wird (2.82.3): «Bauen: 2 Läufe  :::: ✓ 38 s»
+    if sys.stdout.isatty():                       # Balken, solange gebaut wird: «Bauen: 2 Läufe  :::: ✓ 38 s»
         start, spalte = time.time(), 0
         vorne = f"  Bauen: {len(laeufe)} {'Lauf' if len(laeufe) == 1 else 'Läufe'}  "
         print(vorne, end="", flush=True)
@@ -416,7 +417,7 @@ def parallel(schritte, env):
 
 
 def statistik():
-    """Wörter, Lesezeit und Seiten pro Teil (aus Text und Bildschirm-PDF)."""
+    """Wörter, Lesezeit und Seiten pro Teil (aus Text und Lese-PDF)."""
     import re
     try:
         from pypdf import PdfReader
@@ -428,14 +429,14 @@ def statistik():
         teile, akt = [], ["Titelei / Vorwort", 0]
         for z in M.zeilen(os.path.join(BASE, bk.TEXT), var, entwurf=False):
             if isinstance(z, tuple):
-                if z[0] in ("UZ", "MITTE", "ZUSAMMEN", "OFFEN"):
+                if z[0] in ("BLOCK", "DECORATE-REST", "KEEP-TOGETHER", "DRAFT"):
                     akt[1] += sum(len(re.findall(r"\w+", t)) for t in z[2])
                 continue
             t = z.strip()
             if t.startswith("# "):
                 teile.append(akt); akt = [t[2:].split("|")[0].strip() + (" " + t.split("|")[1].strip() if "|" in t else ""), 0]
                 continue
-            if not t or t.startswith(("@", ":::")):
+            if not t or t.startswith("@"):
                 continue
             akt[1] += len(re.findall(r"\w+", re.sub(r"<[^>]+>|\{[^}]*\}|\[([^\]]*)\]\([^)]*\)", r"\1", t)))
         teile.append(akt)
@@ -760,7 +761,7 @@ def zwischendatei(a, art):
 
 
 def fassung(art, final):
-    """Leseprobe oder Korrekturfassung: Bildschirm-PDF in eine Zwischendatei bauen, dann umformen."""
+    """Leseprobe oder Korrekturfassung: Lese-PDF in eine Zwischendatei bauen, dann umformen."""
     import fassungen
     env = dict(os.environ, BUCH_FINAL="1" if final else "0", BUCH_BOOKLET="")
     schritte = [(f"{art.capitalize()} · {name(a)}", "build.py", a, {"BUCH_ZIEL": zwischendatei(a, art)[0]})
@@ -806,7 +807,7 @@ def fassung(art, final):
             box = r.pages[0].mediabox
             schluss = fassungen.schlussseite(float(box.width), float(box.height), "Ende der Leseprobe", zeilen,
                                              bk.schrift("titel"), bk.schrift("text"), bk.DEEP, bk.INK, link)
-            hinten = any(z.strip() == "@RUECKSEITE" for z in open(os.path.join(BASE, bk.TEXT), encoding="utf-8"))
+            hinten = any(z.strip() == "@BACK-COVER" for z in open(os.path.join(BASE, bk.TEXT), encoding="utf-8"))
             ziel = stamm + "_Leseprobe.pdf"
             n, was = fassungen.leseprobe(tmp, ziel, lp[a][1] if lp[a][0] == "kapitel" else None, schluss, hinten,
                                          seiten=lp[a][1] if lp[a][0] == "seiten" else None)
@@ -845,6 +846,7 @@ def pdf_liste(seit):
 
 
 def main():
+    sys.argv[1:] = ["uz" if a.lower() == "uc" else a for a in sys.argv[1:]]    # «uc» = «uz» (Fassung UC)
     import geschichten
     geschichten.hilfsdateien(BASE)          # neu.sh / neu.bat, .gitignore
     global NUR_FASSUNG
@@ -858,9 +860,11 @@ def main():
         NUR_FASSUNG = next((a for a in args if a in ("normal", "uz")), None)
     final = "final" in args
     art = next((a for a in args if a not in ("final", "uz", "normal")), "alles")
-    if art == "cover-stand":                # Menü co: nur anzeigen, nichts bauen (2.82.11)
+    if art in ("befehle", "-h", "--help"):  # «sh build.sh befehle»: diese Liste
+        print(__doc__); return
+    if art in ("co", "cover-stand"):        # Coverrechner: nur anzeigen, nichts bauen
         cover_stand(); return
-    if art == "covers":                     # «sh build.sh covers» = Umschlag neu (Rohdaten lesen): nur-druck final (ab 2.82)
+    if art == "covers":                     # «sh build.sh covers» = Umschlag neu (Rohdaten lesen): nur-druck final
         art, final = "nur-druck", True
     if art == "handbuch":                   # «sh build.sh handbuch»: einschalten, erzeugen (oben), Lese-PDF
         art = "schnell"
@@ -871,7 +875,7 @@ def main():
         art = "nur-druck"                   # Testlauf: nur Druckdateien, nach ausgabe-test/<datei>/
     if art == "sicherung":
         sicherung(); return
-    if art == "isbn":                       # «sh build.sh isbn»: ISBN prüfen, Strichcode-PNG (ab 2.82.6)
+    if art == "isbn":                       # «sh build.sh isbn»: ISBN prüfen, Strichcode-PNG
         isbn_zeigen(); return
     if art == "pruefen":
         pruefen(); return
@@ -920,7 +924,7 @@ def main():
         start = time.time()
         sicherung()
         env = dict(os.environ, BUCH_FINAL="1" if final else "0", BUCH_BOOKLET="", BUCH_SCHNELL="1")
-        NUR_FASSUNG = next((a for a in args if a in ("normal", "uz")), None)   # 2.84.8: «schnell normal|uz»
+        NUR_FASSUNG = next((a for a in args if a in ("normal", "uz")), None)   # «schnell normal|uz»
         parallel([(f"Schnell · {name(a)}", "build.py", a) for a in ausgaben()], env)
         ausgabe_uebersicht(art, final)
         print(f"\nFertig in {time.time() - start:.0f} Sekunden (schnell: ohne Seitenausgleich – für den Druck: final).")
@@ -941,7 +945,7 @@ def main():
         return
     if art not in ("alles", "nur-pdf", "nur-druck", "nur-ebook"):
         print(__doc__); sys.exit(1)
-    # Booklets: im «final» der Probedruck aus der Druckfassung, sonst aus dem Bildschirm-PDF
+    # Booklets: im «final» der Probedruck aus der Druckfassung, sonst aus dem Lese-PDF
     booklet = "druck" if (art == "alles" and final) else ("bildschirm" if art in ("alles", "nur-pdf") else "")
     env = dict(os.environ, BUCH_FINAL="1" if final else "0", BUCH_BOOKLET=booklet)
     start = time.time()
@@ -955,7 +959,7 @@ def main():
     schritte = []
     for a in ausgaben():
         if art in ("alles", "nur-pdf"):
-            schritte.append((f"Bildschirm-PDF · {name(a)}", "build.py", a))
+            schritte.append((f"Lese-PDF · {name(a)}", "build.py", a))
         if art in ("alles", "nur-druck"):
             schritte.append((f"Druckdateien · {name(a)}", "build-broschuere.py", a))
         if art in ("alles", "nur-ebook") and bk.ebook_erstellen(a):

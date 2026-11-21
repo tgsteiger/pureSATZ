@@ -16,7 +16,7 @@ Grösser schadet nicht: Der Motor verkleinert automatisch auf höchstens 1800 Pi
 (Zwischenspeicher _bildcache/). Handyfotos (3000–4000 Pixel) sind also ideal.
 
 Zu klein (z. B. aus WhatsApp oder vom Web, unter ca. 800 Pixel) wird im Druck unscharf.
-Im Bildschirm-PDF sieht man das oft nicht – im Probedruck-Booklet schon eher.
+Im Lese-PDF sieht man das oft nicht – im Probedruck-Booklet schon eher.
 
 Dateinamen: ohne Leerzeichen und Umlaute, z. B. sommer-1980.jpg
 Im Buch:    #### @FOTO Titel / datei: sommer-1980.jpg / text: Bildunterschrift / Leerzeile

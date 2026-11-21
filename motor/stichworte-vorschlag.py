@@ -3,7 +3,7 @@
 stichworte-vorschlag.py – Stichwortverzeichnis: Vorschläge machen und übernehmen.
 
 Aufruf (im Buchordner):
-    sh build.sh stichworte              prüft (stichworte: ja? @STICHWORTE im Buch? Stichwortdatei?)
+    sh build.sh stichworte              prüft (stichworte: ja? @INDEX im Buch? Stichwortdatei?)
                                         und schreibt stichworte-vorschlag.txt (Begriffe mit Häufigkeit)
     sh build.sh stichworte uebernehmen  alle mit [+] oder [x] markierten Vorschläge unten an stichworte-<name>.txt anhängen
 
@@ -79,10 +79,10 @@ def pruefen():
         print("  ok  {stichworte}: ja")
     else:
         print(f"  !!  {{stichworte}}: nein – in {bk.VARIABLEN} auf «ja» setzen, sonst kein Verzeichnis"); gut = False
-    if any(z.strip() == "@STICHWORTE" for _, z in M.lies(TEXT)[1]):
-        print(f"  ok  @STICHWORTE steht in {bk.TEXT}")
+    if any(z.strip() == "@INDEX" for _, z in M.lies(TEXT)[1]):
+        print(f"  ok  @INDEX steht in {bk.TEXT}")
     else:
-        print(f"  !!  @STICHWORTE fehlt in {bk.TEXT} – eigene Zeile am Schluss (vor @RUECKSEITE), sonst kein Verzeichnis")
+        print(f"  !!  @INDEX fehlt in {bk.TEXT} – eigene Zeile am Schluss (vor @BACK-COVER), sonst kein Verzeichnis")
         gut = False
     if bk.stichwort_datei():
         n = sum(1 for z in bk.stichwort_zeilen() if z.split("#", 1)[0].strip())

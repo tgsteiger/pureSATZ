@@ -1,5 +1,5 @@
 #!/bin/sh
-# Ganzes Buch als ZIP sichern: <buchname>_JJJJMMTTHHMMSS.zip (ohne Zwischenspeicher; von den Ausgaben nur die Bildschirm-PDFs).
+# Ganzes Buch als ZIP sichern: <buchname>_JJJJMMTTHHMMSS.zip (ohne Zwischenspeicher; von den Ausgaben nur die Lese-PDFs).
 # Ziele in der Variablen-Datei unter # TECHNIK: sicherung-lokal, sicherung-cloud.
 #   sh sicherung.sh               an alle eingetragenen Ziele
 #   sh sicherung.sh lokal         nur lokal

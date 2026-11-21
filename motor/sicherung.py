@@ -14,7 +14,7 @@ Ziele stehen in der Variablen-Datei unter # TECHNIK:
 
 Dateiname: <buchname>_JJJJMMTTHHMMSS.zip, z. B. MeinBuch_20261019153012.zip
 Im ZIP: alle MD- und TXT-Dateien, fotos/, bilder/, md-history/, motor/, Skripte – und von den Ausgaben
-nur das Bildschirm-PDF jeder Ausgabe (als Überblick). Nicht im ZIP: .venv, Zwischenspeicher, alte Motoren,
+nur das Lese-PDF jeder Ausgabe (als Überblick). Nicht im ZIP: .venv, Zwischenspeicher, alte Motoren,
 alle anderen Ausgabedateien (lassen sich mit «sh build.sh final» neu erstellen).
 """
 import os
@@ -81,7 +81,7 @@ def dateien(ausschluss):
             pfad = os.path.join(wurzel, n)
             relp = os.path.normpath(os.path.join(rel, n))
             if oben in ausgabe_ordner and relp not in pdfs:
-                continue                    # von den Ausgaben nur das Bildschirm-PDF
+                continue                    # von den Ausgaben nur das Lese-PDF
             if n.endswith((".pyc", ".zip", ".backup", "~")) or n.startswith("_tmp") or n == "stichworte-vorschlag.txt":
                 continue
             yield pfad, relp
@@ -119,7 +119,7 @@ def main():
     name = f"{bk.NAME}_{datetime.now():%Y%m%d%H%M%S}.zip"
     liste = list(dateien(set(z.values())))
     if not any(p.endswith(".pdf") and os.sep in r for p, r in liste):
-        print("Hinweis: noch kein Bildschirm-PDF vorhanden (sh build.sh) – gesichert wird trotzdem.")
+        print("Hinweis: noch kein Lese-PDF vorhanden (sh build.sh) – gesichert wird trotzdem.")
     fehler = 0
     for art, ordner in z.items():
         if not ordner_bereit(ordner):

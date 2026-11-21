@@ -2,7 +2,7 @@
 Zum Abhaken: «- [ ]» wird zu «- [x]». Reihenfolge von oben nach unten.
 
 ## 1. Text
-- [ ] Ganzes Buch einmal am Stück gelesen (Bildschirm-PDF)
+- [ ] Ganzes Buch einmal am Stück gelesen (Lese-PDF)
 - [ ] Probedruck-Booklet ausgedruckt und auf Papier gelesen (`sh build.sh final`, Datei `…_Probedruck_booklet.pdf`)
 - [ ] Korrekturfassung gelesen oder weitergegeben (`sh build.sh korrektur`, Zeilennummern für Rückmeldungen)
 - [ ] Jemand anderes hat gegengelesen

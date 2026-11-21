@@ -414,13 +414,13 @@ def buch_md(blocks, fotos_ordner):
                 BERICHT("Text vor der ersten Überschrift → Kapitel «Einleitung» (Titel im Buch-MD anpassen).")
             zeilen += [geschuetzt(inhalt), ""]
         elif art == "zitat":
-            zeilen += ["> " + inhalt.replace("**", ""), ""]
+            zeilen += ["@DECORATE " + inhalt.replace("**", ""), ""]
         elif art == "liste":
             zeilen.append("- " + inhalt)
             if i + 1 >= len(blocks) or blocks[i + 1][0] != "liste":
                 zeilen.append("")
         elif art == "umbruch":
-            zeilen += ["@UMBRUCH", ""]
+            zeilen += ["@NEWPAGE", ""]
         elif art == "bild":
             bildnr += 1
             d = inhalt
@@ -436,7 +436,7 @@ def buch_md(blocks, fotos_ordner):
                 j += 1
             if j < len(blocks) and blocks[j][0] == "beschriftung":
                 text = blocks[j][1].replace("**", ""); blocks[j] = ("leer", None)
-            zeilen.append(f"#### @FOTO {name}")
+            zeilen.append(f"#### @PICTURE {name}")
             if d["daten"]:
                 with open(os.path.join(fotos_ordner, datei), "wb") as f:
                     f.write(d["daten"])
@@ -457,14 +457,14 @@ def buch_md(blocks, fotos_ordner):
 
 
 def titelei(vorlage_md):
-    """Titelei aus der Vorlage (bis @INHALTSVERZEICHNIS), ohne Demo-Widmung, Demo-Hinweis und Demo-Kernsatz."""
+    """Titelei aus der Vorlage (bis @CONTENTS), ohne Demo-Widmung, Demo-Hinweis und Demo-Satz (@DECORATE-PAGE)."""
     aus, weg = [], False
     for z in vorlage_md.split("\n"):
         if z.startswith("## Vorwort"):
             break
-        if re.match(r"#{2,3} @(WIDMUNG|HINWEIS)\b", z):
+        if re.match(r"#{2,3} @(DEDICATION|NOTICE)\b", z):
             weg = True; continue
-        if z.startswith("## @KERNSATZ"):
+        if z.startswith("## @DECORATE-PAGE"):
             continue
         if weg and z.startswith("#"):
             weg = False
@@ -527,12 +527,12 @@ def main():
     name = S.buch(ordner, werte)
     zeilen, bilder = buch_md(blocks, os.path.join(ordner, "fotos"))
     vorlage = S.fuelle(open(os.path.join(S.VORLAGE, "buch.md"), encoding="utf-8").read(), S.platzhalter(werte))
-    text = titelei(vorlage) + "\n".join(zeilen).rstrip() + "\n\n@RUECKSEITE\n"
+    text = titelei(vorlage) + "\n".join(zeilen).rstrip() + "\n\n@BACK-COVER\n"
     with open(os.path.join(ordner, f"{name}-buch.md"), "w", encoding="utf-8") as f:
         f.write(text)
     # Stichwortverzeichnis aus: die Demo-Stichworte passen nicht zum neuen Text
     with open(os.path.join(ordner, f"stichworte-{name}.txt"), "w", encoding="utf-8") as f:
-        f.write("# Stichwortverzeichnis: ein Stichwort pro Zeile, Varianten mit |  (danach @STICHWORTE ins Buch)\n")
+        f.write("# Stichwortverzeichnis: ein Stichwort pro Zeile, Varianten mit |  (danach @INDEX ins Buch)\n")
     for demo in ("beispiel.jpg",):
         p = os.path.join(ordner, "fotos", demo)
         if os.path.exists(p) and demo not in text:
@@ -541,7 +541,7 @@ def main():
 
     kap = sum(1 for z in zeilen if z.startswith("## "))
     teile = sum(1 for z in zeilen if z.startswith("# Teil"))
-    woerter = len(re.findall(r"\w+", " ".join(z for z in zeilen if not z.startswith(("::: ", "datei:", "alt:")))))
+    woerter = len(re.findall(r"\w+", " ".join(z for z in zeilen if not z.startswith(("@", "datei:", "alt:")))))
     kopf = [f"IMPORT-BERICHT – {os.path.basename(a[0])} → {name}  ({date.today():%d.%m.%Y})",
             "(Import in der Testphase – bitte das Ergebnis im PDF kontrollieren)", "",
             f"Titel: {werte['TITEL']}", f"Untertitel: {werte['UNTERTITEL'] or '–'}", f"Autor: {autor}",

@@ -1,49 +1,28 @@
 # Erste Schritte
 
-## Mein erstes Buch in 5 Minuten – Schritt für Schritt
+## 1. Erstes PDF in fünf Minuten
 
-Der Start führt in fünf Schritten zum eigenen Buch. Enter nimmt immer den Vorschlag; der Start darf beliebig oft
-laufen. ZIP ganz auspacken, dann im Ordner pureSATZ:
+ZIP ganz auspacken (Windows: Rechtsklick → «Alle extrahieren …»), dann im Ordner pureSATZ den Start aufrufen:
 
 - **Linux:** Rechtsklick in den Ordner → «Im Terminal öffnen», dann `sh START-Linux.sh`
 - **Mac:** Terminal öffnen (Cmd+Leertaste, «Terminal»), `sh ` tippen, `START-Mac-imTerminal.sh` ins Fenster ziehen, Enter
 - **Windows:** `START-Windows.bat` doppelklicken
 
+Der Start führt in fünf Schritten zum eigenen Buch. Enter nimmt immer den Vorschlag; er darf beliebig oft laufen.
+
 1. **Technik.** Prüft Python (3.10 oder neuer) und installiert, was fehlt. Beim ersten Mal braucht es Internet.
 2. **Ort.** Schlägt einen festen Ordner für deine Bücher vor: `Buchprojekte` im Benutzerordner – nicht Downloads,
    Schreibtisch oder eine Cloud. pureSATZ wird dorthin kopiert; den ausgepackten Ordner darfst du danach löschen.
    `n` lässt pureSATZ, wo es ist.
-3. **Hallo-Buch.** Legt ein Beispielbuch an, baut es und öffnet das PDF. So siehst du, was pureSATZ macht, bevor du
-   selber schreibst. Das Hallo-Buch darf später weg.
+3. **Hallo-Buch.** Legt ein Beispielbuch an, baut es und öffnet das PDF. So siehst du, was pureSATZ macht.
 4. **Dein Buch.** Fragt Titel, Untertitel, Autor und Format, legt den Buchordner neben pureSATZ an und öffnet ihn.
 5. **Extras.** GitHub (freiwillig: Sicherung im Netz, Abgleich zwischen Computern) und Ghostscript (empfohlen).
    Beides geht auch später.
 
-Am Schluss zeigt der Start, was wo liegt (steht auch in `00-UEBERSICHT.txt`). Geschrieben und gebaut wird immer im
-Ordner deines Buchs. Dort das Menü öffnen – ein Buchstabe genügt, `s` baut das Lese-PDF in Sekunden:
+Klemmt etwas: [→ Wenn etwas klemmt](#Wenn-etwas-klemmt) oder unten «Von Hand».
 
-```sh
-sh menu.sh
-```
-
-Klemmt etwas: [→ Wenn etwas klemmt](#Wenn-etwas-klemmt). Ohne Start, von Hand: [→ Erstes PDF](#Erstes-PDF), «Von Hand».
-
-## 1. Erstes PDF in fünf Minuten
-
-::: nur-webhilfe
-Einmal von oben nach unten. Die Häkchen kannst du anklicken, der Browser merkt sie sich.
-Oben rechts **Linux/Mac** oder **Windows** wählen, dann stimmen alle Befehle.
-:::
-::: nur-handbuch
-Einmal von oben nach unten.
-:::
-
-- [ ] **Starten.** ZIP auspacken (Windows: Rechtsklick → «Alle extrahieren …»), dann im Ordner pureSATZ:
-  Windows `START-Windows.bat` doppelklicken · Mac: Terminal öffnen (Cmd+Leertaste, «Terminal», Enter), `sh ` tippen,
-  `START-Mac-imTerminal.sh` ins Fenster ziehen, Enter · Linux: Rechtsklick in den Ordner →
-  «Im Terminal öffnen», dann `sh START-Linux.sh` eintippen. Er führt in fünf Schritten durch: Technik (Python), Ort für die Bücher (`Buchprojekte` im Benutzerordner – nicht Downloads, nicht in einer Cloud), Hallo-Buch, dein eigenes Buch (Titel, Untertitel, Autor, Format) und Extras (GitHub, freiwillig). Enter nimmt jeweils den Vorschlag.
-
-Danach sieht es so aus – geschrieben und gebaut wird immer im Ordner deines Buchs, nie in pureSATZ:
+Danach sieht es so aus (steht auch in `00-UEBERSICHT.txt`) – geschrieben und gebaut wird immer im Ordner deines
+Buchs, nie in pureSATZ:
 
 ```
 Buchprojekte/
@@ -51,6 +30,17 @@ Buchprojekte/
   Hallo-Buch/    zum Ausprobieren, darf weg
   Mein-Buch/     dein Buch – hier schreibst und baust du
 ```
+
+Im Ordner deines Buchs das Menü öffnen – ein Buchstabe genügt, `s` baut das Lese-PDF in Sekunden:
+
+```sh
+sh menu.sh
+```
+
+::: nur-webhilfe
+Zum Abhaken einmal von oben nach unten (die Häkchen merkt sich der Browser). Oben rechts **Linux/Mac** oder
+**Windows** wählen, dann stimmen alle Befehle.
+:::
 
 - [ ] **Terminal im Buchordner.** Windows und Mac: im Buchordner `Terminal hier` doppelklicken – das Befehlsfenster
   öffnet sich genau dort (Windows: cmd). Linux: Rechtsklick in den Ordner → «Im Terminal öffnen».
@@ -159,7 +149,7 @@ sh build.sh final
 | Plattform-Datei fehlt («Druckangaben: … fehlt») | Name bei `{druck-datei}` unter `## Ausgabe: Druck …` prüfen (ohne `.md`), Muster in `pureSATZ/vorlage/druck/`. |
 | Druckerei meldet «nicht eingebettete Schriften» | Motor aktualisieren und neu bauen (`sh update.sh`, dann `sh build.sh final`). Der Bau warnt selbst, falls noch eine Schrift fehlt. |
 | Meine Änderung ist wieder weg | Editor: «Auto save» aus. Beim Hinweis «Datei geändert» neu laden. Ändert eine KI oder ein Skript die Datei, sie vorher im Editor schliessen. Ältere Fassungen liegen in `md-history/`. |
-| Abstand oder neue Seite wirkt nicht | Steht der Befehl innerhalb eines `:::`-Blocks? Dann nach das `:::` setzen. |
+| Abstand oder neue Seite wirkt nicht | Steht der Befehl innerhalb eines `@DECORATE-REST`- oder `@UC-BLOCK`-Bereichs? Dann nach das `@END` setzen. |
 | Farben am Bildschirm unsicher | Am Probedruck auf Papier beurteilen, nicht am Bildschirm. |
 | Etwas anderes | Die Meldung kopieren und in die Suche oben eingeben (im Menü: `hf wort`), oder einer KI zeigen (mit `hilfe-ki.md`). |
 
@@ -200,8 +190,8 @@ Zum Abhaken. Die Hilfe (`hilfe.html`) zeigt zu jedem Schritt Dauer und späteste
 ## Tipp: Menü statt Befehle
 
 Im Buchordner `sh menu.sh` (Windows: `menu.bat` doppelklicken). Dann genügt ein Buchstabe – geordnet nach
-Schreiben (`m` MD öffnen, `g` Geschichten, `t` Tabellen, `c` gegenlesen), Bauen (`s` schnell, `k` komplett,
-`w` weitere), Ansehen (`p` PDF, `o` Ordner) und Abgleichen / Prüfen (`sy` sync, `u` update, `bp` Buch prüfen); `n` neu (neues Buch,
+Schreiben (`m` MD öffnen, `g` Geschichten, `t` Tabellen, `c` gegenlesen), Bauen (`s` schnell, `f` final,
+`k` komplett), Ansehen (`p` PDF, `o` Ordner) und Abgleichen / Prüfen (`sy` sync, `u` update, `bp` Buch prüfen); `n` neu (neues Buch,
 Hallo-Buch, `v` Lotus-Starter). `:` zeigt Befehle zum Tippen, `h` oder `?` die Hilfe.
 Mit ↑ holst du die letzten Befehle zurück, Enter (oder `z`) = eine Stufe zurück (im Hauptmenü: «beenden? [j/N]»).
 
@@ -211,37 +201,137 @@ Mehr dazu in der Hilfe unter «Erste Schritte → Menü».
 
 ## Gestalten: Ich will …
 
-Die häufigsten Fälle beim Gestalten – nachsehen, wenn etwas nicht so aussieht wie gewünscht.
-Danach mit `sh build.sh schnell` ansehen. Ganze Bausteine: [Zum Kopieren](#Zum-Kopieren).
+Die häufigsten Fälle beim Gestalten. Danach mit `s` (Menü) bzw. `sh build.sh schnell` ansehen.
+Ganze Bausteine: [Zum Kopieren](#Zum-Kopieren).
 
 ::: nur-webhilfe
 **Klick auf einen Code = kopiert.** Suchen: Taste `/`.
 :::
 
-| Ich will … | So geht es |
-|---|---|
-| eine **neue Seite** | `---` auf einer eigenen Zeile, davor eine Leerzeile. **Nicht innerhalb eines `:::`-Blocks**, sondern nach dem `:::`. Steht `---` schon oben auf einer Seite, entsteht keine leere Seite. |
-| **mehr Abstand** | `@ABSTAND 8` (in mm). Mehrere Leerzeilen geben *nicht* mehr Abstand. Nicht innerhalb eines `:::`-Blocks. |
-| einen Satz **ganz unten** auf der Seite | `@UNTEN Satz` – zentriert und kursiv, z. B. für einen Hinweis |
-| einen **schönen Schluss** (Gruss, Zitat) | `@ZITAT Schön, dass du da bist.<br/>Herzlich, Name`, darunter `@ZIER 10` |
-| ein Zitat **mit Verzierung** | `@ZITAT-ZIER Satz` (kurz `> Satz`). Nur eine Verzierung pro Seite – sonst wird es unruhig. |
-| einen kurzen **Abschluss am Teil-Ende** | `::: mitte` … `:::` |
-| eine **Dankesseite oder ein Nachwort** im Inhaltsverzeichnis | als Kapitel `## Danke`, Text im Blocksatz, zum Schluss `@ZITAT` und `@ZIER 10` |
-| Text **hervorheben** (fett, kursiv) | `**Wort**` = fett mitten im Text · kursiv als eigene Zeile: `~ Satz` (Randbemerkung) oder `@ZITAT Satz`. [→ fett und kursiv](#Text-hervorheben) |
-| einen **Zwischentitel** | `### Titel`, kleiner `#### Titel`. Im Inhaltsverzeichnis erscheinen sie mit `{inhalt-tiefe}: 3` bzw. `4` in der Variablen-Datei (Standard: nur `##`) |
-| eine **Randbemerkung** | `~ Satz` (klein, kursiv) |
-| einen **grossen Anfangsbuchstaben** am Kapitelanfang | `{initial}: ja` in der Variablen-Datei (Farbe: `{initial-farbe}: haupt` = Blau; Stil: `{initial-stil}: rand` oder `feld`, `{initial-zeilen}: 4`, `{initial-schrift}: fett`; dazu `{kapitaelchen}: ja`) [→ Seitengestaltung](#Seitengestaltung) |
-| Absätze **eingerückt** statt mit Abstand | `{absatz-einzug}: ja` in der Variablen-Datei |
-| eine **Zeile umbrechen**, ohne neuen Absatz | `\` am Zeilenende (in Variablen: `<br/>`) |
-| Text **nur in einer Fassung** | `::: nur-uz` … `:::` oder `::: nur-normal` … `:::` |
-| ein **Foto** | `#### @FOTO Titel`, darunter `datei: bild.jpg` – eine Leerzeile beendet das Foto. [→ Blöcke zum Kopieren](#Zum-Kopieren) · [→ alle Angaben](#Bilder-und-Fotos) |
-| ein Foto, das der **Text umfliesst** | zusätzlich `fluss: rechts` oder `fluss: links` und `breite: 40` (mm) – die nächsten Absätze fliessen daneben |
-| eine **Geschichte** einbinden | `##### @@name` (Dateiname ohne .md, im Ordner geschichten/) – Menü `g` → `b` macht es selbst. [→ Geschichten](#Geschichten-sammeln) |
-| eine **Tabelle** | `@#name` (CSV im Ordner tabellen/) – Menü `t` → `n` legt sie an. [→ Tabellen](#Tabellen) |
-| eine **Notiz**, die nie gedruckt wird | in einer Geschichte unter dem Titel `notiz: …`; im Buch `::: offen-notiz` … `:::` |
-| den Druck in **CMYK** (z. B. tredition) | in der Druckdatei `{farbmodus}: cmyk`, dann `sh build.sh final`. [→ RGB oder CMYK](#Farben-fuer-den-Druck) |
-| den **Strichcode mit der ISBN** (EAN-13, Barcode) mit Goldrahmen oder Bergkette | in der Druckdatei `{isbn-rahmen}: berge` oder `gold` (dazu evtl. `{isbn-rahmen-abstand}: 2`, `{isbn-rahmen-farbe}: schwarz`). [→ Druckangaben](#Plattform-Dateien) |
-| einen **QR-Code** | `@QR https://… \| Text`, zwei nebeneinander mit `@QR-PAAR` |
-| sehen, **ob es passt** | `sh build.sh schnell`, dann das PDF öffnen (der Befehl steht am Ende des Baus) |
+**So sind alle Befehle gebaut:** `@NAME-GRÖSSE-ORT Text` – alles vor dem ersten Leerzeichen ist der Befehl
+(gross geschrieben), danach kommt der Text. Zahlen sind immer mm. Angeben musst du nur, was vom Standard abweicht.
 
-Alle Befehle: Hilfe «Befehle (@)» und «Blöcke (:::)».
+| Ortswort | heisst |
+|---|---|
+| (keins) | hier im Text |
+| `REST` | in die Mitte des Rests der Seite, danach neue Seite |
+| `BOTTOM` | unten auf die Seite (`BOTTOM-34` = 34 mm über dem Ende des Textes), danach neue Seite |
+| `PAGE` | auf eine eigene Seite |
+| `GAP` | in die Lücke vor der nächsten Überschrift |
+| `RIGHT` · `LEFT` | daneben, der Text fliesst herum |
+
+### Text
+
+| Ich will … | So |
+|---|---|
+| Text **hervorheben** | `**fett**` · `*kursiv*` mitten im Text. [→ fett und kursiv](#Text-hervorheben) |
+| eine **Zeile umbrechen**, ohne neuen Absatz | `\` am Zeilenende (in Variablen: `<br/>`) |
+| eine **Randbemerkung** | `@ASIDE Satz` (klein, kursiv) |
+| einen **Zwischentitel** | `### Titel`, kleiner `#### Titel` (ins Inhaltsverzeichnis mit `{inhalt-tiefe}: 3` bzw. `4`) |
+| eine **Aufzählung** | `- Punkt` oder `1. Schritt`, Unterpunkt zwei Leerzeichen eingerückt |
+
+![Text, Liste und Randbemerkung](bilder/hilfe/text.png)
+
+### Sätze mit Linie und Logo (DECORATE)
+
+| Ich will … | So |
+|---|---|
+| einen Satz **zwischen zwei Linien mit Logo**, der Text geht danach weiter | `@DECORATE Satz` |
+| denselben Satz **ohne Linien** | `@DECORATE-TEXT Satz` |
+| einen Satz **ganz unten** auf der Seite (z. B. ein Hinweis) | `@DECORATE-TEXT-BOTTOM Satz` |
+| einen Satz **allein auf einer Seite** | `@DECORATE-PAGE Satz` (in der Titelei: `## @DECORATE-PAGE Satz`) |
+| nur **Linie mit Logo**, ohne Text | `@DECORATE-LOGO` |
+
+![@DECORATE und @DECORATE-TEXT](bilder/hilfe/decorate.png)
+
+![@DECORATE-PAGE: eigene Seite](bilder/hilfe/decorate-page.png)
+
+### Ein Kapitel schön abschliessen
+
+| Ich will … | So |
+|---|---|
+| einen Satz **mitten in den Rest der Seite**, danach neue Seite | `@DECORATE-REST Satz` |
+| mehrere Absätze so | `@DECORATE-REST` … `@END` |
+| einen **Schlusssatz** mit Linie nur oben | `@DECORATE-ABOVE-REST Satz` |
+| den Schlusssatz **auf beiden Seiten einer Doppelseite gleich hoch** | `@DECORATE-ABOVE-BOTTOM-34 Satz` – Oberkante 34 mm über dem Ende des Textes. Auf beiden Seiten dieselbe Zahl; reicht der Platz nicht, setzt der Motor mittig |
+| die Schrift wie der Fliesstext statt kursiv | am Befehl `-UPRIGHT` (in der Hauptfarbe: `-UPRIGHT-MAIN`), z. B. `@DECORATE-REST-UPRIGHT` · für das ganze Buch: `{decorate-stil}` |
+
+Zeilenumbruch im Satz mit `\` am Zeilenende, z. B. `@DECORATE-ABOVE-REST Schön, dass du da bist. \` und darunter `Herzlich, Name`.
+
+![@DECORATE-REST, -ABOVE-REST, -ABOVE-BOTTOM-34](bilder/hilfe/decorate-rest.png)
+
+### Logo
+
+| Ich will … | So |
+|---|---|
+| das **Logo** im Text | `@LOGO-12` (12 mm breit) |
+| das Logo **in die Lücke vor der nächsten Überschrift** (ohne eigenen Platz) | `@LOGO-6-GAP` |
+| das Logo **mitten in den Rest der Seite**, danach neue Seite | `@LOGO-10-REST` |
+| das Logo **unten auf die Seite**, danach neue Seite | `@LOGO-10-BOTTOM` |
+| ein **eigenes Logo** | in der Variablen-Datei `{logo}: mein-logo.png` (Bild in `bilder/`), hell: `{logo-light}` |
+
+![@LOGO-12 und @LOGO-6-GAP](bilder/hilfe/logo.png)
+
+![@LOGO-10-REST und @LOGO-10-BOTTOM](bilder/hilfe/logo-rest-bottom.png)
+
+### Seiten und Abstand
+
+| Ich will … | So |
+|---|---|
+| eine **neue Seite** | `@NEWPAGE` (im Druck immer rechts: `@NEWPAGE-RIGHT`) |
+| eine neue Seite **nur, wenn unten zu wenig Platz** bleibt | `@NEWPAGE-60` (weniger als 60 mm frei) – gut vor einem Foto oder Zwischentitel |
+| **mehr Abstand** | `@SPACER-8` (mm). Mehrere Leerzeilen geben keinen Abstand |
+| einen Abschnitt **nie trennen** | `@KEEP-TOGETHER` … `@END` |
+| den Inhalt einer Seite **senkrecht in die Mitte** | `@PAGE-CENTER` (wirkt beim Bauen mit `k`) |
+| in der **Kopfzeile** ein anderes Wort | `@HEADER Ecuador` … `@HEADER` (allein = wieder normal) |
+
+### Zwei Fassungen (normal und Unzensiert)
+
+| Ich will … | So |
+|---|---|
+| Text **nur in einer Fassung** | `@UC` … `@END` (nur Unzensiert) · `@NORMAL` … `@END` |
+| **einen Befehl** nur in einer Fassung | Vorsilbe: `@UC-SPACER-14`, `@NORMAL-NEWPAGE`, `#### @UC-PICTURE Titel` |
+| einen **Kasten «Unzensiert»** mit Titel | `@UC-BLOCK Titel` … `@END` |
+| Text nur im **E-Book**, nur im **Druck**, nur im **Lese-PDF** | `@EBOOK` · `@PRINT` · `@SCREEN` … `@END` |
+
+![@UC-BLOCK](bilder/hilfe/uc-block.png)
+
+### Noch offen
+
+| Ich will … | So |
+|---|---|
+| eine Stelle, über die ich **noch nicht entschieden** habe | `@DRAFT` … `@END` – mit `s` gelb markiert, mit `f` normal gedruckt |
+| eine **Notiz**, die nie gedruckt wird | `@NOTE Titel` … `@END` (in einer Geschichte: Zeile `notiz: …`) |
+
+![@DRAFT und @NOTE](bilder/hilfe/draft-note.png)
+
+### Bilder, Tabellen, QR
+
+| Ich will … | So |
+|---|---|
+| ein **Foto** | `#### @PICTURE Titel`, darunter `datei: bild.jpg` und `text: Bildtext` – eine Leerzeile beendet das Foto. [→ alle Angaben](#Bilder-und-Fotos) |
+| das Foto **60 mm breit** | `#### @PICTURE-60 Titel` |
+| ein Foto, das der **Text umfliesst** | `#### @PICTURE-40-RIGHT Titel` (oder `-LEFT`) |
+| eine **Tabelle** | `@#name` (CSV im Ordner tabellen/) – Menü `t` → `n` legt sie an. [→ Tabellen](#Tabellen) |
+| eine **Geschichte** einbinden | `##### @@name` – Menü `g` → `b` macht es selbst. [→ Geschichten](#Geschichten-sammeln) |
+| einen **QR-Code** | `@QR https://… \| Text`, mehrere nebeneinander: `@QR a \| Text ;; b \| Text` |
+| einen QR-Code **rechts, der Text fliesst herum** | `@QR-RIGHT url` direkt vor den Absatz (im E-Book weggelassen) |
+| einen **Zeitstrahl** | `@TIMELINE` … `@END`, jede Zeile `1974 \| Geboren` |
+
+![@PICTURE-70 und @PICTURE-35-RIGHT](bilder/hilfe/picture.png)
+
+![@QR, zwei nebeneinander, @QR-RIGHT](bilder/hilfe/qr.png)
+
+![@TIMELINE](bilder/hilfe/timeline.png)
+
+### Aussehen des ganzen Buchs
+
+| Ich will … | So |
+|---|---|
+| einen **grossen Anfangsbuchstaben** am Kapitelanfang | Menü `ge` oder `{initial}: ja` in der Variablen-Datei. [→ Seitengestaltung](#Seitengestaltung) |
+| Absätze **eingerückt** statt mit Abstand | `{absatz-einzug}: ja` |
+| den Druck in **CMYK** (z. B. tredition) | in der Druckdatei `{farbmodus}: cmyk`. [→ RGB oder CMYK](#Farben-fuer-den-Druck) |
+| den **Strichcode** mit Goldrahmen oder Bergkette | in der Druckdatei `{isbn-rahmen}: berge` oder `gold`. [→ Druckangaben](#Plattform-Dateien) |
+| sehen, **ob es passt** | Menü `s` (schnell) – für den Druck: `f` (final) |
+
+Alle Befehle auf einen Blick: Hilfe «Befehle (@)».
