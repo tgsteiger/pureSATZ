@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 3.6.8
+# pureSATZ Hilfe · pureSATZ · Motor 3.6.9
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -880,6 +880,7 @@ Absätze eingerückt statt mit Abstand (wie viele Romane) | `{absatz-einzug}: ja
 Listen (• und 1.) im Blocksatz wie der Fliesstext | `{liste-blocksatz}: ja` – Standard `nein` = linksbündig; Randbemerkungen (`@ASIDE`) bleiben linksbündig
 auf einer Doppelseite zwei Sätze gleich hoch stellen (links und rechts) | Am Seitenende (Abschluss): auf beiden Seiten `@DECORATE-ABOVE-BOTTOM-34 Satz` – Oberkante steht 34 mm über dem Ende des Textes, auf beiden Seiten gleich (Zahl so wählen, dass auf beiden Seiten genug Platz ist; sonst setzt der Motor mittig). Mitten auf der Seite: im PDF messen, wie viel höher der eine Satz steht, und davor einen unsichtbaren Abstand einfügen: `@NORMAL-SPACER-9` (mm, nur in einer Fassung – die UZ bricht anders um). Erst ganz am Schluss machen: ändert sich davor noch Text, muss die Zahl nachgestellt werden
 Grosse Lücken im Blocksatz, langes Wort wird nicht getrennt | Menü `tr` Trennstellen …: Wort mit `|` eintragen, wo getrennt werden darf, z. B. `Re|vi|ta|ler` (`-Revitaler` = entfernen) – oder direkt in der Variablen-Datei `{trennstellen}:`; danach `s` bauen. Automatische Silbentrennung läuft von selbst (ab 10 Buchstaben, Menü `tr`: Zahl ändern)
+Ein Wort an einer Stelle nicht trennen (z. B. letzte Zeile vor dem Umblättern) | `//` direkt vor das Wort in der MD: `die //Geschichte` – nur in diesem Absatz wird das Wort nicht getrennt, es rutscht ganz in die nächste Zeile. Die `//` erscheinen nirgends (PDF, E-Book, Hörbuch). Danach `f` bauen
 
 Wann umbrechen? Teile (`# Teil …`) und Kapitel oberster Ebene (`# Titel`) beginnen von selbst auf einer neuen Seite. Sonst erst umbrechen, wenn der Text fertig ist – jede Änderung verschiebt die Seiten. Lieber `@NEWPAGE-60` als `@NEWPAGE`: es wirkt nur, wenn es nötig ist.
 

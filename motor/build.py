@@ -47,6 +47,7 @@ from reportlab.platypus import (BaseDocTemplate, PageTemplate, Frame, Paragraph,
                                 PageBreak, NextPageTemplate, Table, TableStyle, KeepTogether,
                                 CondPageBreak, Flowable, ImageAndFlowables)
 from reportlab.platypus.doctemplate import ActionFlowable
+from reportlab.platypus import Paragraph as _RLParagraph
 from reportlab.platypus.tableofcontents import TableOfContents, SimpleIndex
 from reportlab.graphics.barcode.qr import QrCodeWidget
 from reportlab.graphics.shapes import Drawing
@@ -635,6 +636,44 @@ class _Ausgaben(dict):
 
 
 AUSGABEN = _Ausgaben()
+M.TRENNMARKEN = True        # 3.6.9: der PDF-Satz behält «//Wort» (E-Book setzt es in build-epub.py wieder auf False)
+
+# 3.6.9: «//Wort» in der MD = dieses Wort an dieser Stelle nicht trennen (z. B. letzte Zeile vor dem Umblättern).
+# Nur der Absatz mit der Marke bekommt eine eigene Trennregel; alle anderen Stellen und Wörter bleiben, wie sie sind.
+_MARKE = re.compile(r"(?<![:/\w])//((?:<[^>]*>)*)([^\W\d_][\w\-]*)")
+_PYPHEN = {}
+
+
+def _ohne_trennung(style, woerter):
+    lang = getattr(style, "hyphenationLang", "")
+    if not lang:
+        return style
+    if isinstance(lang, str):
+        try:
+            import pyphen
+        except ImportError:
+            return style
+        trenne = _PYPHEN.setdefault(lang, pyphen.Pyphen(lang=lang).iterate)
+    else:
+        trenne = lang
+    neu = copy.copy(style)
+    neu.hyphenationLang = lambda w: [] if w in woerter else list(trenne(w))
+    return neu
+
+
+class Paragraph(_RLParagraph):
+    """Wie ReportLab-Paragraph, dazu «//Wort» (3.6.9)."""
+    def __init__(self, text, style=None, *a, **k):
+        if isinstance(text, str) and "//" in text:
+            woerter = set()
+
+            def weg(m):
+                woerter.add(m.group(2))
+                return m.group(1) + m.group(2)
+            text = _MARKE.sub(weg, text)
+            if woerter and style is not None:
+                style = _ohne_trennung(style, woerter)
+        super().__init__(text, style, *a, **k)
 
 
 def text_zeilen():
@@ -1075,7 +1114,7 @@ class Register(SimpleIndex):
         neu, i = [], 0
         while i < len(zellen):
             if (i + 2 < len(zellen) and isinstance(zellen[i], Spacer)
-                    and isinstance(zellen[i + 1], Paragraph) and isinstance(zellen[i + 2], Spacer)):
+                    and isinstance(zellen[i + 1], _RLParagraph) and isinstance(zellen[i + 2], Spacer)):
                 gruppe = [Spacer(1, 7 if neu else 0), Paragraph(zellen[i + 1].text, kopf), Spacer(1, 2)]
                 i += 3
                 while i < len(zellen) and isinstance(zellen[i], Spacer):
@@ -1500,17 +1539,17 @@ class Doc(BaseDocTemplate):
             if e[0] > self.page: e[0] = self.page
         # Jeder Eintrag bekommt ein Sprungziel (key). Damit wird der Eintrag im
         # Inhaltsverzeichnis klickbar, und er erscheint als Lesezeichen in der PDF-Seitenleiste.
-        if isinstance(f, Paragraph) and getattr(f, "_toc", None):
+        if isinstance(f, _RLParagraph) and getattr(f, "_toc", None):
             lvl, text = f._toc
             self.link_entry(lvl, text)
         if isinstance(f, PartMarker):
             self.link_entry(0, teil_eintrag(f.num, f.title, f.sub))
             self.kopf = f.title; self.kap = None; self.zusatz = None
-        if isinstance(f, Paragraph) and getattr(f, "_toc", None) and f._toc[0] == 0:
+        if isinstance(f, _RLParagraph) and getattr(f, "_toc", None) and f._toc[0] == 0:
             self.kopf = f._toc[1]     # Vorwort, Zeitstrahl, Über den Autor …
             self.kap = None; self.zusatz = None
             self._kap_start = self._kap_seite = self._zusatz_start = None
-        if isinstance(f, Paragraph) and getattr(f, "_toc", None) and f._toc[0] == 1:
+        if isinstance(f, _RLParagraph) and getattr(f, "_toc", None) and f._toc[0] == 1:
             self.kap = f._toc[1]      # Kapitel für die Kopfzeile
             if self._kap_seite is None: self._kap_seite = self.kap
         if isinstance(f, KopfZusatz):
@@ -2668,7 +2707,7 @@ def absatz_mitnehmen(doc, story):
         letzte, davor = inhalt[-1], inhalt[-2]
         f, seite = story[letzte], info[letzte][0]
         allein = info[letzte][1] == seite and info[davor][1] < seite
-        einzeilig = isinstance(f, Paragraph) and len(getattr(getattr(f, "blPara", None), "lines", [0, 0])) == 1
+        einzeilig = isinstance(f, _RLParagraph) and len(getattr(getattr(f, "blPara", None), "lines", [0, 0])) == 1
         if allein and einzeilig and type(story[davor]) is Paragraph and davor == letzte - 1:
             mit.add(davor)
     return mit

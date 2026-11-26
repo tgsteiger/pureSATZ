@@ -25,6 +25,7 @@ except ImportError:
 from PIL import Image
 
 import build as bk
+bk.M.TRENNMARKEN = False     # 3.6.9: «//Wort» (nicht trennen) gilt nur im PDF
 E, L = bk.E, bk.L
 
 bk.waehle(sys.argv[1] if len(sys.argv) > 1 else None)

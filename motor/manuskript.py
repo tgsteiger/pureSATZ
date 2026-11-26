@@ -468,6 +468,24 @@ def impressum_einsetzen(roh, a):
     return out
 
 
+TRENNMARKEN = False        # 3.6.9: «//Wort» = dieses Wort an dieser Stelle nicht trennen. Nur der PDF-Satz (build.py)
+TRENN_MARKE = re.compile(r"(?<![:/\w])//(?=[^\W\d_])")    # behält die Marke; E-Book, Hörbuch usw. bekommen sie entfernt.
+
+
+def ohne_trennmarken(x):
+    """«//» vor Wörtern entfernen – in Zeilen (Zeilennummer bleibt) und in Bereichen (Tupel, Listen)."""
+    if isinstance(x, str):
+        if "//" not in x:
+            return x
+        neu = TRENN_MARKE.sub("", x)
+        return _zeile(neu, x.nr) if isinstance(x, Zeile) else neu
+    if isinstance(x, tuple):
+        return tuple(ohne_trennmarken(y) for y in x)
+    if isinstance(x, list):
+        return [ohne_trennmarken(y) for y in x]
+    return x
+
+
 def zeilen(pfad, a, entwurf=False):
     """Text der Ausgabe a: Zeilen (str) und Bereiche als Tupel (NAME, titel, [zeilen]).
     NAME: BLOCK, DRAFT, NOTE, KEEP-TOGETHER, TIMELINE, DECORATE-REST (titel = der Befehl), PICTURE, CODE.
@@ -583,7 +601,7 @@ def zeilen(pfad, a, entwurf=False):
         i += 1
     if offen is not None:
         raise Fehler(f"{_wo(name, offen)}: Bereich wird nicht mit @END geschlossen.")
-    return out
+    return out if TRENNMARKEN else ohne_trennmarken(out)
 
 
 def umschlag(pfad, a):
