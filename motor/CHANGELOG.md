@@ -3,6 +3,11 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 3.6.4 (November 2026) – Bauen viel schneller
+- Bilder kommen **binär** ins PDF (Flate) statt als ASCII85-Text (`rl_config.useA85 = 0`). Ohne den C-Beschleuniger
+  von ReportLab rechnete ASCII85 in Python Byte für Byte – das war der grösste Teil der Bauzeit (Leben123, Druckdateien
+  normal: rund drei Viertel). Text und Pixel gleich, Lese-PDFs etwas kleiner; das Druck-PDF schreibt Ghostscript ohnehin neu.
+
 ## 3.6.3 (November 2026) – CMYK schneller
 - `final`/`komplett` mit `{farbmodus}: cmyk`: Ghostscript wandelt Buchblock und Umschläge beider Fassungen jetzt
   **gleichzeitig** um (je Datei ein Kern, höchstens so viele wie Kerne, max. 4) statt nacheinander. Leben123: rund

@@ -391,6 +391,8 @@ pdfmetrics.registerFontFamily(FT["text"], normal=FT["text"], bold=FT["text_fett"
 # Nur eingebettete Schriften im PDF: Seiten und Grafiken (QR-Codes) starten mit der Buchschrift
 # statt mit Helvetica/Times-Roman – sonst melden Druckereien «nicht eingebettete Schriften».
 from reportlab import rl_config as _rl
+_rl.useA85 = 0      # 3.6.4: Bilder binär einbetten (Flate) statt als ASCII85-Text – ohne den C-Beschleuniger von
+                    # ReportLab rechnet ASCII85 in Python und kostete den grössten Teil der Bauzeit. PDF-Inhalt gleich.
 from reportlab.graphics import shapes as _shapes
 if FT.get("text") in pdfmetrics.getRegisteredFontNames():
     from reportlab.lib import styles as _st
