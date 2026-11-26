@@ -3,6 +3,14 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 3.6.5 (November 2026) – CMYK in Stücken
+- `final` mit `{farbmodus}: cmyk`: Der **Buchblock** wird in Seitenbereiche geteilt (ein Stück pro Kern, max. 4),
+  die Stücke wandelt Ghostscript gleichzeitig um, **qpdf** fügt sie wieder zusammen (Seitenzahl wird geprüft).
+  Seite für Seite dasselbe Ergebnis; Schriften stecken dafür mehrfach im PDF (etwas grösser). Leben123: CMYK rund
+  95 → 50 s. **Links im Buchblock entfallen** (`-dPreserveAnnots=false`, auch ohne Stücke) – Papier braucht keine,
+  Lese-PDF und E-Book behalten sie. Ohne qpdf, mit `PURESATZ_CMYK_STUECKE=1` oder wenn ein Stück scheitert: ganzer
+  Buchblock in einem Stück wie 3.6.3 (Meldung «in einem Stück»). Bücher unter 16 Seiten werden nicht geteilt.
+
 ## 3.6.4 (November 2026) – Bauen viel schneller
 - Bilder kommen **binär** ins PDF (Flate) statt als ASCII85-Text (`rl_config.useA85 = 0`). Ohne den C-Beschleuniger
   von ReportLab rechnete ASCII85 in Python Byte für Byte – das war der grösste Teil der Bauzeit (Leben123, Druckdateien

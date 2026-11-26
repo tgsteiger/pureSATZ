@@ -637,15 +637,32 @@ def ghostscript():
     return gs
 
 
+GS_CMYK = ["-q", "-dNOPAUSE", "-dBATCH", "-dSAFER", "-sDEVICE=pdfwrite", "-dPDFSETTINGS=/prepress",
+           "-dAutoRotatePages=/None", "-sColorConversionStrategy=CMYK", "-dProcessColorModel=/DeviceCMYK",
+           "-dDownsampleColorImages=false", "-dDownsampleGrayImages=false", "-dDownsampleMonoImages=false"]
+
+
+def qpdf_seiten(qpdf, p):
+    """Seitenzahl eines PDFs mit qpdf (None = ging nicht)."""
+    try:
+        r = subprocess.run([qpdf, "--show-npages", p], capture_output=True, text=True)
+        return int(r.stdout.strip()) if r.returncode in (0, 3) else None
+    except (OSError, ValueError):
+        return None
+
+
 def farbmodus_druck(test=None):
     """{farbmodus}: cmyk in der Druckdatei: Buchblock und Umschlag (PDF) mit Ghostscript nach CMYK umwandeln.
     Nur bei final/komplett. Lese-PDF, E-Book, Leseprobe und JPGs bleiben RGB. Jeder Bau setzt die Druck-PDFs neu
     aus den Originalbildern – umgewandelt wird also immer nur einmal, nichts wird mehrfach umgerechnet.
     3.6.3: Ghostscript braucht pro Datei nur einen Kern – darum laufen die Dateien (beide Fassungen, Buchblock und
     Umschlag) gleichzeitig, höchstens so viele wie Kerne (max. 4). PURESATZ_CMYK_PARALLEL=1 = nacheinander wie früher.
-    Jede Datei hat ihre eigene Zwischendatei; Meldungen kommen in der gewohnten Reihenfolge."""
+    3.6.5: Der Buchblock wird zudem in Stücke geteilt (je ein Seitenbereich pro Kern) und danach mit qpdf wieder
+    zusammengefügt – Seite für Seite dasselbe Ergebnis. Links im Buchblock entfallen (Papier braucht keine; Lese-PDF
+    und E-Book behalten sie). Ohne qpdf, bei PURESATZ_CMYK_STUECKE=1 oder wenn etwas nicht aufgeht: ganzer Buchblock
+    in einem Stück wie 3.6.3. Jede Datei hat ihre eigenen Zwischendateien; Meldungen in der gewohnten Reihenfolge."""
     from concurrent.futures import ThreadPoolExecutor
-    auftraege = []                                  # (a, p) in der gewohnten Reihenfolge
+    dateien = []                                    # (a, p) in der gewohnten Reihenfolge
     gs = None
     for a in ausgaben():
         if bk.druck_V("farbmodus", "rgb", a).strip().lower() != "cmyk":
@@ -663,35 +680,71 @@ def farbmodus_druck(test=None):
         for n in (f"{K}_Buchblock.pdf", f"{K}_Umschlag_Hardcover.pdf", f"{K}_Umschlag_Softcover.pdf"):
             p = os.path.join(o, n)
             if os.path.exists(p):
-                auftraege.append((a, p))
-    if not auftraege:
+                dateien.append((a, p))
+    if not dateien:
         return
 
-    def wandeln(auftrag):
-        a, p = auftrag
-        tmp = p[:-4] + "_tmp_cmyk.pdf"              # eigene Zwischendatei je Datei (laufen gleichzeitig)
-        r = subprocess.run([gs, "-q", "-dNOPAUSE", "-dBATCH", "-dSAFER", "-sDEVICE=pdfwrite",
-                            "-dPDFSETTINGS=/prepress", "-dAutoRotatePages=/None",
-                            "-sColorConversionStrategy=CMYK", "-dProcessColorModel=/DeviceCMYK",
-                            "-dDownsampleColorImages=false", "-dDownsampleGrayImages=false",
-                            "-dDownsampleMonoImages=false", f"-sOutputFile={tmp}", p],
-                           capture_output=True, text=True)
-        if r.returncode == 0 and os.path.exists(tmp):
-            os.replace(tmp, p)                      # atomar: die Druckdatei ist nie halb geschrieben
-            return f"CMYK · {name(a)}: {os.path.relpath(p, BASE)}"
-        if os.path.exists(tmp):
-            os.remove(tmp)
-        return (f"> Hinweis: CMYK-Umwandlung ging nicht ({os.path.basename(p)}), Datei bleibt RGB: "
-                f"{(r.stderr or '').strip()[:200]}")
+    def zahl(name):
+        try:
+            return int(os.environ.get(name, "0"))
+        except ValueError:
+            return 0
+    kerne = zahl("PURESATZ_CMYK_PARALLEL") or min(4, os.cpu_count() or 1)
+    qpdf = shutil.which("qpdf") if zahl("PURESATZ_CMYK_STUECKE") != 1 and kerne > 1 else None
 
-    try:
-        wunsch = int(os.environ.get("PURESATZ_CMYK_PARALLEL", "0"))
-    except ValueError:
-        wunsch = 0
-    anzahl = max(1, min(len(auftraege), wunsch if wunsch > 0 else min(4, os.cpu_count() or 1)))
-    with ThreadPoolExecutor(max_workers=anzahl) as pool:
-        for meldung in pool.map(wandeln, auftraege):     # map: Ergebnisse in der Reihenfolge der Aufträge
-            print(meldung)
+    # Aufträge: Umschlag = ein Auftrag · Buchblock = Stücke (Seitenbereiche), sonst ein Auftrag
+    plan = {}                                       # p -> [(tmp, von, bis)]  (von/bis None = ganze Datei)
+    for a, p in dateien:
+        seiten = qpdf_seiten(qpdf, p) if qpdf and p.endswith("_Buchblock.pdf") else None
+        if seiten and seiten >= 16:
+            stuecke = min(zahl("PURESATZ_CMYK_STUECKE") or kerne, seiten // 8)
+            groesse = -(-seiten // stuecke)
+            plan[p] = [(f"{p[:-4]}_tmp_cmyk_{i:02d}.pdf", v, min(v + groesse - 1, seiten))
+                       for i, v in enumerate(range(1, seiten + 1, groesse), 1)]
+        else:
+            plan[p] = [(p[:-4] + "_tmp_cmyk.pdf", None, None)]
+
+    def wandeln(auftrag):
+        p, tmp, von, bis = auftrag
+        extra = ["-dPreserveAnnots=false"] if p.endswith("_Buchblock.pdf") else []      # Buchblock: ohne Links
+        bereich = [f"-dFirstPage={von}", f"-dLastPage={bis}"] if von else []
+        r = subprocess.run([gs] + GS_CMYK + extra + bereich + [f"-sOutputFile={tmp}", p], capture_output=True, text=True)
+        return r.returncode == 0 and os.path.exists(tmp), (r.stderr or "").strip()[:200]
+
+    auftraege = [(p, tmp, von, bis) for p, teile in plan.items() for tmp, von, bis in teile]
+    with ThreadPoolExecutor(max_workers=max(1, min(kerne, len(auftraege)))) as pool:
+        ergebnis = dict(zip([t[1] for t in auftraege], pool.map(wandeln, auftraege)))
+
+    for a, p in dateien:                            # zusammensetzen und melden – in der gewohnten Reihenfolge
+        teile = plan[p]
+        tmps = [t[0] for t in teile]
+        fehler = next((ergebnis[t][1] or "Ghostscript-Fehler" for t in tmps if not ergebnis[t][0]), None)
+        fertig, vermerk = None, ""
+        if fehler is None and len(teile) == 1:
+            fertig = tmps[0]
+        elif fehler is None:                        # Stücke mit qpdf zusammenfügen, Seitenzahl prüfen
+            ganz = p[:-4] + "_tmp_cmyk.pdf"
+            r = subprocess.run([qpdf, tmps[0], "--pages"] + tmps + ["--", ganz], capture_output=True, text=True)
+            if r.returncode in (0, 3) and qpdf_seiten(qpdf, ganz) == teile[-1][2]:
+                fertig, vermerk = ganz, f" ({len(teile)} Stücke)"
+            else:
+                fehler = "Zusammenfügen ging nicht: " + (r.stderr or "").strip()[:150]
+                if os.path.exists(ganz):
+                    os.remove(ganz)
+        if fertig is None and len(teile) > 1:      # Rückweg: ganzer Buchblock in einem Stück (wie 3.6.3)
+            ganz = p[:-4] + "_tmp_cmyk.pdf"
+            ok, fehler = wandeln((p, ganz, None, None))
+            fertig, vermerk = (ganz, " (in einem Stück)") if ok else (None, "")
+        for t in tmps:
+            if t != fertig and os.path.exists(t):
+                os.remove(t)
+        if fertig:
+            os.replace(fertig, p)                   # atomar: die Druckdatei ist nie halb geschrieben
+            print(f"CMYK · {name(a)}: {os.path.relpath(p, BASE)}{vermerk}")
+        else:
+            if os.path.exists(p[:-4] + "_tmp_cmyk.pdf"):
+                os.remove(p[:-4] + "_tmp_cmyk.pdf")
+            print(f"> Hinweis: CMYK-Umwandlung ging nicht ({os.path.basename(p)}), Datei bleibt RGB: {fehler}")
 
 
 def zusatz_dateien(art):
