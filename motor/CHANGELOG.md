@@ -3,6 +3,12 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 3.6.3 (November 2026) – CMYK schneller
+- `final`/`komplett` mit `{farbmodus}: cmyk`: Ghostscript wandelt Buchblock und Umschläge beider Fassungen jetzt
+  **gleichzeitig** um (je Datei ein Kern, höchstens so viele wie Kerne, max. 4) statt nacheinander. Leben123: rund
+  1,5 Min. schneller. Gleicher Ghostscript-Befehl, gleiche Druckdateien. Jede Datei hat ihre eigene Zwischendatei
+  (`<name>_tmp_cmyk.pdf`), Meldungen in der gewohnten Reihenfolge. `PURESATZ_CMYK_PARALLEL=1` = nacheinander wie früher.
+
 ## 3.6.2 (November 2026) – KI: auch nur einen Teil der Hilfe
 - Hilfe: bei jedem Abschnitt rechts «📋 für KI» – kopiert nur diesen Abschnitt samt Hinweis für die KI (passt auch in
   kostenlose KI-Chats). «Mit einer KI arbeiten»: drei Wege (ganze Hilfe, ein Teil, kurz), Einleitung im Handbuch ergänzt.

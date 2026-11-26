@@ -640,11 +640,17 @@ def ghostscript():
 def farbmodus_druck(test=None):
     """{farbmodus}: cmyk in der Druckdatei: Buchblock und Umschlag (PDF) mit Ghostscript nach CMYK umwandeln.
     Nur bei final/komplett. Lese-PDF, E-Book, Leseprobe und JPGs bleiben RGB. Jeder Bau setzt die Druck-PDFs neu
-    aus den Originalbildern – umgewandelt wird also immer nur einmal, nichts wird mehrfach umgerechnet."""
+    aus den Originalbildern – umgewandelt wird also immer nur einmal, nichts wird mehrfach umgerechnet.
+    3.6.3: Ghostscript braucht pro Datei nur einen Kern – darum laufen die Dateien (beide Fassungen, Buchblock und
+    Umschlag) gleichzeitig, höchstens so viele wie Kerne (max. 4). PURESATZ_CMYK_PARALLEL=1 = nacheinander wie früher.
+    Jede Datei hat ihre eigene Zwischendatei; Meldungen kommen in der gewohnten Reihenfolge."""
+    from concurrent.futures import ThreadPoolExecutor
+    auftraege = []                                  # (a, p) in der gewohnten Reihenfolge
+    gs = None
     for a in ausgaben():
         if bk.druck_V("farbmodus", "rgb", a).strip().lower() != "cmyk":
             continue
-        gs = ghostscript()
+        gs = gs or ghostscript()
         if not gs:
             befehl = {"darwin": "brew install ghostscript   (ohne Homebrew: sudo port install ghostscript)",
                       "win32": "winget install ArtifexSoftware.GhostScript"}.get(sys.platform, "sudo apt install ghostscript")
@@ -656,22 +662,36 @@ def farbmodus_druck(test=None):
         K = g["kuerzel"]
         for n in (f"{K}_Buchblock.pdf", f"{K}_Umschlag_Hardcover.pdf", f"{K}_Umschlag_Softcover.pdf"):
             p = os.path.join(o, n)
-            if not os.path.exists(p):
-                continue
-            tmp = os.path.join(o, "_tmp_cmyk.pdf")
-            r = subprocess.run([gs, "-q", "-dNOPAUSE", "-dBATCH", "-dSAFER", "-sDEVICE=pdfwrite",
-                                "-dPDFSETTINGS=/prepress", "-dAutoRotatePages=/None",
-                                "-sColorConversionStrategy=CMYK", "-dProcessColorModel=/DeviceCMYK",
-                                "-dDownsampleColorImages=false", "-dDownsampleGrayImages=false",
-                                "-dDownsampleMonoImages=false", f"-sOutputFile={tmp}", p],
-                               capture_output=True, text=True)
-            if r.returncode == 0 and os.path.exists(tmp):
-                os.replace(tmp, p)
-                print(f"CMYK · {name(a)}: {os.path.relpath(p, BASE)}")
-            else:
-                if os.path.exists(tmp):
-                    os.remove(tmp)
-                print(f"> Hinweis: CMYK-Umwandlung ging nicht ({n}), Datei bleibt RGB: {(r.stderr or '').strip()[:200]}")
+            if os.path.exists(p):
+                auftraege.append((a, p))
+    if not auftraege:
+        return
+
+    def wandeln(auftrag):
+        a, p = auftrag
+        tmp = p[:-4] + "_tmp_cmyk.pdf"              # eigene Zwischendatei je Datei (laufen gleichzeitig)
+        r = subprocess.run([gs, "-q", "-dNOPAUSE", "-dBATCH", "-dSAFER", "-sDEVICE=pdfwrite",
+                            "-dPDFSETTINGS=/prepress", "-dAutoRotatePages=/None",
+                            "-sColorConversionStrategy=CMYK", "-dProcessColorModel=/DeviceCMYK",
+                            "-dDownsampleColorImages=false", "-dDownsampleGrayImages=false",
+                            "-dDownsampleMonoImages=false", f"-sOutputFile={tmp}", p],
+                           capture_output=True, text=True)
+        if r.returncode == 0 and os.path.exists(tmp):
+            os.replace(tmp, p)                      # atomar: die Druckdatei ist nie halb geschrieben
+            return f"CMYK · {name(a)}: {os.path.relpath(p, BASE)}"
+        if os.path.exists(tmp):
+            os.remove(tmp)
+        return (f"> Hinweis: CMYK-Umwandlung ging nicht ({os.path.basename(p)}), Datei bleibt RGB: "
+                f"{(r.stderr or '').strip()[:200]}")
+
+    try:
+        wunsch = int(os.environ.get("PURESATZ_CMYK_PARALLEL", "0"))
+    except ValueError:
+        wunsch = 0
+    anzahl = max(1, min(len(auftraege), wunsch if wunsch > 0 else min(4, os.cpu_count() or 1)))
+    with ThreadPoolExecutor(max_workers=anzahl) as pool:
+        for meldung in pool.map(wandeln, auftraege):     # map: Ergebnisse in der Reihenfolge der Aufträge
+            print(meldung)
 
 
 def zusatz_dateien(art):
