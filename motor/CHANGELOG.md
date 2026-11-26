@@ -3,6 +3,10 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 3.6.8 (November 2026)
+- Menü `s`/`s1`/`s2` öffnet wieder das **Lese-PDF**: `00-Druckbericht.pdf` (kürzester Dateiname im Ordner) galt
+  fälschlich als Lese-PDF – auch bei `p` PDF öffnen. Dateien mit «00-» zählen nicht mehr.
+
 ## 3.6.7 (November 2026) – Stücke gleich schwer
 - CMYK-Stücke werden nach **Arbeit** geschnitten statt nach Seitenzahl: Gewicht je Seite = Megapixel der Bilder (+ kleiner
   Grundwert; an Leben123 gemessen: ~1 s je Megapixel, Text kaum). Seiten mit vielen Bildern ergeben kürzere Stücke –

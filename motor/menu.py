@@ -91,7 +91,7 @@ BEFEHLE = ("co", "cover-stand", "schnell", "komplett", "final", "buchdruck", "en
 MD = {"b": ("Buch", "*-buch.md"), "v": ("Variablen", "*-variablen.md"), "u": ("Umschlag", "*-umschlag.md"),
       "s": ("Stichworte", "stichworte-*.txt"), "h": ("meine Hilfe", "meine-hilfe.md")}
 WEG = ("check_", "_Buchblock", "_Cover", "_Umschlag", "_booklet", "_Inhalt", "_Aenderungen", "_Leseprobe", "_Korrektur",
-       "_tmp")
+       "_tmp", "00-")          # 3.6.8: «00-Druckbericht.pdf» ist kein Lese-PDF (sonst öffnete s den Druckbericht)
 ton = True
 gelaufen = False                       # hat der letzte Menüpunkt etwas ausgeführt (Meldungen stehen lassen)?
 INITIAL_VERLAUF = []                   # ↑ ↓ im Initialen-Menü, in EINST als «in:…»
