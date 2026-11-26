@@ -1,6 +1,6 @@
 # KI-pureSATZ – Wiedereinstieg für Claude (ab pureSATZ 3.5)
 
-Stand: 21.11.2026 · Motor 3.6.0 · Zu Beginn einer Sitzung lesen. Gilt für den Motor und alle Bücher.
+Stand: 26.11.2026 · Motor 3.6.6 · Zu Beginn einer Sitzung lesen. Gilt für den Motor und alle Bücher.
 Regeln für die Zusammenarbeit (Sprache, «go», Befehle): `pureWORLD/CLAUDE-WIEDEREINSTIEGE.md` (privat).
 Buchinhalt: `buecher/<Buch>/KI-<Buch>.md` (z. B. KI-Leben123.md). Grosser Umbau: `claude-modernisierung-puresatz.md`.
 Diese Datei ist öffentlich (GitHub) – nichts Persönliches hineinschreiben.
@@ -39,6 +39,20 @@ Diese Datei ist öffentlich (GitHub) – nichts Persönliches hineinschreiben.
   wird neu vertont (Azure-Kosten!).
 - Menü testen mit Eingaben: `printf 'co\n\nj\n' | python3 motor/menu.py`.
 
+## Bauarten und Tempo (3.6.3–3.6.6)
+- Menü `s`/`s1`/`s2` schnell (Lese-PDF) · **`f`/`f1`/`f2` Buchdruck** (`sh build.sh buchdruck [normal|uz]`): Buchblock +
+  Umschlag CMYK, E-Books, Lese-PDF, Druckbericht, Liste «Für die Druckerei» – ohne Booklet/Mockups · `k` komplett = alles
+  (Booklet, Mockups, Leseprobe, Korrektur) · `sh build.sh final` gibt es weiterhin.
+- 3.6.3 CMYK-Dateien gleichzeitig (ThreadPool, eigene `_tmp_cmyk`-Dateien) · 3.6.4 `rl_config.useA85 = 0` (Bilder binär;
+  ASCII85 in Python war ~75 % der Bauzeit) · 3.6.5 Buchblock in Seitenbereichen (gs `-dFirstPage/-dLastPage`), qpdf fügt
+  zusammen, Seitenzahl geprüft, Rückweg «in einem Stück»; `-dPreserveAnnots=false` = keine Links im Druck-Buchblock ·
+  3.6.6 6 Stücke bei 4 Kernen, grösste Aufträge zuerst. Schalter: `PURESATZ_CMYK_PARALLEL=1`, `PURESATZ_CMYK_STUECKE=1`.
+- Leben123 (Acer, 4 Kerne/8 Threads): final 290 s → 99 s · Buchdruck `f` 94 s · `f1` 65 s · komplett 139 s.
+- Messen: `ps`-Protokoll alle 2 s (`while true; do date +%T >> …; ps -eo pcpu,stat,etime,args --sort=-pcpu | head -10 >> …; sleep 2; done`)
+  und `BUCH_FINAL=1 BUCH_BOOKLET=druck .venv/bin/python3 -m cProfile -o x.prof motor/build-broschuere.py [uz]`.
+- Offen/Ideen: Stücke nach Gewicht der Seiten statt nach Seitenzahl (Seiten mit Bildern bremsen, ~5–8 s) · build-broschuere
+  normal (~28 s, 1 Kern) neu profilieren · «gleich in CMYK bauen» (ohne gs) nur mit RGB-Prüfung und Bildvergleich.
+
 ## Dateien holen und zurückschreiben (Cowork)
 - Zugriff auf `~/Dokumente/pureWORLD` anfragen. Holen (stage) → in der Cloud ändern → zurückschreiben (commit,
   mit expectedMtimeMs) → nochmals holen und vergleichen (cmp). Bilder (PNG/JPG) werden neu verpackt: Pixel vergleichen.
@@ -59,6 +73,10 @@ dann `sh release.sh` (git push, alle Bücher `update.sh lokal ja`) und in Leben1
 - Vor «es gab mal …» im Code und CHANGELOG suchen (grep), nicht annehmen. Bevor man den Motor verdächtigt: md-history vergleichen.
 - Status-Dateien nur über das erste Wort lesen (`split()[0]`).
 - Beide Fassungen bauen parallel: gemeinsame Druckdateien atomar schreiben.
+- Vor dem Optimieren messen (cProfile): Die Bremse war nicht Ghostscript, sondern ASCII85 in Python (fehlender C-Beschleuniger).
+- Ghostscript `pdfwrite` nutzt nur einen Kern – mehr Tempo nur mit mehreren Dateien oder Seitenbereichen gleichzeitig.
+- Vergleich nach Motor-Änderung: `.venv/bin/python3 ../../pureSATZ/test/vergleich.py <alt> .` (Text + Pixel); Links und
+  Schriften prüft er nicht → bei Druck-PDFs zusätzlich mit pikepdf (Seiten, Annots, Farbräume, rg/RG = RGB-Reste).
 - `@DECORATE-ABOVE-BOTTOM-N` braucht N mm Platz; Doppelseite: auf beiden Seiten denselben, kleineren Wert.
 - Umflossene Bilder: Klasse `UmflossenesBild` (eigene wrap/split), immer mit Seitenbild prüfen (pdftoppm).
 - update.py behält nur den letzten `motor-alt-…`; Starter (build.sh usw.) erneuert update ausser Dateien mit `# eigen`.
