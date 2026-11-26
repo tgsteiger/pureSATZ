@@ -1,6 +1,6 @@
 # KI-pureSATZ – Wiedereinstieg für Claude (ab pureSATZ 3.5)
 
-Stand: 26.11.2026 · Motor 3.6.6 · Zu Beginn einer Sitzung lesen. Gilt für den Motor und alle Bücher.
+Stand: 26.11.2026 · Motor 3.6.7 · Zu Beginn einer Sitzung lesen. Gilt für den Motor und alle Bücher.
 Regeln für die Zusammenarbeit (Sprache, «go», Befehle): `pureWORLD/CLAUDE-WIEDEREINSTIEGE.md` (privat).
 Buchinhalt: `buecher/<Buch>/KI-<Buch>.md` (z. B. KI-Leben123.md). Grosser Umbau: `claude-modernisierung-puresatz.md`.
 Diese Datei ist öffentlich (GitHub) – nichts Persönliches hineinschreiben.
@@ -50,7 +50,8 @@ Diese Datei ist öffentlich (GitHub) – nichts Persönliches hineinschreiben.
 - Leben123 (Acer, 4 Kerne/8 Threads): final 290 s → 99 s · Buchdruck `f` 94 s · `f1` 65 s · komplett 139 s.
 - Messen: `ps`-Protokoll alle 2 s (`while true; do date +%T >> …; ps -eo pcpu,stat,etime,args --sort=-pcpu | head -10 >> …; sleep 2; done`)
   und `BUCH_FINAL=1 BUCH_BOOKLET=druck .venv/bin/python3 -m cProfile -o x.prof motor/build-broschuere.py [uz]`.
-- Offen/Ideen: Stücke nach Gewicht der Seiten statt nach Seitenzahl (Seiten mit Bildern bremsen, ~5–8 s) · build-broschuere
+- 3.6.7: Stücke nach Gewicht (Megapixel je Seite, `seiten_gewichte()`/`schneiden()` in bauen.py).
+- Offen/Ideen: build-broschuere
   normal (~28 s, 1 Kern) neu profilieren · «gleich in CMYK bauen» (ohne gs) nur mit RGB-Prüfung und Bildvergleich.
 
 ## Dateien holen und zurückschreiben (Cowork)

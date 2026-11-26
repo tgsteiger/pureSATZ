@@ -3,6 +3,12 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 3.6.7 (November 2026) – Stücke gleich schwer
+- CMYK-Stücke werden nach **Arbeit** geschnitten statt nach Seitenzahl: Gewicht je Seite = Megapixel der Bilder (+ kleiner
+  Grundwert; an Leben123 gemessen: ~1 s je Megapixel, Text kaum). Seiten mit vielen Bildern ergeben kürzere Stücke –
+  am Schluss läuft kein schweres Stück mehr allein. Reihenfolge nach diesem Gewicht (schwerste zuerst, auch Umschläge).
+  Ohne pypdf oder wenn das Messen scheitert: nach Seitenzahl wie 3.6.6. Ergebnis Seite für Seite gleich.
+
 ## 3.6.6 (November 2026) – Buchdruck
 - **Menü `f` = Buchdruck** (`f1` nur normal, `f2` nur UC; Terminal `sh build.sh buchdruck [normal|uz]`): Buchblock und
   Umschlag (CMYK), E-Books, Lese-PDF und Druckbericht – **ohne Probedruck-Booklet und Mockups**. Am Schluss die Liste

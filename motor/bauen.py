@@ -652,6 +652,52 @@ def qpdf_seiten(qpdf, p):
         return None
 
 
+def seiten_gewichte(p):
+    """3.6.7: Arbeit je Seite für die CMYK-Umwandlung ≈ Megapixel der Bilder (gemessen an Leben123: ~1 s je MP,
+    Text kaum). Jede Seite bekommt einen kleinen Grundwert. None = nicht messbar (dann nach Seitenzahl teilen)."""
+    try:
+        from pypdf import PdfReader
+        gewichte = []
+        for seite in PdfReader(p).pages:
+            gesehen, mp = set(), 0.0
+
+            def bilder(res):
+                nonlocal mp
+                xo = res.get("/XObject") if res else None
+                for wert in (xo.get_object().values() if xo else []):
+                    nr = getattr(wert, "idnum", id(wert))
+                    x = wert.get_object()
+                    if nr in gesehen:
+                        continue
+                    gesehen.add(nr)
+                    if x.get("/Subtype") == "/Image":
+                        mp += int(x.get("/Width", 0)) * int(x.get("/Height", 0)) / 1e6
+                    elif x.get("/Subtype") == "/Form":
+                        bilder(x.get("/Resources"))
+            r = seite.get("/Resources")
+            bilder(r.get_object() if r else None)
+            gewichte.append(0.15 + mp)
+        return gewichte
+    except Exception:
+        return None
+
+
+def schneiden(gewichte, stuecke, mindest=4):
+    """Seiten 1…n in höchstens «stuecke» zusammenhängende Bereiche teilen, jeder etwa gleich schwer → [(von, bis)]."""
+    n, summe = len(gewichte), sum(gewichte)
+    grenzen, kum, ziel = [], 0.0, summe / stuecke
+    for i, g in enumerate(gewichte, 1):
+        kum += g
+        if len(grenzen) < stuecke - 1 and kum >= ziel * (len(grenzen) + 1) and i - (grenzen[-1] if grenzen else 0) >= mindest \
+                and n - i >= mindest:
+            grenzen.append(i)
+    bereiche, von = [], 1
+    for b in grenzen + [n]:
+        bereiche.append((von, b))
+        von = b + 1
+    return bereiche
+
+
 def farbmodus_druck(test=None):
     """{farbmodus}: cmyk in der Druckdatei: Buchblock und Umschlag (PDF) mit Ghostscript nach CMYK umwandeln.
     Nur bei final/komplett. Lese-PDF, E-Book, Leseprobe und JPGs bleiben RGB. Jeder Bau setzt die Druck-PDFs neu
@@ -694,16 +740,22 @@ def farbmodus_druck(test=None):
     qpdf = shutil.which("qpdf") if zahl("PURESATZ_CMYK_STUECKE") != 1 and kerne > 1 else None
 
     # Aufträge: Umschlag = ein Auftrag · Buchblock = Stücke (Seitenbereiche), sonst ein Auftrag
-    plan = {}                                       # p -> [(tmp, von, bis)]  (von/bis None = ganze Datei)
+    plan, last = {}, {}                             # p -> [(tmp, von, bis)] (von/bis None = ganze Datei) · tmp -> Arbeit
     for a, p in dateien:
+        gew = seiten_gewichte(p)                    # 3.6.7: Arbeit je Seite (Megapixel), auch für Umschläge
         seiten = qpdf_seiten(qpdf, p) if qpdf and p.endswith("_Buchblock.pdf") else None
         if seiten and seiten >= 16:
             stuecke = min(zahl("PURESATZ_CMYK_STUECKE") or kerne * 3 // 2, seiten // 8)   # 3.6.6: 6 bei 4 Kernen
-            groesse = -(-seiten // stuecke)
-            plan[p] = [(f"{p[:-4]}_tmp_cmyk_{i:02d}.pdf", v, min(v + groesse - 1, seiten))
-                       for i, v in enumerate(range(1, seiten + 1, groesse), 1)]
+            if gew and len(gew) == seiten:          # 3.6.7: gleich schwer schneiden statt gleich viele Seiten
+                bereiche = schneiden(gew, stuecke)
+            else:
+                groesse = -(-seiten // stuecke)
+                bereiche = [(v, min(v + groesse - 1, seiten)) for v in range(1, seiten + 1, groesse)]
+            plan[p] = [(f"{p[:-4]}_tmp_cmyk_{i:02d}.pdf", v, b) for i, (v, b) in enumerate(bereiche, 1)]
         else:
             plan[p] = [(p[:-4] + "_tmp_cmyk.pdf", None, None)]
+        for tmp, v, b in plan[p]:
+            last[tmp] = sum(gew[(v or 1) - 1:b or len(gew)]) if gew else None
 
     def wandeln(auftrag):
         p, tmp, von, bis = auftrag
@@ -714,9 +766,11 @@ def farbmodus_druck(test=None):
 
     auftraege = [(p, tmp, von, bis) for p, teile in plan.items() for tmp, von, bis in teile]
 
-    def gewicht(auftrag):                           # 3.6.6: grosse Arbeit zuerst – sonst läuft am Schluss ein Stück allein
-        p, _, von, bis = auftrag
-        groesse = os.path.getsize(p)
+    def gewicht(auftrag):                           # grosse Arbeit zuerst – sonst läuft am Schluss ein Stück allein
+        p, tmp, von, bis = auftrag
+        if all(v is not None for v in last.values()):
+            return last[tmp]                        # 3.6.7: gemessene Arbeit (Megapixel)
+        groesse = os.path.getsize(p)                # 3.6.6: Dateigrösse anteilig
         return groesse * (bis - von + 1) / plan[p][-1][2] if von else groesse
     auftraege.sort(key=gewicht, reverse=True)
     with ThreadPoolExecutor(max_workers=max(1, min(kerne, len(auftraege)))) as pool:
