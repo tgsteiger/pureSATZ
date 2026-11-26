@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 3.6.5
+# pureSATZ Hilfe · pureSATZ · Motor 3.6.6
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -202,7 +202,7 @@ Als Text (zum Suchen):
   t  Tabellen …                       st Stichworte …
  ── Bauen ─────────────────────────   is ISBN …
   s  schnell  (Lese-PDF)  s1/2        ── Prüfen ───────────────────────
-  f  final    (Druck + E-Book)        bp Buch prüfen  N ✓  UC ✓
+  f  Buchdruck (Druck + E-Book) f1/2  bp Buch prüfen  N ✓  UC ✓
   k  komplett (+ Leseprobe, Korr.)    co Coverrechner prüfen
   hb Hörbuch … (Linux)                db Druckbericht
  ── Ansehen ───────────────────────   ── Weitergeben ──────────────────
@@ -221,11 +221,11 @@ Welche Taste wofür?
 
 Taste | baut | wann
 `s` schnell (`s1` nur normal, `s2` nur UC) | zuerst sync (wenn das Buch bei GitHub ist), dann Lese-PDF als Entwurf und gleich öffnen | beim Schreiben, oft
-`f` final | Lese-PDF, Druckdateien, E-Book, Mockup, Shop, Druckbericht | vor dem Druck
-`k` komplett | wie `f`, dazu Leseprobe und Korrektur-PDF (wie `sh build.sh komplett`) | Buch weitergeben: Druckerei, Webseite, Leser
+`f` Buchdruck (`f1` nur normal, `f2` nur UC) | Buchblock + Umschlag (CMYK), E-Books, Lese-PDF, Druckbericht – ohne Probedruck-Booklet und Mockups; am Schluss die Liste «Für die Druckerei» | vor dem Hochladen zur Druckerei
+`k` komplett | alles: wie `f`, dazu Probedruck-Booklet, Mockups, Leseprobe und Korrektur-PDF (wie `sh build.sh komplett`) | Buch weitergeben: Druckerei, Webseite, Leser
 `c` check / gegenlesen | check_NAME.pdf mit Markierungen pro Person | für Gegenleser
 
-Die Tasten heissen wie die Befehle im Terminal: `f` = `sh build.sh final`, `k` = `sh build.sh komplett`.
+Die Tasten heissen wie die Befehle im Terminal: `f` = `sh build.sh buchdruck` (`f1` = `… buchdruck normal`, `f2` = `… buchdruck uz`), `k` = `sh build.sh komplett`. `sh build.sh final` gibt es weiterhin (alles ausser Leseprobe und Korrektur).
 
 Abgleichen und zurückholen: `sy` sync allein · `ss` Supersync für ein neues oder anderes Gerät (Motor holen + sync + schnell) · `u`/`ul` nur den Motor · `zh` Stand zurückholen: die letzten 5 verschiedenen Stände der Buch-MD aus md-history/ (`v` Variablen, `u` Umschlag), Nummer = zurückholen, der jetzige Stand wird vorher gesichert. Oben «⚠ Motor x bereit → ul»: in pureSATZ daneben liegt ein neuerer Motor.
 
@@ -249,7 +249,7 @@ Untermenüs («…» = nur was es gibt):
 `t` Tabellen | `e` bearbeiten … (Liste mit Kürzel) · `n` neue Tabelle (öffnet die CSV, `@#name` kommt in den Block «## Noch einordnen» im Buch) · `o` Ordner
 `c` check / gegenlesen | `n` Liste neu (personen-seiten.txt) · `c` check-PDF für eine Person (öffnet sich danach) · `t` Textdatei
 `hb` Hörbuch (Linux) | `p` Probe hören · `w` Wörter hören · `t` Texte aus dem Buch · `v` vertonen · `k` Kapitel vertonen … · `e` Wörter/Probe/Einstellungen öffnen · `s` Azure-Schlüssel · `$` Terminal in audio/ · `o` Ordner · `h` Hilfe · `c` prüfen – siehe Hörbuch: Das Menü
-`f` final | Druckdateien für die Druckerei (wie `sh build.sh final`); danach öffnet sich der Druckbericht (`db`): Seitenbilanz, Umschlag, Coverrechner, ISBN, CMYK, Warnungen – jedes Mal neu, `ausgabe-…/00-Druckbericht.pdf` (`{druckbericht}: nein` in den Variablen = nicht öffnen)
+`f` Buchdruck | Druckdateien für die Druckerei (wie `sh build.sh buchdruck`); danach öffnet sich der Druckbericht (`db`): Seitenbilanz, Umschlag, Coverrechner, ISBN, CMYK, Warnungen – jedes Mal neu, `ausgabe-…/00-Druckbericht.pdf` (`{druckbericht}: nein` in den Variablen = nicht öffnen)
 `co` Coverrechner prüfen | baut nichts (wie `sh build.sh co`): pro Fassung Buchblock-Seiten vom letzten Druck-Bau, eingetragene Werte, ob die Rohdaten passen, und was zu tun ist; ist etwas fällig, öffnet sich die Druckdatei
 `um` Umstellen auf 3.0 | erscheint oben als «⚠ Alte Schreibweise (vor 3.0) → um», wenn ein Buch noch die Schreibweise vor 3.0 hat: zeigt die Änderungen, fragt, sichert nach md-history und stellt um. Das Buch sieht danach gleich aus. Andere Computer zuerst mit `ss` auf 3.0 bringen – ein älterer Motor kennt die neuen Namen nicht
 Einstellen · Weitergeben | `lp` Leseprobe · `ko` Korrektur · `np` nur Lese-PDF · `ne` nur E-Book · `st` Stichworte … (`v` Vorschläge · `u` übernehmen · `o` Stichwortdatei öffnen) · `is` ISBN … (alle Ausgaben ansehen und eintragen – Druck/E-Book, normal/UC; Enter = bleibt, `-` = leeren; speichert in der Variablen-Datei, dann Prüfziffer und Strichcode-PNG wie `sh build.sh isbn`) · `tr` Trennstellen … (Liste aus `{trennstellen}`; `Re | vi | ta | ler` = ergänzen, `-Revitaler` = entfernen; wirkt beim nächsten Bau) · `ge` Gestaltung … (Tabelle normal / UC; wo: 0–4 Zeilen oder `ti` im Titel – `ti3`, `ti23`, `ti234` = weitere Stufen; Schrift; Farbe `g` gold · `b` blau · `s` schwarz · `ü` wie die Überschrift; `k1`/`k0` Kapitälchen, `e1`/`e0` Einzug; `fb` `fg` `fs` Fett am Absatzanfang blau · gold · schwarz, `fk1`/`fk0` in Kapitälchen; vorne `n` = nur normal, `uc` = nur UC, ohne = beide; `n0`/`uc0` = alles aus; z. B. `n ti c b k1` · `uc 0`; `v` = Vorschau) · `cl` aufräumen (wie `sh cleanup.sh`, fragt `[j/N]`)
@@ -330,7 +330,7 @@ Danach im neuen Buchordner `sh build.sh`. Mit GitHub: dort `git init -b main` un
 
 Für jede Aufgabe: was im Buch stehen muss, die Schritte und wo es genauer steht.
 
-Ein Buch schreiben – braucht die drei Dateien `<buch>-buch.md`, `-variablen.md`, `-umschlag.md` (macht `setup`).\ Schritte: Titel, Autor usw. in der Variablen-Datei › Text in der Buch-Datei › `s` schnell, Lese-PDF ansehen › `f` final vor dem Druck · `k` komplett = final mit Leseprobe und Korrektur (zum Weitergeben und Gegenlesen).\ → Ein neues Buch anlegen
+Ein Buch schreiben – braucht die drei Dateien `<buch>-buch.md`, `-variablen.md`, `-umschlag.md` (macht `setup`).\ Schritte: Titel, Autor usw. in der Variablen-Datei › Text in der Buch-Datei › `s` schnell, Lese-PDF ansehen › `f` Buchdruck vor dem Druck · `k` komplett = alles mit Booklet, Leseprobe und Korrektur (zum Weitergeben und Gegenlesen).\ → Ein neues Buch anlegen
 
 Teile und Kapitel – Überschriften in der Buch-Datei: `# Teil 1|Titel|Untertitel`, `## Kapitel`, `### Zwischentitel`.\ Schritte: Teil-Zeile (neue Seite mit Teil-Seite) › darunter Kapitel mit `##` › `s` schnell.\ → Aufbau eines Buchs
 
@@ -340,7 +340,7 @@ Ein Inhaltsverzeichnis – `## @CONTENTS` in der Buch-Datei (neue Bücher haben 
 
 Ein Stichwortverzeichnis – `{stichworte}: ja`, eine Zeile `@INDEX`, die Liste `stichworte-<buch>.txt`.\ Schritte: `st` → `v` Vorschläge › `[+]` markieren › `u` übernehmen › `s` schnell.\ → Stichwortverzeichnis
 
-Drucken lassen – eine Druckdatei in `druck/` mit dem Text des Coverrechners.\ Schritte: `f` final › `co` zeigt die Seitenzahl › Coverrechner der Druckerei, Text unten einfügen › `f` final › `bp` zeigt ✓ › hochladen.\ → Umschlag: Rücken und Seitenzahl
+Drucken lassen – eine Druckdatei in `druck/` mit dem Text des Coverrechners.\ Schritte: `f` Buchdruck › `co` zeigt die Seitenzahl › Coverrechner der Druckerei, Text unten einfügen › `f` Buchdruck › `bp` zeigt ✓ › hochladen.\ → Umschlag: Rücken und Seitenzahl
 
 ## Zum Kopieren
 
@@ -1071,10 +1071,10 @@ Ausgabeordner: Ein normaler Bau legt die Druckdateien immer in `ausgabe-normal/`
 
 Die Breite des Rückens hängt von Seitenzahl und Papier ab. Die Druckerei rechnet sie mit ihrem Coverrechner aus.
 
-- Menü `f` final, dann `co` (baut nichts) – zeigt die Seitenzahl des Buchblocks und ob die Werte passen.
+- Menü `f` Buchdruck, dann `co` (baut nichts) – zeigt die Seitenzahl des Buchblocks und ob die Werte passen.
 - Im Coverrechner der Druckerei eingeben: Format, Bindung, Papier wie bestellt, diese Seitenzahl.
 - Den Text, wie er kommt, in der Plattform-Datei `druck/<datei>.md` zuunterst unter `## Coverrechner (Rohdaten)` einfügen (alten Text ersetzen).
-- Nochmals `f` final (oder `sh build.sh covers`): Der Motor liest Rücken, Beschnitt/Einschlag, Gesamtbreite und -höhe (tredition, epubli, BoD, KDP …, in cm, mm oder Zoll), rechnet den Deckel, trägt die Werte oben ein und baut den Umschlag damit. Oben stehen dann `{neu-berechnet}: ja`, `{berechnet-fuer-seiten}` und `{berechnet-am}`.
+- Nochmals `f` Buchdruck (oder `sh build.sh covers`): Der Motor liest Rücken, Beschnitt/Einschlag, Gesamtbreite und -höhe (tredition, epubli, BoD, KDP …, in cm, mm oder Zoll), rechnet den Deckel, trägt die Werte oben ein und baut den Umschlag damit. Oben stehen dann `{neu-berechnet}: ja`, `{berechnet-fuer-seiten}` und `{berechnet-am}`.
 
 Das machen auch `final` und `komplett`. Neue Rohdaten erkennt der Motor am geänderten Text. Er übernimmt nichts, wenn die Seitenzahl in den Rohdaten (z. B. epubli) nicht zum Buchblock passt, der Deckel nicht zum Buchformat passt oder der Text nicht lesbar ist – dann bleiben die Werte oben, und das Menü zeigt «⚠ Coverrechner …» (`co` öffnet die Datei). Nicht lesbar? Den Rohdaten-Block einer KI geben («Rücken, Beschnitt/Einschlag und Deckel in mm») oder die Werte von Hand eintragen. Gibt der Coverrechner für die neue Seitenzahl genau denselben Text aus, `{berechnet-fuer-seiten}` von Hand anpassen. Von Hand prüfen: `python3 motor/rohdaten2cover.py druck/<datei>.md`. Die Texte auf dem Umschlag stehen in `<buch>-umschlag.md` (Vorderseite, Buchrücken, Rückseite). → Plattform-Dateien
 
@@ -1086,7 +1086,7 @@ Ausgabeordner (z. B. `ausgabe-normal/`): `<kurz>_Buchblock.pdf` und `<kurz>_Umsc
 
 - Druckdatei: Muster `tredition-a5-hardcover` (CMYK ist dort schon eingestellt). In der Variablen-Datei unter `## Ausgabe: Druck …` bei `{druck-datei}:` eintragen.
 - Hardcover: Einschlag und Deckel laut Coverrechner, z. B. `{beschnitt-hardcover}: 17` und `{deckel-hardcover}: 153x216`.
-- Coverrechner von tredition: Seitenzahl aus `co` eingeben, den Text in der Druckdatei unter `## Coverrechner (Rohdaten)` einfügen, nochmals `f` final («Umschlag: Rücken und Seitenzahl»).
+- Coverrechner von tredition: Seitenzahl aus `co` eingeben, den Text in der Druckdatei unter `## Coverrechner (Rohdaten)` einfügen, nochmals `f` Buchdruck («Umschlag: Rücken und Seitenzahl»).
 - ISBN und Strichcode: tredition gibt jedem Buch eine ISBN. Die ISBN unter `## Ausgabe: Druck …` bei `{isbn}:` eintragen und in der Druckdatei `{isbn-bild}: auto` – der Motor macht den Strichcode selbst. Prüfen und ansehen: Menü `is` (`sh build.sh isbn`). (Oder das SVG von tredition als PNG in `bilder/` legen und dort eintragen.) `{isbn-rahmen}: berge` und `{isbn-rahmen-abstand}: 2` setzen die Bergkette darüber, ohne dass Gold die Striche berührt.
 - Hochladen: `<kurz>_Buchblock.pdf` und `<kurz>_Umschlag_Hardcover.pdf` – `00-UEBERSICHT.txt` zeigt sie.
 - Impressum: tredition verlangt Druckerei und Kontakt nach EU-Produktsicherheit: `{impressum-herstellung}` und `{impressum-kontakt}` unter `## Ausgabe: Druck …`. Mehr: tredition.com/impressum-buch
@@ -1939,7 +1939,7 @@ Gestalten
 Probedruck und Farben
 
 - Farben am Bildschirm nur grob beurteilen. Was zählt, ist der Probedruck auf dem echten Papier (matt/glänzend, weiss/creme).
-- Seitenzahl geändert: im Coverrechner der Druckerei neu rechnen, Text unter `## Coverrechner (Rohdaten)` ersetzen, dann `f` final (Umschlag).
+- Seitenzahl geändert: im Coverrechner der Druckerei neu rechnen, Text unter `## Coverrechner (Rohdaten)` ersetzen, dann `f` Buchdruck (Umschlag).
 
 ## Glossar
 

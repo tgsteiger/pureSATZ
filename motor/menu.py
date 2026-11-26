@@ -86,7 +86,7 @@ sys.path.insert(0, MOTOR)
 import plattform                        # noqa: E402
 PURESATZ = plattform.puresatz(BASE)    # ../pureSATZ oder ../../pureSATZ (z. B. buecher/Buch)
 LOKAL = os.path.isdir(os.path.join(PURESATZ, "motor"))
-BEFEHLE = ("co", "cover-stand", "schnell", "komplett", "final", "entwurf", "leseprobe", "korrektur", "nur-pdf", "nur-druck", "nur-ebook", "covers", "isbn",
+BEFEHLE = ("co", "cover-stand", "schnell", "komplett", "final", "buchdruck", "entwurf", "leseprobe", "korrektur", "nur-pdf", "nur-druck", "nur-ebook", "covers", "isbn",
            "pruefen", "personen", "stichworte", "stand", "aenderungen", "änderungen", "geschichten", "hilfe", "mockup", "sicherung")
 MD = {"b": ("Buch", "*-buch.md"), "v": ("Variablen", "*-variablen.md"), "u": ("Umschlag", "*-umschlag.md"),
       "s": ("Stichworte", "stichworte-*.txt"), "h": ("meine Hilfe", "meine-hilfe.md")}
@@ -1136,7 +1136,8 @@ def zeige():
                                ("is", "ISBN …")]),                                                          # ablauf, rechts was
                ("Bauen", [("s", ("schnell  (sync + Lese-PDF)" if os.path.isdir(os.path.join(BASE, ".git"))  # dazugehört
                                  else "schnell  (Lese-PDF)") + ("  s1/2" if fassungen_zwei() else "")),
-                          ("f", "final    (Druck + E-Book)"), ("k", "komplett (+ Leseprobe, Korr.)")]
+                          ("f", "Buchdruck (Druck + E-Book)" + ("  f1/2" if fassungen_zwei() else "")),
+                          ("k", "komplett (+ Booklet, Leseprobe, Korr.)")]
                 + ([("hb", "Hörbuch … (Linux)")] if LINUX else [])),
                ("Prüfen", [("bp", bp), ("co", "Coverrechner prüfen"), ("db", "Druckbericht")]),
                ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"),
@@ -1341,8 +1342,8 @@ def main():
                 k = "u" if w == "s2" else "n"
                 if bauen("schnell", *nur) == 0 and k in pdfs():       # Lese-PDF gleich öffnen
                     oeffnen(pdfs()[k][1])
-            elif w == "f":                                  # Druck + E-Book
-                bauen("final")
+            elif w in ("f", "f1", "f2"):                    # 3.6.6 Buchdruck: Buchblock + Umschlag (CMYK) + E-Book, ohne Booklet
+                bauen("buchdruck", *{"f1": ["normal"], "f2": ["uz"]}.get(w, []))
             elif w == "k":                                  # wie sh build.sh komplett: final + Leseprobe + Korrektur
                 bauen("komplett")
             elif w == "db":                                 # Druckbericht des letzten Druck-Baus

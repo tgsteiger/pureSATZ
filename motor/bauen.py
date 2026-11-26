@@ -11,6 +11,7 @@ Im Buchordner (Windows: build.bat statt sh build.sh):
 Booklets zum Selberdrucken entstehen automatisch: im «final» der Probedruck aus der Druckfassung
 (<kurz>_Probedruck_booklet.pdf), sonst aus dem Lese-PDF (<datei>_booklet.pdf).
     sh build.sh nur-druck [final]   nur Druckdateien (Buchblock, Umschlag)
+    sh build.sh buchdruck [normal|uz]   final ohne Booklet und Mockups: Buchblock + Umschlag (CMYK), E-Books, Lese-PDF
     sh build.sh co              Coverrechner: Stand des Umschlags je Fassung ansehen, baut nichts (Menü co)
     sh build.sh covers          Cover neu berechnen: Rohdaten des Coverrechners lesen, nur-druck final
     sh build.sh nur-ebook [final]   nur E-Books
@@ -697,7 +698,7 @@ def farbmodus_druck(test=None):
     for a, p in dateien:
         seiten = qpdf_seiten(qpdf, p) if qpdf and p.endswith("_Buchblock.pdf") else None
         if seiten and seiten >= 16:
-            stuecke = min(zahl("PURESATZ_CMYK_STUECKE") or kerne, seiten // 8)
+            stuecke = min(zahl("PURESATZ_CMYK_STUECKE") or kerne * 3 // 2, seiten // 8)   # 3.6.6: 6 bei 4 Kernen
             groesse = -(-seiten // stuecke)
             plan[p] = [(f"{p[:-4]}_tmp_cmyk_{i:02d}.pdf", v, min(v + groesse - 1, seiten))
                        for i, v in enumerate(range(1, seiten + 1, groesse), 1)]
@@ -712,6 +713,12 @@ def farbmodus_druck(test=None):
         return r.returncode == 0 and os.path.exists(tmp), (r.stderr or "").strip()[:200]
 
     auftraege = [(p, tmp, von, bis) for p, teile in plan.items() for tmp, von, bis in teile]
+
+    def gewicht(auftrag):                           # 3.6.6: grosse Arbeit zuerst – sonst läuft am Schluss ein Stück allein
+        p, _, von, bis = auftrag
+        groesse = os.path.getsize(p)
+        return groesse * (bis - von + 1) / plan[p][-1][2] if von else groesse
+    auftraege.sort(key=gewicht, reverse=True)
     with ThreadPoolExecutor(max_workers=max(1, min(kerne, len(auftraege)))) as pool:
         ergebnis = dict(zip([t[1] for t in auftraege], pool.map(wandeln, auftraege)))
 
@@ -944,6 +951,10 @@ def main():
     komplett = art == "komplett"            # final + Leseprobe + Korrektur
     if komplett:
         art, final = "alles", True
+    buchdruck = art == "buchdruck"          # 3.6.6: final ohne Probedruck-Booklet und Mockups (für die Druckerei)
+    if buchdruck:
+        art, final = "alles", True
+        NUR_FASSUNG = next((a for a in args if a in ("normal", "uz")), None)    # buchdruck normal|uz
     if druck and art in ("alles", "nur-druck"):
         art = "nur-druck"                   # Testlauf: nur Druckdateien, nach ausgabe-test/<datei>/
     if art == "sicherung":
@@ -1019,7 +1030,7 @@ def main():
     if art not in ("alles", "nur-pdf", "nur-druck", "nur-ebook"):
         print(__doc__); sys.exit(1)
     # Booklets: im «final» der Probedruck aus der Druckfassung, sonst aus dem Lese-PDF
-    booklet = "druck" if (art == "alles" and final) else ("bildschirm" if art in ("alles", "nur-pdf") else "")
+    booklet = "" if buchdruck else "druck" if (art == "alles" and final) else ("bildschirm" if art in ("alles", "nur-pdf") else "")
     env = dict(os.environ, BUCH_FINAL="1" if final else "0", BUCH_BOOKLET=booklet)
     start = time.time()
     sicherung()
@@ -1049,7 +1060,7 @@ def main():
             print("> Hinweis: Entwurf – Druckdateien bleiben RGB. CMYK (Ghostscript) nur mit final oder komplett.")
     zusatz_dateien(art)
     statistik()
-    if final and art in ("alles", "nur-pdf"):
+    if final and art in ("alles", "nur-pdf") and not buchdruck:
         mockups()
     if art == "alles" and final:
         print()
@@ -1068,6 +1079,15 @@ def main():
         ordner = "ausgabe-test/" + os.path.splitext(os.path.basename(bk.druck_datei()))[0] + "/"
     if art in ("alles", "nur-druck") and not druck:
         druckbericht(final)
+    if buchdruck:                           # 3.6.6: kurz, was für die Druckerei bereitliegt
+        import glob
+        print("\nFür die Druckerei:")
+        for a in ausgaben():
+            g = bk.AUSGABEN["B" if a == "uz" else "A"]
+            o = os.path.join(BASE, g["ordner"])
+            for f in sorted(glob.glob(os.path.join(o, g["kuerzel"] + "_Buchblock.pdf")) + glob.glob(os.path.join(o, g["kuerzel"] + "_Umschlag_*.pdf"))
+                            + [e for e in glob.glob(os.path.join(o, "*.epub")) if "_Leseprobe" not in e and "_EPUB2" not in e]):
+                print(f"  {name(a)}: {os.path.relpath(f, BASE)}")
     print(f"\nFertig in {time.time() - start:.0f} Sekunden. Ordner: {ordner}")
 
 
