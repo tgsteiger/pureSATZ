@@ -3,6 +3,10 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 3.6.13 (November 2026) – Widmung: Zeilen ausgeglichen
+- Druck: Die Widmung wird so schmal gesetzt, wie es bei gleicher Zeilenzahl geht – alle Zeilen etwa gleich lang,
+  kein einzelnes Wort mehr allein in der letzten Zeile.
+
 ## 3.6.12 (November 2026) – Widmung in der optischen Mitte
 - Druck: Die Widmung (@DEDICATION) steht nicht mehr im unteren Drittel, sondern in der optischen Mitte – auf gleicher
   Höhe wie der Satz einer @DECORATE-PAGE-Seite. Farbe und Schrift bleiben.

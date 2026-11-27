@@ -2987,7 +2987,17 @@ class ImpressumSeite(Flowable):
         if self.widmung:
             self.w = Paragraph(self.widmung, ParagraphStyle("widm", fontName=schrift("text_kursiv"), fontSize=9,
                                                             leading=13, textColor=BLAU, alignment=TA_CENTER))
-            self.wh = self.w.wrap(aw - 16 * mm, ah)[1]
+            self.bw = aw - 16 * mm
+            self.wh = self.w.wrap(self.bw, ah)[1]
+            n = len(self.w.blPara.lines)
+            if n > 1:                  # 3.6.13: Zeilen ausgleichen – schmalste Breite mit gleich vielen Zeilen
+                lo, hi = self.bw / n, self.bw
+                while hi - lo > 1:
+                    m = (lo + hi) / 2
+                    self.w.wrap(m, ah)
+                    lo, hi = (m, hi) if len(self.w.blPara.lines) > n else (lo, m)
+                self.bw = hi
+                self.wh = self.w.wrap(self.bw, ah)[1]
         return aw, ah - 1
     def draw(self):
         self.angaben.drawOn(self.canv, 0, 0)
@@ -2998,7 +3008,7 @@ class ImpressumSeite(Flowable):
             h = IMPRESSUM_LOGO_HOEHE * st.fontSize; b = h * iw / ih
             self.canv.drawImage(self.logo, 0, self.ah_ang + 2 * st.leading, b, h, mask="auto")
         if self.w:
-            self.w.drawOn(self.canv, 8 * mm, self.ah / 2 + 12 * mm - self.wh / 2)   # 3.6.12: optische Mitte, Höhe wie MottoSeite
+            self.w.drawOn(self.canv, (self.aw - self.bw) / 2, self.ah / 2 + 12 * mm - self.wh / 2)   # 3.6.12: optische Mitte, Höhe wie MottoSeite
 
 
 IMPRESSUM_LOGO_HOEHE = 1.5    # × Schriftgrösse des Impressums
