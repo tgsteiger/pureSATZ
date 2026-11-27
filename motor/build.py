@@ -1419,6 +1419,9 @@ class Ornament(Flowable):
         c.drawImage(bild(LOTUS), cx - lw / 2, 7 - lh / 2, lw, lh, mask="auto")
 
 
+TEIL_SEITEN = {}   # 3.6.14: Teil -> Seite (für den Check «Teil rechts» im Druck)
+
+
 class PartMarker(Flowable):
     """Steht oben auf der Teil-Seite und zeichnet Bild und Titel (Teil, Titel, Untertitel).
     Die Seitenvorlage «part» zeichnet nur den Hintergrund."""
@@ -1427,6 +1430,7 @@ class PartMarker(Flowable):
     def wrap(self, aw, ah): return aw, 1
     def draw(self):
         c = self.canv
+        TEIL_SEITEN[self.num] = c.getPageNumber()      # letzter Durchlauf zählt
         T = L.TEIL
         def pos(yp):   # Seitenkoordinate -> Koordinate dieses Flowables (steht ganz oben im Rahmen)
             return yp - (H - TOP - 1)
@@ -3169,6 +3173,9 @@ if __name__ == "__main__":
     ziel = os.environ.get("BUCH_ZIEL") or os.path.join(ordner, ausgabe()["datei"] + ".pdf")   # Leseprobe/Korrektur: Zwischendatei
     n = build(ziel)
     print(f"Fertig: {os.path.relpath(ziel, BASE)} ({n} Seiten)")
+    if DRUCK and TEIL_SEITEN:    # 3.6.14: Check – beginnt jeder Teil auf einer rechten Seite? (nur melden)
+        print("Teile rechts: " + " · ".join(f"{t} S.{p} " + ("✓" if p % 2 else "✗ links")
+                                             for t, p in sorted(TEIL_SEITEN.items(), key=lambda x: x[1])))
     if os.environ.get("BUCH_BOOKLET") == "bildschirm":      # Booklet zum Selberdrucken (bauen.py)
         try:
             import booklet

@@ -673,6 +673,9 @@ diesen Zeilen der Buch-MD:
 **Gut zu wissen:**
 
 - Ein Kapitel soll auf einer rechten Seite beginnen: `@NEWPAGE-RIGHT` davor.
+- Teile beginnen schön auf einer **rechten** Seite. Nach `f` zeigt der Druckbericht «Teile rechts» (✗ = links).
+  Ausgleichen von Hand: eine Zierseite (`@DECORATE-PAGE Satz`) im Abschnitt davor oder kürzen – jede Seite mehr
+  oder weniger kippt alle folgenden Teile. pureSATZ fügt nichts selbst ein.
 - Die Druckerei will eine gerade Seitenzahl (epubli: dazu die letzte Seite frei für den Strichcode). pureSATZ füllt
   am Schluss selbst mit leeren Seiten auf; `sh build.sh final` zeigt die **Seitenbilanz**.
 - In den Word-Vorlagen der Druckereien macht man das von Hand – Leerseiten, weisse Kästen über Seitenzahlen,
