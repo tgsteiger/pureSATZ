@@ -82,7 +82,7 @@ def teil_seiten(pdf):
     return seiten
 
 
-def doppelseiten(pdf, ziel, titel="", schrift=None, breite=120):
+def doppelseiten(pdf, ziel, titel="", schrift=None, breite=250):
     """3.7: Alle Seiten als Doppelseiten auf einem PNG (Seite 1 allein rechts). Teil-Seiten mit Rahmen:
     grün = rechts, rot = links. Gibt (teile, rechts) zurück; None, wenn kein Werkzeug zum Rendern da ist."""
     from PIL import Image, ImageDraw, ImageFont
@@ -102,26 +102,28 @@ def doppelseiten(pdf, ziel, titel="", schrift=None, breite=120):
     teile = teil_seiten(pdf)
     w, h = seiten[0].size
     try:
-        f1 = ImageFont.truetype(schrift, 15) if schrift else ImageFont.load_default()
-        f2 = ImageFont.truetype(schrift, 12) if schrift else ImageFont.load_default()
+        f1 = ImageFont.truetype(schrift, breite // 8) if schrift else ImageFont.load_default()   # 3.7.2: wächst mit
+        f2 = ImageFont.truetype(schrift, breite // 10) if schrift else ImageFont.load_default()
     except OSError:
         f1 = f2 = ImageFont.load_default()
     paare = [[None, 1]] + [[i, i + 1 if i + 1 <= len(seiten) else None] for i in range(2, len(seiten) + 1, 2)]
-    pro, sw, sh = 7, 2 * w + 14, h + 24
-    C = Image.new("RGB", (pro * sw + 20, ((len(paare) + pro - 1) // pro) * sh + 46), (225, 225, 225))
+    pro, sw, sh = 7, 2 * w + 14, h + breite // 6
+    kopf = breite // 4
+    C = Image.new("RGB", (pro * sw + 20, ((len(paare) + pro - 1) // pro) * sh + kopf + 10), (225, 225, 225))
     D = ImageDraw.Draw(C)
     rechts = sum(1 for t in teile if t % 2)
     D.text((10, 12), f"{titel} · {len(seiten)} Seiten · Teile rechts: {rechts} von {len(teile)} "
                      "(grün = rechts, rot = links)", fill="black", font=f1)
     for k, paar in enumerate(paare):
-        x0, y0 = 10 + (k % pro) * sw, 42 + (k // pro) * sh
+        x0, y0 = 10 + (k % pro) * sw, kopf + (k // pro) * sh
         for j, n in enumerate(paar):
             if n is None:
                 continue
             x = x0 + j * w
             C.paste(seiten[n - 1], (x, y0))
             if n in teile:
-                D.rectangle([x, y0, x + w - 1, y0 + h - 1], outline=(0, 150, 0) if n % 2 else (210, 0, 0), width=4)
-        D.text((x0 + w - 14, y0 + h + 4), "–".join(str(n) for n in paar if n), fill=(60, 60, 60), font=f2)
+                D.rectangle([x, y0, x + w - 1, y0 + h - 1], outline=(0, 150, 0) if n % 2 else (210, 0, 0),
+                            width=max(4, breite // 30))
+        D.text((x0 + w - breite // 9, y0 + h + 4), "–".join(str(n) for n in paar if n), fill=(60, 60, 60), font=f2)
     C.save(ziel)
     return teile, rechts
