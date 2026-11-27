@@ -3,6 +3,10 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 3.6.10 (November 2026) – Hilfe: Tipp Seitenenden vor dem Buchdruck
+- Hilfe: Vor `f` Buchdruck die letzte Zeile jeder Seite prüfen und getrennte Wörter mit `//Wort` zusammenhalten
+  (bei «Ein Buch schreiben» und in den Tipps «Probedruck und Farben»).
+
 ## 3.6.9 (November 2026) – //Wort: hier nicht trennen
 - **`//` direkt vor einem Wort** in der MD (`die //Geschichte`): Dieses Wort wird in diesem Absatz nicht getrennt und
   rutscht ganz in die nächste Zeile – z. B. damit am Seitenende vor dem Umblättern kein getrenntes Wort steht. Alle anderen

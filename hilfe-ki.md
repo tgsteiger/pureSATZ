@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 3.6.9
+# pureSATZ Hilfe · pureSATZ · Motor 3.6.10
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -330,7 +330,7 @@ Danach im neuen Buchordner `sh build.sh`. Mit GitHub: dort `git init -b main` un
 
 Für jede Aufgabe: was im Buch stehen muss, die Schritte und wo es genauer steht.
 
-Ein Buch schreiben – braucht die drei Dateien `<buch>-buch.md`, `-variablen.md`, `-umschlag.md` (macht `setup`).\ Schritte: Titel, Autor usw. in der Variablen-Datei › Text in der Buch-Datei › `s` schnell, Lese-PDF ansehen › `f` Buchdruck vor dem Druck · `k` komplett = alles mit Booklet, Leseprobe und Korrektur (zum Weitergeben und Gegenlesen).\ → Ein neues Buch anlegen
+Ein Buch schreiben – braucht die drei Dateien `<buch>-buch.md`, `-variablen.md`, `-umschlag.md` (macht `setup`).\ Schritte: Titel, Autor usw. in der Variablen-Datei › Text in der Buch-Datei › `s` schnell, Lese-PDF ansehen › Trennungen am Seitenende mit `//Wort` verhindern › `f` Buchdruck vor dem Druck · `k` komplett = alles mit Booklet, Leseprobe und Korrektur (zum Weitergeben und Gegenlesen).\ → Ein neues Buch anlegen
 
 Teile und Kapitel – Überschriften in der Buch-Datei: `# Teil 1|Titel|Untertitel`, `## Kapitel`, `### Zwischentitel`.\ Schritte: Teil-Zeile (neue Seite mit Teil-Seite) › darunter Kapitel mit `##` › `s` schnell.\ → Aufbau eines Buchs
 
@@ -1940,6 +1940,7 @@ Gestalten
 Probedruck und Farben
 
 - Farben am Bildschirm nur grob beurteilen. Was zählt, ist der Probedruck auf dem echten Papier (matt/glänzend, weiss/creme).
+- Vor dem Buchdruck die Seitenenden prüfen: im Lese-PDF die letzte Zeile jeder Seite ansehen. Steht dort ein getrenntes Wort (Trennstrich vor dem Umblättern), in der MD `//` direkt davor setzen (`die //Geschichte`) – das Wort wandert ganz auf die nächste Seite. Erst ganz am Schluss: Jede Textänderung verschiebt die Umbrüche.
 - Seitenzahl geändert: im Coverrechner der Druckerei neu rechnen, Text unter `## Coverrechner (Rohdaten)` ersetzen, dann `f` Buchdruck (Umschlag).
 
 ## Glossar
