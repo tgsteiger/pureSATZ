@@ -74,7 +74,7 @@ Als Text (zum Suchen):
 |---|---|---|
 | `s` schnell (`s1` nur normal, `s2` nur UC) | zuerst sync (wenn das Buch bei GitHub ist), dann Lese-PDF als Entwurf und gleich öffnen | beim Schreiben, oft |
 | `f` Buchdruck (`f1` nur normal, `f2` nur UC) | Buchblock + Umschlag (CMYK), E-Books, Lese-PDF, Druckbericht – ohne Probedruck-Booklet und Mockups; am Schluss die Liste «Für die Druckerei» | vor dem Hochladen zur Druckerei |
-| `k` komplett | alles: wie `f`, dazu Probedruck-Booklet, Mockups, Leseprobe und Korrektur-PDF (wie `sh build.sh komplett`) | Buch weitergeben: Druckerei, Webseite, Leser |
+| `k` komplett | alles: wie `f`, dazu Probedruck-Booklet, Mockups, Leseprobe, Korrektur-PDF und Doppelseiten-Bild (`ds`) (wie `sh build.sh komplett`) | Buch weitergeben: Druckerei, Webseite, Leser |
 | `c` check / gegenlesen | check_NAME.pdf mit Markierungen pro Person | für Gegenleser |
 
 Die Tasten heissen wie die Befehle im Terminal: `f` = `sh build.sh buchdruck` (`f1` = `… buchdruck normal`, `f2` = `… buchdruck uz`), `k` = `sh build.sh komplett`. `sh build.sh final` gibt es weiterhin (alles ausser Leseprobe und Korrektur).

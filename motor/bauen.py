@@ -1156,6 +1156,19 @@ def main():
         print("\n=== Leseprobe und Korrektur ===")
         fassung("leseprobe", True)
         fassung("korrektur", True)
+        for a in ausgaben():                # 3.7.4: Doppelseiten-Bild wie Menü ds (ohne Öffnen)
+            g = bk.AUSGABEN["B" if a == "uz" else "A"]
+            b = os.path.join(BASE, g["ordner"], g["kuerzel"] + "_Buchblock.pdf")
+            if os.path.exists(b):
+                try:
+                    import pdfwerkzeug
+                    r = pdfwerkzeug.doppelseiten(b, os.path.join(os.path.dirname(b), f"00-Doppelseiten-{a}.png"),
+                                                 ("UNZENSIERT (UZ)" if a == "uz" else "NORMAL") + " · " + g["kuerzel"] + "_Buchblock",
+                                                 os.path.join(MOTOR, "fonts", "DejaVuSansMono.ttf"))
+                    if r:
+                        print(f"Doppelseiten {name(a)}: Teile rechts {r[1]} von {len(r[0])}")
+                except Exception as e:
+                    print(f"> Hinweis: Doppelseiten {name(a)} nicht erstellt ({e})")
     bk.zeige_offene_stellen()
     if art in ("alles", "nur-pdf", "nur-druck"):
         schriften_pruefen(os.path.splitext(os.path.basename(bk.druck_datei()))[0] if druck else None)

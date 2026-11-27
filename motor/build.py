@@ -1743,6 +1743,8 @@ class Doc(BaseDocTemplate):
         """Kopfzeile: «Autor · Teil · Kapitel» (Variable «kopfzeile»: ohne-autor, autor, wechselnd).
         Kapitel = das erste Kapitel, das auf der Seite beginnt, sonst das laufende.
         Ein @HEADER-Zusatz (z. B. «Ecuador») ersetzt das Kapitel, solange er die ganze Seite gilt."""
+        if getattr(d, "_ohne_kopf", None) == d.page:    # 3.7.5: Zierseite ohne Kopfzeile
+            return
         teil = getattr(self, "kopf", self.KOPF_STANDARD)
         kap = self._kap_seite or self._kap_start
         if self._zusatz_start:
@@ -2500,6 +2502,8 @@ def _build(out, ausgleich=None):
             QUELLEN.append((nr, foto_info(ln[2])[1] or ln[1], foto_quelle(ln[2])))
             story.append(QuellenMarke(nr))
         if isinstance(ln, tuple):          # Bereiche (… @END), Bild, Code
+            if ln[0] == "DECORATE-REST" and story and isinstance(story[-1], Umbruch):
+                story.append(OhneKopf())   # 3.7.5: Zierseite (allein nach @NEWPAGE) ohne Kopfzeile
             teile = {"BLOCK": uz_kasten, "DRAFT": offen_kasten, "NOTE": platzhalter, "PICTURE": foto,
                      "DECORATE-REST": mitte, "KEEP-TOGETHER": zusammen, "CODE": code_kasten}[ln[0]](ln[1], ln[2])
             if teile and isinstance(teile[0], tuple) and teile[0][0] == "FLOAT":
@@ -2635,6 +2639,17 @@ class SeiteMitte(Flowable):
 
 class Umbruch(PageBreak):
     """Von Hand gesetzter Seitenwechsel (@NEWPAGE); die Seite davor wird ausgeglichen."""
+
+
+class OhneKopf(Flowable):
+    """3.7.5: Diese Seite ohne Kopfzeile (Zierseite: @NEWPAGE + @DECORATE-REST allein auf der Seite)."""
+    def wrap(self, aw, ah):
+        return 0, 0
+
+    def draw(self):
+        d = getattr(self.canv, "_doctemplate", None)
+        if d is not None:
+            d._ohne_kopf = d.page
 
 
 def seitenausgleich(doc, story):
