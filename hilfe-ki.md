@@ -1,4 +1,4 @@
-# pureSATZ Hilfe · pureSATZ · Motor 3.6.14
+# pureSATZ Hilfe · pureSATZ · Motor 3.7.0
 
 Für eine KI: Das ist die ganze Hilfe von pureSATZ (Satzsystem für Bücher aus Markdown) als Text. Beantworte Fragen dazu genau und sag, in welcher Datei was einzutragen ist. Ändere nur die Buchdateien (MD, Variablen, Umschlag, druck/, Stichworte, Tabellen, Geschichten), nie den Ordner motor/. Befehle für Linux/Mac; unter Windows wird «sh name.sh» zu «name.bat».
 
@@ -801,7 +801,7 @@ danach | Vorwort, dann Teil 1 | `## Vorwort` · `# Teil 1|Titel|Untertitel`
 Gut zu wissen:
 
 - Ein Kapitel soll auf einer rechten Seite beginnen: `@NEWPAGE-RIGHT` davor.
-- Teile beginnen schön auf einer rechten Seite. Nach `f` zeigt der Druckbericht «Teile rechts» (✗ = links). Ausgleichen von Hand: eine Zierseite (`@DECORATE-PAGE Satz`) im Abschnitt davor oder kürzen – jede Seite mehr oder weniger kippt alle folgenden Teile. pureSATZ fügt nichts selbst ein.
+- Teile beginnen schön auf einer rechten Seite. Nach `f` zeigt der Druckbericht «Teile rechts» (✗ = links), Menü `ds` alle Doppelseiten als Bild (`00-Doppelseiten.png`, grün = rechts, rot = links). Ausgleichen von Hand: eine Zierseite (`@DECORATE-PAGE Satz`) im Abschnitt davor oder kürzen – jede Seite mehr oder weniger kippt alle folgenden Teile. pureSATZ fügt nichts selbst ein.
 - Die Druckerei will eine gerade Seitenzahl (epubli: dazu die letzte Seite frei für den Strichcode). pureSATZ füllt am Schluss selbst mit leeren Seiten auf; `sh build.sh final` zeigt die Seitenbilanz.
 - In den Word-Vorlagen der Druckereien macht man das von Hand – Leerseiten, weisse Kästen über Seitenzahlen, Abschnittswechsel. In pureSATZ ist das nicht nötig.
 - Schöner Kapitelanfang: `{initial}: ja` (grosser Anfangsbuchstabe), siehe «Seitengestaltung».

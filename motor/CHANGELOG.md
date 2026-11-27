@@ -8,6 +8,8 @@ Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.
   (`Teile rechts: Teil 1 S.9 ✓ · Teil 3 S.26 ✗ links …`), auch im Druckbericht. Nur ein Hinweis, es wird nichts eingefügt.
 - Menü `ds` Doppelseiten: aus jedem Buchblock ein PNG mit allen Doppelseiten (`00-Doppelseiten.png` im
   Ausgabeordner), Teil-Seiten grün (rechts) oder rot (links). Nur auf Wunsch, baut nichts.
+- `@LOGO-40-REST-LIGHT`: heller Lotus (wie auf der letzten Seite) mitten auf den freien Platz – z. B. als ruhige
+  Seite vor einem Teil, damit dieser rechts beginnt.
 
 ## 3.6.13 (November 2026) – Widmung: Zeilen ausgeglichen
 - Druck: Die Widmung wird so schmal gesetzt, wie es bei gleicher Zeilenzahl geht – alle Zeilen etwa gleich lang,

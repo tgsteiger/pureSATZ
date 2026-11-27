@@ -398,8 +398,8 @@ def _pruefe(b, token, wo):
     elif n == "DECORATE-TEXT" and (w or b.hoehe or b.ort not in (None, "BOTTOM")):
         nein("möglich: @DECORATE-TEXT Text oder @DECORATE-TEXT-BOTTOM Text")
     elif n == "LOGO":
-        if w or b.hoehe:
-            nein("möglich: @LOGO-12, @LOGO-10-BOTTOM, @LOGO-8-REST, @LOGO-6-GAP")
+        if (w and w != ["LIGHT"]) or b.hoehe:
+            nein("möglich: @LOGO-12, @LOGO-10-BOTTOM, @LOGO-8-REST, @LOGO-40-REST-LIGHT (heller Lotus), @LOGO-6-GAP")
         if b.ort not in (None, "BOTTOM", "REST", "GAP"):
             nein("Ort: REST, BOTTOM oder GAP")
 

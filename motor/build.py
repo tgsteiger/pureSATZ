@@ -2137,8 +2137,8 @@ class MitteBlock(Flowable):
 class LotusUnten(Flowable):
     """@LOGO-10-BOTTOM: füllt den Rest der Seite und setzt eine Lotusblüte zentriert an den unteren Rand.
     @LOGO-10-REST = mitten in den freien Platz."""
-    def __init__(self, breite, mitte=False):
-        super().__init__(); self.b, self.mitte = breite, mitte
+    def __init__(self, breite, mitte=False, hell=False):
+        super().__init__(); self.b, self.mitte, self.hell = breite, mitte, hell
     def wrap(self, aw, ah):
         self.aw, self.ah = aw, ah
         return aw, ah - 0.5
@@ -2148,7 +2148,8 @@ class LotusUnten(Flowable):
         h = self.b * LOTUS_RATIO
         if self.ah > h + 6 * mm:
             y = (self.ah - 0.5 - h) / 2 if self.mitte else 2 * mm
-            self.canv.drawImage(bild(LOTUS), (self.aw - self.b) / 2, y, self.b, h, mask="auto")
+            self.canv.drawImage(bild(LOTUS_HELL if self.hell else LOTUS), (self.aw - self.b) / 2, y, self.b, h,
+                                mask="auto")     # 3.7: -LIGHT = heller Lotus (wie auf der letzten Seite)
 
 
 class LotusTrenner(Flowable):
@@ -2410,7 +2411,7 @@ def _build(out, ausgleich=None):
         elif n == "PAGE-CENTER":
             flush(); story.append(SeiteMitte())
         elif n == "LOGO" and b.ort in ("BOTTOM", "REST"):   # unten auf die Seite bzw. in die Mitte des Rests
-            flush(); story.append(LotusUnten(b.mm(10) * mm, b.ort == "REST"))
+            flush(); story.append(LotusUnten(b.mm(10) * mm, b.ort == "REST", "LIGHT" in b.woerter))
         elif n == "LOGO" and b.ort == "GAP":      # ohne eigenen Platz, in die Lücke vor der nächsten Überschrift
             flush(); story.append(LotusTrenner(b.mm(6) * mm))
         elif n == "LOGO":
