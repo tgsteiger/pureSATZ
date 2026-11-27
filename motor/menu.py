@@ -166,9 +166,10 @@ def doppelseiten_zeigen():
         print(GRAU("  Noch kein Buchblock – zuerst f (Buchdruck)."))
         return
     for b in bloecke:
-        ziel = os.path.join(os.path.dirname(b), "00-Doppelseiten.png")
+        uz = "unzensiert" in os.path.basename(os.path.dirname(b))
+        ziel = os.path.join(os.path.dirname(b), "00-Doppelseiten-" + ("uz" if uz else "normal") + ".png")
         try:
-            r = pdfwerkzeug.doppelseiten(b, ziel, os.path.basename(b)[:-4],
+            r = pdfwerkzeug.doppelseiten(b, ziel, ("UNZENSIERT (UZ)" if uz else "NORMAL") + " · " + os.path.basename(b)[:-4],
                                          os.path.join(MOTOR, "fonts", "DejaVuSansMono.ttf"))
         except Exception as e:
             print(GRAU(f"  Doppelseiten nicht erstellt ({os.path.basename(b)}: {e})"))
@@ -1145,7 +1146,8 @@ def zeige():
     print("\n" + kopf(rechts=f"Klang ({FETT('!')}) {'ein' if ton else 'aus'}"))
     motor_neu = motor_bereit()                         # neuerer Motor in pureSATZ daneben?
     if motor_neu:
-        print(FETT(f" ⚠ Motor {motor_neu} bereit") + GRAU("  → ul"))
+        print(FETT(f" ⚠ Motor {motor_neu} bereit  → ") + "\033[1m" * FARBIG + "ul" + "\033[0m" * FARBIG
+              + FETT(" übernehmen") + GRAU("  (↵)"))
     for k, d, n, b, g, _ in cover_faellig():
         print(FETT(f" ⚠ Coverrechner {k}: {n} Seiten, eingetragen für {b}") + GRAU(f"  ({g}) → co"))   # co öffnet die Datei
     if pruef_stand() == "fehler":
@@ -1346,8 +1348,11 @@ def main():
                     continue
             else:
                 zeige()
-                print(" Wahl oder Befehl (z. B. final · ↑ = letzte · ↵ = beenden):")
+                neu = motor_bereit()                      # 3.7: neuer Motor bereit → ↵ = ul (empfohlen)
+                print(" Wahl oder Befehl (z. B. final · ↑ = letzte · ↵ = " + (f"ul neuer Motor {neu}):" if neu else "beenden):"))
                 e = frage(" Eingabe: ", merken=True)
+                if not e and neu:
+                    e = "ul"
             w = e.lower()
             if w in ("", "z", "q"):                   # Hauptmenü: Enter / z = beenden? [j/N] – nur j schliesst
                 if beenden_frage():

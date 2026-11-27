@@ -336,9 +336,23 @@ class Befehl:
         return (self.kopf if kopf else "") + "@" + self.rest + ((" " + self.text) if self.text else "")
 
 
+_GEMELDET = set()
+
+
 def befehl(s, wo=""):
     """Zeile -> Befehl, oder None, wenn sie kein Befehl ist (Text, @@geschichte, @#tabelle, @PORTRAIT).
-    Ein falscher Bauplan gibt einen Fehler mit Zeilennummer."""
+    Ein falscher Bauplan gibt einen Fehler mit Zeilennummer. 3.7: Bei einem falschen Befehl nur melden –
+    die Zeile steht dann als Text im Lese-PDF (im Druck fällt sie weg); gebaut wird trotzdem."""
+    try:
+        return _befehl(s, wo)
+    except Fehler as e:
+        if str(e) not in _GEMELDET:
+            _GEMELDET.add(str(e))
+            print(f"✗ WARNUNG {e} – Zeile übersprungen, bitte korrigieren")
+        return None
+
+
+def _befehl(s, wo=""):
     m = BEFEHL_ZEILE.match(s.strip())
     if not m:
         return None
@@ -684,7 +698,7 @@ def pruefen(basis, text, umschlag_datei=None, finde=None, var=None):
                     if wort == "@PICTURE" or wort.startswith("@PICTURE-") and wort != "@PICTURE-CREDITS":
                         meldungen.append(f"Zeile {z.nr}: ein Bild beginnt mit «#### {wort} Titel»")
                     elif wort != "@PORTRAIT" and befehl(s, f"Zeile {z.nr}") is None:
-                        meldungen.append(f"Zeile {z.nr}: unbekannter Befehl {wort}")
+                        hinweise.append(f"✗ Zeile {z.nr}: Befehl {wort} stimmt nicht – wird übersprungen, bitte korrigieren")
                     elif wort == "@PORTRAIT":
                         d = s[10:].partition("|")[0].strip()
                         if not (finde(d) if finde else os.path.exists(os.path.join(basis, d))):

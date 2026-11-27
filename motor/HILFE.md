@@ -674,7 +674,7 @@ diesen Zeilen der Buch-MD:
 
 - Ein Kapitel soll auf einer rechten Seite beginnen: `@NEWPAGE-RIGHT` davor.
 - Teile beginnen schön auf einer **rechten** Seite. Nach `f` zeigt der Druckbericht «Teile rechts» (✗ = links),
-  Menü `ds` alle Doppelseiten als Bild (`00-Doppelseiten.png`, grün = rechts, rot = links).
+  Menü `ds` alle Doppelseiten als Bild (`00-Doppelseiten-normal.png` / `-uz.png`, grün = rechts, rot = links).
   Ausgleichen von Hand: eine Zierseite (`@DECORATE-PAGE Satz`) im Abschnitt davor oder kürzen – jede Seite mehr
   oder weniger kippt alle folgenden Teile. pureSATZ fügt nichts selbst ein.
 - Die Druckerei will eine gerade Seitenzahl (epubli: dazu die letzte Seite frei für den Strichcode). pureSATZ füllt

@@ -2563,11 +2563,13 @@ def _build(out, ausgleich=None):
         elif s.startswith("@PORTRAIT "):
             # @PORTRAIT bild.png | Bildtext : rundes Foto mit Ring
             story += portrait(None, [s[10:]])
-        elif s.lstrip().startswith("@"):
+        elif s.lstrip().startswith("@"):      # 3.7: unbekannter Befehl – melden, trotzdem bauen
             import umbenennen as U
             neu = U.zeile(s.strip())                  # alte Schreibweise (vor 3.0)?
-            raise M.Fehler(f"{TEXT}, Zeile {getattr(ln, 'nr', '?')}: unbekannter Befehl «{s.strip()}»."
-                           + (f" Alte Schreibweise – neu: «{neu.strip()}». Menü um stellt das ganze Buch um." if neu else ""))
+            if not DRUCK:
+                para.append(s.strip())                # Lese-PDF: als Text sichtbar · Druck: fällt weg
+            print("✗ WARNUNG " + f"{TEXT}, Zeile {getattr(ln, 'nr', '?')}: unbekannter Befehl «{s.strip()}»."
+                  + (f" Alte Schreibweise – neu: «{neu.strip()}». Menü um stellt das ganze Buch um." if neu else ""))
         else:
             para.append(s.strip())
     story += liste.ende()
