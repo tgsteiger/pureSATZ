@@ -3,6 +3,15 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
+## 3.6.12 (November 2026) – Widmung in der optischen Mitte
+- Druck: Die Widmung (@DEDICATION) steht nicht mehr im unteren Drittel, sondern in der optischen Mitte – auf gleicher
+  Höhe wie der Satz einer @DECORATE-PAGE-Seite. Farbe und Schrift bleiben.
+
+## 3.6.11 (November 2026) – Buchblock: Lesezeichen wieder vollständig
+- Seit 3.6.5 (CMYK in Stücken) hatte der Buchblock nur noch die Lesezeichen des ersten Stücks (bis ca. Seite 11).
+  Jetzt werden sie nach dem Zusammenfügen vollständig aus dem ursprünglichen Buchblock übernommen (pypdf, Seiten
+  und Bilder unverändert); der Inhalt öffnet sich im PDF-Betrachter gleich mit. Geht es nicht: Hinweis, Datei wie bisher.
+
 ## 3.6.10 (November 2026) – Hilfe: Tipp Seitenenden vor dem Buchdruck
 - Hilfe: Vor `f` Buchdruck die letzte Zeile jeder Seite prüfen und getrennte Wörter mit `//Wort` zusammenhalten
   (bei «Ein Buch schreiben» und in den Tipps «Probedruck und Farben»).

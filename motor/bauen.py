@@ -698,6 +698,37 @@ def schneiden(gewichte, stuecke, mindest=4):
     return bereiche
 
 
+def lesezeichen(quelle, ziel):
+    """3.6.11: Lesezeichen (Inhalt im PDF-Betrachter) vollständig aus «quelle» nach «ziel» übernehmen – nach dem
+    Zusammenfügen der CMYK-Stücke hätte der Buchblock sonst nur die des ersten Stücks. Seiten und Bilder bleiben
+    unverändert. True = gemacht. Geht es nicht, bleibt «ziel» wie es ist."""
+    try:
+        from pypdf import PdfReader, PdfWriter
+        r = PdfReader(quelle)
+        if not r.outline:
+            return False
+        w = PdfWriter()
+        w.append(ziel, import_outline=False)
+
+        def dazu(eintraege, oben):
+            letzter = None
+            for e in eintraege:
+                if isinstance(e, list):                 # Unterpunkte des vorherigen Eintrags
+                    dazu(e, letzter)
+                elif r.get_destination_page_number(e) is not None:
+                    letzter = w.add_outline_item(e.title, r.get_destination_page_number(e), parent=oben)
+        dazu(r.outline, None)
+        w.page_mode = "/UseOutlines"                # Inhalt beim Öffnen gleich zeigen
+        tmp = ziel[:-4] + "_lz.pdf"
+        with open(tmp, "wb") as f:
+            w.write(f)
+        os.replace(tmp, ziel)
+        return True
+    except Exception as e:
+        print(f"> Hinweis: Lesezeichen im Buchblock nicht übernommen ({e})")
+        return False
+
+
 def farbmodus_druck(test=None):
     """{farbmodus}: cmyk in der Druckdatei: Buchblock und Umschlag (PDF) mit Ghostscript nach CMYK umwandeln.
     Nur bei final/komplett. Lese-PDF, E-Book, Leseprobe und JPGs bleiben RGB. Jeder Bau setzt die Druck-PDFs neu
@@ -788,6 +819,7 @@ def farbmodus_druck(test=None):
             r = subprocess.run([qpdf, tmps[0], "--pages"] + tmps + ["--", ganz], capture_output=True, text=True)
             if r.returncode in (0, 3) and qpdf_seiten(qpdf, ganz) == teile[-1][2]:
                 fertig, vermerk = ganz, f" ({len(teile)} Stücke)"
+                lesezeichen(p, ganz)                # 3.6.11: sonst nur die Lesezeichen des ersten Stücks
             else:
                 fehler = "Zusammenfügen ging nicht: " + (r.stderr or "").strip()[:150]
                 if os.path.exists(ganz):

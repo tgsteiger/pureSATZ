@@ -2998,7 +2998,7 @@ class ImpressumSeite(Flowable):
             h = IMPRESSUM_LOGO_HOEHE * st.fontSize; b = h * iw / ih
             self.canv.drawImage(self.logo, 0, self.ah_ang + 2 * st.leading, b, h, mask="auto")
         if self.w:
-            self.w.drawOn(self.canv, 8 * mm, (self.ah / 3 - self.wh) / 2)   # mittig im unteren Drittel
+            self.w.drawOn(self.canv, 8 * mm, self.ah / 2 + 12 * mm - self.wh / 2)   # 3.6.12: optische Mitte, Höhe wie MottoSeite
 
 
 IMPRESSUM_LOGO_HOEHE = 1.5    # × Schriftgrösse des Impressums
@@ -3016,11 +3016,11 @@ def impressum_logo():
 
 
 def impressum(zeilen, widmung):
-    """Druck: Impressum links unten (Logo oben), Widmung auf eigener Seite rechts, im unteren Drittel.
+    """Druck: Impressum links unten (Logo oben), Widmung auf eigener Seite rechts, in der optischen Mitte (wie @DECORATE-PAGE).
     Bildschirm: Titel allein, Impressum zentriert unten auf eigener Seite, Widmung auf eigener Seite."""
     html = zeilen_html(zeilen)
     if DRUCK:
-        # Seite 2 (links): Impressum unten, Logo der Plattform oben. Seite 3 (rechts): Widmung allein.
+        # Seite 2 (links): Impressum unten, Logo der Plattform oben. Seite 3 (rechts): Widmung allein, optische Mitte.
         out = [PageBreak(), ImpressumSeite("", Paragraph(html, ParagraphStyle(
             "imp", parent=small, alignment=TA_LEFT, fontSize=7.6, leading=11)), impressum_logo())]
         if widmung:
