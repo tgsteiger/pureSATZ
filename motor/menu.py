@@ -1163,7 +1163,7 @@ def zeige():
                ("Bauen", [("s", ("schnell  (sync + Lese-PDF)" if os.path.isdir(os.path.join(BASE, ".git"))  # dazugehört
                                  else "schnell  (Lese-PDF)") + ("  s1/2" if fassungen_zwei() else "")),
                           ("f", "Buchdruck (Druck + E-Book)" + ("  f1/2" if fassungen_zwei() else "")),
-                          ("k", "komplett (+ Booklet, Leseprobe, Korr.)")]
+                          ("k", "komplett (alles)")]
                 + ([("hb", "Hörbuch … (Linux)")] if LINUX else [])),
                ("Prüfen", [("bp", bp), ("co", "Coverrechner prüfen"), ("db", "Druckbericht"), ("ds", "Doppelseiten (Teile rechts?)")]),
                ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"),
