@@ -288,6 +288,8 @@ def leere_seiten(pdf, bis):
 fuell = n - INHALT
 innen = leere_seiten(BLOCK, INHALT)
 print(f"*** Seitenbilanz {KUERZEL}: {INHALT} Seiten Inhalt + {fuell} Füllseite(n) = {n} Seiten Buchblock")
+if bk.teile_rechts():                       # 3.7: Check «Teile rechts» (nur Hinweis)
+    print("*** " + bk.teile_rechts())
 if fuell:
     teile = []
     if not P["eigener_barcode"]:

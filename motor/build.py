@@ -1419,7 +1419,15 @@ class Ornament(Flowable):
         c.drawImage(bild(LOTUS), cx - lw / 2, 7 - lh / 2, lw, lh, mask="auto")
 
 
-TEIL_SEITEN = {}   # 3.6.14: Teil -> Seite (für den Check «Teil rechts» im Druck)
+TEIL_SEITEN = {}   # 3.7: Teil -> Seite (für den Check «Teil rechts» im Druck)
+
+
+def teile_rechts():
+    """3.7: Check für den Druck – beginnt jeder Teil auf einer rechten Seite? Nur melden, nichts einfügen."""
+    if not TEIL_SEITEN:
+        return ""
+    return "Teile rechts: " + " · ".join(f"{t} S.{p} " + ("✓" if p % 2 else "✗ links")
+                                        for t, p in sorted(TEIL_SEITEN.items(), key=lambda x: x[1]))
 
 
 class PartMarker(Flowable):
@@ -3173,9 +3181,6 @@ if __name__ == "__main__":
     ziel = os.environ.get("BUCH_ZIEL") or os.path.join(ordner, ausgabe()["datei"] + ".pdf")   # Leseprobe/Korrektur: Zwischendatei
     n = build(ziel)
     print(f"Fertig: {os.path.relpath(ziel, BASE)} ({n} Seiten)")
-    if DRUCK and TEIL_SEITEN:    # 3.6.14: Check – beginnt jeder Teil auf einer rechten Seite? (nur melden)
-        print("Teile rechts: " + " · ".join(f"{t} S.{p} " + ("✓" if p % 2 else "✗ links")
-                                             for t, p in sorted(TEIL_SEITEN.items(), key=lambda x: x[1])))
     if os.environ.get("BUCH_BOOKLET") == "bildschirm":      # Booklet zum Selberdrucken (bauen.py)
         try:
             import booklet

@@ -91,7 +91,7 @@ BEFEHLE = ("co", "cover-stand", "schnell", "komplett", "final", "buchdruck", "en
 MD = {"b": ("Buch", "*-buch.md"), "v": ("Variablen", "*-variablen.md"), "u": ("Umschlag", "*-umschlag.md"),
       "s": ("Stichworte", "stichworte-*.txt"), "h": ("meine Hilfe", "meine-hilfe.md")}
 WEG = ("check_", "_Buchblock", "_Cover", "_Umschlag", "_booklet", "_Inhalt", "_Aenderungen", "_Leseprobe", "_Korrektur",
-       "_tmp", "00-")          # 3.6.8: «00-Druckbericht.pdf» ist kein Lese-PDF (sonst öffnete s den Druckbericht)
+       "_tmp")
 ton = True
 gelaufen = False                       # hat der letzte Menüpunkt etwas ausgeführt (Meldungen stehen lassen)?
 INITIAL_VERLAUF = []                   # ↑ ↓ im Initialen-Menü, in EINST als «in:…»
@@ -156,6 +156,30 @@ def frage_verlauf(text, verlauf):
         verlauf.append(e)
         del verlauf[:-20]
     return e
+
+
+def doppelseiten_zeigen():
+    """3.7 `ds`: Aus jedem fertigen Buchblock ein PNG mit allen Doppelseiten (00-Doppelseiten.png), Teile markiert."""
+    import pdfwerkzeug
+    bloecke = sorted(glob.glob(os.path.join(BASE, "ausgabe-*", "*_Buchblock.pdf")))
+    if not bloecke:
+        print(GRAU("  Noch kein Buchblock – zuerst f (Buchdruck)."))
+        return
+    for b in bloecke:
+        ziel = os.path.join(os.path.dirname(b), "00-Doppelseiten.png")
+        try:
+            r = pdfwerkzeug.doppelseiten(b, ziel, os.path.basename(b)[:-4],
+                                         os.path.join(MOTOR, "fonts", "DejaVuSansMono.ttf"))
+        except Exception as e:
+            print(GRAU(f"  Doppelseiten nicht erstellt ({os.path.basename(b)}: {e})"))
+            continue
+        if r is None:
+            print(GRAU("  Zum Anzeigen fehlt pypdfium2 (oder pdftoppm)."))
+            return
+        teile, rechts = r
+        print(f"  {os.path.relpath(ziel, BASE)}: Teile rechts {rechts} von {len(teile)}"
+              + ("" if rechts == len(teile) else "  (links: S. " + ", ".join(str(t) for t in teile if not t % 2) + ")"))
+        oeffnen(ziel)
 
 
 def oeffnen(pfad):
@@ -1139,7 +1163,7 @@ def zeige():
                           ("f", "Buchdruck (Druck + E-Book)" + ("  f1/2" if fassungen_zwei() else "")),
                           ("k", "komplett (+ Booklet, Leseprobe, Korr.)")]
                 + ([("hb", "Hörbuch … (Linux)")] if LINUX else [])),
-               ("Prüfen", [("bp", bp), ("co", "Coverrechner prüfen"), ("db", "Druckbericht")]),
+               ("Prüfen", [("bp", bp), ("co", "Coverrechner prüfen"), ("db", "Druckbericht"), ("ds", "Doppelseiten (Teile rechts?)")]),
                ("Ansehen", [("p", "PDF öffnen …"), ("o", "Ordner öffnen …"),
                             ("sm", "Stand merken"), ("a", "änderungen (a|ä)"), ("zh", "Stand zurückholen …")]),
                ("Weitergeben", [("c", "check / gegenlesen …"), ("lp", "Leseprobe    ko Korrektur"),
@@ -1348,6 +1372,8 @@ def main():
                 bauen("komplett")
             elif w == "db":                                 # Druckbericht des letzten Druck-Baus
                 oeffnen(next(iter(sorted(glob.glob(os.path.join(BASE, "*", "00-Druckbericht.pdf")))), None))
+            elif w == "ds":                                 # 3.7: Doppelseiten-Übersicht des Buchblocks (nur auf Wunsch)
+                doppelseiten_zeigen()
             elif w == "um":                                 # 3.0.1: auf die Schreibweise 3.0 umstellen
                 umstellen_menue()
             elif w in ("ge", "in"):                     # Gestaltung (in = alte Taste)

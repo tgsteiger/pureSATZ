@@ -69,3 +69,59 @@ def zeilen_aller_seiten(pdf):
 
 HINWEIS = ("Für Cover-JPG und E-Book-Titelbild fehlt pypdfium2. Einmalig im Buchordner: "
            "python3 motor/einrichten.py   (Windows: py motor\\einrichten.py)")
+
+
+def teil_seiten(pdf):
+    """Seiten der Teile (und des Anhangs): Lesezeichen der obersten Ebene, die Unterpunkte haben."""
+    from pypdf import PdfReader
+    r = PdfReader(pdf)
+    o, seiten = list(r.outline), []
+    for i, e in enumerate(o):
+        if not isinstance(e, list) and i + 1 < len(o) and isinstance(o[i + 1], list):
+            seiten.append(r.get_destination_page_number(e) + 1)
+    return seiten
+
+
+def doppelseiten(pdf, ziel, titel="", schrift=None, breite=120):
+    """3.7: Alle Seiten als Doppelseiten auf einem PNG (Seite 1 allein rechts). Teil-Seiten mit Rahmen:
+    grün = rechts, rot = links. Gibt (teile, rechts) zurück; None, wenn kein Werkzeug zum Rendern da ist."""
+    from PIL import Image, ImageDraw, ImageFont
+    seiten = []
+    if pdfium is not None:
+        doc = pdfium.PdfDocument(pdf)
+        for s in doc:
+            seiten.append(s.render(scale=breite / s.get_size()[0]).to_pil().convert("RGB"))
+        doc.close()
+    elif shutil.which("pdftoppm"):
+        with tempfile.TemporaryDirectory() as t:
+            subprocess.run(["pdftoppm", "-scale-to-x", str(breite), "-scale-to-y", "-1", "-png", pdf,
+                            os.path.join(t, "s")], check=True)
+            seiten = [Image.open(os.path.join(t, f)).convert("RGB") for f in sorted(os.listdir(t))]
+    else:
+        return None
+    teile = teil_seiten(pdf)
+    w, h = seiten[0].size
+    try:
+        f1 = ImageFont.truetype(schrift, 15) if schrift else ImageFont.load_default()
+        f2 = ImageFont.truetype(schrift, 12) if schrift else ImageFont.load_default()
+    except OSError:
+        f1 = f2 = ImageFont.load_default()
+    paare = [[None, 1]] + [[i, i + 1 if i + 1 <= len(seiten) else None] for i in range(2, len(seiten) + 1, 2)]
+    pro, sw, sh = 7, 2 * w + 14, h + 24
+    C = Image.new("RGB", (pro * sw + 20, ((len(paare) + pro - 1) // pro) * sh + 46), (225, 225, 225))
+    D = ImageDraw.Draw(C)
+    rechts = sum(1 for t in teile if t % 2)
+    D.text((10, 12), f"{titel} · {len(seiten)} Seiten · Teile rechts: {rechts} von {len(teile)} "
+                     "(grün = rechts, rot = links)", fill="black", font=f1)
+    for k, paar in enumerate(paare):
+        x0, y0 = 10 + (k % pro) * sw, 42 + (k // pro) * sh
+        for j, n in enumerate(paar):
+            if n is None:
+                continue
+            x = x0 + j * w
+            C.paste(seiten[n - 1], (x, y0))
+            if n in teile:
+                D.rectangle([x, y0, x + w - 1, y0 + h - 1], outline=(0, 150, 0) if n % 2 else (210, 0, 0), width=4)
+        D.text((x0 + w - 14, y0 + h + 4), "–".join(str(n) for n in paar if n), fill=(60, 60, 60), font=f2)
+    C.save(ziel)
+    return teile, rechts

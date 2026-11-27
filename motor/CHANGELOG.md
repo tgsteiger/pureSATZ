@@ -3,9 +3,11 @@
 pureSATZ ist das Satzsystem (der «Motor»), das aus Markdown-Dateien Buch, Umschlag und E-Book macht.
 Der Name erinnert an pureRACE, die Zeitmess-Software des Autors von 1994. Bis 2.9.4 hiess es «Motor Leeres Buch».
 
-## 3.6.14 (November 2026) – Check «Teile rechts»
+## 3.7.0 (November 2026) – Check «Teile rechts»
 - Druck: Nach dem Buchblock meldet der Motor jede Teil-Seite und ob sie rechts liegt
   (`Teile rechts: Teil 1 S.9 ✓ · Teil 3 S.26 ✗ links …`), auch im Druckbericht. Nur ein Hinweis, es wird nichts eingefügt.
+- Menü `ds` Doppelseiten: aus jedem Buchblock ein PNG mit allen Doppelseiten (`00-Doppelseiten.png` im
+  Ausgabeordner), Teil-Seiten grün (rechts) oder rot (links). Nur auf Wunsch, baut nichts.
 
 ## 3.6.13 (November 2026) – Widmung: Zeilen ausgeglichen
 - Druck: Die Widmung wird so schmal gesetzt, wie es bei gleicher Zeilenzahl geht – alle Zeilen etwa gleich lang,
